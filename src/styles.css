@@ -1,0 +1,16 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+  font-family: 'Poppins', sans-serif!important;
+}
+
+/* NAVBAR MENU */
+nav ul {
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+nav {
+  background-color: #330733!important;
+}
