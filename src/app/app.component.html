@@ -1,2 +1,280 @@
-<router-outlet></router-outlet>
+<!--
+<nb-layout>
+  <nb-layout-header fixed>
+    <img src="../assets/images/logo-black.png" class="d-inline-block align-top img-fluid" width="200"
+         alt="DoUtDes logo">
+    &lt;!&ndash;<ul class="float-right">&ndash;&gt;
+    &lt;!&ndash;<li class="nav-item">Login</li>&ndash;&gt;
+    &lt;!&ndash;<li class="nav-item">Registrazione</li>&ndash;&gt;
+    &lt;!&ndash;</ul>&ndash;&gt;
+    &lt;!&ndash;<div class="float-right">&ndash;&gt;
+    <nb-actions class="ml-auto" *ngIf="false">
+      <nb-action>
+        <a href="/login">Login</a>
+      </nb-action>
+      <nb-action>
+        <a href="/signup">Registrazione</a>
+      </nb-action>
+    </nb-actions>
 
+    <nb-action class="ml-auto">
+      <div class="user-container">
+        <div class="user-picture"></div>
+        <div class="info-container">
+          <div class="user-name">Gino Paoli</div>
+        </div>
+      </div>
+    </nb-action>
+
+
+    &lt;!&ndash;</div>&ndash;&gt;
+  </nb-layout-header>
+
+  <nb-sidebar>
+&lt;!&ndash;    <nb-card>
+      <nb-card-header>Gengive Radioattive</nb-card-header>
+      <nb-card-body>Immagine</nb-card-body>
+      <nb-card-footer>Di gomma</nb-card-footer>
+    </nb-card>&ndash;&gt;
+    <nb-menu>
+      &lt;!&ndash;<nb-menu-item>&ndash;&gt;
+        cacca
+      &lt;!&ndash;</nb-menu-item>&ndash;&gt;
+
+    </nb-menu>
+  </nb-sidebar>
+
+  <nb-layout-column>
+    <router-outlet></router-outlet>
+  </nb-layout-column>
+</nb-layout>
+
+-->
+
+<body class="app sidebar-show aside-menu-show">
+<!--<header class="app-header navbar">-->
+  <!--&lt;!&ndash; Header content here &ndash;&gt;-->
+<!--</header>-->
+<app-header
+  [fixed]="true"
+  [navbarBrandFull]="{src: 'assets/img/logo-black.png', width: 89, height: 25, alt: 'DoUtDes Logo'}"
+  [navbarBrandMinimized]="{src: 'assets/img/brand/sygnet.svg', width: 30, height: 30, alt: 'DoUtDes Logo'}"
+  [sidebarToggler]="'lg'"
+  [asideMenuToggler]="'lg'">
+  <ul class="nav navbar-nav d-md-down-none">
+    <li class="nav-item px-3">
+      <a class="nav-link" [routerLink]="['/signup']">Register</a>
+    </li>
+    <li class="nav-item px-3">
+      <a class="nav-link" [routerLink]="['/login']">Sign In</a>
+    </li>
+ <!--   <li class="nav-item px-3">
+      <a class="nav-link" href="#">Settings</a>
+    </li>-->
+  </ul>
+  <ul class="nav navbar-nav ml-auto">
+    <li class="nav-item d-md-down-none">
+      <a class="nav-link" href="#"><i class="icon-bell"></i><span class="badge badge-pill badge-danger">5</span></a>
+    </li>
+    <li class="nav-item d-md-down-none">
+      <a class="nav-link" href="#"><i class="icon-list"></i></a>
+    </li>
+    <li class="nav-item d-md-down-none">
+      <a class="nav-link" href="#"><i class="icon-location-pin"></i></a>
+    </li>
+    <li class="nav-item dropdown" dropdown placement="bottom right">
+      <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" dropdownToggle (click)="false">
+        <img src="assets/img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com"/>
+      </a>
+      <div class="dropdown-menu dropdown-menu-right" *dropdownMenu aria-labelledby="simple-dropdown">
+        <div class="dropdown-header text-center"><strong>Account</strong></div>
+        <a class="dropdown-item" href="#"><i class="fa fa-bell-o"></i> Updates<span class="badge badge-info">42</span></a>
+        <a class="dropdown-item" href="#"><i class="fa fa-envelope-o"></i> Messages<span class="badge badge-success">42</span></a>
+        <a class="dropdown-item" href="#"><i class="fa fa-tasks"></i> Tasks<span class="badge badge-danger">42</span></a>
+        <a class="dropdown-item" href="#"><i class="fa fa-comments"></i> Comment<span class="badge badge-warning">42</span></a>
+        <div class="dropdown-header text-center"><strong>Settings</strong></div>
+        <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Profile</a>
+        <a class="dropdown-item" href="#"><i class="fa fa-wrench"></i> Setting</a>
+        <a class="dropdown-item" href="#"><i class="fa fa-usd"></i> Payments<span class="badge badge-dark">42</span></a>
+        <a class="dropdown-item" href="#"><i class="fa fa-file"></i> Projects<span class="badge badge-primary">42</span></a>
+        <div class="divider"></div>
+        <a class="dropdown-item" href="#"><i class="fa fa-shield"></i> Lock account</a>
+        <a class="dropdown-item" href="#"><i class="fa fa-lock"></i> Logout</a>
+      </div>
+    </li>
+  </ul>
+</app-header>
+<div class="app-body">
+  <!--<div class="sidebar">-->
+    <!--&lt;!&ndash; Sidebar content here &ndash;&gt;-->
+    <!---->
+  <!--</div>-->
+  <app-sidebar [fixed]="true">
+    <!--<app-sidebar-nav>-->
+      <ul class="nav">
+        <li class="nav-title">Menu</li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/home']">
+            <i class="nav-icon cui-speedometer"></i> Nav item
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+            <i class="nav-icon cui-speedometer"></i> With badge
+            <span class="badge badge-primary">NEW</span>
+          </a>
+        </li>
+        <li class="nav-item nav-dropdown">
+          <a class="nav-link nav-dropdown-toggle" href="#">
+            <i class="nav-icon cui-puzzle"></i> Nav dropdown
+          </a>
+          <ul class="nav-dropdown-items">
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <i class="nav-icon cui-puzzle"></i> Nav dropdown item
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <i class="nav-icon cui-puzzle"></i> Nav dropdown item
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item mt-auto">
+          <a class="nav-link nav-link-success" href="https://coreui.io">
+            <i class="nav-icon cui-cloud-download"></i> Download CoreUI</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link nav-link-danger" href="https://coreui.io/pro/">
+            <i class="nav-icon cui-layers"></i> Try CoreUI
+            <strong>PRO</strong>
+          </a>
+        </li>
+      </ul>
+    <!--</app-sidebar-nav>-->
+  </app-sidebar>
+  <main class="main">
+    <!-- Main content here -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="#">Library</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Data</li>
+      </ol>
+    </nav>
+
+    <router-outlet></router-outlet>
+  </main>
+  <!--<aside class="aside-menu">
+    &lt;!&ndash; Aside menu content here &ndash;&gt;
+  </aside>-->
+  <aside class="aside-menu" >
+    <div class="list-group list-group-accent">
+      <div class="list-group-item list-group-item-accent-secondary bg-light text-center font-weight-bold text-muted text-uppercase small">Today</div>
+      <div class="list-group-item list-group-item-accent-warning list-group-item-divider">
+        <div class="avatar float-right">
+          <img class="img-avatar" src="assets/img/avatars/7.jpg" alt="admin@bootstrapmaster.com">
+        </div>
+        <div>Meeting with
+          <strong>Lucas</strong>
+        </div>
+        <small class="text-muted mr-3">
+          <i class="icon-calendar"></i>  1 - 3pm</small>
+        <small class="text-muted">
+          <i class="icon-location-pin"></i>  Palo Alto, CA</small>
+      </div>
+      <div class="list-group-item list-group-item-accent-info">
+        <div class="avatar float-right">
+          <img class="img-avatar" src="assets/img/avatars/4.jpg" alt="admin@bootstrapmaster.com">
+        </div>
+        <div>Skype with
+          <strong>Megan</strong>
+        </div>
+        <small class="text-muted mr-3">
+          <i class="icon-calendar"></i>  4 - 5pm</small>
+        <small class="text-muted">
+          <i class="icon-social-skype"></i>  On-line</small>
+      </div>
+      <div class="list-group-item list-group-item-accent-secondary bg-light text-center font-weight-bold text-muted text-uppercase small">Tomorrow</div>
+      <div class="list-group-item list-group-item-accent-danger list-group-item-divider">
+        <div>New UI Project -
+          <strong>deadline</strong>
+        </div>
+        <small class="text-muted mr-3">
+          <i class="icon-calendar"></i>  10 - 11pm</small>
+        <small class="text-muted">
+          <i class="icon-home"></i>  creativeLabs HQ</small>
+        <div class="avatars-stack mt-2">
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/2.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/3.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/4.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/5.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/6.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+        </div>
+      </div>
+      <div class="list-group-item list-group-item-accent-success list-group-item-divider">
+        <div>
+          <strong>#10 Startups.Garden</strong> Meetup</div>
+        <small class="text-muted mr-3">
+          <i class="icon-calendar"></i>  1 - 3pm</small>
+        <small class="text-muted">
+          <i class="icon-location-pin"></i>  Palo Alto, CA</small>
+      </div>
+      <div class="list-group-item list-group-item-accent-primary list-group-item-divider">
+        <div>
+          <strong>Team meeting</strong>
+        </div>
+        <small class="text-muted mr-3">
+          <i class="icon-calendar"></i>  4 - 6pm</small>
+        <small class="text-muted">
+          <i class="icon-home"></i>  creativeLabs HQ</small>
+        <div class="avatars-stack mt-2">
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/2.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/3.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/4.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/5.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/6.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/7.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+          <div class="avatar avatar-xs">
+            <img class="img-avatar" src="assets/img/avatars/8.jpg" alt="admin@bootstrapmaster.com">
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+<app-footer>
+  <span><a href="https://www.doutdes-cluster.it">DoUtDes</a> &copy; 2018 </span>
+  <span class="ml-auto">
+    <a href="https://github.com/sebastianpodda/doutdes-ui" target="_blank">
+      <i class="fa fa-3x fa-github" style="color: #000;"></i>
+    </a>
+  </span>
+  <span class="ml-auto">Powered by <a href="https://www.unica.it">UniCA</a></span>
+</app-footer>
+
+
+</body>

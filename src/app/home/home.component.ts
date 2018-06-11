@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class HomeComponent implements OnInit {
   // users : any = require('../../../routes/users');
 
-  something: string = "Cicoria";
+  something = 'Cicoria';
 
   constructor() { }
 

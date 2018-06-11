@@ -1,0 +1,6 @@
+@media (min-width: 576px) and (min-width: 992px) {
+  html:not([dir="rtl"]) .aside-menu-lg-show.aside-menu-fixed .main,
+  html:not([dir="rtl"]) .aside-menu-lg-show.aside-menu-fixed .app-footer  {
+    margin-left: 200px;
+  }
+}
