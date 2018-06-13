@@ -1,5 +1,21 @@
-<div class="">
-  <main class="d-flex align-items-center">
+<app-header
+  [fixed]="true"
+  [navbarBrandFull]="{src: 'assets/img/brand/logo-black.png', width: 89, height: 25, alt: 'DoUtDes Logo'}"
+  [navbarBrandMinimized]="{src: 'assets/img/brand/logo-black.png', width: 30, height: 30, alt: 'DoUtDes Logo'}"
+  [sidebarToggler]="false"
+  [asideMenuToggler]="false">
+
+  <ul class="nav navbar-nav d-md-down-none mr-auto">
+    <li class="nav-item px-3">
+      <a class="nav-link" [routerLink]="['/register']">Registrati</a>
+    </li>
+    <li class="nav-item px-3">
+      <a class="nav-link" [routerLink]="['/login']">Login</a>
+    </li>
+  </ul>
+</app-header>
+<div class="app-body">
+  <main class="main d-flex align-items-center">
     <div class="container">
       <div class="row">
         <div class="col-md-8 mx-auto">
@@ -10,13 +26,13 @@
                 <p class="text-muted">Sign In to your account</p>
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fa fa-2x fa-user"></i></span>
+                    <span class="input-group-text"><i class="icon-user"></i></span>
                   </div>
                   <input type="text" class="form-control" placeholder="Username">
                 </div>
                 <div class="input-group mb-4">
                   <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fa fa-2x fa-lock"></i></span>
+                    <span class="input-group-text"><i class="icon-lock"></i></span>
                   </div>
                   <input type="password" class="form-control" placeholder="Password">
                 </div>
@@ -45,3 +61,8 @@
     </div>
   </main>
 </div>
+<app-footer>
+  <span><a href="http://www.doutdes-cluster.it">DoUtDes</a> &copy; 2018 UniCA.</span>
+  <span class="ml-auto">Powered by <a href="https://www.unica.it/unica/it/dip_matinfo.page" target="_blank">
+    Dipartimento di Matematica e Informatica</a></span>
+</app-footer>

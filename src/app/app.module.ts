@@ -1,75 +1,68 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
-import { RouterModule, Routes } from '@angular/router';
-// import { MatToolbarModule, MatButtonModule } from '@angular/material';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 
-/** Nebular components **/
-/*import {
-  NbActionsModule, NbCardModule, NbLayoutModule, NbMenuItem, NbMenuModule, NbMenuService, NbSidebarModule, NbSidebarService, NbTabsetModule,
-  NbThemeModule,
-  NbUserModule
-} from '@nebular/theme';*/
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
+import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+
+const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+  suppressScrollX: true
+};
 
 import { AppComponent } from './app.component';
-import { NotfoundComponent } from './notfound/notfound.component';
-import { HomeComponent } from './home/home.component';
-import {NbMenuInternalService} from '@nebular/theme/components/menu/menu.service';
-import {AppSidebarNavComponent} from '@coreui/angular/lib/sidebar/app-sidebar-nav.component';
-import {AppAsideModule, AppBreadcrumbModule, AppFooterModule, AppHeaderModule, AppSidebarModule} from '@coreui/angular';
-import {AppBreadcrumbService} from '@coreui/angular/lib/breadcrumb/app-breadcrumb.service';
-import {LoginComponent} from './views/login/login.component';
-import {RegisterComponent} from './views/register/register.component';
 
-const appRoutes: Routes = [
-  // Qui vanno i vari percorsi dei componenti
-  {
-    path: '',
-    redirectTo: '/home',
-    pathMatch: 'full'
-  },
-  {
-    path: 'home',
-    component: HomeComponent,
-    data: { title: 'DoUtDes Home' }
-  },
-  {
-    path: 'signup',
-    component: RegisterComponent
-  },
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: '**',
-    component: NotfoundComponent
-  }
+// Import containers
+import { DefaultLayoutComponent } from './containers';
+
+import { P404Component } from './views/error/404.component';
+import { P500Component } from './views/error/500.component';
+import { LoginComponent } from './views/login/login.component';
+import { RegisterComponent } from './views/register/register.component';
+
+const APP_CONTAINERS = [
+  DefaultLayoutComponent
 ];
 
+import {
+  AppAsideModule,
+  AppBreadcrumbModule,
+  AppHeaderModule,
+  AppFooterModule,
+  AppSidebarModule,
+} from '@coreui/angular';
+
+// Import routing module
+import { AppRoutingModule } from './app.routing';
+
+// Import 3rd party components
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { ChartsModule } from 'ng2-charts/ng2-charts';
+
 @NgModule({
-  declarations: [
-    AppComponent,
-    NotfoundComponent,
-    HomeComponent,
-    RegisterComponent,
-    LoginComponent
-  ],
   imports: [
     BrowserModule,
-    HttpClientModule,
-    AppSidebarModule,
-    AppBreadcrumbModule,
+    AppRoutingModule,
     AppAsideModule,
-    AppHeaderModule,
+    AppBreadcrumbModule.forRoot(),
     AppFooterModule,
-    RouterModule.forRoot(appRoutes) // { enableTracing: true })
+    AppHeaderModule,
+    AppSidebarModule,
+    PerfectScrollbarModule,
+    BsDropdownModule.forRoot(),
+    TabsModule.forRoot(),
+    ChartsModule
   ],
-  exports: [
-    // MatButtonModule,
-    // MatToolbarModule,
+  declarations: [
+    AppComponent,
+    ...APP_CONTAINERS,
+    P404Component,
+    P500Component,
+    LoginComponent,
+    RegisterComponent
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [ AppComponent ]
 })
 export class AppModule { }
