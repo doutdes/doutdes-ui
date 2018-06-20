@@ -13,6 +13,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   submitted = false;
   returnUrl: string;
+  failed = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -47,10 +48,14 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(this.f.username.value, this.f.password.value)
       .pipe(first())
       .subscribe(data => {
-        console.log(data);
         this.router.navigate([this.returnUrl]);
       }, error => {
-        console.log(error);
+        // console.log(error);
+
+        if (!error['logged']) {
+          this.failed = true;
+        }
+
         this.loading = false;
       });
   }

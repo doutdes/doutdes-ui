@@ -24,6 +24,7 @@
               <div class="card-body">
                 <h1>Login</h1>
                 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
                   <p class="text-muted">Sign In to your account</p>
                   <div class="input-group mb-3">
                     <div class="input-group-prepend">
@@ -47,6 +48,9 @@
                       <div *ngIf="f.password.errors.required">Password is required</div>
                     </div>
                   </div>
+
+                  <div *ngIf="failed"><p class="text-danger">Username or Password not corrected</p></div>
+
                   <div class="row">
                     <div class="col-6">
                       <button [disabled]="loading" class="btn btn-primary px-4">Login</button>
