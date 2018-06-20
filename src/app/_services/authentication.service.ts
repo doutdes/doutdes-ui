@@ -26,6 +26,7 @@ export class AuthenticationService {
   }
 
   logout() {
+    console.log('sloggato');
     localStorage.removeItem('currentUser');
   }
 }

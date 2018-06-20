@@ -1,26 +1,21 @@
 import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate} from '@angular/router';
+import {ActivatedRouteSnapshot, CanActivate, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 
 @Injectable()
 
 export class AccessGuard implements CanActivate {
+
+  constructor(private router: Router) { }
+
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean>|Promise<boolean>|boolean {
     const requiresLogin = route.data.requiresLogin || false;
 
-    if (requiresLogin) {
+    if (requiresLogin && !localStorage.getItem('currentUser')) {
+      this.router.navigate(['/login']);
       return false;
     }
+
+    return true;
   }
-
-/*  checkLogin(url: string): boolean {
-    if (this.authService.isLoggedIn) { return true; }
-
-    // Store the attempted URL for redirecting
-    this.authService.redirectUrl = url;
-
-    // Navigate to the login page with extras
-    this.router.navigate(['/login']);
-    return false;
-  }*/
 }

@@ -43,11 +43,11 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DefaultLayoutComponent,
+    canActivate: [ AccessGuard ],
     data: {
       title: 'Home',
       requiresLogin: true
     },
-    // canActivate: [ AccessGuard ],
     children: [
       {
         path: 'base',
