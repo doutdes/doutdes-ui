@@ -47,7 +47,7 @@ export const routes: Routes = [
       title: 'Home',
       requiresLogin: true
     },
-    canActivate: [ AccessGuard ],
+    // canActivate: [ AccessGuard ],
     children: [
       {
         path: 'base',
