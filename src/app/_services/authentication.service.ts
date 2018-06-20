@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map } from 'rxjs/internal/operators';
+import {map, repeatWhen} from 'rxjs/internal/operators';
 
 @Injectable()
 export class AuthenticationService {
@@ -19,6 +19,7 @@ export class AuthenticationService {
 
         if (response['user'] && response['token']) {
           localStorage.setItem('currentUser', response['token']);
+          localStorage.setItem('username', response['user'].username);
         }
 
         return response['token'];
@@ -26,7 +27,6 @@ export class AuthenticationService {
   }
 
   logout() {
-    console.log('sloggato');
-    localStorage.removeItem('currentUser');
+    localStorage.clear();
   }
 }
