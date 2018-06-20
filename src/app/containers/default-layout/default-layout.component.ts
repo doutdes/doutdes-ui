@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { navItems } from './../../_nav';
+import {User} from '../../_models/User';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,7 +11,7 @@ export class DefaultLayoutComponent {
   public sidebarMinimized = true;
   private changes: MutationObserver;
   public element: HTMLElement = document.body;
-  private username: string;
+  private user: User;
 
   constructor() {
 
@@ -22,6 +23,6 @@ export class DefaultLayoutComponent {
       attributes: true
     });
 
-    this.username = localStorage.getItem('username');
+    this.user = JSON.parse(localStorage.getItem('user'));
   }
 }

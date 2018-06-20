@@ -19,7 +19,7 @@ export class AuthenticationService {
 
         if (response['user'] && response['token']) {
           localStorage.setItem('currentUser', response['token']);
-          localStorage.setItem('username', response['user'].username);
+          localStorage.setItem('user', JSON.stringify(response['user']));
         }
 
         return response['token'];
