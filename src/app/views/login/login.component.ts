@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from '../../_services/authentication.service';
+import {first} from 'rxjs/internal/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,4 +34,24 @@ export class LoginComponent implements OnInit {
 
 
   get f() { return this.loginForm.controls; }
+
+  onSubmit() {
+    this.submitted = true;
+
+    if (this.loginForm.invalid){
+      return;
+    }
+
+    this.loading = true;
+
+    this.authenticationService.login(this.f.username.value, this.f.password.value)
+      .pipe(first())
+      .subscribe(data => {
+        console.log(data);
+        this.router.navigate([this.returnUrl]);
+      }, error => {
+        console.log(error);
+        this.loading = false;
+      });
+  }
 }

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { hashSync } from '@types/bcrypt-nodejs';
 import { map } from 'rxjs/internal/operators';
 
 @Injectable()
@@ -8,15 +7,21 @@ export class AuthenticationService {
   constructor(private http: HttpClient) { }
 
   login(username: string, password: string) {
-    const psw = hashSync(password);
+    let headers = new HttpHeaders();
+    headers = headers.set('Authorization', 'Basic ' + btoa(username + ':' + password));
 
-    return this.http.post<any>('localhost:3000/login', {username: username, password: psw} )
+    const httpOptions = {
+      headers: headers
+    };
+
+    return this.http.post<any>('http://localhost:3000/login', {}, httpOptions)
       .pipe(map(response => {
-        if (response.user && response.token) {
-          localStorage.setItem('currentUser', response.token);
+
+        if (response['user'] && response['token']) {
+          localStorage.setItem('currentUser', response['token']);
         }
 
-        return response.token;
+        return response['token'];
       }));
   }
 

@@ -57,7 +57,7 @@ import {HttpClientModule} from '@angular/common/http';
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     ChartsModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   declarations: [
     AppComponent,
