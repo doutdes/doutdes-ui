@@ -6,6 +6,7 @@ export class User {
   vat_number: string;
   first_name: string;
   last_name: string;
+  birth_place: string;
   birth_date: Date;
   fiscal_code: string;
   address: string;
