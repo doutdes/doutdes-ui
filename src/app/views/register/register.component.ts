@@ -10,7 +10,7 @@ import {PasswordValidation} from '../../_helpers/password-validator.directive';
 export class RegisterComponent implements OnInit{
 
   registrationForm: FormGroup;
-  selectedUser: 'company';
+  selectedUser = 'editor';
   loading = false;
   submitted = false;
 
@@ -53,6 +53,9 @@ export class RegisterComponent implements OnInit{
       this.loading = false;
       return;
     }
+
+    this.registrationForm.value.type = this.selectedUser;
+    console.log(this.registrationForm.value); // TODO takes all the values from the form, I have to pass it to the model and to the service
 
 
   }
