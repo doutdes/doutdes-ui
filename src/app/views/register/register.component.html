@@ -27,15 +27,14 @@
               <div class="form-inline mb-2">
                 <label class="my-1 mr-2" for="userType">Type of user</label>
                 <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="userType">
-                  <option value="company" selected>Company</option>
-                  <option value="editor">Editor</option>
+                  <option value="company">Company</option>
+                  <option value="editor" selected>Editor</option>
                   <option value="analyst">Analyst</option>
                 </select>
               </div>
 
               <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
 
-                <!-- Vat Number and Company Name only for companies users -->
                 <div *ngIf="this.selectedUser == 'company'">
                   <div class="form-row">
                     <div class="input-group mb-3 col-md-6">
@@ -51,7 +50,7 @@
                       <input type="text" name="vat_number" class="form-control" placeholder="Vat Number" required>
                     </div>
                   </div>
-                </div>
+                </div> <!-- Vat Number and Company Name only for companies users -->
 
                 <div class="form-row">
                   <div class="input-group mb-4 col-md-6">
@@ -66,7 +65,7 @@
                     </div>
                     <input type="text" name="last_name" class="form-control" placeholder="Last Name">
                   </div>
-                </div>
+                </div> <!-- First and last name -->
                 <div class="form-row">
                   <div class="input-group mb-3 col-md-6">
                     <div class="input-group-prepend">
@@ -80,7 +79,43 @@
                     </div>
                     <input type="date" name="birth_date" class="form-control" placeholder="Birth Date">
                   </div>
-                </div>
+                </div> <!-- Birth place and birth date -->
+                <div class="form-row">
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                    </div>
+                    <input type="text" name="fiscal_code" class="form-control" placeholder="Fiscal Code">
+                  </div>
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-location-pin"></i></span>
+                    </div>
+                    <input type="text" name="address" class="form-control" placeholder="Address">
+                  </div>
+                </div> <!-- Fiscal Code and Address -->
+                <div class="form-row">
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-location-pin"></i></span>
+                    </div>
+                    <input type="text" name="city" class="form-control" placeholder="Residence City">
+                  </div>
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-location-pin"></i></span>
+                    </div>
+                    <input type="text" name="zip_code" class="form-control" placeholder="Zip Code">
+                  </div>
+                </div> <!-- Residence City and Zip Code -->
+                <div class="form-row">
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                    </div>
+                    <input type="text" name="province" class="form-control" placeholder="Province">
+                  </div>
+                </div> <!-- Province -->
                 <div class="form-row">
                   <div class="input-group mb-3 col-md-6">
                     <div class="input-group-prepend">
@@ -94,8 +129,7 @@
                     </div>
                     <input type="email" name="email" class="form-control" placeholder="Email">
                   </div>
-                </div>
-
+                </div> <!-- Email and Username -->
                 <div class="form-row">
                   <div class="input-group mb-3 col-md-6">
                     <div class="input-group-prepend">
@@ -110,7 +144,7 @@
                     <input type="password" name="r_password" class="form-control" placeholder="Repeat password">
                   </div>
                   <button [disabled]="loading" class="btn btn-block btn-success">Create Account</button>
-                </div>
+                </div> <!-- Password and repeated password -->
               </form>
             </div>
 
