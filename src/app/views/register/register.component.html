@@ -33,79 +33,85 @@
                 </select>
               </div>
 
-              <div [ngSwitch]="this.selectedUser">
-                <div *ngSwitchCase="'company'">Company registration</div>
-                <div *ngSwitchCase="'editor'">Editor registration</div>
-                <div *ngSwitchCase="'analyst'">Analyst registration</div>
-              </div>
+              <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
 
-              <!--<div class="form-row">-->
-                <!--<div class="input-group mb-4 col-md-6">-->
-                  <!--<div class="input-group-prepend">-->
-                    <!--<span class="input-group-text"><i class="icon-user"></i></span>-->
-                  <!--</div>-->
-                  <!--<input type="text" class="form-control" placeholder="First Name">-->
-                <!--</div>-->
-                <!--<div class="input-group mb-4 ml-auto col-md-6">-->
-                  <!--<div class="input-group-prepend">-->
-                    <!--<span class="input-group-text"><i class="icon-user"></i></span>-->
-                  <!--</div>-->
-                  <!--<input type="text" class="form-control" placeholder="Last Name">-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--<div class="form-row">-->
-                <!--<div class="input-group mb-3 col-md-6">-->
-                  <!--<div class="input-group-prepend">-->
-                    <!--<span class="input-group-text"><i class="icon-location-pin"></i></span>-->
-                  <!--</div>-->
-                  <!--<input type="text" class="form-control" placeholder="Birth Place">-->
-                <!--</div>-->
-                <!--<div class="input-group mb-3 col-md-6">-->
-                  <!--<div class="input-group-prepend">-->
-                    <!--<span class="input-group-text"><i class="icon-calendar"></i></span>-->
-                  <!--</div>-->
-                  <!--<input type="date" class="form-control" placeholder="Birth Date">-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--<div class="form-row">-->
-                <!--<div class="input-group mb-3 col-md-6">-->
-                  <!--<div class="input-group-prepend">-->
-                    <!--<span class="input-group-text"><i class="icon-briefcase"></i></span>-->
-                  <!--</div>-->
-                  <!--<input type="text" class="form-control" placeholder="Company Name">-->
-                <!--</div>-->
-                <!--<div class="input-group mb-3 col-md-6">-->
-                  <!--<div class="input-group-prepend">-->
-                    <!--<span class="input-group-text"><i class="icon-chart"></i></span>-->
-                  <!--</div>-->
-                  <!--<input type="text" class="form-control" placeholder="Vat Number">-->
-                <!--</div>-->
-              <!--</div>-->
-              <!--<div class="input-group mb-3">-->
-                <!--<div class="input-group-prepend">-->
-                  <!--<span class="input-group-text"><i class="icon-user"></i></span>-->
-                <!--</div>-->
-                <!--<input type="text" class="form-control" placeholder="Username">-->
-              <!--</div>-->
-              <!--<div class="input-group mb-3">-->
-                <!--<div class="input-group-prepend">-->
-                  <!--<span class="input-group-text">@</span>-->
-                <!--</div>-->
-                <!--<input type="text" class="form-control" placeholder="Email">-->
-              <!--</div>-->
-              <!--<div class="input-group mb-3">-->
-                <!--<div class="input-group-prepend">-->
-                  <!--<span class="input-group-text"><i class="icon-lock"></i></span>-->
-                <!--</div>-->
-                <!--<input type="password" class="form-control" placeholder="Password">-->
-              <!--</div>-->
-              <!--<div class="input-group mb-4">-->
-                <!--<div class="input-group-prepend">-->
-                  <!--<span class="input-group-text"><i class="icon-lock"></i></span>-->
-                <!--</div>-->
-                <!--<input type="password" class="form-control" placeholder="Repeat password">-->
-              <!--</div>-->
-              <button type="button" class="btn btn-block btn-success">Create Account</button>
+                <!-- Vat Number and Company Name only for companies users -->
+                <div *ngIf="this.selectedUser == 'company'">
+                  <div class="form-row">
+                    <div class="input-group mb-3 col-md-6">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="icon-briefcase"></i></span>
+                      </div>
+                      <input type="text" name="company_name" class="form-control" placeholder="Company Name" required>
+                    </div>
+                    <div class="input-group mb-3 col-md-6">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="icon-chart"></i></span>
+                      </div>
+                      <input type="text" name="vat_number" class="form-control" placeholder="Vat Number" required>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="input-group mb-4 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-user"></i></span>
+                    </div>
+                    <input type="text" name="first_name" class="form-control" placeholder="First Name">
+                  </div>
+                  <div class="input-group mb-4 ml-auto col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-user"></i></span>
+                    </div>
+                    <input type="text" name="last_name" class="form-control" placeholder="Last Name">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-location-pin"></i></span>
+                    </div>
+                    <input type="text" name="birth_place" class="form-control" placeholder="Birth Place">
+                  </div>
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-calendar"></i></span>
+                    </div>
+                    <input type="date" name="birth_date" class="form-control" placeholder="Birth Date">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                    </div>
+                    <input type="text" name="username" class="form-control" placeholder="Username">
+                  </div>
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">@</span>
+                    </div>
+                    <input type="email" name="email" class="form-control" placeholder="Email">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="input-group mb-3 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-lock"></i></span>
+                    </div>
+                    <input type="password" name="password" class="form-control" placeholder="Password">
+                  </div>
+                  <div class="input-group mb-4 col-md-6">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="icon-lock"></i></span>
+                    </div>
+                    <input type="password" name="r_password" class="form-control" placeholder="Repeat password">
+                  </div>
+                  <button [disabled]="loading" class="btn btn-block btn-success">Create Account</button>
+                </div>
+              </form>
             </div>
 
           </div>

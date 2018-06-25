@@ -22,7 +22,6 @@
             "styles": [
               "node_modules/@coreui/icons/css/coreui-icons.css",
               "node_modules/flag-icon-css/css/flag-icon.css",
-              "node_modules/font-awesome/css/font-awesome.css",
               "node_modules/simple-line-icons/css/simple-line-icons.css",
               "src/scss/style.scss"
             ],
@@ -75,7 +74,10 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [
-              "node_modules/chart.js/dist/Chart.min.js"
+              "node_modules/chart.js/dist/Chart.min.js",
+              "node_modules/jquery/dist/jquery.js",
+              "node_modules/@fortawesome/fontawesome/index.js",
+              "node_modules/@fortawesome/fontawesome-free-solid/index.js"
             ],
             "styles": [
               "node_modules/flag-icon-css/css/flag-icon.css",

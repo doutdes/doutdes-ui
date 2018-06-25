@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { faUserTie } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -8,25 +9,39 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 })
 export class RegisterComponent implements OnInit{
 
-  userChoice: FormGroup;
-  selectedUser: string = 'company';
+  registrationForm: FormGroup;
+  selectedUser: 'company';
+  loading = false;
 
   constructor(
     private formBuilder: FormBuilder
   ) { }
 
   ngOnInit(): void {
-    this.userChoice = this.formBuilder.group({
-      userType: ['', Validators.required]
+    this.registrationForm = this.formBuilder.group({
+      first_name:  ['', Validators.required],
+      last_name:   ['', Validators.required],
+      birth_place: ['', Validators.required],
+      birth_date:  ['', Validators.required],
+      username:    ['', Validators.required],
+      email:       ['', Validators.required],
+      password:    ['', Validators.required],
+      r_password:  ['', Validators.required]
     });
   }
 
-  get getUserType() {
-    return this.userChoice.controls.userType.value;
-  }
+  get f() { return this.registrationForm.controls; }
 
   selectChangeHandler (event: any) {
     this.selectedUser = event.target.value;
+  }
+
+  onSubmit() {
+    if (this.registrationForm.invalid) {
+      return;
+    }
+
+    this.loading = true;
   }
 
 }
