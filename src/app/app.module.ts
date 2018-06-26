@@ -42,6 +42,7 @@ import { ChartsModule } from 'ng2-charts/ng2-charts';
 import {ReactiveFormsModule} from '@angular/forms';
 import {AuthenticationService} from './_services/authentication.service';
 import {HttpClientModule} from '@angular/common/http';
+import {UserService} from './_services/user.service';
 
 @NgModule({
   imports: [
@@ -67,7 +68,7 @@ import {HttpClientModule} from '@angular/common/http';
     LoginComponent,
     RegisterComponent
   ],
-  providers: [ AuthenticationService ],
+  providers: [ AuthenticationService, UserService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
