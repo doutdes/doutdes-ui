@@ -16,21 +16,21 @@ export const navItems = [
   {
     name: 'Google',
     url:  '/theme/colors',
-    icon: 'fa fa-google'
+    icon: 'fab fa-google'
   },
   {
     name: 'Youtube',
     url:  '/theme/colors',
-    icon: 'fa fa-youtube'
+    icon: 'fab fa-youtube'
   },
   {
     name: 'Twitter',
     url:  '/theme/colors',
-    icon: 'fa fa-twitter'
+    icon: 'fab fa-twitter'
   },
   {
     name: 'Instagram',
     url:  '/theme/colors',
-    icon: 'fa fa-instagram'
+    icon: 'fab fa-instagram'
   }
 ];

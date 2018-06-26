@@ -44,7 +44,7 @@ export class RegisterComponent implements OnInit{
       vat_number: []
     }, {
       validator: Validators.compose([PasswordValidation.MatchPassword, FiscalCodeValidation.CheckFiscalCode])
-      // TODO To add controls about unique mail, unique username and unique fiscal code
+      // TODO To add controls about unique mail, unique username and unique fiscal code in the backend
     });
   }
 
@@ -82,6 +82,7 @@ export class RegisterComponent implements OnInit{
     // Setting some values to pass to the backend
     this.registrationForm.value.user_type = this.selectedUser;
     this.registrationForm.value.id = 0;
+    this.registrationForm.value.checksum = 0;
 
     // If the user is not a company, put the values to null
     if (this.selectedUser !== 'company') {
@@ -91,7 +92,7 @@ export class RegisterComponent implements OnInit{
 
     delete this.registrationForm.value.r_password;
 
-    console.log(this.registrationForm.value); // TODO takes all the values from the form, I have to pass it to the model and to the service
+    console.log(this.registrationForm.value);
 
     this.loading = true;
 
@@ -99,9 +100,12 @@ export class RegisterComponent implements OnInit{
       .pipe(first())
       .subscribe(
         data => {
+          console.log(data);
           this.router.navigate(['/login']);
         }, error => {
           this.loading = false;
+          console.log(error);
+          console.log('User or email already exists');
         }
       );
   }

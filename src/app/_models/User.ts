@@ -15,8 +15,5 @@ export interface User {
   zip: string;
   password: string;
   user_type: string;
+  checksum: string;
 }
-
-// TODO To use Interface for casting
-// TODO To calculate the checksum into the backend
-// https://stackoverflow.com/questions/40421100/how-to-parse-a-json-object-to-a-typescript-object
