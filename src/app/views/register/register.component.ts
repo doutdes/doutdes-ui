@@ -6,13 +6,18 @@ import {UserService} from '../../_services/user.service';
 import {User} from '../../_models/User';
 import {first} from 'rxjs/internal/operators';
 import {Router} from '@angular/router';
-
+import {NgRedux, select} from '@angular-redux/store';
+import {IAppState} from '../../store/model';
+import {SIGNED_UP} from '../../store/actions';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: 'register.component.html'
 })
-export class RegisterComponent implements OnInit{
+export class RegisterComponent implements OnInit {
+
+  @select() username;
+  @select() just_signed;
 
   registrationForm: FormGroup;
   selectedUser = 'editor';
@@ -22,7 +27,8 @@ export class RegisterComponent implements OnInit{
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private ngRedux: NgRedux<IAppState>
   ) { }
 
   ngOnInit(): void {
@@ -44,7 +50,6 @@ export class RegisterComponent implements OnInit{
       vat_number: []
     }, {
       validator: Validators.compose([PasswordValidation.MatchPassword, FiscalCodeValidation.CheckFiscalCode])
-      // TODO To add controls about unique mail, unique username and unique fiscal code in the backend
     });
   }
 
@@ -101,6 +106,7 @@ export class RegisterComponent implements OnInit{
       .subscribe(
         data => {
           console.log(data);
+          this.setSignedUp(this.registrationForm.value.username);
           this.router.navigate(['/login']);
         }, error => {
           this.loading = false;
@@ -108,5 +114,9 @@ export class RegisterComponent implements OnInit{
           console.log('User or email already exists');
         }
       );
+  }
+
+  setSignedUp(username: string) {
+    this.ngRedux.dispatch({type: SIGNED_UP, username: username});
   }
 }

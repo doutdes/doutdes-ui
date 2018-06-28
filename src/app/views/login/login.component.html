@@ -78,6 +78,11 @@
       </div>
     </div>
   </main>
+  <div *ngIf="just_signed | async">
+    <alert type="success">
+      <strong>Well done!</strong> You successfully signed up! Now you should login to our platform.
+    </alert>
+  </div>
 </div>
 <app-footer>
   <span><a href="http://www.doutdes-cluster.it">DoUtDes</a> &copy; 2018 UniCA.</span>
