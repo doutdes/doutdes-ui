@@ -40,12 +40,13 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { AlertModule } from 'ngx-bootstrap/alert';
 
 // Import services
 import {UserService} from './_services/user.service';
 import {AuthenticationService} from './_services/authentication.service';
+import {JwtInterceptor} from './_helpers/jwt.interceptor';
 
 // Import Redux Store
 import {StoreModule} from './store/store.module';
@@ -76,7 +77,11 @@ import {StoreModule} from './store/store.module';
     LoginComponent,
     RegisterComponent
   ],
-  providers: [ AuthenticationService, UserService ],
+  providers: [
+    AuthenticationService,
+    UserService ,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+  ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

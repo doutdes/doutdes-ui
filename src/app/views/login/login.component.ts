@@ -63,10 +63,9 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(this.f.username.value, this.f.password.value)
       .pipe(first())
       .subscribe(data => {
-        this.onLogged(this.f.username.value);
+        this.onLogged(this.f.username.value, data.token);
         this.router.navigate([this.returnUrl]);
       }, error => {
-        // console.log(error);
 
         if (!error['logged']) {
           this.failed = true;
@@ -76,7 +75,7 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  onLogged(username: string){
-    this.ngRedux.dispatch({type: LOGGED, username: username});
+  onLogged(username: string, token: string){
+    this.ngRedux.dispatch({type: LOGGED, username: username, jwt: token});
   }
 }

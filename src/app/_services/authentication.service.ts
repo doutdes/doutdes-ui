@@ -1,10 +1,18 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {map, repeatWhen} from 'rxjs/internal/operators';
+import {NgRedux} from '@angular-redux/store';
+import {IAppState} from '../store/model';
+import {LOGGED, SLOGGED} from '../store/actions';
+
 
 @Injectable()
 export class AuthenticationService {
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private ngRedux: NgRedux<IAppState>
+  ) {
+  }
 
   login(username: string, password: string) {
     let headers = new HttpHeaders();
@@ -14,19 +22,17 @@ export class AuthenticationService {
       headers: headers
     };
 
-    return this.http.post<any>('http://localhost:3000/login', {}, httpOptions)
-      .pipe(map(response => {
-
-        if (response['user'] && response['token']) {
-          localStorage.setItem('currentUser', response['token']);
-          localStorage.setItem('user', JSON.stringify(response['user']));
-        }
-
-        return response['token'];
-      }));
+    return this.http.post<any>('http://localhost:3000/login', {}, httpOptions).pipe(map(response => {
+      this.onLogin(username, response['token']);
+      return true;
+    }));
   }
 
   logout() {
-    localStorage.clear();
+    this.ngRedux.dispatch({type: SLOGGED});
+  }
+
+  onLogin(username: string, token: string){
+    this.ngRedux.dispatch({type: LOGGED, username: username, jwt: token});
   }
 }
