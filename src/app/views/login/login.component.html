@@ -16,6 +16,9 @@
 </app-header>
 <div class="app-body">
   <main class="main d-flex align-items-center">
+    <alert *ngIf="just_signed | async" class="alert-registration" type="success" [dismissible]="true">
+      <strong>Well done!</strong> You successfully signed up! Now you should login to our platform.
+    </alert>
     <div class="container">
       <div class="row">
         <div class="col-md-8 mx-auto">
@@ -78,11 +81,6 @@
       </div>
     </div>
   </main>
-  <div *ngIf="just_signed | async">
-    <alert type="success">
-      <strong>Well done!</strong> You successfully signed up! Now you should login to our platform.
-    </alert>
-  </div>
 </div>
 <app-footer>
   <span><a href="http://www.doutdes-cluster.it">DoUtDes</a> &copy; 2018 UniCA.</span>

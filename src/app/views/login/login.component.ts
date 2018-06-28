@@ -6,10 +6,16 @@ import {first} from 'rxjs/internal/operators';
 import {NgRedux, select} from '@angular-redux/store';
 import {LOGGED} from '../../store/actions';
 import {IAppState} from '../../store/model';
+import {AlertConfig} from 'ngx-bootstrap/alert';
+
+export function getAlertConfig(): AlertConfig {
+  return Object.assign(new AlertConfig(), { type: 'success' });
+}
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: 'login.component.html'
+  templateUrl: 'login.component.html',
+  providers: [{ provide: AlertConfig, useFactory: getAlertConfig }]
 })
 export class LoginComponent implements OnInit {
 
