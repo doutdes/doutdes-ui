@@ -16,8 +16,8 @@ import { AppComponent } from './app.component';
 import { DefaultLayoutComponent } from './containers';
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
-import { LoginComponent } from './views/login/login.component';
-import { RegisterComponent } from './views/register/register.component';
+import { LoginComponent } from './features/authentication/login/login.component';
+import { RegisterComponent } from './features/authentication/register/register.component';
 
 const APP_CONTAINERS = [
   DefaultLayoutComponent
@@ -44,12 +44,12 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { AlertModule } from 'ngx-bootstrap/alert';
 
 // Import services
-import {UserService} from './_services/user.service';
-import {AuthenticationService} from './_services/authentication.service';
-import {JwtInterceptor} from './_helpers/jwt.interceptor';
+import {UserService} from './shared/_services/user.service';
+import {AuthenticationService} from './features/authentication/authentication.service';
+import {JwtInterceptor} from './shared/jwt.interceptor';
 
 // Import Redux Store
-import {StoreModule} from './store/store.module';
+import {StoreModule} from './shared/store/store.module';
 
 @NgModule({
   imports: [
@@ -79,8 +79,7 @@ import {StoreModule} from './store/store.module';
   ],
   providers: [
     AuthenticationService,
-    UserService ,
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    UserService
   ],
   bootstrap: [ AppComponent ]
 })

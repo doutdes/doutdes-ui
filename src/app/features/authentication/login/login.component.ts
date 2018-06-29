@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import {AuthenticationService} from '../../_services/authentication.service';
+import {AuthenticationService} from '../authentication.service';
 import {first} from 'rxjs/internal/operators';
 import {NgRedux, select} from '@angular-redux/store';
-import {LOGGED} from '../../store/actions';
-import {IAppState} from '../../store/model';
+import {LOGGED} from '../../../shared/store/actions';
+import {IAppState} from '../../../shared/store/model';
 import {AlertConfig} from 'ngx-bootstrap/alert';
 
 export function getAlertConfig(): AlertConfig {
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
 
     this.authenticationService.logout();
 
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl = '';
   }
 
 
@@ -63,8 +63,10 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(this.f.username.value, this.f.password.value)
       .pipe(first())
       .subscribe(data => {
-        this.onLogged(this.f.username.value, data.token);
-        this.router.navigate([this.returnUrl]);
+        if (data) {
+          console.log('Navigo in home page');
+          this.router.navigateByUrl(this.returnUrl);
+        }
       }, error => {
 
         if (!error['logged']) {
@@ -75,7 +77,7 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  onLogged(username: string, token: string){
+  onLogged(username: string, token: string) {
     this.ngRedux.dispatch({type: LOGGED, username: username, jwt: token});
   }
 }

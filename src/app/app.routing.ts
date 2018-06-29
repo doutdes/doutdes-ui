@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import {AccessGuard} from './_guards/AccessGuard';
+import {AccessGuard} from './shared/_guards/AccessGuard';
 
 // Import Containers
 import { DefaultLayoutComponent } from './containers';
 
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
-import { LoginComponent } from './views/login/login.component';
-import { RegisterComponent } from './views/register/register.component';
+import { LoginComponent } from './features/authentication/login/login.component';
+import { RegisterComponent } from './features/authentication/register/register.component';
 
 
 export const routes: Routes = [
@@ -93,7 +93,7 @@ export const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [ RouterModule.forRoot(routes, {useHash: false}) ],
+  imports: [ RouterModule.forRoot(routes, {useHash: false, enableTracing: true }) ],
   exports: [ RouterModule ],
   providers: [ AccessGuard ]
 })

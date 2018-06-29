@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {map, repeatWhen} from 'rxjs/internal/operators';
 import {NgRedux} from '@angular-redux/store';
-import {IAppState} from '../store/model';
-import {LOGGED, SLOGGED} from '../store/actions';
+import {IAppState} from '../../shared/store/model';
+import {LOGGED, SLOGGED} from '../../shared/store/actions';
 
 
 @Injectable()
@@ -33,6 +33,7 @@ export class AuthenticationService {
   }
 
   onLogin(username: string, token: string){
+    console.log('Dispatch: ' + username);
     this.ngRedux.dispatch({type: LOGGED, username: username, jwt: token});
   }
 }
