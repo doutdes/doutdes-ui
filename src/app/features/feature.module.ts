@@ -4,6 +4,7 @@ import {FeatureRoutingModule} from './feature.routing';
 import {SharedModule} from '../shared/shared.module';
 import {CoreModule} from '../core/core.module';
 import {AppFooterModule} from '@coreui/angular';
+import {AccessGuard} from '../shared/_guards/AccessGuard';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,7 @@ import {AppFooterModule} from '@coreui/angular';
     AppFooterModule
   ],
   providers: [
-
+    AccessGuard
   ],
   exports: [
 

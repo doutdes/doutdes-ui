@@ -1,8 +1,10 @@
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 
 /** App Components **/
 import {FeatureComponent} from './feature.component';
+import {AccessGuard} from '../shared/_guards/AccessGuard';
+import {FeatureDashboardModule} from './dashboard/dashboard.module';
 
 @NgModule({
   imports: [
@@ -11,18 +13,30 @@ import {FeatureComponent} from './feature.component';
         path: '',
         component: FeatureComponent,
         children: [
-            {
-              path: '',
-              redirectTo: 'authentication',
-              pathMatch: 'full'
+          {
+            path: '',
+            redirectTo: 'dashboard',
+            pathMatch: 'full'
+          },
+          {
+            path: 'dashboard',
+            loadChildren: './dashboard/dashboard.module#FeatureDashboardModule',
+            canActivate: [
+              AccessGuard
+            ],
+            data: {
+              title: 'Dashboard',
+              requiresLogin: true
             },
-            {
-              path: 'authentication',
-              loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
-            },
+          },
+          {
+            path: 'authentication',
+            loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
+          },
         ]
       }
     ])
   ], exports: [RouterModule]
 })
-export class FeatureRoutingModule { }
+export class FeatureRoutingModule {
+}

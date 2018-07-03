@@ -15,10 +15,10 @@ export class AccessGuard implements CanActivate {
 
     if (requiresLogin && this.username.length > 0) {
       console.log(this.username);
-      this.router.navigate(['/login']);
-      return false;
+      return true;
     }
 
-    return true;
+    this.router.navigate(['/authentication/login']);
+    return false;
   }
 }

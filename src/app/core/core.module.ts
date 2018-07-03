@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {FooterComponent} from './footer/footer.component';
 import {HeaderComponent} from './header/header.component';
 import {AppFooterModule, AppHeaderModule} from '@coreui/angular';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -11,6 +12,7 @@ import {AppFooterModule, AppHeaderModule} from '@coreui/angular';
   imports: [
     AppFooterModule,
     AppHeaderModule,
+    RouterModule
   ],
   exports: [
     HeaderComponent,

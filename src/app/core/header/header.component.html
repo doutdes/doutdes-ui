@@ -5,3 +5,13 @@
   [navbarBrandMinimized]="{src: 'assets/img/brand/logo-black.png', width: 30, height: 30, alt: 'DoUtDes Logo'}"
   [sidebarToggler]="false"
   [asideMenuToggler]="false">
+
+  <ul class="nav navbar-nav d-md-down-none mr-auto">
+    <li class="nav-item px-3">
+      <a class="nav-link" [routerLink]="['/authentication/register']">Sign In</a>
+    </li>
+    <li class="nav-item px-3">
+      <a class="nav-link" [routerLink]="['/authentication/login']">Login</a>
+    </li>
+  </ul>
+</app-header>
