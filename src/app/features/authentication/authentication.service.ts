@@ -33,7 +33,6 @@ export class AuthenticationService {
   }
 
   onLogin(username: string, token: string){
-    console.log('Dispatch: ' + username);
     this.ngRedux.dispatch({type: LOGGED, username: username, jwt: token});
   }
 }

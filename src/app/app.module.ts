@@ -16,8 +16,8 @@ import { AppComponent } from './app.component';
 import { DefaultLayoutComponent } from './containers';
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
-import { LoginComponent } from './features/authentication/login/login.component';
-import { RegisterComponent } from './features/authentication/register/register.component';
+import { FeatureAuthenticationLoginComponent } from './features/authentication/login/login.component';
+import { FeatureAuthenticationRegisterComponent } from './features/authentication/register/register.component';
 
 const APP_CONTAINERS = [
   DefaultLayoutComponent
@@ -50,16 +50,16 @@ import {JwtInterceptor} from './shared/jwt.interceptor';
 
 // Import Redux Store
 import {StoreModule} from './shared/store/store.module';
+import {CoreModule} from './core/core.module';
 
 @NgModule({
   imports: [
     BrowserModule,
+    CoreModule,
     ReactiveFormsModule,
     AppRoutingModule,
     AppAsideModule,
     AppBreadcrumbModule.forRoot(),
-    AppFooterModule,
-    AppHeaderModule,
     AppSidebarModule,
     PerfectScrollbarModule,
     BsDropdownModule.forRoot(),
@@ -74,12 +74,9 @@ import {StoreModule} from './shared/store/store.module';
     ...APP_CONTAINERS,
     P404Component,
     P500Component,
-    LoginComponent,
-    RegisterComponent
   ],
   providers: [
-    AuthenticationService,
-    UserService
+
   ],
   bootstrap: [ AppComponent ]
 })

@@ -1,0 +1,36 @@
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <p class="text-muted">Sign In to your account</p>
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text"><i class="icon-user"></i></span>
+    </div>
+    <input type="text" class="form-control" placeholder="Username" formControlName="username"
+           [ngClass]="{ 'is-invalid': submitted && f.username.errors }"/>
+
+    <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+      <div *ngIf="f.username.errors.required">Username is required</div>
+    </div>
+  </div>
+  <div class="input-group mb-4">
+    <div class="input-group-prepend">
+      <span class="input-group-text"><i class="icon-lock"></i></span>
+    </div>
+    <input type="password" class="form-control" placeholder="Password" formControlName="password"
+           [ngClass]="{ 'is-invalid': submitted && f.password.errors }"/>
+
+    <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+      <div *ngIf="f.password.errors.required">Password is required</div>
+    </div>
+  </div>
+
+  <div *ngIf="failed"><p class="text-danger">Username or Password not corrected</p></div>
+
+  <div class="row">
+    <div class="col-6">
+      <button [disabled]="loading" class="btn btn-primary px-4">Login</button>
+    </div>
+    <div class="col-6 text-right">
+      <button type="button" class="btn btn-link px-0">Forgot password?</button>
+    </div>
+  </div>
+</form>

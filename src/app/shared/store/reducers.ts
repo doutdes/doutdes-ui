@@ -6,7 +6,6 @@ export function rootReducer(state: IAppState, action): IAppState {
   switch (action.type) {
 
     case LOGGED:
-      console.log('Nuovo stato: ' + action.username + ' LOGGED');
       return Object.assign({}, state, {
         username: action.username,
         logged: true,

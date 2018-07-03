@@ -8,11 +8,16 @@ import { DefaultLayoutComponent } from './containers';
 
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
-import { LoginComponent } from './features/authentication/login/login.component';
-import { RegisterComponent } from './features/authentication/register/register.component';
+import { FeatureAuthenticationLoginComponent } from './features/authentication/login/login.component';
+import { FeatureAuthenticationRegisterComponent } from './features/authentication/register/register.component';
 
 
 export const routes: Routes = [
+  {
+    path: '',
+    loadChildren: './features/feature.module#FeatureModule'
+  }
+  /*
   {
     path: '',
     redirectTo: 'dashboard',
@@ -24,20 +29,6 @@ export const routes: Routes = [
     component: P500Component,
     data: {
       title: 'Page 500'
-    }
-  },
-  {
-    path: 'login',
-    component: LoginComponent,
-    data: {
-      title: 'Login Page'
-    }
-  },
-  {
-    path: 'register',
-    component: RegisterComponent,
-    data: {
-      title: 'Register Page'
     }
   },
   {
@@ -89,12 +80,12 @@ export const routes: Routes = [
     data: {
       title: 'Page 404'
     }
-  },
+  },*/
 ];
 
 @NgModule({
   imports: [ RouterModule.forRoot(routes, {useHash: false, enableTracing: true }) ],
   exports: [ RouterModule ],
-  providers: [ AccessGuard ]
+  // providers: [ AccessGuard ]
 })
 export class AppRoutingModule {}
