@@ -3,6 +3,7 @@ import {AppFooterModule} from '@coreui/angular';
 import {SharedModule} from '../../../shared/shared.module';
 import {CoreModule} from '../../../core/core.module';
 import {FeatureDashboardFacebookComponent} from './facebook.component';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -11,7 +12,8 @@ import {FeatureDashboardFacebookComponent} from './facebook.component';
   imports: [
     SharedModule,
     CoreModule,
-    AppFooterModule
+    AppFooterModule,
+    RouterModule
   ],
   providers: [
 

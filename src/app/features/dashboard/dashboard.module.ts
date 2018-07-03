@@ -4,6 +4,7 @@ import {SharedModule} from '../../shared/shared.module';
 import {CoreModule} from '../../core/core.module';
 import {FeatureDashboardComponent} from './dashboard.component';
 import {FeatureDashboardRoutingModule} from './dashboard.routing';
+import {FeatureDashboardFacebookModule} from './facebook/facebook.module';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import {FeatureDashboardRoutingModule} from './dashboard.routing';
     SharedModule,
     CoreModule,
     AppFooterModule,
+    FeatureDashboardFacebookModule,
     FeatureDashboardRoutingModule
   ],
   providers: [

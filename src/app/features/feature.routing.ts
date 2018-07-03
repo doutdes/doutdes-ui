@@ -21,13 +21,13 @@ import {FeatureDashboardModule} from './dashboard/dashboard.module';
           {
             path: 'dashboard',
             loadChildren: './dashboard/dashboard.module#FeatureDashboardModule',
-            canActivate: [
-              AccessGuard
-            ],
-            data: {
-              title: 'Dashboard',
-              requiresLogin: true
-            },
+            // canActivate: [
+            //   AccessGuard
+            // ],
+            // data: {
+            //   title: 'Dashboard',
+            //   requiresLogin: true
+            // },
           },
           {
             path: 'authentication',

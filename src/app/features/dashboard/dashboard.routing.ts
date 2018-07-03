@@ -11,21 +11,16 @@ import {FeatureDashboardFacebookComponent} from './facebook/facebook.component';
     RouterModule.forChild([
       {
         path: '',
-        component: FeatureDashboardComponent,
-        children: [
-          {
-            path: '',
-            redirectTo: 'facebook',
-            pathMatch: 'full'
-          },
-          {
-            path: 'facebook',
-            component: FeatureDashboardFacebookComponent
-          }
-        ]
+        redirectTo: 'facebook',
+        pathMatch: 'full'
+      },
+      {
+        path: 'facebook',
+        component: FeatureDashboardFacebookComponent
       }
     ])
   ],
   exports: [RouterModule]
 })
-export class FeatureDashboardRoutingModule { }
+export class FeatureDashboardRoutingModule {
+}
