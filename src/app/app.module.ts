@@ -61,6 +61,7 @@ import {CoreModule} from './core/core.module';
     AppAsideModule,
     AppBreadcrumbModule.forRoot(),
     AppSidebarModule,
+    AppFooterModule,
     PerfectScrollbarModule,
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),

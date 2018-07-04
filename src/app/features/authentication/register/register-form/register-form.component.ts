@@ -12,7 +12,7 @@ import {SIGNED_UP} from '../../../../shared/store/actions';
 
 @Component({
   selector: 'app-feature-authentication-register-form',
-  templateUrl: 'register-form.component.html'
+  templateUrl: './register-form.component.html'
 })
 export class FeatureAuthenticationRegisterFormComponent implements OnInit {
 
