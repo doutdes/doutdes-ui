@@ -10,37 +10,20 @@ import {FacebookFanCount} from '../../../shared/_models/FacebookData';
 
 export class FeatureDashboardFacebookComponent implements OnInit {
   fanCount$: FacebookFanCount[];
-
-  public dati: Array<any> = [
-    {data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A'},
-    {data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B'},
-    {data: [18, 48, 77, 9, 100, 27, 40], label: 'Series C'}
-  ];
-  public etichette: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  dati: Array<any> = [];
+  values: Number[] = [];
+  etichette: Array<any> = [];
+  check = false;
 
   public opzioni: any = {
     animation: false,
-    responsive: true
+    responsive: true,
+    scales: {xAxes: [{ticks: { display: false}}] },
+    elements: { point: { radius: 0 } }
   };
   public colori: Array<any> = [
     { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-    },
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
-      borderColor: 'rgba(77,83,96,1)',
-      pointBackgroundColor: 'rgba(77,83,96,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
-    },
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
+      backgroundColor: '#b3b3ff',
       borderColor: 'rgba(148,159,177,1)',
       pointBackgroundColor: 'rgba(148,159,177,1)',
       pointBorderColor: '#fff',
@@ -50,6 +33,8 @@ export class FeatureDashboardFacebookComponent implements OnInit {
   ];
 
   public tipo = 'line';
+  public legenda = false;
+
 
   constructor(private facebookService: FacebookService) {}
 
@@ -62,7 +47,20 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       .pipe(first())
       .subscribe(data => {
           console.log('sono entrato');
-          this.fanCount$ = data;
+
+          for (let i = 0; i < data.length; i++) {
+
+            if (i % 10 === 0) {
+              this.values.push(data[i].value);
+              this.etichette.push(data[i].end_time);
+            }
+          }
+          this.dati = [{data: this.values, label: 'fanCount', fill: true, cubicInterpolationMode: 'default'}];
+
+          console.log(this.dati);
+          console.log(this.etichette);
+
+          this.check = true;
         }, error => {
           if (error) {
             console.log('errore');

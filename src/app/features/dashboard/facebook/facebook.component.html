@@ -1,18 +1,18 @@
-<h1>Facebook</h1>
-<div></div>
+<div class="row">
+  <div class="col-md-6"style="padding:20px">
+      <div style="background:#7373ff; color:#fff">
+        <h1 style="padding-left:20px; padding-top:10px; padding-bottom:10px; text-transform: uppercase">Facebook Fan</h1>
+      </div>
 
-<!--<div *ngIf="this.fanCount$ != null">
-  <div *ngFor="let row of fanCount$">
-    <p>{{row.value}}</p>
-    <p>{{row.end_time}}</p>
+      <div *ngIf="this.check">
+        <canvas baseChart width="500px" height="200px" style="padding:15px; background:#fff"
+                [datasets]=dati
+                [labels]=etichette
+                [options]=opzioni
+                [colors]=colori
+                [chartType]=tipo
+                [legend]=legenda></canvas>
+      </div>
   </div>
-</div>-->
-
-<div *ngIf="this.fanCount$ != null">
-  <canvas baseChart class="chart"
-          [datasets]=dati
-          [labels]=etichette
-          [options]=opzioni
-          [colors]=colori
-          [chartType]=tipo></canvas>
 </div>
+
