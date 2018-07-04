@@ -1,3 +1,12 @@
+<div class="form-inline mb-2">
+  <label class="my-1 mr-2" for="userType">Type of user</label>
+  <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="userType">
+    <option value="company">Company</option>
+    <option value="editor" selected>Editor</option>
+    <option value="analyst">Analyst</option>
+  </select>
+</div>
+
 <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
 
   <div *ngIf="this.selectedUser === 'company'">

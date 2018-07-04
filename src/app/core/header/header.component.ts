@@ -14,7 +14,7 @@ import { Component, Input } from '@angular/core';
 })
 
 export class HeaderComponent {
-
+  isCollapsed = true;
   constructor( ) { }
 
 }

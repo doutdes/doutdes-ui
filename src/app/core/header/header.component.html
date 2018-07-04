@@ -1,17 +1,17 @@
-<!--Se è sloggato, false a lg-->
-<app-header
-  [fixed]="true"
-  [navbarBrandFull]="{src: 'assets/img/brand/logo-black.png', width: 89, height: 25, alt: 'DoUtDes Logo'}"
-  [navbarBrandMinimized]="{src: 'assets/img/brand/logo-black.png', width: 30, height: 30, alt: 'DoUtDes Logo'}"
-  [sidebarToggler]="false"
-  [asideMenuToggler]="false">
-
-  <ul class="nav navbar-nav d-md-down-none mr-auto">
-    <li class="nav-item px-3">
-      <a class="nav-link" [routerLink]="['/authentication/register']">Sign In</a>
-    </li>
-    <li class="nav-item px-3">
-      <a class="nav-link" [routerLink]="['/authentication/login']">Login</a>
-    </li>
-  </ul>
-</app-header>
+<!-- Here we have to build two different navbars for a user logged or not-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">DoUtDes</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/authentication/login']">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/authentication/register']">Sign Up</a>
+      </li>
+    </ul>
+  </div>
+</nav>

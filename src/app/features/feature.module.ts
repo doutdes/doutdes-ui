@@ -3,8 +3,9 @@ import {FeatureComponent} from './feature.component';
 import {FeatureRoutingModule} from './feature.routing';
 import {SharedModule} from '../shared/shared.module';
 import {CoreModule} from '../core/core.module';
-import {AppFooterModule} from '@coreui/angular';
 import {AccessGuard} from '../shared/_guards/AccessGuard';
+import {AppFooterModule, AppSidebarModule} from '@coreui/angular';
+import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,9 @@ import {AccessGuard} from '../shared/_guards/AccessGuard';
     FeatureRoutingModule,
     SharedModule,
     CoreModule,
-    AppFooterModule
+    AppSidebarModule,
+    AppFooterModule,
+    PerfectScrollbarModule,
   ],
   providers: [
     AccessGuard

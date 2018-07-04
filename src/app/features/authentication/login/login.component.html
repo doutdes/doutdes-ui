@@ -1,36 +1,32 @@
-<div class="app-body">
-  <main class="main d-flex align-items-center">
-    <alert *ngIf="just_signed | async" class="alert-registration" type="success" [dismissible]="true">
-      <strong>Well done!</strong> You successfully signed up! Now you should login to our platform.
-    </alert>
+<div class="container">
+  <alert *ngIf="just_signed | async" class="alert-registration" type="success" [dismissible]="true">
+    <strong>Well done!</strong> You successfully signed up! Now you should login to our platform.
+  </alert>
 
-    <div class="container">
-      <div class="row">
-        <div class="col-md-8 mx-auto">
-          <div class="card-group">
-            <div class="card p-4">
-              <div class="card-body">
-                <h1>Login</h1>
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card-group">
+        <div class="card p-4">
+          <div class="card-body">
+            <h1>Login</h1>
 
-                <app-feature-authentication-login-form></app-feature-authentication-login-form>
-              </div>
-            </div>
-
-            <div class="card text-white bg-primary py-5 d-md-down-none" style="width:44%">
-              <div class="card-body text-center">
-                <div>
-                  <h2>Sign up</h2>
-                  <p>If you are not still signed up to our service, please do it as fast as possible!</p>
-                  <a [routerLink]="['../register']">
-                    <button type="button" class="btn btn-primary active mt-3">Register Now!</button>
-                  </a>
-                </div>
-              </div>
-            </div>
-
+            <app-feature-authentication-login-form></app-feature-authentication-login-form>
           </div>
         </div>
+
+        <div class="card text-white bg-primary py-5 d-md-down-none" style="width:44%">
+          <div class="card-body text-center">
+            <div>
+              <h2>Sign up</h2>
+              <p>If you are not still signed up to our service, please do it as fast as possible!</p>
+              <a [routerLink]="['../register']">
+                <button type="button" class="btn btn-primary active mt-3">Register Now!</button>
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-  </main>
+  </div>
 </div>

@@ -3,7 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   // tslint:disable-next-line
-  selector: 'body',
+  selector: 'app-root',
   template: '<router-outlet></router-outlet>'
   // templateUrl: './app.component.html'
 })
