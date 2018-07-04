@@ -5,6 +5,7 @@ import {RouterModule} from '@angular/router';
 import {FeatureComponent} from './feature.component';
 import {AccessGuard} from '../shared/_guards/AccessGuard';
 import {FeatureDashboardModule} from './dashboard/dashboard.module';
+import {ChartJSModule} from '../views/chartjs/chartjs.module';
 
 @NgModule({
   imports: [
@@ -33,6 +34,10 @@ import {FeatureDashboardModule} from './dashboard/dashboard.module';
             path: 'authentication',
             loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
           },
+          {
+            path: 'charts',
+            loadChildren: '../views/chartjs/chart.js.module#ChartJSModule'
+          }
         ]
       }
     ])

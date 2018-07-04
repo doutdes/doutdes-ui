@@ -1,1 +1,18 @@
-<h1>Facebook goes here</h1>
+<h1>Facebook</h1>
+<div></div>
+
+<!--<div *ngIf="this.fanCount$ != null">
+  <div *ngFor="let row of fanCount$">
+    <p>{{row.value}}</p>
+    <p>{{row.end_time}}</p>
+  </div>
+</div>-->
+
+<div *ngIf="this.fanCount$ != null">
+  <canvas baseChart class="chart"
+          [datasets]=dati
+          [labels]=etichette
+          [options]=opzioni
+          [colors]=colori
+          [chartType]=tipo></canvas>
+</div>

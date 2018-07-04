@@ -4,6 +4,9 @@ import {SharedModule} from '../../../shared/shared.module';
 import {CoreModule} from '../../../core/core.module';
 import {FeatureDashboardFacebookComponent} from './facebook.component';
 import {RouterModule} from '@angular/router';
+import {HttpClientModule} from '@angular/common/http';
+import {FacebookService} from '../../../shared/_services/facebook.service';
+import {ChartsModule} from 'ng2-charts/ng2-charts';
 
 @NgModule({
   declarations: [
@@ -12,11 +15,13 @@ import {RouterModule} from '@angular/router';
   imports: [
     SharedModule,
     CoreModule,
+    ChartsModule,
     AppFooterModule,
-    RouterModule
+    RouterModule,
+    HttpClientModule
   ],
   providers: [
-
+    FacebookService
   ],
   exports: [
     FeatureDashboardFacebookComponent
