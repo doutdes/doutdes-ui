@@ -10,11 +10,13 @@ import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
 import { FeatureAuthenticationLoginComponent } from './features/authentication/login/login.component';
 import { FeatureAuthenticationRegisterComponent } from './features/authentication/register/register.component';
+import {AppComponent} from './app.component';
 
 
 export const routes: Routes = [
   {
     path: '',
+    component: AppComponent,
     loadChildren: './features/feature.module#FeatureModule'
   },
   {
@@ -27,7 +29,7 @@ export const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [ RouterModule.forRoot(routes, {useHash: false, enableTracing: true }) ],
+  imports: [ RouterModule.forRoot(routes, {useHash: false, enableTracing: false }) ],
   exports: [ RouterModule ],
   // providers: [ AccessGuard ]
 })
