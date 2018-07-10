@@ -3,7 +3,7 @@ export interface FacebookFanCount {
   end_time: Date;
 }
 
-export interface FacebookFanCity {
-  value: any;
+export interface FacebookImpressions {
+  value: number;
   end_time: Date;
 }

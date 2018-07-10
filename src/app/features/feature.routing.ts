@@ -34,10 +34,10 @@ import {ChartJSModule} from '../views/chartjs/chartjs.module';
             path: 'authentication',
             loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
           },
-          {
-            path: 'charts',
-            loadChildren: '../views/chartjs/chart.js.module#ChartJSModule'
-          }
+          // {
+          //   path: 'charts',
+          //   loadChildren: '../views/chartjs/chart.js.module#ChartJSModule'
+          // }
         ]
       }
     ])

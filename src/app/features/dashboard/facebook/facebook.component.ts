@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {first} from 'rxjs/internal/operators';
 import {FacebookService} from '../../../shared/_services/facebook.service';
-import {FacebookFanCount} from '../../../shared/_models/FacebookData';
+import {FacebookFanCount, FacebookImpressions} from '../../../shared/_models/FacebookData';
 
 @Component({
   selector: 'app-feature-dashboard-facebook',
@@ -9,17 +9,20 @@ import {FacebookFanCount} from '../../../shared/_models/FacebookData';
 })
 
 export class FeatureDashboardFacebookComponent implements OnInit {
-  fanCount$: FacebookFanCount[];
   dati: Array<any> = [];
+  dati2 : Array<any> = [];
   values: Number[] = [];
+  values2: Number[] = [];
   etichette: Array<any> = [];
+  etichette2: Array<any> = [];
   check = false;
+  check2 = false;
 
   public opzioni: any = {
     animation: false,
     responsive: true,
-    scales: {xAxes: [{ticks: { display: false}}] },
-    elements: { point: { radius: 0 } }
+    scales: {xAxes: [{ticks: {display: false}}]},
+    elements: {point: {radius: 0}}
   };
   public colori: Array<any> = [
     { // grey
@@ -36,13 +39,16 @@ export class FeatureDashboardFacebookComponent implements OnInit {
   public legenda = false;
 
 
-  constructor(private facebookService: FacebookService) {}
+  constructor(private facebookService: FacebookService) {
+  }
 
   ngOnInit(): void {
     this.getFanCount();
+    this.getPageImpressions();
   }
 
   getFanCount(): void {
+
     this.facebookService.fbfancount()
       .pipe(first())
       .subscribe(data => {
@@ -68,4 +74,33 @@ export class FeatureDashboardFacebookComponent implements OnInit {
         }
       );
   }
+
+  getPageImpressions(): void {
+
+    this.facebookService.fbpageimpressions()
+      .pipe(first())
+      .subscribe(data => {
+          console.log('sono entrato');
+
+          for (let i = 0; i < data.length; i++) {
+
+            if (i % 10 === 0) {
+              this.values2.push(data[i].value);
+              this.etichette2.push(data[i].end_time);
+            }
+          }
+          this.dati2 = [{data: this.values2, label: 'pageImpressions', fill: true, cubicInterpolationMode: 'default'}];
+
+          console.log(this.dati2);
+          console.log(this.etichette2);
+
+          this.check2 = true;
+        }, error => {
+          if (error) {
+            console.log('errore');
+          }
+        }
+      );
+  }
+
 }
