@@ -13,7 +13,7 @@ import {FeatureDashboardFacebookComponent} from './facebook/facebook.component';
         path: '',
         // component: FeatureDashboardComponent
         redirectTo: 'facebook',
-        match: 'full'
+        pathMatch: 'full'
       },
       {
         path: 'facebook',
