@@ -21,14 +21,11 @@ export class FeatureAuthenticationLoginFormComponent implements OnInit {
   returnUrl: string;
   failed = false;
 
-  @select('token') token: Observable<string>;
-
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
-    private ngRedux: NgRedux<IAppState>
   ) { }
 
   ngOnInit(): void {
@@ -39,7 +36,6 @@ export class FeatureAuthenticationLoginFormComponent implements OnInit {
 
     this.returnUrl = '';
   }
-
 
   get f() { return this.loginForm.controls; }
 
@@ -56,23 +52,20 @@ export class FeatureAuthenticationLoginFormComponent implements OnInit {
     // At this point, all validators are true
     this.loading = true;
 
+    // Save the credentials to pass to the authentication service
     this.credentials = {
       username: this.f.username.value,
       password: this.f.password.value
     };
 
-    console.log(this.credentials);
-
-    //
     this.authenticationService.login(this.credentials)
       .pipe(first())
       .subscribe(data => {
-        console.log('Dovrei navigare');
         this.router.navigate(['dashboard']);
       }, error => {
         this.loading = false;
+        this.failed = true;
       });
-
 
   }
 
