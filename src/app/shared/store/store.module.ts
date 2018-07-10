@@ -1,16 +1,14 @@
 import {NgModule} from '@angular/core';
 import {NgRedux, NgReduxModule} from '@angular-redux/store';
-import {IAppState, INITIAL_STATE} from './model';
-import {rootReducer} from './reducers';
+import {FIRST_STATE, IAppState} from './model';
+import {rootReducer} from './root';
 
 @NgModule({
   imports: [NgReduxModule]
 })
 
 export class StoreModule {
-  constructor(
-    public store: NgRedux<IAppState>
-  ) {
-    store.configureStore(rootReducer, INITIAL_STATE);
+  constructor (private ngRedux: NgRedux<IAppState>) {
+    ngRedux.configureStore(rootReducer, FIRST_STATE);
   }
 }

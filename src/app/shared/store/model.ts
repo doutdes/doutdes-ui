@@ -1,13 +1,10 @@
+import {LoginState} from '../../features/authentication/login/login.model';
+import {INITIAL_STATE} from '../../features/authentication/login/login.model';
+
 export interface IAppState {
-  username?: String;
-  logged: boolean;
-  just_signed: boolean;
-  jwt: string;
+  login: LoginState;
 }
 
-export const INITIAL_STATE: IAppState = {
-  username: '',
-  logged: false,
-  just_signed: false,
-  jwt: ''
-};
+export const FIRST_STATE: IAppState = {
+  login: INITIAL_STATE
+}

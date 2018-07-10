@@ -5,6 +5,7 @@ import {RouterModule} from '@angular/router';
 import {FeatureComponent} from './feature.component';
 import {AccessGuard} from '../shared/_guards/AccessGuard';
 import {FeatureDashboardModule} from './dashboard/dashboard.module';
+import {AuthenticationService} from './authentication/authentication.service';
 
 @NgModule({
   imports: [
@@ -20,14 +21,14 @@ import {FeatureDashboardModule} from './dashboard/dashboard.module';
           },
           {
             path: 'dashboard',
+            canActivate: [
+              AccessGuard
+            ],
             loadChildren: './dashboard/dashboard.module#FeatureDashboardModule',
-            // canActivate: [
-            //   AccessGuard
-            // ],
-            // data: {
-            //   title: 'Dashboard',
-            //   requiresLogin: true
-            // },
+            data: {
+              title: 'Dashboard',
+              requiresLogin: true
+            },
           },
           {
             path: 'authentication',
@@ -36,7 +37,9 @@ import {FeatureDashboardModule} from './dashboard/dashboard.module';
         ]
       }
     ])
-  ], exports: [RouterModule]
+  ],
+  providers: [AccessGuard, AuthenticationService],
+  exports: [RouterModule],
 })
 export class FeatureRoutingModule {
 }

@@ -1,38 +1,54 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {map, repeatWhen} from 'rxjs/internal/operators';
-import {NgRedux} from '@angular-redux/store';
+import {Credentials, LoginState} from './login/login.model';
+import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../shared/store/model';
-import {LOGGED, SLOGGED} from '../../shared/store/actions';
-
+import {LOGIN_USER_ERROR, LOGIN_USER_SUCCESS} from './login/login.actions';
+import {Router} from '@angular/router';
+import {map} from 'rxjs/internal/operators';
+import {Observable, of} from 'rxjs';
 
 @Injectable()
 export class AuthenticationService {
+
+  @select('login') loginState;
+
   constructor(
     private http: HttpClient,
-    private ngRedux: NgRedux<IAppState>
+    private ngRedux: NgRedux<IAppState>,
+    // private router: Router
   ) {
   }
 
-  login(username: string, password: string) {
+  login(credentials: Credentials) {
+
     let headers = new HttpHeaders();
-    headers = headers.set('Authorization', 'Basic ' + btoa(username + ':' + password));
+    headers = headers.set('Authorization', 'Basic ' + btoa(credentials.username + ':' + credentials.password));
 
     const httpOptions = {
       headers: headers
     };
 
-    return this.http.post<any>('http://localhost:3000/login', {}, httpOptions).pipe(map(response => {
-      this.onLogin(username, response['token']);
-      return true;
-    }));
+    return this.http.post<any>('http://localhost:3000/login', {}, httpOptions)
+      .pipe(map(response => {
+
+        if (response['user'] && response['token']) {
+          console.log('Setto');
+          this.ngRedux.dispatch({type: LOGIN_USER_SUCCESS, user: response['user'], token: response['token']});
+
+          return response;
+        } else {
+          this.ngRedux.dispatch({type: LOGIN_USER_ERROR});
+        }
+      }));
   }
 
-  logout() {
-    this.ngRedux.dispatch({type: SLOGGED});
-  }
+  isLogged(): Observable<boolean> {
+    this.loginState.subscribe(state => {
+      console.log(state['token']);
+      return of(state['token'] != null);
+    });
 
-  onLogin(username: string, token: string){
-    this.ngRedux.dispatch({type: LOGGED, username: username, jwt: token});
+    return of(false);
   }
 }
