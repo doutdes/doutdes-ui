@@ -25,33 +25,49 @@ export class FeatureDashboardFacebookComponent implements OnInit {
     animation: false,
     responsive: true,
     scales: {xAxes: [{ticks: {display: false}}]},
-    elements: {point: {radius: 0}}
+    elements: {point: {radius: 0}},
   };
   public chartColor1: Array<any> = [
     { // grey
-      backgroundColor: '#b3b3ff',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
+      backgroundColor: '#63c2de',
+      borderColor: '#63c2de',
+      pointBackgroundColor: '#fff',
       pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
     }
   ];
+
+  public chartColor2: Array<any> = [
+  { // grey
+    backgroundColor: '#8CCEA0',
+    borderColor: '#8CCEA0',
+    pointBackgroundColor: '#fff',
+    pointBorderColor: '#fff',
+  }
+];
 
   public chartTypeLine = 'line';
   public chartLegendFalse = false;
 
   // GoogleChart options
-  public mapchartData = [
-    ['Country', 'Popularity'],
-    ['Germany', 200],
-    ['United States', 300],
-    ['Brazil', 400],
-    ['Canada', 500],
-    ['France', 600],
-    ['RU', 700]
-  ];
-  public mapchartOptions = {};
+  public geoChartData = {
+    chartType: 'GeoChart',
+    dataTable: [
+      ['Country', 'Popularity'],
+      ['Germany', 200],
+      ['United States', 300],
+      ['Brazil', 400],
+      ['Canada', 500],
+      ['France', 600],
+      ['RU', 700]
+    ],
+    options: {
+      region: 'world',
+      colorAxis: {colors: ['#F7DEDE', '#EF7C7C']},
+      backgroundColor: '#fff',
+      datalessRegionColor: '#eee',
+      defaultColor: '#333',
+    }
+  };
 
 
   constructor(private facebookService: FacebookService) {
@@ -76,7 +92,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
               this.fanLabels.push(data[i].end_time);
             }
           }
-          this.fanChartData = [{data: this.fanValues, label: 'fanCount', fill: true, cubicInterpolationMode: 'default'}];
+          this.fanChartData = [{data: this.fanValues, borderWidth: 1, fill: true, cubicInterpolationMode: 'default'}];
 
           this.fanLock = true;
         }, error => {
@@ -95,12 +111,12 @@ export class FeatureDashboardFacebookComponent implements OnInit {
 
           for (let i = 0; i < data.length; i++) {
 
-            if (i % 10 === 0) {
+            if (i % 20 === 0) {
               this.impressValues.push(data[i].value);
               this.impressLabels.push(data[i].end_time);
             }
           }
-          this.impressChartData = [{data: this.impressValues, label: 'pageImpressions', fill: true, cubicInterpolationMode: 'default'}];
+          this.impressChartData = [{data: this.impressValues, borderWidth: 1, fill: true, cubicInterpolationMode: 'default'}];
 
           this.impressLock = true;
         }, error => {
