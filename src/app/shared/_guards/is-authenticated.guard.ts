@@ -8,20 +8,16 @@ import {IAppState} from '../store/model';
 
 @Injectable()
 
-export class AccessGuard implements CanActivate {
+export class IsAuthenticatedGuard implements CanActivate {
   @select('login') loginState;
 
   constructor(private router: Router, private authService: AuthenticationService, private store: NgRedux<IAppState>) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
-    const requiresLogin = route.data.requiresLogin || false;
-
-    // If the login is required
-    if (requiresLogin) {
 
       // Select the login item from the store
-      return this.store.select('login').pipe(
+      /*return this.store.select('login').pipe(
         map(logState => {
             // If the token is stored, the user is logged and can access to the page
             console.log(logState);
@@ -34,7 +30,13 @@ export class AccessGuard implements CanActivate {
             return false;
           }
         ), take(1)
-      );
+      );*/
+
+      if (localStorage.getItem('token') != null) {
+        return true;
+      }
+
+      this.router.navigate(['authentication/login']);
+      return false;
     }
-  }
 }

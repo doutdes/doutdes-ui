@@ -22,3 +22,8 @@ app-feature {
 .Site-content {
   flex: 1;
 }
+
+.nav-item .nav-link>.img-avatar, .nav-item .avatar.nav-link>img {
+  height: 35px;
+  margin: 0 10px;
+}

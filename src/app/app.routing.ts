@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import {AccessGuard} from './shared/_guards/AccessGuard';
+import {IsAuthenticatedGuard} from './shared/_guards/is-authenticated.guard';
 
 // Import Containers
 import { DefaultLayoutComponent } from './containers';
@@ -31,6 +31,6 @@ export const routes: Routes = [
 @NgModule({
   imports: [ RouterModule.forRoot(routes, {useHash: false, enableTracing: true }) ],
   exports: [ RouterModule ],
-  // providers: [ AccessGuard ]
+  // providers: [ IsAuthenticatedGuard ]
 })
 export class AppRoutingModule {}

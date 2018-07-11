@@ -3,7 +3,7 @@ import {FeatureComponent} from './feature.component';
 import {FeatureRoutingModule} from './feature.routing';
 import {SharedModule} from '../shared/shared.module';
 import {CoreModule} from '../core/core.module';
-import {AccessGuard} from '../shared/_guards/AccessGuard';
+import {IsAuthenticatedGuard} from '../shared/_guards/is-authenticated.guard';
 import {AppFooterModule, AppSidebarModule} from '@coreui/angular';
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 
@@ -20,7 +20,7 @@ import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
     PerfectScrollbarModule,
   ],
   providers: [
-    AccessGuard
+    IsAuthenticatedGuard
   ],
   exports: [
 

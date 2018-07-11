@@ -1,5 +1,6 @@
-import {LOGIN_USER, LOGIN_USER_SUCCESS, LOGIN_USER_ERROR} from './login.actions';
+import {LOGIN_USER, LOGIN_USER_SUCCESS, LOGIN_USER_ERROR, LOGOUT_USER} from './login.actions';
 import {INITIAL_STATE, LoginState} from './login.model';
+
 
 export function LoginReducer(state: LoginState = INITIAL_STATE , action): LoginState {
 
@@ -14,8 +15,6 @@ export function LoginReducer(state: LoginState = INITIAL_STATE , action): LoginS
         });
 
     case LOGIN_USER_SUCCESS:
-      console.log('LOGIN_USER_SUCCESS');
-      console.log(action.token);
       return Object.assign({}, state,
         {
           token: action.token,
@@ -30,6 +29,15 @@ export function LoginReducer(state: LoginState = INITIAL_STATE , action): LoginS
           token: null,
           user: {},
           hasError: true,
+          isLoading: false
+        });
+
+    case LOGOUT_USER:
+      return Object.assign({}, state,
+        {
+          token: null,
+          user: {},
+          hasError: false,
           isLoading: false
         });
 
