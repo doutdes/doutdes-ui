@@ -83,12 +83,12 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       return;
     }
 
-    // Setting some values to pass to the backend
+    // Setting some fanValues to pass to the backend
     this.registrationForm.value.user_type = this.selectedUser;
     this.registrationForm.value.id = 0;
     this.registrationForm.value.checksum = 0;
 
-    // If the user is not a company, put the values to null
+    // If the user is not a company, put the fanValues to null
     if (this.selectedUser !== 'company') {
       this.registrationForm.value.company_name = null;
       this.registrationForm.value.vat_number = null;

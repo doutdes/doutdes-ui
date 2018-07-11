@@ -7,6 +7,8 @@ import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {ChartsModule} from 'ng2-charts/ng2-charts';
+import { Ng2GoogleChartsModule } from 'ng2-google-charts';
+
 
 @NgModule({
   declarations: [
@@ -16,6 +18,7 @@ import {ChartsModule} from 'ng2-charts/ng2-charts';
     SharedModule,
     CoreModule,
     ChartsModule,
+    Ng2GoogleChartsModule,
     AppFooterModule,
     RouterModule,
     HttpClientModule

@@ -5,14 +5,14 @@
       <h2 style="padding-left:20px; padding-top:10px; padding-bottom:10px; text-transform: uppercase">Fans</h2>
     </div>
 
-    <div *ngIf="this.check">
+    <div *ngIf="this.fanLock">
       <canvas baseChart width="400px" height="200px" style="padding:15px; background:#fff"
-              [datasets]=dati
-              [labels]=etichette
-              [options]=opzioni
-              [colors]=colori
-              [chartType]=tipo
-              [legend]=legenda></canvas>
+              [datasets]="fanChartData"
+              [labels]="fanLabels"
+              [options]="chartOptions1"
+              [colors]="chartColor1"
+              [chartType]="chartTypeLine"
+              [legend]="chartLegendFalse"></canvas>
     </div>
   </div>
 <!--</div>-->
@@ -23,15 +23,23 @@
       <h2 style="padding-left:20px; padding-top:10px; padding-bottom:10px; text-transform: uppercase">Page impressions</h2>
     </div>
 
-    <div *ngIf="this.check2">
+    <div *ngIf="this.impressLock">
       <canvas baseChart width="400px" height="200px" style="padding:15px; background:#fff"
-              [datasets]=dati2
-              [labels]=etichette
-              [options]=opzioni
-              [colors]=colori
-              [chartType]=tipo
-              [legend]=legenda></canvas>
+              [datasets]="impressChartData"
+              [labels]="impressLabels"
+              [options]="chartOptions1"
+              [colors]="chartColor1"
+              [chartType]="chartTypeLine"
+              [legend]="chartLegendFalse"></canvas>
     </div>
   </div>
 </div>
+
+<google-chart [data]="mapchartData"></google-chart>
+
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+  var googleLoaded = false;
+  var googleChartsPackagesToLoad = ['geochart'];
+</script>
 
