@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {first} from 'rxjs/internal/operators';
 import {FacebookService} from '../../../shared/_services/facebook.service';
-import {FacebookFanCount, FacebookImpressions} from '../../../shared/_models/FacebookData';
 
 @Component({
   selector: 'app-feature-dashboard-facebook',
@@ -9,22 +8,26 @@ import {FacebookFanCount, FacebookImpressions} from '../../../shared/_models/Fac
 })
 
 export class FeatureDashboardFacebookComponent implements OnInit {
-  dati: Array<any> = [];
-  dati2 : Array<any> = [];
-  values: Number[] = [];
-  values2: Number[] = [];
-  etichette: Array<any> = [];
-  etichette2: Array<any> = [];
-  check = false;
-  check2 = false;
+  // Fans chart
+  fanChartData: Array<any> = [];
+  fanValues: Number[] = [];
+  fanLabels: Array<any> = [];
+  fanLock = false;
 
-  public opzioni: any = {
+  // Impressions chart
+  impressChartData: Array<any> = [];
+  impressValues: Number[] = [];
+  impressLabels: Array<any> = [];
+  impressLock = false;
+
+  // ChartJS options
+  public chartOptions1: any = {
     animation: false,
     responsive: true,
     scales: {xAxes: [{ticks: {display: false}}]},
     elements: {point: {radius: 0}}
   };
-  public colori: Array<any> = [
+  public chartColor1: Array<any> = [
     { // grey
       backgroundColor: '#b3b3ff',
       borderColor: 'rgba(148,159,177,1)',
@@ -35,8 +38,20 @@ export class FeatureDashboardFacebookComponent implements OnInit {
     }
   ];
 
-  public tipo = 'line';
-  public legenda = false;
+  public chartTypeLine = 'line';
+  public chartLegendFalse = false;
+
+  // GoogleChart options
+  public mapchartData = [
+    ['Country', 'Popularity'],
+    ['Germany', 200],
+    ['United States', 300],
+    ['Brazil', 400],
+    ['Canada', 500],
+    ['France', 600],
+    ['RU', 700]
+  ];
+  public mapchartOptions = {};
 
 
   constructor(private facebookService: FacebookService) {
@@ -52,24 +67,21 @@ export class FeatureDashboardFacebookComponent implements OnInit {
     this.facebookService.fbfancount()
       .pipe(first())
       .subscribe(data => {
-          console.log('sono entrato');
 
+          // Push data pairs in the chart array
           for (let i = 0; i < data.length; i++) {
 
-            if (i % 10 === 0) {
-              this.values.push(data[i].value);
-              this.etichette.push(data[i].end_time);
+            if (i % 10 === 0) { // Data are greedy sampled by 10 units
+              this.fanValues.push(data[i].value);
+              this.fanLabels.push(data[i].end_time);
             }
           }
-          this.dati = [{data: this.values, label: 'fanCount', fill: true, cubicInterpolationMode: 'default'}];
+          this.fanChartData = [{data: this.fanValues, label: 'fanCount', fill: true, cubicInterpolationMode: 'default'}];
 
-          console.log(this.dati);
-          console.log(this.etichette);
-
-          this.check = true;
+          this.fanLock = true;
         }, error => {
           if (error) {
-            console.log('errore');
+            console.log('errore'); // TODO FIXME
           }
         }
       );
@@ -80,24 +92,20 @@ export class FeatureDashboardFacebookComponent implements OnInit {
     this.facebookService.fbpageimpressions()
       .pipe(first())
       .subscribe(data => {
-          console.log('sono entrato');
 
           for (let i = 0; i < data.length; i++) {
 
             if (i % 10 === 0) {
-              this.values2.push(data[i].value);
-              this.etichette2.push(data[i].end_time);
+              this.impressValues.push(data[i].value);
+              this.impressLabels.push(data[i].end_time);
             }
           }
-          this.dati2 = [{data: this.values2, label: 'pageImpressions', fill: true, cubicInterpolationMode: 'default'}];
+          this.impressChartData = [{data: this.impressValues, label: 'pageImpressions', fill: true, cubicInterpolationMode: 'default'}];
 
-          console.log(this.dati2);
-          console.log(this.etichette2);
-
-          this.check2 = true;
+          this.impressLock = true;
         }, error => {
           if (error) {
-            console.log('errore');
+            console.log('errore'); // TODO FIXME
           }
         }
       );
