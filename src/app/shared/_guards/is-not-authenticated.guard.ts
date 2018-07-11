@@ -15,27 +15,22 @@ export class IsAuthenticatedGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
+    const requiresLogin = route.data.requiresLogin || false;
 
-      // Select the login item from the store
-      /*return this.store.select('login').pipe(
-        map(logState => {
-            // If the token is stored, the user is logged and can access to the page
+    // Select the login item from the store
+    return this.store.select('login').pipe(
+      map(logState => {
+          // If the token is stored, the user is logged and can access to the page
+          console.log(logState);
 
-            if (logState['token'] != null) {
-              return true;
-            }
-
-            this.router.navigate(['authentication/login']);
-            return false;
+          if (logState['token'] == null) {
+            return true;
           }
-        ), take(1)
-      );*/
 
-      if (localStorage.getItem('token') != null) {
-        return true;
-      }
-
-      this.router.navigate(['authentication/login']);
-      return false;
-    }
+          this.router.navigate(['authentication/login']);
+          return false;
+        }
+      ), take(1)
+    );
+  }
 }

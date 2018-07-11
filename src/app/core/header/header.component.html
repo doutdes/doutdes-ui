@@ -1,19 +1,45 @@
 <!-- TODO Impostare navbar personalizzate se utente è loggato o meno -->
 
-<!-- Here we have to build two different navbars for a user logged or not-->
+<!-- If user is not logged in-->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="#">DoUtDes</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/authentication/login']">Login</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [routerLink]="['/authentication/register']">Sign Up</a>
-      </li>
-    </ul>
+    <div *ngIf="username$ == null">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/authentication/login']">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/authentication/register']">Sign Up</a>
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="username$ != null async" class="ml-auto">
+      <ul class="nav navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+             aria-expanded="false">
+            <i class="fa fa-2x fa-user-tie"></i>
+            <!--<img class="img-avatar" src="assets/img/avatars/6.jpg" alt="admin@bootstrapmaster.com">-->
+          </a>
+          <div class="dropdown-menu dropdown-menu-right">
+            <div class="dropdown-header text-center">
+              <strong class="text-capitalize">{{username$}} Settings</strong>
+            </div>
+            <a class="dropdown-item" href="#">
+              <i class="fa fa-user"></i> Profile</a>
+            <a class="dropdown-item" href="#">
+              <i class="fa fa-wrench"></i> Settings</a>
+            <a class="dropdown-item" (click)="logout()">
+              <i class="fa fa-lock"></i> Logout</a>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>

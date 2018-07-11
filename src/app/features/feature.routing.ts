@@ -3,7 +3,7 @@ import {RouterModule} from '@angular/router';
 
 /** App Components **/
 import {FeatureComponent} from './feature.component';
-import {AccessGuard} from '../shared/_guards/AccessGuard';
+import {IsAuthenticatedGuard} from '../shared/_guards/is-authenticated.guard';
 import {FeatureDashboardModule} from './dashboard/dashboard.module';
 import {AuthenticationService} from './authentication/authentication.service';
 
@@ -22,7 +22,7 @@ import {AuthenticationService} from './authentication/authentication.service';
           {
             path: 'dashboard',
             canActivate: [
-              AccessGuard
+              IsAuthenticatedGuard
             ],
             loadChildren: './dashboard/dashboard.module#FeatureDashboardModule',
             data: {
@@ -38,7 +38,7 @@ import {AuthenticationService} from './authentication/authentication.service';
       }
     ])
   ],
-  providers: [AccessGuard, AuthenticationService],
+  providers: [IsAuthenticatedGuard, AuthenticationService],
   exports: [RouterModule],
 })
 export class FeatureRoutingModule {

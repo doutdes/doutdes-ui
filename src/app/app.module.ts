@@ -45,10 +45,10 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 
 import {CoreModule} from './core/core.module';
 import {StoreModule} from './shared/store/store.module';
+import {StoreService} from './shared/_services/store.service';
 
 @NgModule({
   imports: [
-    BrowserModule,
     CoreModule,
     ReactiveFormsModule,
     AppRoutingModule,
@@ -62,7 +62,8 @@ import {StoreModule} from './shared/store/store.module';
     ChartsModule,
     HttpClientModule,
     AlertModule.forRoot(),
-    StoreModule
+    StoreModule,
+    BrowserModule
   ],
   declarations: [
     AppComponent,
@@ -71,7 +72,7 @@ import {StoreModule} from './shared/store/store.module';
     P500Component,
   ],
   providers: [
-
+    StoreService
   ],
   bootstrap: [ AppComponent ]
 })
