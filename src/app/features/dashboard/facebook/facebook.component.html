@@ -1,1 +1,37 @@
-<h1>Facebook goes here</h1>
+<div class="row">
+  <div class="col-md-6">
+    <div style="background:#7373ff; color:#fff">
+      <h1 style="padding-left:20px; padding-top:10px; padding-bottom:10px; text-transform: uppercase">Facebook Fan</h1>
+    </div>
+
+    <div *ngIf="this.check">
+      <canvas baseChart width="400px" height="200px" style="padding:15px; background:#fff"
+              [datasets]=dati
+              [labels]=etichette
+              [options]=opzioni
+              [colors]=colori
+              [chartType]=tipo
+              [legend]=legenda></canvas>
+    </div>
+  </div>
+</div>
+<div class="row">
+
+  <div class="col-md-6">
+    <div style="background:#7373ff; color:#fff" >
+      <h1 style="padding-left:20px; padding-top:10px; padding-bottom:10px; text-transform: uppercase">Facebook Page
+        impressions</h1>
+    </div>
+
+    <div *ngIf="this.check2">
+      <canvas baseChart width="400px" height="200px" style="padding:15px; background:#fff"
+              [datasets]=dati2
+              [labels]=etichette
+              [options]=opzioni
+              [colors]=colori
+              [chartType]=tipo
+              [legend]=legenda></canvas>
+    </div>
+  </div>
+</div>
+

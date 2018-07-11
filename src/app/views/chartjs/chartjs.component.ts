@@ -42,7 +42,7 @@ export class ChartJSComponent {
       pointHoverBorderColor: 'rgba(148,159,177,0.8)'
     }
   ];
-  public lineChartLegend = true;
+  public lineChartLegend = false;
   public lineChartType = 'line';
 
   // barChart

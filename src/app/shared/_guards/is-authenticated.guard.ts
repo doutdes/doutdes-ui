@@ -24,6 +24,7 @@ export class AccessGuard implements CanActivate {
       return this.store.select('login').pipe(
         map(logState => {
             // If the token is stored, the user is logged and can access to the page
+            console.log(logState);
 
             if (logState['token'] != null) {
               return true;
