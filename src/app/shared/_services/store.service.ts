@@ -10,12 +10,20 @@ export class StoreService {
     this.localStorage.setItem('jwt', token).subscribe(() => {});
   }
 
+  getToken() {
+    return this.localStorage.getItem('jwt');
+  }
+
   removeToken() {
     this.localStorage.removeItem('jwt').subscribe(() => {}, () => {});
   }
 
   setUsername(username: string) {
     this.localStorage.setItem('username', username).subscribe(() => {});
+  }
+
+  getUsername() {
+    return this.localStorage.getItem('username');
   }
 
   removeUsername() {

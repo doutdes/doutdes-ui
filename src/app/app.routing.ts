@@ -29,7 +29,7 @@ export const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [ RouterModule.forRoot(routes, {useHash: false, enableTracing: true }) ],
+  imports: [ RouterModule.forRoot(routes, {useHash: false, enableTracing: false }) ],
   exports: [ RouterModule ],
   // providers: [ IsAuthenticatedGuard ]
 })

@@ -8,7 +8,8 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <div *ngIf="username$ == null">
+
+    <div *ngIf="!logged$">
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link" [routerLink]="['/authentication/login']">Login</a>
@@ -19,7 +20,7 @@
       </ul>
     </div>
 
-    <div *ngIf="username$ != null async" class="ml-auto">
+    <div *ngIf="logged$" class="ml-auto">
       <ul class="nav navbar-nav">
         <li class="nav-item dropdown">
           <a class="nav-link nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
