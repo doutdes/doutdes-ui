@@ -21,9 +21,9 @@ import {AuthenticationService} from './authentication/authentication.service';
           },
           {
             path: 'dashboard',
-            canActivate: [
-              IsAuthenticatedGuard
-            ],
+            // canActivate: [
+            //   IsAuthenticatedGuard
+            // ],
             loadChildren: './dashboard/dashboard.module#FeatureDashboardModule',
             data: {
               title: 'Dashboard',
