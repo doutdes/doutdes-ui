@@ -11,6 +11,7 @@ import {FeatureDashboardFacebookComponent} from './facebook/facebook.component';
     RouterModule.forChild([
       {
         path: '',
+        // component: FeatureDashboardComponent
         redirectTo: 'facebook',
         pathMatch: 'full'
       },

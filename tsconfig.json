@@ -14,16 +14,6 @@
     "lib": [
       "es2017",
       "dom"
-    ],
-    "baseUrl": "src",
-    "paths": {
-      "@app-core/*": ["app/core/*"],
-      "@app-features/*": ["app/features/*"],
-      "@app-features-authentication/*": ["app/features/authentication/*"],
-      "@app-features-authentication/login/*": ["app/features/authentication/login/*"],
-      "@app-features-authentication/register/*": ["app/features/authentication/register/*"],
-      "@app-features-dashboard/*": ["app/features/dashboard/*"],
-      "@app-shared/*": ["app/shared/*"]
-    }
+    ]
   }
 }

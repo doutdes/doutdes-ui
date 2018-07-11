@@ -1,30 +1,20 @@
-/** 3rd part **/
-import {Action} from '@ngrx/store';
+/** Login Actions **/
 
-/** App Models **/
-import {Login} from './login.model';
+import {Injectable} from '@angular/core';
+import {IAppState} from '../../../shared/store/model';
+import {NgRedux} from '@angular-redux/store';
+import {Credentials} from './login.model';
 
-export const LOGIN          = '[Login] Login';
-export const LOGIN_SUCCESS  = '[Login] Login Success';
-export const LOGIN_ERROR    = '[Login] Login Error';
+export const LOGIN_USER          = 'LOGIN_USER';
+export const LOGIN_USER_SUCCESS  = 'LOGIN_USER_SUCCESS';
+export const LOGIN_USER_ERROR    = 'LOGIN_USER_ERROR';
+export const LOGOUT_USER         = 'LOGOUT_USER';
 
-export class LoginAction implements Action {
-  readonly type = LOGIN;
-  constructor (public payload: Login) {}
+@Injectable()
+export class LoginActions {
+  constructor(private ngRedux: NgRedux<IAppState>) {}
+
+  logoutUser() {
+    this.ngRedux.dispatch({ type: LOGOUT_USER });
+  }
 }
-
-export class LoginSuccessAction implements Action {
-  readonly type = LOGIN_SUCCESS;
-  constructor (public payload: boolean) {}
-}
-
-export class LoginErrorAction implements Action {
-  readonly type = LOGIN_ERROR;
-  constructor (public payload: any) {}
-}
-
-// Export
-export type All
-  = LoginAction
-  | LoginSuccessAction
-  | LoginErrorAction;

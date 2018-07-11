@@ -8,7 +8,6 @@ import {first} from 'rxjs/internal/operators';
 import {Router} from '@angular/router';
 import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../../shared/store/model';
-import {SIGNED_UP} from '../../../../shared/store/actions';
 
 @Component({
   selector: 'app-feature-authentication-register-form',
@@ -105,7 +104,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       .pipe(first())
       .subscribe(
         data => {
-          this.setSignedUp(this.registrationForm.value.username);
+          // this.setSignedUp(this.registrationForm.value.username);
           this.router.navigate(['/login']);
         }, error => {
           this.loading = false;
@@ -113,9 +112,5 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
           console.log('User or email already exists');
         }
       );
-  }
-
-  setSignedUp(username: string) {
-    this.ngRedux.dispatch({type: SIGNED_UP, username: username});
   }
 }

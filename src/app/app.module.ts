@@ -43,14 +43,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { AlertModule } from 'ngx-bootstrap/alert';
 
-// Import services
-import {UserService} from './shared/_services/user.service';
-import {AuthenticationService} from './features/authentication/authentication.service';
-import {JwtInterceptor} from './shared/jwt.interceptor';
-
-// Import Redux Store
-import {StoreModule} from './shared/store/store.module';
 import {CoreModule} from './core/core.module';
+import {StoreModule} from './shared/store/store.module';
 
 @NgModule({
   imports: [
