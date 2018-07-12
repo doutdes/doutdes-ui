@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit {
 
   // @select('login') loginState: Observable<LoginState>;
   username$: string = null;
-  logged$: false;
+  logged$ = false;
   // public isAuthenticated$ = this.authService.isAuthenticated$;
 
   constructor(
@@ -28,10 +28,11 @@ export class HeaderComponent implements OnInit {
     private authService: AuthenticationService,
     private globalEventService: GlobalEventsManagerService
   ) {
-    this.globalEventService.userLogged.subscribe((mode: any) => {
+    this.globalEventService.userLogged.subscribe((mode: boolean) => {
       console.log('Stato: ' + mode);
       this.logged$ = mode;
     });
+    console.log(this.logged$);
   }
 
   ngOnInit(): void {
@@ -44,10 +45,13 @@ export class HeaderComponent implements OnInit {
         this.username$ = null;
       }
     });*/
-    this.globalEventService.userLogged.subscribe((mode: any) => {
+    console.log('inizializzo la headbar');
+    console.log(this.logged$);
+    this.globalEventService.userLogged.subscribe((mode: boolean) => {
       console.log('Stato: ' + mode);
       this.logged$ = mode;
     });
+    console.log(this.logged$);
   }
 
   logout() {
