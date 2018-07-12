@@ -111,3 +111,9 @@ body {
 app-core-header .navbar {
   height: 56px;
 }
+
+.col-1-5 {
+  -ms-flex: 0 0 12.5%;
+  flex: 0 0 12.5%;
+  max-width: 12.5%;
+}

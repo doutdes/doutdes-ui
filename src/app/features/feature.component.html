@@ -1,33 +1,14 @@
 <app-core-header></app-core-header>
-<!--<div class="wrapper">-->
-
-
-<!--
-<div id="wrapper">
-
-  <div class="container-fluid">
-    <app-core-sidebar></app-core-sidebar>
-    <div id="page-content-wrapper" class="">
-      <div class="container-fluid Site-content">
-
-        <router-outlet></router-outlet>
-      </div>
-    </div>
-    <app-core-footer></app-core-footer>
-  </div>
-
-</div>
--->
-
 
 <div class="row" id="body-row">
-  <app-core-sidebar id="sidebar-container" class="sidebar-expanded d-none d-md-block col-2">
+  <app-core-sidebar id="sidebar-container" class="sidebar-expanded d-none d-md-block col-1-5"><!-- style="max-width: 200px">-->
   </app-core-sidebar>
 
   <div class="col px-0" id="main-content">
     <nav aria-label="breadcrumb" class="">
-      <ol class="breadcrumb border border-info">
-        <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+      <ol class="breadcrumb border border-info border-left-0 border-right-0">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
         <li class="breadcrumb-item active" aria-current="page">Facebook</li>
       </ol>
     </nav>
