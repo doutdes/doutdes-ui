@@ -33,6 +33,11 @@ export class HeaderComponent implements OnInit {
       this.logged$ = mode;
     });
     console.log(this.logged$);
+
+    this.localStore.getUsername().subscribe(username => {
+      this.username$ = username;
+      console.log('username: --> ' + username);
+    });
   }
 
   ngOnInit(): void {
