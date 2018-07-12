@@ -46,9 +46,11 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 import {CoreModule} from './core/core.module';
 import {StoreModule} from './shared/store/store.module';
 import {StoreService} from './shared/_services/store.service';
+import {GlobalEventsManagerService} from './shared/_services/global-event-manager.service';
 
 @NgModule({
   imports: [
+    BrowserModule,
     CoreModule,
     ReactiveFormsModule,
     AppRoutingModule,
@@ -62,8 +64,7 @@ import {StoreService} from './shared/_services/store.service';
     ChartsModule,
     HttpClientModule,
     AlertModule.forRoot(),
-    StoreModule,
-    BrowserModule
+    StoreModule
   ],
   declarations: [
     AppComponent,
@@ -72,7 +73,7 @@ import {StoreService} from './shared/_services/store.service';
     P500Component,
   ],
   providers: [
-    StoreService
+    StoreService, GlobalEventsManagerService
   ],
   bootstrap: [ AppComponent ]
 })

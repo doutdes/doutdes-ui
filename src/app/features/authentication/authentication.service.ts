@@ -3,20 +3,22 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Credentials, LoginState} from './login/login.model';
 import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../shared/store/model';
-import {LOGIN_USER_ERROR, LOGIN_USER_SUCCESS} from './login/login.actions';
+import {LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LoginActions} from './login/login.actions';
 import {Router} from '@angular/router';
 import {map} from 'rxjs/internal/operators';
-import {Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {StoreService} from '../../shared/_services/store.service';
 
 @Injectable()
 export class AuthenticationService {
 
-  @select('login') loginState;
+  // isAuthenticated$ = new BehaviorSubject<boolean>(false);
 
   constructor(
     private http: HttpClient,
     private ngRedux: NgRedux<IAppState>,
     // private router: Router
+    private loginActions: LoginActions
   ) {
   }
 
@@ -34,23 +36,25 @@ export class AuthenticationService {
 
         if (response['user'] && response['token']) {
           console.log('Setto');
-          this.ngRedux.dispatch({type: LOGIN_USER_SUCCESS, user: response['user'], token: response['token']});
+          // this.ngRedux.dispatch({type: LOGIN_USER_SUCCESS, user: response['user'], token: response['token']});
+
+          this.loginActions.loginUserSuccess(response['user'], response['token']);
+          // this.isAuthenticated$.next(true);
 
           return response;
         } else {
-          this.ngRedux.dispatch({type: LOGIN_USER_ERROR});
+          this.loginActions.loginUserError();
+          // this.isAuthenticated$.next(false);
+          // this.ngRedux.dispatch({type: LOGIN_USER_ERROR});
         }
       }));
   }
 
-  isLogged(): Observable<boolean> {
-    this.loginState.subscribe(state => {
-      console.log(state['token']);
-      return of(state['token'] != null);
-    });
-
-    return of(false);
+  logout() {
+    // this.isAuthenticated$.next(false);
   }
+
+
 }
 
 

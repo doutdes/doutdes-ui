@@ -6,6 +6,7 @@ import {NgRedux} from '@angular-redux/store';
 import {Router} from '@angular/router';
 import {User} from '../../../shared/_models/User';
 import {StoreService} from '../../../shared/_services/store.service';
+import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 
 export const LOGIN_USER          = 'LOGIN_USER';
 export const LOGIN_USER_SUCCESS  = 'LOGIN_USER_SUCCESS';
@@ -14,7 +15,12 @@ export const LOGOUT_USER         = 'LOGOUT_USER';
 
 @Injectable()
 export class LoginActions {
-  constructor(private ngRedux: NgRedux<IAppState>, private router: Router, private storeLocal: StoreService) {}
+  constructor(
+    private ngRedux: NgRedux<IAppState>,
+    private router: Router,
+    private storeLocal: StoreService,
+    private eventManager: GlobalEventsManagerService
+    ) {}
 
   loginUser() {
     this.ngRedux.dispatch({ type: LOGIN_USER });
@@ -36,6 +42,7 @@ export class LoginActions {
 
     this.storeLocal.removeToken();
     this.storeLocal.removeUsername();
+    this.eventManager.userLogged.emit(false);
 
     this.router.navigate(['/authentication/login']);
   }

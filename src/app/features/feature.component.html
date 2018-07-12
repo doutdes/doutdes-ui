@@ -1,11 +1,18 @@
 <app-core-header></app-core-header>
 <!--<div class="wrapper">-->
-  <div class="container-fluid Site-content" style="padding:40px">
 
-    <router-outlet></router-outlet>
+
+<div id="wrapper">
+
+  <div class="container-fluid">
+    <app-core-sidebar></app-core-sidebar>
+    <div id="page-content-wrapper">
+      <div class="container-fluid Site-content">
+
+        <router-outlet></router-outlet>
+      </div>
+      <app-core-footer></app-core-footer>
+    </div>
   </div>
-  <!--<div class="push"></div>-->
-<!--</div>-->
-<app-core-footer></app-core-footer>
 
-
+</div>

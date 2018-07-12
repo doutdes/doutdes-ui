@@ -1,19 +1,21 @@
 import {NgModule} from '@angular/core';
 import {FooterComponent} from './footer/footer.component';
 import {HeaderComponent} from './header/header.component';
-import {AppFooterModule, AppHeaderModule} from '@coreui/angular';
+// import {AppFooterModule, AppHeaderModule, AppSidebarModule} from '@coreui/angular';
 import {RouterModule} from '@angular/router';
 import {SharedModule} from '../shared/shared.module';
 import {LoginActions} from '../features/authentication/login/login.actions';
+import {SidebarComponent} from './sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    SidebarComponent
   ],
   imports: [
-    AppFooterModule,
-    AppHeaderModule,
+    // AppFooterModule,
+    // AppHeaderModule,
     RouterModule,
     SharedModule
   ],
@@ -22,7 +24,8 @@ import {LoginActions} from '../features/authentication/login/login.actions';
   ],
   exports: [
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    SidebarComponent
   ]
 })
 
