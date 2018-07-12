@@ -29,6 +29,7 @@ export class HeaderComponent implements OnInit {
     private globalEventService: GlobalEventsManagerService
   ) {
     this.globalEventService.userLogged.subscribe((mode: any) => {
+      console.log('Stato: ' + mode);
       this.logged$ = mode;
     });
   }
@@ -43,6 +44,10 @@ export class HeaderComponent implements OnInit {
         this.username$ = null;
       }
     });*/
+    this.globalEventService.userLogged.subscribe((mode: any) => {
+      console.log('Stato: ' + mode);
+      this.logged$ = mode;
+    });
   }
 
   logout() {

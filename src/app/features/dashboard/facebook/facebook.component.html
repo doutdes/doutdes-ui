@@ -5,7 +5,7 @@
     </div>
 
     <div *ngIf="this.fanLock">
-      <canvas baseChart class="rounded-bottom border"  style="padding:15px; background:#fff"
+      <canvas baseChart class="rounded-bottom border" style="padding:15px; background:#fff"
               [datasets]="fanChartData"
               [labels]="fanLabels"
               [options]="chartOptions1"
@@ -14,15 +14,15 @@
               [legend]="chartLegendFalse"></canvas>
     </div>
   </div>
-<!--</div>-->
-<!--<div class="row">-->
+  <!--</div>-->
+  <!--<div class="row">-->
 
   <div class="col-md-3">
     <div style="background:#4dbd74; color:#fff; padding:10px;" class="rounded-top border border-bottom-0">
       <span style="padding-left:15px; font-size:14pt">Page impressions</span>
     </div>
 
-    <div *ngIf="this.impressLock" >
+    <div *ngIf="this.impressLock">
       <canvas baseChart class="rounded-bottom border" style="background:#fff; padding:20px"
               [datasets]="impressChartData"
               [labels]="impressLabels"
@@ -35,14 +35,14 @@
 </div>
 
 <div class="row" style="margin-top:30px">
-<div class="col-md-3">
-  <div style="background:#f86c6b; color:#fff; padding:10px;" class="rounded-top border border-bottom-0">
-    <span style="padding-left:15px; font-size:14pt">Geomap</span>
+  <div class="col-md-3">
+    <div style="background:#f86c6b; color:#fff; padding:10px;" class="rounded-top border border-bottom-0">
+      <span style="padding-left:15px; font-size:14pt">Geomap</span>
+    </div>
+    <div class="rounded-bottom border" style="background:#fff;padding:15px"> <!-- TODO FIX RESPONSIVENESS -->
+      <google-chart class="col-md-3" [data]="geoChartData"></google-chart>
+    </div>
   </div>
-  <div  class="rounded-bottom border" style="background:#fff;padding:15px"> <!-- TODO FIX RESPONSIVENESS -->
-    <google-chart class="col-md-3" [data]="geoChartData"></google-chart>
-  </div>
-</div>
 </div>
 
 <script src="https://www.gstatic.com/charts/loader.js"></script>

@@ -24,12 +24,16 @@ export class IsAuthenticatedGuard implements CanActivate {
 
           // If the token exists, then the user is logged in and can carry on
           if (tkn != null) {
+            console.log('Token non nullo');
+            console.log(tkn);
+
             this.eventEmitter.showNavBar.emit(true);
             this.eventEmitter.userLogged.emit(true);
             return true;
           }
 
           // If the user is not logged in, he is redirect to the login view
+          console.log('Token nullo');
           this.eventEmitter.showNavBar.emit(false);
           this.eventEmitter.userLogged.emit(false);
 

@@ -2,17 +2,33 @@
 <!--<div class="wrapper">-->
 
 
+<!--
 <div id="wrapper">
 
   <div class="container-fluid">
     <app-core-sidebar></app-core-sidebar>
-    <div id="page-content-wrapper">
+    <div id="page-content-wrapper" class="">
       <div class="container-fluid Site-content">
 
         <router-outlet></router-outlet>
       </div>
-      <app-core-footer></app-core-footer>
     </div>
+    <app-core-footer></app-core-footer>
   </div>
 
+</div>
+-->
+
+
+<div class="row" id="body-row">
+  <app-core-sidebar id="sidebar-container" class="sidebar-expanded d-none d-md-block col-2">
+  </app-core-sidebar>
+
+  <div class="col px-0" id="main-content">
+    <div class="container-fluid">
+      <router-outlet></router-outlet>
+    </div>
+
+    <app-core-footer></app-core-footer>
+  </div>
 </div>
