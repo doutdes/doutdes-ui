@@ -13,24 +13,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 import { AppComponent } from './app.component';
 
 // Import containers and views
-import { DefaultLayoutComponent } from './containers';
-import { P404Component } from './views/error/404.component';
-import { P500Component } from './views/error/500.component';
-import { FeatureAuthenticationLoginComponent } from './features/authentication/login/login.component';
-import { FeatureAuthenticationRegisterComponent } from './features/authentication/register/register.component';
+// import { P404Component } from './views/error/404.component';
+// import { P500Component } from './views/error/500.component';
 
-const APP_CONTAINERS = [
-  DefaultLayoutComponent
-];
-
-// Import CoreUI Components
-import {
-  AppAsideModule,
-  AppBreadcrumbModule,
-  AppHeaderModule,
-  AppFooterModule,
-  AppSidebarModule,
-} from '@coreui/angular';
 
 // Import routing module
 import { AppRoutingModule } from './app.routing';
@@ -54,10 +39,6 @@ import {GlobalEventsManagerService} from './shared/_services/global-event-manage
     CoreModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    AppAsideModule,
-    AppBreadcrumbModule.forRoot(),
-    AppSidebarModule,
-    AppFooterModule,
     PerfectScrollbarModule,
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
@@ -68,9 +49,8 @@ import {GlobalEventsManagerService} from './shared/_services/global-event-manage
   ],
   declarations: [
     AppComponent,
-    ...APP_CONTAINERS,
-    P404Component,
-    P500Component,
+    // P404Component,
+    // P500Component,
   ],
   providers: [
     StoreService, GlobalEventsManagerService
