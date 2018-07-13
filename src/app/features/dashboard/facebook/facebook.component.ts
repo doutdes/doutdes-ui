@@ -38,38 +38,41 @@ export class FeatureDashboardFacebookComponent implements OnInit {
   ];
 
   public chartColor2: Array<any> = [
-  { // grey
-    backgroundColor: '#8CCEA0',
-    borderColor: '#8CCEA0',
-    pointBackgroundColor: '#fff',
-    pointBorderColor: '#fff',
-  }
-];
+    { // grey
+      backgroundColor: '#8CCEA0',
+      borderColor: '#8CCEA0',
+      pointBackgroundColor: '#fff',
+      pointBorderColor: '#fff',
+    }
+  ];
 
   public chartTypeLine = 'line';
   public chartLegendFalse = false;
 
   // GoogleChart options
-  public geoChartData = {
-    chartType: 'GeoChart',
-    dataTable: [
-      ['Country', 'Popularity'],
-      ['Germany', 200],
-      ['United States', 300],
-      ['Brazil', 400],
-      ['Canada', 500],
-      ['France', 600],
-      ['RU', 700]
-    ],
-    options: {
-      region: 'world',
-      colorAxis: {colors: ['#F7DEDE', '#EF7C7C']},
-      backgroundColor: '#fff',
-      datalessRegionColor: '#eee',
-      defaultColor: '#333',
-      width: '80%'
-    }
-  };
+
+  public geoChartData = null;
+  geoChartLock = false;
+  // public geoChartData = {
+  //   chartType: 'GeoChart',
+  //   dataTable: [
+  //     ['Country', 'Popularity'],
+  //     ['Germany', 200],
+  //     ['United States', 300],
+  //     ['Brazil', 400],
+  //     ['Canada', 500],
+  //     ['France', 600],
+  //     ['RU', 700]
+  //   ],
+  //   options: {
+  //     region: 'world',
+  //     colorAxis: {colors: ['#F7DEDE', '#EF7C7C']},
+  //     backgroundColor: '#fff',
+  //     datalessRegionColor: '#eee',
+  //     defaultColor: '#333',
+  //     width: '80%'
+  //   }
+  // };
 
 
   constructor(private facebookService: FacebookService) {
@@ -82,6 +85,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
   ngOnInit(): void {
     this.getFanCount();
     this.getPageImpressions();
+    this.getFanCountry();
   }
 
   getFanCount(): void {
@@ -132,5 +136,40 @@ export class FeatureDashboardFacebookComponent implements OnInit {
         }
       );
   }
+
+  getFanCountry(): void {
+
+    this.facebookService.fbfancountry()
+      .pipe(first())
+      .subscribe(data => {
+          console.log('prova');
+
+          const header = [['Country', 'Popularity']];
+          const arr = Object.keys(data[0].value).map(function(k) { return [k, data[0].value[k]]; });
+
+          console.log(arr);
+
+          this.geoChartData = {
+            chartType: 'GeoChart',
+            dataTable: header.concat(arr)
+            ,
+            options: {
+              region: 'world',
+              colorAxis: {colors: ['#F7DEDE', '#EF7C7C']},
+              backgroundColor: '#fff',
+              datalessRegionColor: '#eee',
+              defaultColor: '#333',
+              width: '80%'
+            }
+          };
+          this.geoChartLock = true;
+        }, error => {
+          if (error) {
+            console.log('errore'); // TODO FIXME
+          }
+        }
+      );
+  }
+
 
 }
