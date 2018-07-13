@@ -1,85 +1,86 @@
+<div id="sidebar-container" class="sidebar-expanded d-none d-md-block col-1-5" *ngIf="showNavigationBar$">
+  <ul class="list-group sticky-top sticky-offset">
+    <!-- Separator with title -->
+    <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
+      <small class="font-weight-bold">MAIN MENU</small>
+    </li>
+    <!-- /END Separator -->
+    <!-- Menu with submenu -->
+    <a href="#submenu1" data-toggle="collapse" aria-expanded="false"
+       class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fas fa-tachometer-alt mr-3"></span>
+        <span class="menu-collapsed">Dashboard</span>
+        <span class="fas fa-plus ml-auto"></span>
+      </div>
+    </a>
+    <!-- Submenu content -->
+    <div id="submenu1" class="collapse sidebar-submenu">
+      <a href="#" class="list-group-item list-group-item-action text-white">
+        <span class="menu-collapsed">Charts</span>
+      </a>
+      <a href="#" class="list-group-item list-group-item-action text-white">
+        <span class="menu-collapsed">Reports</span>
+      </a>
 
-<ul class="list-group sticky-top sticky-offset">
-  <!-- Separator with title -->
-  <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
-    <small class="font-weight-bold">MAIN MENU</small>
-  </li>
-  <!-- /END Separator -->
-  <!-- Menu with submenu -->
-  <a href="#submenu1" data-toggle="collapse" aria-expanded="false"
-     class="list-group-item list-group-item-action flex-column align-items-start">
-    <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fas fa-tachometer-alt mr-3"></span>
-      <span class="menu-collapsed">Dashboard</span>
-      <span class="fas fa-plus ml-auto"></span>
     </div>
-  </a>
-  <!-- Submenu content -->
-  <div id="submenu1" class="collapse sidebar-submenu">
-    <a href="#" class="list-group-item list-group-item-action text-white">
-      <span class="menu-collapsed">Charts</span>
+    <a href="#submenu2" data-toggle="collapse" aria-expanded="false"
+       class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fa fa-user fa-fw mr-3"></span>
+        <span class="menu-collapsed">Profile</span>
+        <span class="fas fa-plus ml-auto"></span>
+      </div>
     </a>
-    <a href="#" class="list-group-item list-group-item-action text-white">
-      <span class="menu-collapsed">Reports</span>
+    <!-- Submenu content -->
+    <div id="submenu2" class="collapse sidebar-submenu">
+      <a href="#" class="list-group-item list-group-item-action text-white">
+        <span class="menu-collapsed">Settings</span>
+      </a>
+      <a href="#" class="list-group-item list-group-item-action text-white">
+        <span class="menu-collapsed">Password</span>
+      </a>
+    </div>
+    <a href="#" class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fa fa-tasks fa-fw mr-3"></span>
+        <span class="menu-collapsed">Tasks</span>
+      </div>
     </a>
-
-  </div>
-  <a href="#submenu2" data-toggle="collapse" aria-expanded="false"
-     class="list-group-item list-group-item-action flex-column align-items-start">
-    <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fa fa-user fa-fw mr-3"></span>
-      <span class="menu-collapsed">Profile</span>
-      <span class="fas fa-plus ml-auto"></span>
-    </div>
-  </a>
-  <!-- Submenu content -->
-  <div id="submenu2" class="collapse sidebar-submenu">
-    <a href="#" class="list-group-item list-group-item-action text-white">
-      <span class="menu-collapsed">Settings</span>
+    <!-- Separator with title -->
+    <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
+      <small class="font-weight-bold">OPTIONS</small>
+    </li>
+    <!-- /END Separator -->
+    <a href="#" class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fa fa-calendar fa-fw mr-3"></span>
+        <span class="menu-collapsed">Calendar</span>
+      </div>
     </a>
-    <a href="#" class="list-group-item list-group-item-action text-white">
-      <span class="menu-collapsed">Password</span>
+    <a href="#" class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fa fa-envelope-o fa-fw mr-3"></span>
+        <span class="menu-collapsed">Messages <span class="badge badge-pill badge-primary ml-2">5</span></span>
+      </div>
     </a>
-  </div>
-  <a href="#" class="list-group-item list-group-item-action">
-    <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fa fa-tasks fa-fw mr-3"></span>
-      <span class="menu-collapsed">Tasks</span>
-    </div>
-  </a>
-  <!-- Separator with title -->
-  <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
-    <small class="font-weight-bold">OPTIONS</small>
-  </li>
-  <!-- /END Separator -->
-  <a href="#" class="list-group-item list-group-item-action">
-    <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fa fa-calendar fa-fw mr-3"></span>
-      <span class="menu-collapsed">Calendar</span>
-    </div>
-  </a>
-  <a href="#" class="list-group-item list-group-item-action">
-    <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fa fa-envelope-o fa-fw mr-3"></span>
-      <span class="menu-collapsed">Messages <span class="badge badge-pill badge-primary ml-2">5</span></span>
-    </div>
-  </a>
-  <!-- Separator without title -->
-  <li class="list-group-item sidebar-separator menu-collapsed"></li>
-  <!-- /END Separator -->
-  <a href="#" class="list-group-item list-group-item-action">
-    <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fa fa-question fa-fw mr-3"></span>
-      <span class="menu-collapsed">Help</span>
-    </div>
-  </a>
-  <a href="#" data-toggle="sidebar-colapse"
-     class="list-group-item list-group-item-action d-flex align-items-center">
-    <div class="d-flex w-100 justify-content-start align-items-center">
-      <span id="collapse-icon" class="fa fa-2x mr-3"></span>
-      <span id="collapse-text" class="menu-collapsed">Collapse</span>
-    </div>
-  </a>
-</ul>
-<!-- List Group END-->
-<!--</div>-->
+    <!-- Separator without title -->
+    <li class="list-group-item sidebar-separator menu-collapsed"></li>
+    <!-- /END Separator -->
+    <a href="#" class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fa fa-question fa-fw mr-3"></span>
+        <span class="menu-collapsed">Help</span>
+      </div>
+    </a>
+    <a href="#" data-toggle="sidebar-colapse"
+       class="list-group-item list-group-item-action d-flex align-items-center">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span id="collapse-icon" class="fa fa-2x mr-3"></span>
+        <span id="collapse-text" class="menu-collapsed">Collapse</span>
+      </div>
+    </a>
+  </ul>
+  <!-- List Group END-->
+  <!--</div>-->
+</div>

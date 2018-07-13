@@ -5,12 +5,13 @@ import {LoginActions} from '../../features/authentication/login/login.actions';
 import {StoreService} from '../../shared/_services/store.service';
 
 @Component({
-  selector: 'app-core-sidebar',
-  templateUrl: './sidebar.component.html',
+  selector: 'app-core-breadcrumb',
+  templateUrl: './breadcrumb.component.html',
 })
 
-export class SidebarComponent implements OnInit{
-  showNavigationBar$ = false;
+export class BreadcrumbComponent implements OnInit {
+
+  showBreadcrumb$ = false;
 
   constructor(
     private actions: LoginActions,
@@ -27,7 +28,7 @@ export class SidebarComponent implements OnInit{
 
   showNavbar() {
     this.globalEventService.showNavBar.subscribe((mode: boolean) => {
-      this.showNavigationBar$ = mode;
+      this.showBreadcrumb$ = mode;
     });
   }
 

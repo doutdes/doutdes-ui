@@ -6,16 +6,16 @@ import {RouterModule} from '@angular/router';
 import {SharedModule} from '../shared/shared.module';
 import {LoginActions} from '../features/authentication/login/login.actions';
 import {SidebarComponent} from './sidebar/sidebar.component';
+import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 
 @NgModule({
   declarations: [
     HeaderComponent,
     FooterComponent,
-    SidebarComponent
+    SidebarComponent,
+    BreadcrumbComponent
   ],
   imports: [
-    // AppFooterModule,
-    // AppHeaderModule,
     RouterModule,
     SharedModule
   ],
@@ -25,7 +25,8 @@ import {SidebarComponent} from './sidebar/sidebar.component';
   exports: [
     HeaderComponent,
     FooterComponent,
-    SidebarComponent
+    SidebarComponent,
+    BreadcrumbComponent
   ]
 })
 

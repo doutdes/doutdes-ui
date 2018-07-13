@@ -17,10 +17,8 @@ import {GlobalEventsManagerService} from '../../shared/_services/global-event-ma
 
 export class HeaderComponent implements OnInit {
 
-  // @select('login') loginState: Observable<LoginState>;
   username$: string = null;
   logged$ = false;
-  // public isAuthenticated$ = this.authService.isAuthenticated$;
 
   constructor(
     private actions: LoginActions,
@@ -28,35 +26,12 @@ export class HeaderComponent implements OnInit {
     private authService: AuthenticationService,
     private globalEventService: GlobalEventsManagerService
   ) {
-    this.globalEventService.userLogged.subscribe((mode: boolean) => {
-      console.log('Stato: ' + mode);
-      this.logged$ = mode;
-    });
-    console.log(this.logged$);
-
-    this.localStore.getUsername().subscribe(username => {
-      this.username$ = username;
-      console.log('username: --> ' + username);
-    });
+    this.isUserLogged();
+    this.updateUsername();
   }
 
   ngOnInit(): void {
-    /*this.isAuthenticated$.subscribe(authenticated => {
-      if (authenticated) {
-        console.log('Authenticated');
-        this.updateUsername();
-      } else {
-        console.log('Not Authenticated');
-        this.username$ = null;
-      }
-    });*/
-    console.log('inizializzo la headbar');
-    console.log(this.logged$);
-    this.globalEventService.userLogged.subscribe((mode: boolean) => {
-      console.log('Stato: ' + mode);
-      this.logged$ = mode;
-    });
-    console.log(this.logged$);
+    this.isUserLogged();
   }
 
   logout() {
@@ -67,7 +42,12 @@ export class HeaderComponent implements OnInit {
   updateUsername() {
     this.localStore.getUsername().subscribe(name => {
       this.username$ = name;
-      console.log(name);
+    });
+  }
+
+  isUserLogged() {
+    this.globalEventService.userLogged.subscribe((mode: boolean) => {
+      this.logged$ = mode;
     });
   }
 

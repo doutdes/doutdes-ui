@@ -64,7 +64,7 @@ export class FeatureAuthenticationLoginFormComponent implements OnInit {
         setTimeout(() => {
             this.router.navigate(['dashboard']);
           },
-          10);
+          500);
       }, error => {
         this.loading = false;
         this.failed = true;

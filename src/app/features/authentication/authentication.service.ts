@@ -12,12 +12,9 @@ import {StoreService} from '../../shared/_services/store.service';
 @Injectable()
 export class AuthenticationService {
 
-  // isAuthenticated$ = new BehaviorSubject<boolean>(false);
-
   constructor(
     private http: HttpClient,
     private ngRedux: NgRedux<IAppState>,
-    // private router: Router
     private loginActions: LoginActions
   ) {
   }
@@ -35,23 +32,17 @@ export class AuthenticationService {
       .pipe(map(response => {
 
         if (response['user'] && response['token']) {
-          console.log('Setto');
-          // this.ngRedux.dispatch({type: LOGIN_USER_SUCCESS, user: response['user'], token: response['token']});
 
           this.loginActions.loginUserSuccess(response['user'], response['token']);
-          // this.isAuthenticated$.next(true);
 
           return response;
         } else {
           this.loginActions.loginUserError();
-          // this.isAuthenticated$.next(false);
-          // this.ngRedux.dispatch({type: LOGIN_USER_ERROR});
         }
       }));
   }
 
   logout() {
-    // this.isAuthenticated$.next(false);
   }
 
 

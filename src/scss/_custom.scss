@@ -30,6 +30,10 @@ body {
   margin-bottom: 60px;
 }
 
+#main-content .container-fluid {
+  min-height: calc(100% - 56px - 54px);
+}
+
 #body-row {
   margin-left: 0;
   margin-right: 0;
@@ -47,7 +51,7 @@ body {
 
 /* Sidebar sizes when expanded and expanded */
 .sidebar-expanded {
-  width: 230px;
+  min-width: 230px;
 }
 
 .sidebar-collapsed {
@@ -129,9 +133,11 @@ app-core-header .navbar {
   flex: 0 0 12.5%;
   max-width: 12.5%;
 }
-/*
-canvas {
-  padding-top:30px!important;
-  padding-bottom:30px!important;
-  height:290px!important;
-}*/
+
+app-core-breadcrumb nav {
+  height: 50px;
+}
+
+app-feature-authentication-login .container {
+  //margin-top: calc(25% - 28px - 25px );
+}

@@ -42,7 +42,9 @@ export class LoginActions {
 
     this.storeLocal.removeToken();
     this.storeLocal.removeUsername();
+
     this.eventManager.userLogged.emit(false);
+    this.eventManager.showNavBar.emit(false);
 
     this.router.navigate(['/authentication/login']);
   }
