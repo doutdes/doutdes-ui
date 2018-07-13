@@ -22,6 +22,8 @@ export class IsAuthenticatedGuard implements CanActivate {
       return this.localStore.getToken().pipe(
         map(tkn => {
 
+          console.log(tkn);
+
           // If the token exists, then the user is logged in and can carry on
           if (tkn != null) {
             console.log('Token non nullo');

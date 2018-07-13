@@ -1,11 +1,11 @@
 <div class="row">
-  <div class="col-md-3">
-    <div style="background:#20a8d8; color:#fff; padding:10px; " class="rounded-top border border-bottom-0">
-      <span style="padding-left:15px; font-size:14pt">Page fans</span>
+  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12">
+    <div style="background:#0B9AC1; color:#fff; padding:10px; " class="rounded-top">
+      <i class="fab fa-facebook-f" style="padding-bottom:3px; padding-left:10px"></i><span style="padding-left:15px; font-size:14pt">Page fans</span>
     </div>
 
     <div *ngIf="this.fanLock">
-      <canvas baseChart class="rounded-bottom border" style="padding:15px; background:#fff"
+      <canvas baseChart class="rounded-bottom border" style="padding:20px; background:#fff; height:1000px"
               [datasets]="fanChartData"
               [labels]="fanLabels"
               [options]="chartOptions1"
@@ -17,13 +17,13 @@
   <!--</div>-->
   <!--<div class="row">-->
 
-  <div class="col-md-3">
-    <div style="background:#4dbd74; color:#fff; padding:10px;" class="rounded-top border border-bottom-0">
-      <span style="padding-left:15px; font-size:14pt">Page impressions</span>
+  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12" >
+    <div style="background:#2C994B; color:#fff; padding:10px;" class="rounded-top">
+      <i class="fab fa-facebook-f" style="padding-bottom:3px; padding-left:10px"></i><span style="padding-left:15px; font-size:14pt">Page impressions</span>
     </div>
 
     <div *ngIf="this.impressLock">
-      <canvas baseChart class="rounded-bottom border" style="background:#fff; padding:20px"
+      <canvas baseChart class="rounded-bottom border" style="background:#fff; padding:20px;"
               [datasets]="impressChartData"
               [labels]="impressLabels"
               [options]="chartOptions1"
@@ -35,14 +35,17 @@
 </div>
 
 <div class="row" style="margin-top:30px">
-  <div class="col-md-3">
-    <div style="background:#f86c6b; color:#fff; padding:10px;" class="rounded-top border border-bottom-0">
-      <span style="padding-left:15px; font-size:14pt">Geomap</span>
+  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12" (window:resize)="myfunction()">
+    <div style="background:#E04545; color:#fff; padding:10px;" class="rounded-top">
+      <i class="fab fa-facebook-f" style="padding-bottom:3px; padding-left:10px"></i><span style="padding-left:15px; font-size:14pt">Geomap</span>
     </div>
-    <div class="rounded-bottom border" style="background:#fff;padding:15px"> <!-- TODO FIX RESPONSIVENESS -->
-      <google-chart class="col-md-3" [data]="geoChartData"></google-chart>
+    <div class="rounded-bottom border" style="background:#fff;padding:20px">
+      <google-chart #geochart [data]="geoChartData"></google-chart>
     </div>
   </div>
+</div>
+
+<div class="row" style="margin-top:30px">
 </div>
 
 <script src="https://www.gstatic.com/charts/loader.js"></script>

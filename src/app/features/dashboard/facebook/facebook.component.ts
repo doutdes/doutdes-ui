@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {first} from 'rxjs/internal/operators';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 
@@ -8,6 +8,7 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
 })
 
 export class FeatureDashboardFacebookComponent implements OnInit {
+  @ViewChild('geochart') geochart;
   // Fans chart
   fanChartData: Array<any> = [];
   fanValues: Number[] = [];
@@ -25,7 +26,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
     animation: false,
     responsive: true,
     scales: {xAxes: [{ticks: {display: false}}]},
-    elements: {point: {radius: 0}},
+    elements: {point: {radius: 0}}
   };
   public chartColor1: Array<any> = [
     { // grey
@@ -66,11 +67,16 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       backgroundColor: '#fff',
       datalessRegionColor: '#eee',
       defaultColor: '#333',
+      width: '80%'
     }
   };
 
 
   constructor(private facebookService: FacebookService) {
+  }
+
+  myfunction(): void {
+    this.geochart.redraw();
   }
 
   ngOnInit(): void {
