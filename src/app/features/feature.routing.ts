@@ -4,8 +4,8 @@ import {RouterModule} from '@angular/router';
 /** App Components **/
 import {FeatureComponent} from './feature.component';
 import {IsAuthenticatedGuard} from '../shared/_guards/is-authenticated.guard';
-import {FeatureDashboardModule} from './dashboard/dashboard.module';
 import {AuthenticationService} from './authentication/authentication.service';
+import {P404Component} from '../errors/404.component';
 
 @NgModule({
   imports: [
@@ -34,7 +34,11 @@ import {AuthenticationService} from './authentication/authentication.service';
             path: 'authentication',
             loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
           },
-        ]
+        ],
+      },
+      {
+        path: '**',
+        component: P404Component
       }
     ])
   ],
