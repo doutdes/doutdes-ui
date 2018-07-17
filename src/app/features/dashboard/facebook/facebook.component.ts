@@ -9,6 +9,8 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
 
 export class FeatureDashboardFacebookComponent implements OnInit {
   @ViewChild('geochart') geochart;
+  @ViewChild('piechart') piechart;
+
   // Fans chart
   fanChartData: Array<any> = [];
   fanValues: Number[] = [];
@@ -49,43 +51,26 @@ export class FeatureDashboardFacebookComponent implements OnInit {
   public chartTypeLine = 'line';
   public chartLegendFalse = false;
 
-  // GoogleChart options
-
+  // GoogleChart Map options
   public geoChartData = null;
   geoChartLock = false;
-  // public geoChartData = {
-  //   chartType: 'GeoChart',
-  //   dataTable: [
-  //     ['Country', 'Popularity'],
-  //     ['Germany', 200],
-  //     ['United States', 300],
-  //     ['Brazil', 400],
-  //     ['Canada', 500],
-  //     ['France', 600],
-  //     ['RU', 700]
-  //   ],
-  //   options: {
-  //     region: 'world',
-  //     colorAxis: {colors: ['#F7DEDE', '#EF7C7C']},
-  //     backgroundColor: '#fff',
-  //     datalessRegionColor: '#eee',
-  //     defaultColor: '#333',
-  //     width: '80%'
-  //   }
-  // };
 
+  // GoogleChart Pie options
+  public pieChartData = null;
 
   constructor(private facebookService: FacebookService) {
   }
 
   myfunction(): void {
     this.geochart.redraw();
+    this.piechart.redraw();
   }
 
   ngOnInit(): void {
     this.getFanCount();
     this.getPageImpressions();
     this.getFanCountry();
+    this.getFanPieCountry();
   }
 
   getFanCount(): void {
@@ -145,7 +130,9 @@ export class FeatureDashboardFacebookComponent implements OnInit {
           console.log('prova');
 
           const header = [['Country', 'Popularity']];
-          const arr = Object.keys(data[0].value).map(function(k) { return [k, data[0].value[k]]; });
+          const arr = Object.keys(data[0].value).map(function (k) {
+            return [k, data[0].value[k]];
+          });
 
           console.log(arr);
 
@@ -171,5 +158,26 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       );
   }
 
+  getFanPieCountry(): void {
+    this.facebookService.fbfancountry()
+      .pipe()
+      .subscribe(
+        data => {
+          const header = [['Country', 'Popularity']];
+          const arr = Object.keys(data[0].value).map(function (k) {
+            return [k, data[0].value[k]];
+          });
+          this.pieChartData = {
+            chartType: 'PieChart',
+            dataTable: header.concat(arr)
+          };
+        },
+        error => {
+          if (error) {
+            console.log('errore'); // TODO FIXME
+          }
+        }
+      );
+  }
 
 }
