@@ -43,14 +43,25 @@
       <google-chart #geochart [data]="geoChartData"></google-chart>
     </div>
   </div>
+
+  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12" (window:resize)="myfunction()">
+    <div style="background:#FF703D; color:#fff; padding:10px;" class="rounded-top">
+      <i class="fab fa-facebook-f" style="padding-bottom:3px; padding-left:10px"></i><span style="padding-left:15px; font-size:14pt">Page fans by country</span>
+    </div>
+    <div class="rounded-bottom border" style="background:#fff;padding:20px">
+      <google-chart #piechart [data]="pieChartData"></google-chart>
+    </div>
+  </div>
+
 </div>
 
 <div class="row" style="margin-top:30px">
 </div>
 
 <script src="https://www.gstatic.com/charts/loader.js"></script>
-<script>
-  var googleLoaded = false;
-  var googleChartsPackagesToLoad = ['geochart'];
-</script>
+<!--<script>-->
+  <!--var googleLoaded = false;-->
+  <!--var googleChartsPackagesToLoad = ['geochart'];-->
+<!--</script>-->
+
 
