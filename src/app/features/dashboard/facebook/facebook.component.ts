@@ -171,7 +171,9 @@ export class FeatureDashboardFacebookComponent implements OnInit {
             chartType: 'PieChart',
             dataTable: header.concat(arr),
             options: {
-              sliceVisibilityThreshold: .05
+              sliceVisibilityThreshold: .05,
+              pieHole: 0.2,
+              //colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
             }
           };
         },
