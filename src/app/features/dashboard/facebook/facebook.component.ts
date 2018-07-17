@@ -169,7 +169,10 @@ export class FeatureDashboardFacebookComponent implements OnInit {
           });
           this.pieChartData = {
             chartType: 'PieChart',
-            dataTable: header.concat(arr)
+            dataTable: header.concat(arr),
+            options: {
+              sliceVisibilityThreshold: .05
+            }
           };
         },
         error => {
