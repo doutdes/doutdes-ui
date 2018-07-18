@@ -31,10 +31,8 @@ export class HeaderComponent {
   }
 
   logout() {
-    setTimeout(() => {
-      this.actions.logoutUser();
-      this.authService.logout();
-    }, 500);
+    this.actions.logoutUser();
+    this.authService.logout();
   }
 
 }
