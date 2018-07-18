@@ -61,7 +61,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
   constructor(private facebookService: FacebookService) {
   }
 
-  myfunction(): void {
+  chartResizer(): void {
     this.geochart.redraw();
     this.piechart.redraw();
   }

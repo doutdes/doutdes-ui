@@ -1,61 +1,58 @@
-<div class="row">
-  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12">
-    <div style="background:#0B9AC1; color:#fff; padding:10px; " class="rounded-top">
-      <i class="fab fa-facebook-f" style="padding-bottom:3px; padding-left:10px"></i><span style="padding-left:15px; font-size:14pt">Page fans</span>
+
+  <div class="row" style="height:40%">
+    <div class="col-md-4 col-sm-6 order-md-1 order-sm-1 pt-3">
+
+      <app-cardbar title='Page fans' background="#0B9AC1" icon="fa-facebook-f"></app-cardbar>
+
+      <div *ngIf="this.fanLock">
+        <canvas baseChart class="rounded-bottom border" style=" background:#fff;"
+                [datasets]="fanChartData"
+                [labels]="fanLabels"
+                [options]="chartOptions1"
+                [colors]="chartColor1"
+                [chartType]="chartTypeLine"
+                [legend]="chartLegendFalse"></canvas>
+      </div>      <!-- PAGE FANS -->
     </div>
 
-    <div *ngIf="this.fanLock">
-      <canvas baseChart class="rounded-bottom border" style="padding:20px; background:#fff; height:1000px"
-              [datasets]="fanChartData"
-              [labels]="fanLabels"
-              [options]="chartOptions1"
-              [colors]="chartColor1"
-              [chartType]="chartTypeLine"
-              [legend]="chartLegendFalse"></canvas>
-    </div>
-  </div>
-  <!--</div>-->
-  <!--<div class="row">-->
+    <div class="col-md-4 col-sm-6 order-md-2 order-sm-2 pt-3">
 
-  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12" >
-    <div style="background:#2C994B; color:#fff; padding:10px;" class="rounded-top">
-      <i class="fab fa-facebook-f" style="padding-bottom:3px; padding-left:10px"></i><span style="padding-left:15px; font-size:14pt">Page impressions</span>
+      <app-cardbar title='Page impressions' background="#2C994B" icon="fa-facebook-f"></app-cardbar>
+
+      <div *ngIf="this.impressLock">
+        <canvas baseChart class="rounded-bottom border" style="background:#fff;"
+                [datasets]="impressChartData"
+                [labels]="impressLabels"
+                [options]="chartOptions1"
+                [colors]="chartColor2"
+                [chartType]="chartTypeLine"
+                [legend]="chartLegendFalse"></canvas>
+      </div>  <!-- PAGE IMPRESSIONS -->
     </div>
 
-    <div *ngIf="this.impressLock">
-      <canvas baseChart class="rounded-bottom border" style="background:#fff; padding:20px;"
-              [datasets]="impressChartData"
-              [labels]="impressLabels"
-              [options]="chartOptions1"
-              [colors]="chartColor2"
-              [chartType]="chartTypeLine"
-              [legend]="chartLegendFalse"></canvas>
+    <div class="col-md-4 col-sm-6 order-md-3 order-sm-5 pt-3">
+      <div class="rounded" style="border:2px dashed #aaa; height:100%"></div>
     </div>
-  </div>
-</div>
 
-<div class="row" style="margin-top:30px">
-  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12" (window:resize)="myfunction()">
-    <div style="background:#E04545; color:#fff; padding:10px;" class="rounded-top">
-      <i class="fab fa-facebook-f" style="padding-bottom:3px; padding-left:10px"></i><span style="padding-left:15px; font-size:14pt">Geomap</span>
-    </div>
-    <div class="rounded-bottom border" style="background:#fff;padding:20px">
+  <div class="col-md-4 col-sm-6 order-md-4 order-sm-3 pt-3" (window:resize)="chartResizer()">
+    <app-cardbar title='Geomap' background="#E04545" icon="fa-facebook-f"></app-cardbar>
+
+    <div class="rounded-bottom border" style="background:#fff;">
       <google-chart #geochart [data]="geoChartData"></google-chart>
-    </div>
+    </div> <!-- GEOMAP -->
   </div>
 
-  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12" (window:resize)="myfunction()">
-    <div style="background:#FF703D; color:#fff; padding:10px;" class="rounded-top">
-      <i class="fab fa-facebook-f" style="padding-bottom:3px; padding-left:10px"></i><span style="padding-left:15px; font-size:14pt">Page fans by country</span>
-    </div>
-    <div class="rounded-bottom border" style="background:#fff;padding:20px">
+  <div class="col-md-4 col-sm-6 order-md-5 order-sm-4 pt-3">
+    <app-cardbar title='Top countries' background="#FF703D" icon="fa-facebook-f"></app-cardbar>
+
+    <div class="rounded-bottom border" style="background:#fff;">
       <google-chart #piechart [data]="pieChartData"></google-chart>
-    </div>
+    </div> <!-- TOP COUNTRIES -->
   </div>
 
-</div>
-
-<div class="row" style="margin-top:30px">
+  <div class="col-md-4 col-sm-6 order-md-6 order-sm-6 pt-3">
+    <div class="rounded" style="border:2px dashed #aaa; height:100%"></div>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/charts/loader.js"></script>
