@@ -145,3 +145,14 @@ app-core-breadcrumb nav {
 app-feature-authentication-login .container {
   //margin-top: calc(25% - 28px - 25px );
 }
+
+ul {
+  li {
+    color: white;
+
+    a {
+      color: red;
+    }
+  }
+
+}
