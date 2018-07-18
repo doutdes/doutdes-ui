@@ -7,7 +7,7 @@ import {SharedModule} from '../shared/shared.module';
 import {LoginActions} from '../features/authentication/login/login.actions';
 import {SidebarComponent} from './sidebar/sidebar.component';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
-import {CardbarComponent} from './cardbar/cardbar.component';
+import {CardComponent} from './card/card.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +15,7 @@ import {CardbarComponent} from './cardbar/cardbar.component';
     FooterComponent,
     SidebarComponent,
     BreadcrumbComponent,
-    CardbarComponent
+    CardComponent
   ],
   imports: [
     RouterModule,
@@ -29,7 +29,7 @@ import {CardbarComponent} from './cardbar/cardbar.component';
     FooterComponent,
     SidebarComponent,
     BreadcrumbComponent,
-    CardbarComponent
+    CardComponent
   ]
 })
 
