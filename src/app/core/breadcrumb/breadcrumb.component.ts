@@ -9,26 +9,13 @@ import {StoreService} from '../../shared/_services/store.service';
   templateUrl: './breadcrumb.component.html',
 })
 
-export class BreadcrumbComponent implements OnInit {
+export class BreadcrumbComponent {
 
-  showBreadcrumb$ = false;
+  isUserLoggedIn: boolean;
 
-  constructor(
-    private actions: LoginActions,
-    private localStore: StoreService,
-    private authService: AuthenticationService,
-    private globalEventService: GlobalEventsManagerService
-  ) {
-    this.showNavbar();
-  }
-
-  ngOnInit(): void {
-    this.showNavbar();
-  }
-
-  showNavbar() {
-    this.globalEventService.showNavBar.subscribe((mode: boolean) => {
-      this.showBreadcrumb$ = mode;
+  constructor(private globalEventService: GlobalEventsManagerService) {
+    this.globalEventService.isUserLoggedIn.subscribe(value => {
+      this.isUserLoggedIn = value;
     });
   }
 

@@ -1,4 +1,4 @@
-<div id="sidebar-container" class="sidebar-expanded d-none d-md-block col-1-5" *ngIf="showNavigationBar$">
+<div id="sidebar-container" class="sidebar-expanded d-none d-md-block col-1-5" *ngIf="isUserLoggedIn">
   <ul class="list-group sticky-top sticky-offset">
     <!-- Separator with title -->
     <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
@@ -28,14 +28,14 @@
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-user fa-fw mr-3"></span>
-        <span class="menu-collapsed">Profile</span>
+        <span class="menu-collapsed">Profile Preferences</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
     <!-- Submenu content -->
     <div id="submenu2" class="collapse sidebar-submenu">
-      <a href="#" class="list-group-item list-group-item-action text-white">
-        <span class="menu-collapsed">Settings</span>
+      <a href="/preferences/api-keys" class="list-group-item list-group-item-action text-white">
+        <span class="menu-collapsed">Api Keys</span>
       </a>
       <a href="#" class="list-group-item list-group-item-action text-white">
         <span class="menu-collapsed">Password</span>

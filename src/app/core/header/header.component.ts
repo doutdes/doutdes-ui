@@ -15,10 +15,9 @@ import {GlobalEventsManagerService} from '../../shared/_services/global-event-ma
   templateUrl: './header.component.html'
 })
 
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
 
-  username$: string = null;
-  logged$ = false;
+  isUserLoggedIn = false;
 
   constructor(
     private actions: LoginActions,
@@ -26,29 +25,16 @@ export class HeaderComponent implements OnInit {
     private authService: AuthenticationService,
     private globalEventService: GlobalEventsManagerService
   ) {
-    this.isUserLogged();
-    this.updateUsername();
-  }
-
-  ngOnInit(): void {
-    this.isUserLogged();
+    this.globalEventService.isUserLoggedIn.subscribe(value => {
+      this.isUserLoggedIn = value;
+    });
   }
 
   logout() {
-    this.actions.logoutUser();
-    this.authService.logout();
-  }
-
-  updateUsername() {
-    this.localStore.getUsername().subscribe(name => {
-      this.username$ = name;
-    });
-  }
-
-  isUserLogged() {
-    this.globalEventService.userLogged.subscribe((mode: boolean) => {
-      this.logged$ = mode;
-    });
+    setTimeout(() => {
+      this.actions.logoutUser();
+      this.authService.logout();
+    }, 500);
   }
 
 }

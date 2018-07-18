@@ -25,10 +25,13 @@ import {P404Component} from '../errors/404.component';
               IsAuthenticatedGuard
             ],
             loadChildren: './dashboard/dashboard.module#FeatureDashboardModule',
-            data: {
-              title: 'Dashboard',
-              requiresLogin: true
-            },
+          },
+          {
+            path: 'preferences',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './preferences/preferences.module#FeaturePreferencesModule',
           },
           {
             path: 'authentication',
