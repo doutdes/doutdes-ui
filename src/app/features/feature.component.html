@@ -1,15 +1,18 @@
-<app-core-header></app-core-header>
+<app-core-header></app-core-header>             <!-- HEADER -->
 
 <div class="row" id="body-row">
-  <app-core-sidebar><!-- >-->
-  </app-core-sidebar>
 
-  <div class="col px-0" id="main-content">
-    <app-core-breadcrumb></app-core-breadcrumb>
-    <div class="container-fluid" style="padding-left:35px; padding-top:10px">
+  <app-core-sidebar></app-core-sidebar>         <!-- SIDEBAR -->
+
+  <div class="col p-2" id="main-content">
+
+    <app-core-breadcrumb></app-core-breadcrumb> <!-- BREADCRUMB -->
+
+    <div class="container-fluid">               <!-- CONTAINER -->
       <router-outlet></router-outlet>
     </div>
 
-    <app-core-footer></app-core-footer>
+    <app-core-footer></app-core-footer>         <!-- FOOTER -->
+
   </div>
 </div>
