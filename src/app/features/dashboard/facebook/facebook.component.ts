@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {first} from 'rxjs/internal/operators';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 
@@ -8,36 +8,14 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
 })
 
 export class FeatureDashboardFacebookComponent implements OnInit {
-  @ViewChild('geochart') geochart;
-  @ViewChild('piechart') piechart;
 
   // Fans chart
-  fanChartData: Array<any> = [];
-  fanValues: Number[] = [];
-  fanLabels: Array<any> = [];
-  fanLock = false;
+  fanChartArray: Array<any> = [];
 
   // Impressions chart
   impressChartData: Array<any> = [];
   impressValues: Number[] = [];
   impressLabels: Array<any> = [];
-  impressLock = false;
-
-  // ChartJS options
-  public chartOptions1: any = {
-    animation: false,
-    responsive: true,
-    scales: {xAxes: [{ticks: {display: false}}]},
-    elements: {point: {radius: 0}}
-  };
-  public chartColor1: Array<any> = [
-    { // grey
-      backgroundColor: '#63c2de',
-      borderColor: '#63c2de',
-      pointBackgroundColor: '#fff',
-      pointBorderColor: '#fff',
-    }
-  ];
 
   public chartColor2: Array<any> = [
     { // grey
@@ -48,48 +26,47 @@ export class FeatureDashboardFacebookComponent implements OnInit {
     }
   ];
 
-  public chartTypeLine = 'line';
-  public chartLegendFalse = false;
-
-  // GoogleChart Map options
+  public fanChartData = null;
   public geoChartData = null;
-  geoChartLock = false;
-
-  // GoogleChart Pie options
   public pieChartData = null;
 
   constructor(private facebookService: FacebookService) {
   }
 
-  chartResizer(): void {
-    this.geochart.redraw();
-    this.piechart.redraw();
-  }
-
   ngOnInit(): void {
-    this.getFanCount();
-    this.getPageImpressions();
-    this.getFanCountry();
-    this.getFanPieCountry();
+    this.initFanWidget();
+    this.initImpressionWidget();
+    this.initGeomapWidget();
+    this.initPieWidget();
   }
 
-  getFanCount(): void {
+  initFanWidget(): void {
 
     this.facebookService.fbfancount()
       .pipe(first())
       .subscribe(data => {
 
-          // Push data pairs in the chart array
-          for (let i = 0; i < data.length; i++) {
+        const header = [['Date', 'Fans number']];
 
-            if (i % 10 === 0) { // Data are greedy sampled by 10 units
-              this.fanValues.push(data[i].value);
-              this.fanLabels.push(data[i].end_time);
-            }
+        // Push data pairs in the chart array
+        for (let i = 0; i < data.length; i++) {
+
+          if (i % 10 === 0) { // Data are greedy sampled by 10 units
+            this.fanChartArray.push([data[i].end_time.getMonth, data[i].value]);
           }
-          this.fanChartData = [{data: this.fanValues, borderWidth: 1, fill: true, cubicInterpolationMode: 'default'}];
+        }
 
-          this.fanLock = true;
+        this.fanChartData = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(this.fanChartArray),
+          options: {
+            chartArea: {height: '90%', left: 10, right: 10},
+            legend: {position: 'none'},
+            colors: ['#63c2de'],
+            areaOpacity: 0.6
+          }
+        };
+
         }, error => {
           if (error) {
             console.log('errore'); // TODO FIXME
@@ -98,7 +75,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       );
   }
 
-  getPageImpressions(): void {
+  initImpressionWidget(): void {
 
     this.facebookService.fbpageimpressions()
       .pipe(first())
@@ -113,7 +90,6 @@ export class FeatureDashboardFacebookComponent implements OnInit {
           }
           this.impressChartData = [{data: this.impressValues, borderWidth: 1, fill: true, cubicInterpolationMode: 'default'}];
 
-          this.impressLock = true;
         }, error => {
           if (error) {
             console.log('errore'); // TODO FIXME
@@ -122,19 +98,15 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       );
   }
 
-  getFanCountry(): void {
+  initGeomapWidget(): void {
 
     this.facebookService.fbfancountry()
       .pipe(first())
       .subscribe(data => {
-          console.log('prova');
-
           const header = [['Country', 'Popularity']];
           const arr = Object.keys(data[0].value).map(function (k) {
             return [k, data[0].value[k]];
           });
-
-          console.log(arr);
 
           this.geoChartData = {
             chartType: 'GeoChart',
@@ -146,10 +118,9 @@ export class FeatureDashboardFacebookComponent implements OnInit {
               backgroundColor: '#fff',
               datalessRegionColor: '#eee',
               defaultColor: '#333',
-              width: '80%'
+              height: '300'
             }
           };
-          this.geoChartLock = true;
         }, error => {
           if (error) {
             console.log('errore'); // TODO FIXME
@@ -158,7 +129,8 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       );
   }
 
-  getFanPieCountry(): void {
+  initPieWidget(): void {
+
     this.facebookService.fbfancountry()
       .pipe()
       .subscribe(
@@ -167,14 +139,18 @@ export class FeatureDashboardFacebookComponent implements OnInit {
           const arr = Object.keys(data[0].value).map(function (k) {
             return [k, data[0].value[k]];
           });
+
           this.pieChartData = {
             chartType: 'PieChart',
             dataTable: header.concat(arr),
             options: {
-              sliceVisibilityThreshold: .05,
-              pieHole: 0.2,
-              colors: ['9e1906', 'b8321b', 'c54e27', 'd26a29', 'f09328'],
-              is3D: true,
+              fontSize: 12,
+              legend: {position: 'labeled', textStyle: {fontSize: 14}},
+              chartArea: {height: 220, left: 0, right: 0},
+              height: 250,
+              sliceVisibilityThreshold: 0.05,
+              pieHole: 0.15,
+              colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
             }
           };
         },
