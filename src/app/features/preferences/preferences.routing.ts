@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {FeaturePreferencesApiKeysComponent} from './api-keys/api-keys.component';
+import {FeaturePreferencesApiKeysRegisterFormComponent} from './api-keys/register-form/register-form.component';
 
 /** App Components **/
 
@@ -16,6 +17,10 @@ import {FeaturePreferencesApiKeysComponent} from './api-keys/api-keys.component'
       {
         path: 'api-keys',
         component: FeaturePreferencesApiKeysComponent
+      },
+      {
+        path: 'api-keys/insert',
+        component: FeaturePreferencesApiKeysRegisterFormComponent
       }
     ])
   ],

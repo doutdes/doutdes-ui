@@ -18,8 +18,16 @@ export class StoreService {
     this.localStorage.removeItem('jwt').subscribe(() => {}, () => {});
   }
 
-  getUsername() {
-    return this.localStorage.getItem('username');
+  setId(id: number) {
+    this.localStorage.setItem('id', id).subscribe(() => {});
+  }
+
+  getId() {
+    return this.localStorage.getItem('id');
+  }
+
+  removeId() {
+    this.localStorage.removeItem('id').subscribe(() => {}, () => {});
   }
 
   clear() {

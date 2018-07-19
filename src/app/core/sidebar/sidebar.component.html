@@ -16,8 +16,8 @@
     </a>
     <!-- Submenu content -->
     <div id="submenu1" class="collapse sidebar-submenu">
-      <a href="#" class="list-group-item list-group-item-action text-white">
-        <span class="menu-collapsed">Charts</span>
+      <a [routerLink]="['/dashboard/facebook']" class="list-group-item list-group-item-action text-white">
+        <span class="menu-collapsed">Facebook</span>
       </a>
       <a href="#" class="list-group-item list-group-item-action text-white">
         <span class="menu-collapsed">Reports</span>
@@ -34,7 +34,7 @@
     </a>
     <!-- Submenu content -->
     <div id="submenu2" class="collapse sidebar-submenu">
-      <a href="/preferences/api-keys" class="list-group-item list-group-item-action text-white">
+      <a [routerLink]="['/preferences/api-keys']" class="list-group-item list-group-item-action text-white">
         <span class="menu-collapsed">Api Keys</span>
       </a>
       <a href="#" class="list-group-item list-group-item-action text-white">
