@@ -1,5 +1,29 @@
-<div class="container">
-  <div class="col-md-4">ciao</div>
-  <div class="col-md-4">cef</div>
-  <div class="col-md-4">iuh</div>
+
+
+<div class="container h-100">
+  <alert *ngIf="just_signed | async" class="alert-registration" type="success" [dismissible]="true">
+    <strong>Well done!</strong> You successfully signed up! Now you should login to our platform.
+  </alert>
+
+  <div class="row h-100 align-items-center">
+    <div class="col-md-8 mx-auto">
+      <div class="card-group">
+        <div class="card p-4">
+          <div class="card-body">
+            <h2>Insert new api key</h2>
+
+            <div class="form-inline mb-2">
+              <label class="my-1 mr-2">Type of service</label>
+              <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="userType">
+                <option value=0 selected>Facebook Insights</option>
+                <option value=1>Google Analytics</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>
+
