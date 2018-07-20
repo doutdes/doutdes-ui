@@ -1,6 +1,8 @@
 import {LocalStorage} from '@ngx-pwa/local-storage';
 import {Injectable} from '@angular/core';
 
+// TODO eliminate this monster
+
 @Injectable()
 export class StoreService {
 
@@ -8,10 +10,15 @@ export class StoreService {
 
   setToken(token: string) {
     this.localStorage.setItem('jwt', token).subscribe(() => {});
+    localStorage.setItem('jwt', token);
   }
 
   getToken() {
     return this.localStorage.getItem('jwt');
+  }
+
+  getTokenProof() {
+    return localStorage.getItem('jwt');
   }
 
   removeToken() {

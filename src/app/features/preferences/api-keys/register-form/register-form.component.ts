@@ -15,11 +15,9 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
   loading = false;
   submitted = false;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private store: StoreService,
-    private apiKeysService: ApiKeysService
-  ) {
+  constructor(private formBuilder: FormBuilder,
+              private store: StoreService,
+              private apiKeysService: ApiKeysService) {
   }
 
   ngOnInit(): void {
@@ -51,15 +49,17 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
       .subscribe(id => {
         this.registrationForm.value.user_id = id;
 
+        console.log(id);
+
         this.apiKeysService.registerKey(this.registrationForm.value)
           .pipe()
           .subscribe(data => {
             // TODO routing sulla lista delle api key
           }, error => {
             this.loading = false;
-            console.log('missing user_id');
-          })
-        ;
+            console.log(error);
+          });
+
       }, error => {
         this.loading = false;
         console.log(error);
