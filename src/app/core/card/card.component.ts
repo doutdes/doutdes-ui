@@ -21,14 +21,14 @@ export class CardComponent implements OnInit {
   @Input() icon: string;
   @Input() chartData: any;
   @Input() chartType: string;
+  @Input() xlOrder: string;
   @Input() lgOrder: string;
-  @Input() mdOrder: string;
-  @HostBinding('class') elementClass = 'col-lg-4 col-md-6 pt-3';
+  @HostBinding('class') elementClass = 'col-xl-4 col-lg-6 pt-3';
   @ViewChild('mychart') mychart;
 
   ngOnInit() {
 
-    this.elementClass = this.elementClass + ' order-lg-' + this.lgOrder + ' order-md-' + this.mdOrder;
+    this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
 
     // Handling icon nicknames
     switch (this.icon) {
