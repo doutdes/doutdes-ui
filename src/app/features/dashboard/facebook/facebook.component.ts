@@ -149,6 +149,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
               height: 250,
               sliceVisibilityThreshold: 0.05,
               pieHole: 0.15,
+              is3D: false,
               colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
             }
           };
