@@ -36,13 +36,13 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       .pipe(first())
       .subscribe(data => {
 
-          const header = [['Date', 'Fans number']];
+          const header = [['Date', 'Number of fans']];
 
           // Push data pairs in the chart array
           for (let i = 0; i < data.length; i++) {
 
             if (i % 10 === 0) { // Data are greedy sampled by 10 units
-              this.fanChartArray.push([data[i].end_time.getMonth, data[i].value]);
+              this.fanChartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
             }
           }
 
@@ -50,10 +50,12 @@ export class FeatureDashboardFacebookComponent implements OnInit {
             chartType: 'AreaChart',
             dataTable: header.concat(this.fanChartArray),
             options: {
-              chartArea: {height: '90%', left: 10, right: 10},
+              chartArea: {left: 30, right: 0, height: 280, top: 0},
               legend: {position: 'none'},
+              height: 310,
+              explorer: {},
               colors: ['#63c2de'],
-              areaOpacity: 0.6
+              areaOpacity: 0.4
             }
           };
 
@@ -74,19 +76,21 @@ export class FeatureDashboardFacebookComponent implements OnInit {
           const header = [['Date', 'Impressions']];
           for (let i = 0; i < data.length; i++) {
 
-            if (i % 20 === 0) {
-              this.impressChartArray.push([data[i].end_time.getMonth, data[i].value]);
-            }
+            //if (i % 2 === 0) {
+              this.impressChartArray.push([new Date(data[i].end_time), data[i].value]);
+            //}
           }
 
           this.impressChartData = {
             chartType: 'AreaChart',
             dataTable: header.concat(this.impressChartArray),
             options: {
-              chartArea: {height: '90%', left: 10, right: 10},
+              chartArea: {left: 30, right: 0, height: 280, top:0},
               legend: {position: 'none'},
+              height: 310,
+              explorer: {},
               colors: ['#8CCEA0'],
-              areaOpacity: 0.6
+              areaOpacity: 0.4
             }
           };
         }, error => {
@@ -149,6 +153,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
               height: 250,
               sliceVisibilityThreshold: 0.05,
               pieHole: 0.15,
+              is3D: false,
               colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
             }
           };
