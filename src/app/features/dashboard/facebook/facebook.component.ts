@@ -13,20 +13,10 @@ export class FeatureDashboardFacebookComponent implements OnInit {
   fanChartArray: Array<any> = [];
 
   // Impressions chart
-  impressChartData: Array<any> = [];
-  impressValues: Number[] = [];
-  impressLabels: Array<any> = [];
-
-  public chartColor2: Array<any> = [
-    { // grey
-      backgroundColor: '#8CCEA0',
-      borderColor: '#8CCEA0',
-      pointBackgroundColor: '#fff',
-      pointBorderColor: '#fff',
-    }
-  ];
+  impressChartArray: Array<any> = [];
 
   public fanChartData = null;
+  public impressChartData = null;
   public geoChartData = null;
   public pieChartData = null;
 
@@ -46,26 +36,26 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       .pipe(first())
       .subscribe(data => {
 
-        const header = [['Date', 'Fans number']];
+          const header = [['Date', 'Fans number']];
 
-        // Push data pairs in the chart array
-        for (let i = 0; i < data.length; i++) {
+          // Push data pairs in the chart array
+          for (let i = 0; i < data.length; i++) {
 
-          if (i % 10 === 0) { // Data are greedy sampled by 10 units
-            this.fanChartArray.push([data[i].end_time.getMonth, data[i].value]);
+            if (i % 10 === 0) { // Data are greedy sampled by 10 units
+              this.fanChartArray.push([data[i].end_time.getMonth, data[i].value]);
+            }
           }
-        }
 
-        this.fanChartData = {
-          chartType: 'AreaChart',
-          dataTable: header.concat(this.fanChartArray),
-          options: {
-            chartArea: {height: '90%', left: 10, right: 10},
-            legend: {position: 'none'},
-            colors: ['#63c2de'],
-            areaOpacity: 0.6
-          }
-        };
+          this.fanChartData = {
+            chartType: 'AreaChart',
+            dataTable: header.concat(this.fanChartArray),
+            options: {
+              chartArea: {height: '90%', left: 10, right: 10},
+              legend: {position: 'none'},
+              colors: ['#63c2de'],
+              areaOpacity: 0.6
+            }
+          };
 
         }, error => {
           if (error) {
@@ -81,15 +71,24 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       .pipe(first())
       .subscribe(data => {
 
+          const header = [['Date', 'Impressions']];
           for (let i = 0; i < data.length; i++) {
 
             if (i % 20 === 0) {
-              this.impressValues.push(data[i].value);
-              this.impressLabels.push(data[i].end_time);
+              this.impressChartArray.push([data[i].end_time.getMonth, data[i].value]);
             }
           }
-          this.impressChartData = [{data: this.impressValues, borderWidth: 1, fill: true, cubicInterpolationMode: 'default'}];
 
+          this.impressChartData = {
+            chartType: 'AreaChart',
+            dataTable: header.concat(this.impressChartArray),
+            options: {
+              chartArea: {height: '90%', left: 10, right: 10},
+              legend: {position: 'none'},
+              colors: ['#8CCEA0'],
+              areaOpacity: 0.6
+            }
+          };
         }, error => {
           if (error) {
             console.log('errore'); // TODO FIXME
