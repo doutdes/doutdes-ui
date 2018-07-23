@@ -1,4 +1,3 @@
-import {LocalStorage} from '@ngx-pwa/local-storage';
 import {Injectable} from '@angular/core';
 
 // TODO eliminate this monster
@@ -6,38 +5,33 @@ import {Injectable} from '@angular/core';
 @Injectable()
 export class StoreService {
 
-  constructor(protected localStorage: LocalStorage) {}
+  constructor() {}
 
   setToken(token: string) {
-    this.localStorage.setItem('jwt', token).subscribe(() => {});
     localStorage.setItem('jwt', token);
   }
 
   getToken() {
-    return this.localStorage.getItem('jwt');
-  }
-
-  getTokenProof() {
     return localStorage.getItem('jwt');
   }
 
   removeToken() {
-    this.localStorage.removeItem('jwt').subscribe(() => {}, () => {});
+    localStorage.removeItem('jwt');
   }
 
-  setId(id: number) {
-    this.localStorage.setItem('id', id).subscribe(() => {});
+  setId(id) {
+    localStorage.setItem('id', id);
   }
 
   getId() {
-    return this.localStorage.getItem('id');
+    return localStorage.getItem('id');
   }
 
   removeId() {
-    this.localStorage.removeItem('id').subscribe(() => {}, () => {});
+    localStorage.removeItem('id');
   }
 
   clear() {
-    this.localStorage.clear().subscribe(() => {}, () => {});
+    localStorage.clear();
   }
 }

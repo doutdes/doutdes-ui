@@ -36,7 +36,7 @@ export class JwtInterceptor implements HttpInterceptor {
     return next.handle(request);*/
 
 
-    const tkn = this.localStorage.getTokenProof();
+    const tkn = this.localStorage.getToken();
 
     if (tkn !== null) {
       const headers = request.headers

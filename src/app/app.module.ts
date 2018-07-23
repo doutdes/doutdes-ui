@@ -46,8 +46,6 @@ import {JwtInterceptor} from './shared/jwt.interceptor';
   ],
   declarations: [
     AppComponent,
-    // P404Component,
-    // P500Component,
   ],
   providers: [
     StoreService,
