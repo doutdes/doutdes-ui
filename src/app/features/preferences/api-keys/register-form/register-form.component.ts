@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {StoreService} from '../../../../shared/_services/store.service';
 import {ApiKeysService} from '../../../../shared/_services/apikeys.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-feature-preferences-apikeys-register-form',
@@ -15,9 +16,11 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
   loading = false;
   submitted = false;
 
-  constructor(private formBuilder: FormBuilder,
-              private store: StoreService,
-              private apiKeysService: ApiKeysService) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private store: StoreService,
+    private apiKeysService: ApiKeysService,
+    private router: Router) {
   }
 
   ngOnInit(): void {
@@ -44,29 +47,23 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
 
     this.registrationForm.value.service = this.selectedService;
 
-    this.store.getId()
+
+    this.registrationForm.value.user_id = this.store.getId();
+
+    //console.log(id);
+
+    this.apiKeysService.registerKey(this.registrationForm.value)
       .pipe()
-      .subscribe(id => {
-        this.registrationForm.value.user_id = id;
-
-        console.log(id);
-
-        this.apiKeysService.registerKey(this.registrationForm.value)
-          .pipe()
-          .subscribe(data => {
-            // TODO routing sulla lista delle api key
-          }, error => {
-            this.loading = false;
-            console.log(error);
-          });
-
+      .subscribe(data => {
+        // TODO routing sulla lista delle api key
+        this.router.navigate(['/preferences/api-keys']);
       }, error => {
         this.loading = false;
         console.log(error);
-        console.log('registration failed');
       });
 
   }
-
 }
+
+
 
