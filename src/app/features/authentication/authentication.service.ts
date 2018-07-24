@@ -28,7 +28,7 @@ export class AuthenticationService {
       headers: headers
     };
 
-    return this.http.post<any>('http://localhost:3000/login', {}, httpOptions)
+    return this.http.post<any>('http://www.doutdes-cluster.it:3000/login', {}, httpOptions)
       .pipe(map(response => {
 
         if (response['user'] && response['token']) {

@@ -9,17 +9,17 @@ export class ApiKeysService {
   }
 
   registerKey(api: ApiKey) {
-    return this.http.post('http://localhost:3000/keys/insert', api);
+    return this.http.post('http://www.doutdes-cluster.it:3000/keys/insert', api);
   }
 
   getAllKeys() {
-    return this.http.get<ApiKey[]>('http://localhost:3000/keys/getAll/');
+    return this.http.get<ApiKey[]>('http://www.doutdes-cluster.it:3000/keys/getAll/');
   }
 
   deleteKey(service) {
     // let key: ApiKey;
     // key.service = service;
-    return this.http.request('delete', 'http://localhost:3000/keys/delete', {body: {service: service}});
+    return this.http.request('delete', 'http://www.doutdes-cluster.it:3000/keys/delete', {body: {service: service}});
   }
 
 }
