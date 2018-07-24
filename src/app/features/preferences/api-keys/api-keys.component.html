@@ -1,8 +1,26 @@
-<h1>Api Keys list
-  <a [routerLink]="['insert']">
-    <i class="fas fa-plus"></i>
-  </a></h1>
+<h1>Api Keys list</h1>
 
-<div>
+<table class="table" *ngIf="apiKeysList$.length !== 0; else no_content">
+  <thead>
+  <tr>
+    <th scope="col">Service</th>
+    <th scope="col">Token</th>
+    <th scope="col"></th>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+  <tbody *ngFor="let key of apiKeysList$">
+    <tr>
+      <td>{{serviceName(key.service)}}</td>
+      <td>{{key.api_key}}</td>
+      <td><button type="button" class="btn btn-primary">Update</button></td>
+      <td><button type="button" class="btn btn-danger" (click)="deleteService(key.service)">Delete</button></td>
+    </tr>
+  </tbody>
+</table>
+<ng-template #no_content>
+  <h4>There are not still keys. Insert a new one!</h4>
+</ng-template>
+<button type="button" class="btn btn-success" [routerLink]="['insert']">Insert New Key</button>
 
-</div>
+

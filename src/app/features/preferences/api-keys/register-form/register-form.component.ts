@@ -47,15 +47,11 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
 
     this.registrationForm.value.service = this.selectedService;
 
-
     this.registrationForm.value.user_id = this.store.getId();
-
-    //console.log(id);
 
     this.apiKeysService.registerKey(this.registrationForm.value)
       .pipe()
       .subscribe(data => {
-        // TODO routing sulla lista delle api key
         this.router.navigate(['/preferences/api-keys']);
       }, error => {
         this.loading = false;
