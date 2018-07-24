@@ -4,26 +4,34 @@
       <div class="card-group">
         <div class="card p-4">
           <div class="card-body">
-            <h2>Insert new api key</h2>
-            <div class="form-inline mb-2">
-              <label class="my-1 mr-2">Type of service</label>
-              <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="userType">
-                <option value=0 selected>Facebook Insights</option>
-                <option value=1>Google Analytics</option>
-              </select>
+            <h2 class="text-center display-4 mb-4">Insert new api key</h2>
+            <div class="form-group row mb-4">
+              <label for="userType" class="col-form-label col-md-4">Type of service</label>
+              <div class="col-md-8">
+                <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="userType">
+                  <option value=0 selected>Facebook Insights</option>
+                  <option value=1>Google Analytics</option>
+                </select>
+              </div>
             </div>
             <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-              <div class="form-row mb-3">
-                <div class="input-group col-md-6">
+              <div class="form-group row">
+                <label for="userType" class="col-form-label col-md-4">API Key</label>
+                <div class="input-group col-md-8 mb-4">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-key"></i></span>
                   </div>
-                  <input type="text" formControlName="api_key" class="form-control" placeholder="Insert Token"/>
+                  <input type="text" id="api_key" formControlName="api_key" class="form-control"
+                         placeholder="Insert Token"/>
                 </div>
               </div>
-              <div *ngIf="submitted && error400" class="text-danger mb-3">Service already exists</div>
-              <button [disabled]="loading" class="btn btn-success " [ngClass]="{'is-invalid': submitted && error400}"> Insert</button>
-              <button type="button" class="btn btn-danger" [routerLink]="['../']">Cancel</button>
+              <div *ngIf="submitted && error400" class="text-danger mb-4">Service already exists</div>
+              <div class="form-group-row">
+                <button [disabled]="loading" class="btn btn-lg btn-success" style="width: 49%; margin-right: 2%" [ngClass]="{'is-invalid': submitted && error400}">
+                  Insert
+                </button>
+                <button type="button" class="btn btn-lg btn-danger" style="width: 49%" [routerLink]="['../']">Cancel</button>
+              </div>
             </form>
           </div>
         </div>
