@@ -1,6 +1,7 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {select} from '@angular-redux/store';
 import {AlertConfig} from 'ngx-bootstrap/alert';
+import {StoreService} from '../../../shared/_services/store.service';
 
 @Component({
   selector: 'app-feature-authentication-login',
@@ -19,7 +20,7 @@ import {AlertConfig} from 'ngx-bootstrap/alert';
 export class FeatureAuthenticationLoginComponent {
   @select() just_signed;
 
-  constructor() { }
+  constructor(private storeLocal: StoreService) { this.storeLocal.clear(); }
 
 }
 

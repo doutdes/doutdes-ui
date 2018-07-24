@@ -5,6 +5,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import {AuthenticationService} from '../authentication.service';
 import {SharedModule} from '../../../shared/shared.module';
 import {RouterLinkActive, RouterModule} from '@angular/router';
+import {StoreService} from '../../../shared/_services/store.service';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {RouterLinkActive, RouterModule} from '@angular/router';
   ],
   providers: [
     UserService,
-    AuthenticationService
+    AuthenticationService,
+    StoreService
   ]
 })
 export class LoginModule {}

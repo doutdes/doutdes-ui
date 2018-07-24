@@ -41,6 +41,7 @@ export class LoginActions {
     this.ngRedux.dispatch({ type: LOGOUT_USER });
     this.storeLocal.removeToken();
     this.storeLocal.removeId();
+    this.storeLocal.clear();
     this.eventManager.isUserLoggedIn.next(false);
 
     this.router.navigate(['/authentication/login']);
