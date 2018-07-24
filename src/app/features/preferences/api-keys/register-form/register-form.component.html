@@ -1,6 +1,6 @@
 <div class="container h-100">
   <div class="row h-100 align-items-center">
-    <div class="col-md-8 mx-auto">
+    <div class="col-md-6 mx-auto">
       <div class="card-group">
         <div class="card p-4">
           <div class="card-body">
@@ -13,20 +13,21 @@
               </select>
             </div>
             <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-              <div class="form-row">
-                <div class="input-group mb-3 col-md-6">
+              <div class="form-row mb-3">
+                <div class="input-group col-md-6">
                   <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="icon-briefcase"></i></span>
+                    <span class="input-group-text"><i class="fas fa-key"></i></span>
                   </div>
                   <input type="text" formControlName="api_key" class="form-control" placeholder="Insert Token"/>
                 </div>
               </div>
-              <button [disabled]="loading" class="btn btn-block btn-success">Insert new api key</button>
+              <div *ngIf="submitted && error400" class="text-danger mb-3">Service already exists</div>
+              <button [disabled]="loading" class="btn btn-success " [ngClass]="{'is-invalid': submitted && error400}"> Insert</button>
+              <button type="button" class="btn btn-danger" [routerLink]="['../']">Cancel</button>
             </form>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 

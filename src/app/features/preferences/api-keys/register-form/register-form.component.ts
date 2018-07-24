@@ -15,6 +15,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
   selectedService = 0;
   loading = false;
   submitted = false;
+  error400 = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -55,7 +56,10 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
         this.router.navigate(['/preferences/api-keys']);
       }, error => {
         this.loading = false;
-        console.log(error);
+        if(error.status === 400) {
+          this.error400 = true;
+        }
+        console.log(error.status);
       });
 
   }
