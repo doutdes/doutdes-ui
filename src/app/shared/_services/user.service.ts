@@ -8,6 +8,6 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   register(user: User) {
-    return this.http.post('http://www.doutdes-cluster.it:3000/users/create', user);
+    return this.http.post('http://www.doutdes-cluster.it/users/create', user);
   }
 }
