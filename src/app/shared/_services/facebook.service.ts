@@ -9,14 +9,14 @@ export class FacebookService {
   }
 
   fbfancount() {
-    return this.http.get<FacebookFanCount[]>('http://www.doutdes-cluster.it/fbfancount');
+    return this.http.get<FacebookFanCount[]>('http://www.doutdes-cluster.it:443/fbfancount');
   }
 
   fbpageimpressions() {
-    return this.http.get<FacebookImpressions[]>('http://www.doutdes-cluster.it/fbpageimpressions');
+    return this.http.get<FacebookImpressions[]>('http://www.doutdes-cluster.it:443/fbpageimpressions');
   }
 
   fbfancountry(){
-    return this.http.get<FaceBookFanCountry[]>('http://www.doutdes-cluster.it/fbfancountry');
+    return this.http.get<FaceBookFanCountry[]>('http://www.doutdes-cluster.it:443/fbfancountry');
   }
 }
