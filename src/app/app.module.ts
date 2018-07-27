@@ -1,14 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { APP_BASE_HREF } from '@angular/common';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
-import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
-import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-
-const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
-  suppressScrollX: true
-};
 
 import { AppComponent } from './app.component';
 
@@ -29,6 +23,7 @@ import {StoreModule} from './shared/store/store.module';
 import {StoreService} from './shared/_services/store.service';
 import {GlobalEventsManagerService} from './shared/_services/global-event-manager.service';
 import {JwtInterceptor} from './shared/jwt.interceptor';
+import {environment} from '../environments/environment';
 
 @NgModule({
   imports: [
@@ -51,6 +46,7 @@ import {JwtInterceptor} from './shared/jwt.interceptor';
     StoreService,
     GlobalEventsManagerService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: APP_BASE_HREF, useValue: environment.baseHref },
   ],
   bootstrap: [ AppComponent ]
 })

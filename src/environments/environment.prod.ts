@@ -1,3 +1,6 @@
 export const environment = {
-  production: true
+  production: true,
+  baseHref: './',
+  host: 'www.doutdes-cluster.it',
+  port: '443'
 };

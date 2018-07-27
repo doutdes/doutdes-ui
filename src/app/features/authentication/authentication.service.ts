@@ -8,6 +8,7 @@ import {Router} from '@angular/router';
 import {map} from 'rxjs/internal/operators';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 import {StoreService} from '../../shared/_services/store.service';
+import {environment} from '../../../environments/environment';
 
 @Injectable()
 export class AuthenticationService {
@@ -28,7 +29,7 @@ export class AuthenticationService {
       headers: headers
     };
 
-    return this.http.post<any>('http://www.doutdes-cluster.it:443/login', {}, httpOptions)
+    return this.http.post<any>('http://' + environment.host + ':' + environment.port + '/login', {}, httpOptions)
       .pipe(map(response => {
 
         if (response['user'] && response['token']) {
