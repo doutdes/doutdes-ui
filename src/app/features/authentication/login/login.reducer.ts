@@ -1,8 +1,8 @@
 import {LOGIN_USER, LOGIN_USER_SUCCESS, LOGIN_USER_ERROR, LOGOUT_USER} from './login.actions';
-import {INITIAL_STATE, LoginState} from './login.model';
+import {LOGIN_INITIAL_STATE, LoginState} from './login.model';
 
 
-export function LoginReducer(state: LoginState = INITIAL_STATE , action): LoginState {
+export function LoginReducer(state: LoginState = LOGIN_INITIAL_STATE , action): LoginState {
 
   switch (action.type) {
     case LOGIN_USER:

@@ -1,18 +1,12 @@
-import {Injectable, NgModuleRef} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {Observable} from 'rxjs';
-import {NgRedux, select} from '@angular-redux/store';
-import {AuthenticationService} from '../../features/authentication/authentication.service';
-import {map, take} from 'rxjs/internal/operators';
-import {IAppState} from '../store/model';
 import {StoreService} from '../_services/store.service';
 import {GlobalEventsManagerService} from '../_services/global-event-manager.service';
 
 @Injectable()
 
 export class IsAuthenticatedGuard implements CanActivate {
-  @select('login') loginState;
-
   constructor(private router: Router, private localStore: StoreService, private eventEmitter: GlobalEventsManagerService) {
   }
 

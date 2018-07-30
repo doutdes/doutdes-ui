@@ -1,7 +1,7 @@
 <nav aria-label="breadcrumb" class="" *ngIf="isUserLoggedIn">
   <ol class="breadcrumb border border-info border-left-0 border-right-0">
-    <li class="breadcrumb-item"><a href="#">Home</a></li>
-    <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Facebook</li>
+    <li *ngFor="let item of breadList" class="breadcrumb-item">
+      <a [routerLink]="[item.url]">{{item.label}}</a>
+    </li>
   </ol>
 </nav>

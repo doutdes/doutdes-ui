@@ -4,6 +4,7 @@ import {CoreModule} from '../../../core/core.module';
 import {FeaturePreferencesApiKeysComponent} from './api-keys.component';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FeaturePreferencesApiKeysRegisterFormComponent} from './register-form/register-form.component';
+import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import {FeaturePreferencesApiKeysRegisterFormComponent} from './register-form/re
     CoreModule,
   ],
   providers: [
-    ApiKeysService
+    ApiKeysService,
+    BreadcrumbActions
   ],
   exports: [
     FeaturePreferencesApiKeysComponent,

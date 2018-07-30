@@ -1,15 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {StoreService} from '../../../../shared/_services/store.service';
 import {ApiKeysService} from '../../../../shared/_services/apikeys.service';
 import {Router} from '@angular/router';
+import {BreadcrumbActions} from '../../../../core/breadcrumb/breadcrumb.actions';
+import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
 
 @Component({
   selector: 'app-feature-preferences-apikeys-register-form',
   templateUrl: './register-form.component.html'
 })
 
-export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
+export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, OnDestroy {
 
   registrationForm: FormGroup;
   selectedService = 0;
@@ -17,17 +19,23 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
   submitted = false;
   error400 = false;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private store: StoreService,
-    private apiKeysService: ApiKeysService,
-    private router: Router) {
+  constructor(private formBuilder: FormBuilder,
+              private store: StoreService,
+              private apiKeysService: ApiKeysService,
+              private router: Router,
+              private breadcrumbActions: BreadcrumbActions) {
   }
 
   ngOnInit(): void {
     this.registrationForm = this.formBuilder.group({
       api_key: ['', Validators.compose([Validators.maxLength(100), Validators.required])]
     });
+
+    this.addBreadcrumb();
+  }
+
+  ngOnDestroy(): void {
+    this.removeBreadcrumb();
   }
 
   get f() {
@@ -56,12 +64,26 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit {
         this.router.navigate(['/preferences/api-keys']);
       }, error => {
         this.loading = false;
-        if(error.status === 400) {
+        if (error.status === 400) {
           this.error400 = true;
         }
         console.log(error.status);
       });
+  }
 
+  addBreadcrumb() {
+    const bread = [] as Breadcrumb[];
+
+    bread.push(new Breadcrumb('Home', '/'));
+    bread.push(new Breadcrumb('Preferences', '/preferences/'));
+    bread.push(new Breadcrumb('Api Keys', '/preferences/api-keys/'));
+    bread.push(new Breadcrumb('Insert', '/preferences/api-keys/insert'));
+
+    this.breadcrumbActions.updateBreadcrumb(bread);
+  }
+
+  removeBreadcrumb() {
+    this.breadcrumbActions.deleteBreadcrumb();
   }
 }
 
