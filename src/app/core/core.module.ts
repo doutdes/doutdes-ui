@@ -24,11 +24,9 @@ import {BreadcrumbsModule, BreadcrumbsService} from 'ng6-breadcrumbs';
     RouterModule,
     SharedModule,
     Ng2GoogleChartsModule,
-    BreadcrumbsModule
   ],
   providers: [
     LoginActions,
-    BreadcrumbsService
   ],
   exports: [
     HeaderComponent,
@@ -37,7 +35,6 @@ import {BreadcrumbsModule, BreadcrumbsService} from 'ng6-breadcrumbs';
     BreadcrumbComponent,
     CardComponent,
     EmptycardComponent,
-    BreadcrumbsModule
   ]
 })
 
