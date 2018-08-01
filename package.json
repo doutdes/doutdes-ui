@@ -2,7 +2,7 @@
   "name": "doutdes-ui",
   "version": "1.0.0",
   "description": "DoUtDes User Interface",
-  "homepage": "http://www.doutdes-cluster.it",
+  "homepage": "http://' + environment.host + ':' + environment.port + '",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

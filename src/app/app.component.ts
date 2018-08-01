@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {Router, NavigationEnd} from '@angular/router';
+import {environment} from '../environments/environment';
 
 @Component({
   // tslint:disable-next-line
@@ -8,7 +9,8 @@ import { Router, NavigationEnd } from '@angular/router';
   // templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-  constructor(private router: Router) { }
+  constructor(private router: Router) {
+  }
 
   ngOnInit() {
     this.router.events.subscribe((evt) => {
