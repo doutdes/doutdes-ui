@@ -12,7 +12,7 @@ export interface LoginState {
   isLoading: boolean;
 }
 
-export const INITIAL_STATE: LoginState = {
+export const LOGIN_INITIAL_STATE: LoginState = {
   token: null,
   user: null,
   hasError: false,

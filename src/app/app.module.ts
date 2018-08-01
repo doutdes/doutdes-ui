@@ -1,11 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { APP_BASE_HREF } from '@angular/common';
-
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
-
 import { AppComponent } from './app.component';
-
 
 // Import routing module
 import { AppRoutingModule } from './app.routing';
@@ -23,7 +19,6 @@ import {StoreModule} from './shared/store/store.module';
 import {StoreService} from './shared/_services/store.service';
 import {GlobalEventsManagerService} from './shared/_services/global-event-manager.service';
 import {JwtInterceptor} from './shared/jwt.interceptor';
-import {environment} from '../environments/environment';
 
 @NgModule({
   imports: [
@@ -37,7 +32,7 @@ import {environment} from '../environments/environment';
     ChartsModule,
     HttpClientModule,
     AlertModule.forRoot(),
-    StoreModule
+    StoreModule,
   ],
   declarations: [
     AppComponent,
@@ -46,8 +41,8 @@ import {environment} from '../environments/environment';
     StoreService,
     GlobalEventsManagerService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    { provide: APP_BASE_HREF, useValue: environment.baseHref },
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [ AppComponent ],
+  exports: []
 })
 export class AppModule { }

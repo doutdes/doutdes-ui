@@ -1,21 +1,27 @@
-///<reference path="../../../../../node_modules/@angular/core/src/metadata/lifecycle_hooks.d.ts"/>
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
+import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
+import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 
 @Component({
   selector: 'app-feature-preferences-api-keys',
   templateUrl: './api-keys.component.html'
 })
 
-export class FeaturePreferencesApiKeysComponent implements OnInit {
+export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   apiKeysList$: Array<any> = [];
 
-  constructor(private apiKeyService: ApiKeysService) {
+  constructor(private apiKeyService: ApiKeysService, private breadcrumbActions: BreadcrumbActions) {
   }
 
   ngOnInit(): void {
     this.updateList();
+    this.addBreadcrumb();
+  }
+
+  ngOnDestroy(): void {
+    this.removeBreadcrumb();
   }
 
   updateList(): void {
@@ -45,6 +51,20 @@ export class FeaturePreferencesApiKeysComponent implements OnInit {
       }, error => {
         console.log(error);
       });
+  }
+
+  addBreadcrumb() {
+    const bread = [] as Breadcrumb[];
+
+    bread.push(new Breadcrumb('Home', '/'));
+    bread.push(new Breadcrumb('Preferences', '/preferences/'));
+    bread.push(new Breadcrumb('Api Keys', '/preferences/api-keys/'));
+
+    this.breadcrumbActions.updateBreadcrumb(bread);
+  }
+
+  removeBreadcrumb() {
+    this.breadcrumbActions.deleteBreadcrumb();
   }
 
 }

@@ -9,6 +9,7 @@ import {SidebarComponent} from './sidebar/sidebar.component';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {CardComponent} from './card/card.component';
 import {EmptycardComponent} from './card/emptycard.component';
+import {BreadcrumbsModule, BreadcrumbsService} from 'ng6-breadcrumbs';
 
 @NgModule({
   declarations: [
@@ -22,10 +23,10 @@ import {EmptycardComponent} from './card/emptycard.component';
   imports: [
     RouterModule,
     SharedModule,
-    Ng2GoogleChartsModule
+    Ng2GoogleChartsModule,
   ],
   providers: [
-    LoginActions
+    LoginActions,
   ],
   exports: [
     HeaderComponent,
@@ -33,7 +34,7 @@ import {EmptycardComponent} from './card/emptycard.component';
     SidebarComponent,
     BreadcrumbComponent,
     CardComponent,
-    EmptycardComponent
+    EmptycardComponent,
   ]
 })
 

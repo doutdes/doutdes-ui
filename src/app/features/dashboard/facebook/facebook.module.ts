@@ -8,6 +8,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {ChartsModule} from 'ng2-charts/ng2-charts';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
+import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { Ng2GoogleChartsModule } from 'ng2-google-charts';
     HttpClientModule
   ],
   providers: [
-    FacebookService
+    FacebookService,
+    BreadcrumbActions
   ],
   exports: [
     FeatureDashboardFacebookComponent

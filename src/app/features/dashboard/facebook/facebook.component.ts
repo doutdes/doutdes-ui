@@ -1,13 +1,17 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {first} from 'rxjs/internal/operators';
 import {FacebookService} from '../../../shared/_services/facebook.service';
+import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
+import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 
 @Component({
   selector: 'app-feature-dashboard-facebook',
   templateUrl: './facebook.component.html'
 })
 
-export class FeatureDashboardFacebookComponent implements OnInit {
+export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
+
+  private breadcrumb: any[];
 
   // Fans chart
   fanChartArray: Array<any> = [];
@@ -20,7 +24,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
   public geoChartData = null;
   public pieChartData = null;
 
-  constructor(private facebookService: FacebookService) {
+  constructor(private facebookService: FacebookService, private breadcrumbActions: BreadcrumbActions) {
   }
 
   ngOnInit(): void {
@@ -28,6 +32,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
     this.initImpressionWidget();
     this.initGeomapWidget();
     this.initPieWidget();
+    this.addBreadcrumb();
   }
 
   initFanWidget(): void {
@@ -77,7 +82,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
           for (let i = 0; i < data.length; i++) {
 
             //if (i % 2 === 0) {
-              this.impressChartArray.push([new Date(data[i].end_time), data[i].value]);
+            this.impressChartArray.push([new Date(data[i].end_time), data[i].value]);
             //}
           }
 
@@ -85,7 +90,7 @@ export class FeatureDashboardFacebookComponent implements OnInit {
             chartType: 'AreaChart',
             dataTable: header.concat(this.impressChartArray),
             options: {
-              chartArea: {left: 30, right: 0, height: 280, top:0},
+              chartArea: {left: 30, right: 0, height: 280, top: 0},
               legend: {position: 'none'},
               height: 310,
               explorer: {},
@@ -166,4 +171,21 @@ export class FeatureDashboardFacebookComponent implements OnInit {
       );
   }
 
+  addBreadcrumb() {
+    const bread = [] as Breadcrumb[];
+
+    bread.push(new Breadcrumb('Home', '/'));
+    bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
+    bread.push(new Breadcrumb('Facebook', '/dashboard/facebook/'));
+
+    this.breadcrumbActions.updateBreadcrumb(bread);
+  }
+
+  removeBreadcrumb() {
+    this.breadcrumbActions.deleteBreadcrumb();
+  }
+
+  ngOnDestroy() {
+    this.removeBreadcrumb();
+  }
 }
