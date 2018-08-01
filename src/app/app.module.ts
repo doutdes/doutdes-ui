@@ -45,7 +45,7 @@ import {environment} from '../environments/environment';
   providers: [
     StoreService,
     GlobalEventsManagerService,
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
   ],
   bootstrap: [ AppComponent ]
 })
