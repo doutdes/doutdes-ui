@@ -5,7 +5,6 @@
 
 export const environment = {
   production: false,
-  baseHref: '/',
   host: 'localhost',
   port: '443'
 };
