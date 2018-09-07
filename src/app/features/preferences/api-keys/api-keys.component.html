@@ -1,23 +1,36 @@
-<h1>Api Keys list</h1>
+<div class="row">
+  <h1>Api Keys list</h1>
+  <div class="col-md-12">
+    <div class="panel-body">
+      <!--<div class="table-responsive">-->
+        <table class="table table-hover" *ngIf="apiKeysList$.length !== 0; else no_content">
+          <thead>
+          <tr>
+            <th scope="col" style="width: 10%">Service</th>
+            <th scope="col" style="width: 70%">Token</th>
+            <th scope="col" style="width: 10%"></th>
+            <th scope="col" style="width: 10%"></th>
+          </tr>
+          </thead>
+          <tbody *ngFor="let key of apiKeysList$">
+          <tr>
+            <td>{{serviceName(key.service)}}</td>
+            <td>{{key.api_key}}</td>
+            <td>
+              <button type="button" class="btn btn-primary">Update</button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-danger" (click)="deleteService(key.service)">Delete</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      <!--</div>-->
+    </div>
+  </div>
+</div>
 
-<table class="table table-hover" *ngIf="apiKeysList$.length !== 0; else no_content">
-  <thead>
-  <tr>
-    <th scope="col">Service</th>
-    <th scope="col">Token</th>
-    <th scope="col"></th>
-    <th scope="col"></th>
-  </tr>
-  </thead>
-  <tbody *ngFor="let key of apiKeysList$">
-    <tr>
-      <td>{{serviceName(key.service)}}</td>
-      <td>{{key.api_key}}</td>
-      <td><button type="button" class="btn btn-primary">Update</button></td>
-      <td><button type="button" class="btn btn-danger" (click)="deleteService(key.service)">Delete</button></td>
-    </tr>
-  </tbody>
-</table>
+
 <ng-template #no_content>
   <h4>There are not still keys. Insert a new one!</h4>
 </ng-template>

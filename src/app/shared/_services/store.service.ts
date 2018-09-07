@@ -31,6 +31,18 @@ export class StoreService {
     localStorage.removeItem('id');
   }
 
+  setUserNames(name: string){
+    localStorage.setItem('usernames', name);
+  }
+
+  getUserNames(){
+    return localStorage.getItem('usernames');
+  }
+
+  removeUserNames(){
+    localStorage.removeItem('usernames');
+  }
+
   clear() {
     localStorage.clear();
   }

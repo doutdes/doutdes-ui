@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { APP_BASE_HREF } from '@angular/common';
+import {APP_BASE_HREF, HashLocationStrategy, LocationStrategy} from '@angular/common';
 
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
@@ -46,6 +46,7 @@ import {environment} from '../environments/environment';
     StoreService,
     GlobalEventsManagerService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
   ],
   bootstrap: [ AppComponent ]
 })

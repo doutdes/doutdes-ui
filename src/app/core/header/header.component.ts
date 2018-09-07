@@ -18,6 +18,7 @@ import {GlobalEventsManagerService} from '../../shared/_services/global-event-ma
 export class HeaderComponent {
 
   isUserLoggedIn = false;
+  username: string;
 
   constructor(
     private actions: LoginActions,
@@ -27,6 +28,7 @@ export class HeaderComponent {
   ) {
     this.globalEventService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value;
+      this.username = this.localStore.getUserNames();
     });
   }
 
