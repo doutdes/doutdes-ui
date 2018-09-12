@@ -3,7 +3,13 @@ import {Component, HostBinding, Input, OnInit} from '@angular/core';
 @Component({
   selector: 'app-emptycard',
   template: `
-      <div class="rounded" style="border:2px dashed #aaa; height:396px"></div>
+      <div class="rounded" style="border:2px dashed #aaa; height:396px">
+        <div class="row h-100">
+          <div class="col-sm-12 my-auto text-center">
+            <i class="fas fa-plus add-card"></i>
+          </div>
+        </div>
+      </div>
   `
 })
 

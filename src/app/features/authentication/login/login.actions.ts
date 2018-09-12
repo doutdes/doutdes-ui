@@ -30,6 +30,8 @@ export class LoginActions {
     this.ngRedux.dispatch({ type: LOGIN_USER_SUCCESS, user: user, token: token });
     this.storeLocal.setToken(token);
     this.storeLocal.setId(user.id);
+    this.storeLocal.setUserNames(user.first_name + ' ' + user.last_name);
+
     this.eventManager.isUserLoggedIn.next(true);
   }
 
@@ -39,9 +41,12 @@ export class LoginActions {
 
   logoutUser() {
     this.ngRedux.dispatch({ type: LOGOUT_USER });
+
     this.storeLocal.removeToken();
     this.storeLocal.removeId();
+    this.storeLocal.removeUserNames();
     this.storeLocal.clear();
+
     this.eventManager.isUserLoggedIn.next(false);
 
     this.router.navigate(['/authentication/login']);
