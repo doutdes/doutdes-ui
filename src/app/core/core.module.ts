@@ -9,6 +9,8 @@ import {SidebarComponent} from './sidebar/sidebar.component';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {CardComponent} from './card/card.component';
 import {EmptycardComponent} from './card/emptycard.component';
+import {BsModalService, ModalModule} from 'ngx-bootstrap';
+import { SelectDropDownModule } from 'ngx-select-dropdown';
 
 @NgModule({
   declarations: [
@@ -23,9 +25,12 @@ import {EmptycardComponent} from './card/emptycard.component';
     RouterModule,
     SharedModule,
     Ng2GoogleChartsModule,
+    ModalModule.forRoot(),
+    SelectDropDownModule
   ],
   providers: [
     LoginActions,
+    BsModalService
   ],
   exports: [
     HeaderComponent,

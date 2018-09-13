@@ -81,9 +81,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           const header = [['Date', 'Impressions']];
           for (let i = 0; i < data.length; i++) {
 
-            //if (i % 2 === 0) {
+            // if (i % 2 === 0) {
             this.impressChartArray.push([new Date(data[i].end_time), data[i].value]);
-            //}
+            // }
           }
 
           this.impressChartData = {
