@@ -9,7 +9,6 @@ import {SidebarComponent} from './sidebar/sidebar.component';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {CardComponent} from './card/card.component';
 import {EmptycardComponent} from './card/emptycard.component';
-import {BreadcrumbsModule, BreadcrumbsService} from 'ng6-breadcrumbs';
 
 @NgModule({
   declarations: [
