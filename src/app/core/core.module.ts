@@ -11,6 +11,7 @@ import {CardComponent} from './card/card.component';
 import {EmptycardComponent} from './card/emptycard.component';
 import {BsModalService, ModalModule} from 'ngx-bootstrap';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
+import {ChartsService} from '../shared/_services/charts.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
   ],
   providers: [
     LoginActions,
-    BsModalService
+    BsModalService,
+    ChartsService
   ],
   exports: [
     HeaderComponent,

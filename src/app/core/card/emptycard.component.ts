@@ -1,6 +1,8 @@
 import {Component, HostBinding, Input, OnInit, TemplateRef} from '@angular/core';
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
+import {ChartsService} from '../../shared/_services/charts.service';
+import {first} from 'rxjs/operators';
 
 @Component({
   selector: 'app-emptycard',
@@ -22,19 +24,28 @@ export class EmptycardComponent implements OnInit {
     search: true
   };
 
-  dropdownOptions = [
-    'Fb Page Fans',
-    'Geo Chart'
-  ];
+  dropdownOptions = [];
 
   constructor(
-    private modalService: BsModalService
+    private modalService: BsModalService,
+    private chartService: ChartsService
   ) {
 
   }
 
   ngOnInit() {
     this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
+
+    this.chartService.getChartsByType(1)
+      .pipe(first())
+      .subscribe(charts => {
+        charts.forEach(el => {
+          this.dropdownOptions.push(el.title);
+        });
+      }, error1 => {
+        console.log(error1);
+        console.log('Error taking charts by type');
+      });
   }
 
   openModal(template: TemplateRef<any>) {

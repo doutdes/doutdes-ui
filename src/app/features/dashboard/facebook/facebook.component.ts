@@ -28,6 +28,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    // Query per recuperare i grafici di questo determinato servizio per l'utente in uso
+    // Disegno successivo dei grafici scelti
+
     this.initFanWidget();
     this.initImpressionWidget();
     this.initGeomapWidget();
@@ -187,5 +191,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
+  }
+
+  // Get charts by dashboard type and user
+  loadDashboard() {
+
   }
 }
