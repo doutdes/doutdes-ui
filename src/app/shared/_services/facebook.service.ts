@@ -14,17 +14,17 @@ export class FacebookService {
 
   fbfancount() {
     const headers = this.getAuthorization();
-    return this.http.get<FacebookFanCount[]>('http://' + environment.host + ':' + environment.port + '/fbfancount', {headers});
+    return this.http.get<FacebookFanCount[]>('http://' + environment.host + ':' + environment.port + '/fb/fancount', {headers});
   }
 
   fbpageimpressions() {
     const headers = this.getAuthorization();
-    return this.http.get<FacebookImpressions[]>('http://' + environment.host + ':' + environment.port + '/fbpageimpressions', {headers});
+    return this.http.get<FacebookImpressions[]>('http://' + environment.host + ':' + environment.port + '/fb/pageimpressions', {headers});
   }
 
   fbfancountry() {
     const headers = this.getAuthorization();
-    return this.http.get<FaceBookFanCountry[]>('http://' + environment.host + ':' + environment.port + '/fbfancountry', {headers});
+    return this.http.get<FaceBookFanCountry[]>('http://' + environment.host + ':' + environment.port + '/fb/fancountry', {headers});
   }
 
   getAuthorization() {
