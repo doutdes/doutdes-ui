@@ -28,7 +28,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
 
   ngOnInit(): void {
     this.registrationForm = this.formBuilder.group({
-      api_key: ['', Validators.compose([Validators.maxLength(100), Validators.required])]
+      api_key: ['', Validators.compose([Validators.maxLength(200), Validators.required])]
     });
 
     this.addBreadcrumb();
