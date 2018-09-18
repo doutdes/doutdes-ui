@@ -31,11 +31,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     // Query per recuperare i grafici di questo determinato servizio per l'utente in uso
     // Disegno successivo dei grafici scelti
+    this.loadDashboard();
 
-    this.initFanWidget();
-    this.initImpressionWidget();
-    this.initGeomapWidget();
-    this.initPieWidget();
+    // this.initFanWidget();
+    // this.initImpressionWidget();
+    // this.initGeomapWidget();
+    // this.initPieWidget();
     this.addBreadcrumb();
   }
 
@@ -195,6 +196,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   // Get charts by dashboard type and user
   loadDashboard() {
-
+    // TODO Call the dashboard type
   }
 }

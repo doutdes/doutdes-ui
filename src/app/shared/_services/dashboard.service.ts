@@ -11,6 +11,22 @@ export class DashboardService {
   ) {
   }
 
+  // TODO Format calls
 
+  getDashboardByType() {
+
+  }
+
+  getUserDashboards() {
+
+  }
+
+  getDashboardCharsByType() {
+
+  }
+
+  addChartToDashboard() {
+
+  }
 
 }
