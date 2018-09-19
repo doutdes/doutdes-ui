@@ -1,0 +1,51 @@
+<div class="rounded" style="border:2px dashed #aaa; height:396px">
+  <div class="row h-100">
+    <div class="col-sm-12 my-auto text-center">
+      <i class="fas fa-plus add-card" (click)="openModal(addChart)"></i>
+    </div>
+  </div>
+</div>
+
+<ng-template #addChart>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Add Chart</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Title</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Chart</label>
+        <div class="col-sm-10">
+          <ngx-select-dropdown formControlName="chart"
+                               [multiple]="false" [(value)]="chartSelected" [config]="config"
+                               [options]="dropdownOptions">
+          </ngx-select-dropdown>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Color</label>
+        <div class="col-sm-10">
+          <input type="color" class="form-control" style="min-height: 30px">
+        </div>
+      </div>
+
+
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success">Add</button>
+    <button type="button" class="btn btn-danger" (click)="closeModal()">Cancel</button>
+  </div>
+</ng-template>

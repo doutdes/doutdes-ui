@@ -28,10 +28,15 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.initFanWidget();
-    this.initImpressionWidget();
-    this.initGeomapWidget();
-    this.initPieWidget();
+
+    // Query per recuperare i grafici di questo determinato servizio per l'utente in uso
+    // Disegno successivo dei grafici scelti
+    this.loadDashboard();
+
+    // this.initFanWidget();
+    // this.initImpressionWidget();
+    // this.initGeomapWidget();
+    // this.initPieWidget();
     this.addBreadcrumb();
   }
 
@@ -81,9 +86,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           const header = [['Date', 'Impressions']];
           for (let i = 0; i < data.length; i++) {
 
-            //if (i % 2 === 0) {
+            // if (i % 2 === 0) {
             this.impressChartArray.push([new Date(data[i].end_time), data[i].value]);
-            //}
+            // }
           }
 
           this.impressChartData = {
@@ -187,5 +192,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
+  }
+
+  // Get charts by dashboard type and user
+  loadDashboard() {
+    // TODO Call the dashboard type
   }
 }
