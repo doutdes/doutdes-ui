@@ -1,0 +1,28 @@
+<div class="rounded-top" [ngStyle]="{'backgroundColor': background, 'color': color}" style="padding:10px">
+  <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
+  <span style="font-size:14pt">{{dashChart.title}}</span>
+  <i (click)="openModal(deleteChart)" class="fas fa-times float-right removeChart"></i>
+</div>
+<div style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
+  <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
+  </google-chart>
+</div>
+
+
+<ng-template #deleteChart>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">{{dashChart.title}} dismissal</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    Do you really want to remove this chart from the dashboard?
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="closeModal()">No</button>
+    <button type="button" class="btn btn-success" (click)="removeChart(dashChart.dashboard_id, dashChart.chart_id)">Yes</button>
+  </div>
+</ng-template>

@@ -19,7 +19,7 @@ export class ChartsCallsService {
     }
   }
 
-  public formatDataByChartId(ID, data) {
+  public formatDataByChartId(ID, data) { // TODO Take color and obtain a palette
     let dataFormat;
     let header;
     let chartArray = [];

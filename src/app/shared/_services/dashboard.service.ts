@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {StoreService} from './store.service';
-import {FacebookFanCount} from '../_models/FacebookData';
 import {environment} from '../../../environments/environment';
 import {DashboardCharts} from '../_models/DashboardCharts';
 
@@ -29,8 +28,24 @@ export class DashboardService {
 
   }
 
-  addChartToDashboard() {
+  addChartToDashboard(chart) {
+    const headers = this.getAuthorization();
+    return this.http.post('http://' + environment.host + ':' + environment.port + '/dashboards/addChartToDashboard/', {chart}, {headers});
+  }
 
+  removeChart(dashboard_id, chart_id) {
+
+    const headers = this.getAuthorization();
+
+    const body = {
+      dashboard_id: dashboard_id,
+      chart_id: chart_id
+    };
+
+    return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + '/dashboards/removeChartFromDashboard', {
+      headers,
+      body
+    });
   }
 
   getAuthorization() {

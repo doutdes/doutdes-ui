@@ -5,6 +5,7 @@ export interface DashboardCharts {
   chart_id: number;
   title: string;
   color: string;
-  chart: Chart;
-  chartdata?: any;
+  chart?: Chart;
+  chartData?: any;
+  position?: number;
 }

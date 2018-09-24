@@ -1,36 +1,36 @@
-import {Component, HostBinding, Input, OnInit, ViewChild} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {Component, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {DashboardCharts} from '../../shared/_models/DashboardCharts';
+import {DashboardService} from '../../shared/_services/dashboard.service';
+import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 
 @Component({
   selector: 'app-card',
-  template: `
-    <div class="rounded-top" [ngStyle]="{'backgroundColor': background, 'color': color}" style="padding:10px">
-      <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
-      <span style="font-size:14pt">{{title}}</span>
-      <i class="far fa-2x fa-window-close float-right"></i>
-    </div>
-    <div style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
-      <google-chart id="{{chartType}}" style="height:310px" [data]="chartData" #mychart (window:resize)="chartResizer()">
-      </google-chart>
-    </div>
-  `
+  templateUrl: './card.component.html',
+  styleUrls: ['./card.component.scss']
 })
 
 export class CardComponent implements OnInit {
-  @Input() title = 'empty';
   @Input() background = '#000';
-  @Input() color = '#fff';
   @Input() icon: string;
-  @Input() chartData: any;
-  @Input() chartType: string;
   @Input() xlOrder: string;
   @Input() lgOrder: string;
+  @Input() dashChart: DashboardCharts;
   @HostBinding('class') elementClass = 'col-xl-4 col-lg-6 pt-3';
   @ViewChild('mychart') mychart;
 
+  color = '#fff';
+  modalRef: BsModalRef;
+
+  constructor(
+    private modalService: BsModalService,
+    private dashboardService: DashboardService,
+    private eventManager: GlobalEventsManagerService) {
+  }
+
   ngOnInit() {
 
-    this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
+    this.elementClass = this.elementClass + ' order-xl-' + this.dashChart.position + ' order-lg-' + this.dashChart.position;
 
     // Handling icon nicknames
     switch (this.icon) {
@@ -70,4 +70,27 @@ export class CardComponent implements OnInit {
   chartResizer(): void {
     this.mychart.redraw();
   }
+
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  closeModal(): void {
+    this.modalRef.hide();
+  }
+
+  removeChart(dashboard_id, chart_id){
+    this.dashboardService.removeChart(dashboard_id, chart_id)
+      .subscribe(deleted => {
+
+        this.eventManager.refreshDashboard.next(true);
+        this.closeModal();
+
+      }, error => {
+        console.log(error);
+        console.log("Cannot delete chart from dashboard");
+      })
+  }
+
+
 }

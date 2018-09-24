@@ -4,4 +4,5 @@ import {BehaviorSubject} from 'rxjs';
 @Injectable()
 export class GlobalEventsManagerService {
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public refreshDashboard: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 }
