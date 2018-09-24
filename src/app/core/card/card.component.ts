@@ -1,4 +1,5 @@
 import {Component, HostBinding, Input, OnInit, ViewChild} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
 
 @Component({
   selector: 'app-card',
@@ -6,6 +7,7 @@ import {Component, HostBinding, Input, OnInit, ViewChild} from '@angular/core';
     <div class="rounded-top" [ngStyle]="{'backgroundColor': background, 'color': color}" style="padding:10px">
       <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
       <span style="font-size:14pt">{{title}}</span>
+      <i class="far fa-2x fa-window-close float-right"></i>
     </div>
     <div style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
       <google-chart id="{{chartType}}" style="height:310px" [data]="chartData" #mychart (window:resize)="chartResizer()">

@@ -9,6 +9,8 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
 import {ChartsModule} from 'ng2-charts/ng2-charts';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
+import {DashboardService} from '../../../shared/_services/dashboard.service';
+import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 
 
 @NgModule({
@@ -26,6 +28,8 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
   ],
   providers: [
     FacebookService,
+    DashboardService,
+    ChartsCallsService,
     BreadcrumbActions
   ],
   exports: [
