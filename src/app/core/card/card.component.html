@@ -1,7 +1,11 @@
 <div class="rounded-top" [ngStyle]="{'backgroundColor': background, 'color': color}" style="padding:10px">
   <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
   <span style="font-size:14pt">{{dashChart.title}}</span>
-  <i (click)="openModal(deleteChart)" class="fas fa-times float-right removeChart"></i>
+
+  <!--<i class="fas fa-sort-down fa-2x float-right icon-card"></i>-->
+
+  <!--<i (click)="openModal(deleteChart)" class="fas fa-times float-right icon-card"></i>-->
+  <!--<i class="fas fa-cog float-right mr-1 icon-card"></i>-->
 </div>
 <div style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
   <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
@@ -23,6 +27,8 @@
 
   <div class="modal-footer">
     <button type="button" class="btn btn-danger" (click)="closeModal()">No</button>
-    <button type="button" class="btn btn-success" (click)="removeChart(dashChart.dashboard_id, dashChart.chart_id)">Yes</button>
+    <button type="button" class="btn btn-success" (click)="removeChart(dashChart.dashboard_id, dashChart.chart_id)">
+      Yes
+    </button>
   </div>
 </ng-template>
