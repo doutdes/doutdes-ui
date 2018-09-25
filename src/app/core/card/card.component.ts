@@ -79,7 +79,7 @@ export class CardComponent implements OnInit {
     this.modalRef.hide();
   }
 
-  removeChart(dashboard_id, chart_id){
+  removeChart(dashboard_id, chart_id): void {
     this.dashboardService.removeChart(dashboard_id, chart_id)
       .subscribe(deleted => {
 

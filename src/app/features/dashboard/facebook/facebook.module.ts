@@ -12,6 +12,7 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {BsDropdownModule} from 'ngx-bootstrap';
 
 
 @NgModule({

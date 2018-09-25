@@ -9,7 +9,7 @@ import {SidebarComponent} from './sidebar/sidebar.component';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {CardComponent} from './card/card.component';
 import {EmptycardComponent} from './card/emptycard.component';
-import {BsModalService, ModalModule} from 'ngx-bootstrap';
+import {BsDropdownModule, BsModalService, ModalModule} from 'ngx-bootstrap';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import {ChartsService} from '../shared/_services/charts.service';
 import {DashboardService} from '../shared/_services/dashboard.service';
@@ -28,6 +28,7 @@ import {GlobalEventsManagerService} from '../shared/_services/global-event-manag
     RouterModule,
     SharedModule,
     Ng2GoogleChartsModule,
+    BsDropdownModule,
     ModalModule.forRoot(),
     SelectDropDownModule
   ],

@@ -1,17 +1,42 @@
-<div class="rounded-top" [ngStyle]="{'backgroundColor': background, 'color': color}" style="padding:10px">
-  <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
-  <span style="font-size:14pt">{{dashChart.title}}</span>
+<div class="container-fluid">
 
-  <!--<i class="fas fa-sort-down fa-2x float-right icon-card"></i>-->
+  <!--<span dropdown class="float-right">-->
+      <!--<a href id="basic-link" dropdownToggle (click)="false" aria-controls="basic-link-dropdown">-->
+        <!--<i class="fas fa-sort-down fa-2x icon-card"></i>-->
+      <!--</a>-->
+      <!--<ul id="basic-link-dropdown" *dropdownMenu class="dropdown-menu " role="menu" aria-labelledby="basic-link">-->
+        <!--&lt;!&ndash;<li role="menuitem"><a class="dropdown-item" href="#">Another action</a></li>&ndash;&gt;-->
+        <!--<li class="dropdown-item" (click)="openModal(deleteChart)">Remove</li>-->
+        <!--<li class="dropdown-item">Update</li>-->
+      <!--</ul>-->
+  <!--</span>-->
 
-  <!--<i (click)="openModal(deleteChart)" class="fas fa-times float-right icon-card"></i>-->
-  <!--<i class="fas fa-cog float-right mr-1 icon-card"></i>-->
+  <div class="btn-group float-right" dropdown>
+    <button id="button-basic" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+            aria-controls="dropdown-basic"><span class="caret"></span>
+    </button>
+    <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
+        role="menu" aria-labelledby="button-basic">
+      <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Remove </li>
+      <li class="dropdown-item"><i class="fas fa-edit"></i> Update</li>
+    </ul>
+  </div>
+
+  <div class="rounded-top" [ngStyle]="{'backgroundColor': background, 'color': color}" style="padding:10px">
+    <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
+    <span style="font-size:14pt">{{dashChart.title}}</span>
+
+    <!--<i class="fas fa-sort-down fa-2x float-right icon-card"></i>-->
+
+    <!--<i (click)="openModal(deleteChart)" class="fas fa-times float-right icon-card"></i>-->
+    <!--<i class="fas fa-cog float-right mr-1 icon-card"></i>-->
+  </div>
+  <div style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
+    <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
+    </google-chart>
+  </div>
+
 </div>
-<div style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
-  <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
-  </google-chart>
-</div>
-
 
 <ng-template #deleteChart>
   <div class="modal-header">
