@@ -92,5 +92,8 @@ export class CardComponent implements OnInit {
       })
   }
 
+  updateChart(): void {
+
+  }
 
 }
