@@ -1,27 +1,12 @@
-<div class="row" style="padding-bottom:30px">
+<div class="row" style="padding-bottom:30px" *ngIf="chartArray$.length > 0">
 
-  <!-- FAN WIDGET -->
-  <app-card title="Page fans" background="lightblue" icon="facebook" chartType="areachart" [chartData]="fanChartData"
-            [xlOrder]="1"
-            [lgOrder]="1"></app-card>
+  <div *ngFor="let chart of chartArray$" class="col-md-4">
+    <app-card background="{{chart.color}}" icon="facebook" [dashChart]="chart"></app-card>
+  </div>
 
-  <!-- PAGE IMPRESSIONS WIDGET -->
-  <app-card title="Page impressions" background="green" icon="facebook" chartType="areachart" [chartData]="impressChartData"
-            [xlOrder]="2"
-            [lgOrder]="2"></app-card>
+  <app-emptycard class="col-md-4" [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
 
-  <!-- GEOMAP WIDGET -->
-  <app-card title="Geomap" background="red" icon="facebook" chartType="geochart" [chartData]="geoChartData"
-            [xlOrder]="4"
-            [lgOrder]="3"></app-card>
 
-  <!-- TOP COUNTRIES WIDGET -->
-  <app-card title="Top countries" background="peach" icon="facebook" chartType="piechart" [chartData]="pieChartData"
-            [xlOrder]="5"
-            [lgOrder]="4"></app-card>
-
-  <app-emptycard [xlOrder]="3" [lgOrder]="5"></app-emptycard>
-  <app-emptycard [xlOrder]="6" [lgOrder]="6"></app-emptycard>
 
 </div>
 

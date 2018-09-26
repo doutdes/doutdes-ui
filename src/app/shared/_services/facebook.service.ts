@@ -27,7 +27,7 @@ export class FacebookService {
     return this.http.get<FaceBookFanCountry[]>('http://' + environment.host + ':' + environment.port + '/fb/fancountry', {headers});
   }
 
-  getAuthorization() {
+  private getAuthorization() {
     return new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`);
