@@ -20,17 +20,23 @@ export class DashboardService {
     return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardChartsByType/' + type, {headers});
   }
 
-  getUserDashboards() {
-
-  }
-
-  getDashboardCharsByType() {
-
-  }
+  // getUserDashboards() {
+  //
+  // }
+  //
+  // getDashboardCharsByType() {
+  //
+  // }
 
   addChartToDashboard(chart) {
     const headers = this.getAuthorization();
     return this.http.post('http://' + environment.host + ':' + environment.port + '/dashboards/addChartToDashboard/', {chart}, {headers});
+  }
+
+  updateChart(chart)  {
+    const headers = this.getAuthorization();
+    console.log(chart);
+    return this.http.put('http://' + environment.host + ':' + environment.port + '/dashboards/updateChartInDashboard/', {chart}, {headers});
   }
 
   removeChart(dashboard_id, chart_id) {

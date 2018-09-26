@@ -3,6 +3,8 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {first} from 'rxjs/operators';
 
 @Component({
   selector: 'app-card',
@@ -22,7 +24,12 @@ export class CardComponent implements OnInit {
   color = '#fff';
   modalRef: BsModalRef;
 
+  updateChartForm: FormGroup;
+  loading = false;
+  submitted = false;
+
   constructor(
+    private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private eventManager: GlobalEventsManagerService) {
@@ -65,6 +72,37 @@ export class CardComponent implements OnInit {
         break;
       }
     }
+
+    this.updateChartForm = this.formBuilder.group({
+      chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
+      chartColor: [this.dashChart.color, Validators.compose([Validators.maxLength(7), Validators.required])],
+    });
+  }
+
+  get f() {
+    return this.updateChartForm.controls;
+  }
+
+  onSubmit() {
+    this.submitted = true;
+
+
+    if (this.updateChartForm.invalid) {
+      this.loading = false;
+      return;
+    }
+
+    const chart: DashboardCharts = {
+      dashboard_id: this.dashChart.dashboard_id,
+      chart_id: this.dashChart.chart_id,
+      title: this.updateChartForm.value.chartTitle,
+      color: this.updateChartForm.value.chartColor
+    };
+
+    console.log(chart);
+    this.loading = true;
+
+    this.updateChart(chart);
   }
 
   chartResizer(): void {
@@ -92,7 +130,22 @@ export class CardComponent implements OnInit {
       })
   }
 
-  updateChart(): void {
+  updateChart(toUpdate): void {
+    // const toUpdate: DashboardCharts = {
+    //   dashboard_id: dashboard_id,
+    //   chart_id: chart_id,
+    //   title: title,
+    //   color: color
+    // };
+
+    this.dashboardService.updateChart(toUpdate)
+      .subscribe(updated => {
+        this.eventManager.refreshDashboard.next(true);
+        this.closeModal();
+      }, error => {
+        console.log('Error updating the chart');
+        console.log(error);
+      })
 
   }
 

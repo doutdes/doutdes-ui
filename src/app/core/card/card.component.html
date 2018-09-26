@@ -1,16 +1,5 @@
 <div class="container-fluid">
 
-  <!--<span dropdown class="float-right">-->
-      <!--<a href id="basic-link" dropdownToggle (click)="false" aria-controls="basic-link-dropdown">-->
-        <!--<i class="fas fa-sort-down fa-2x icon-card"></i>-->
-      <!--</a>-->
-      <!--<ul id="basic-link-dropdown" *dropdownMenu class="dropdown-menu " role="menu" aria-labelledby="basic-link">-->
-        <!--&lt;!&ndash;<li role="menuitem"><a class="dropdown-item" href="#">Another action</a></li>&ndash;&gt;-->
-        <!--<li class="dropdown-item" (click)="openModal(deleteChart)">Remove</li>-->
-        <!--<li class="dropdown-item">Update</li>-->
-      <!--</ul>-->
-  <!--</span>-->
-
   <div class="btn-group float-right" dropdown>
     <button id="button-basic" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
             aria-controls="dropdown-basic"><span class="caret"></span>
@@ -18,18 +7,13 @@
     <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
         role="menu" aria-labelledby="button-basic">
       <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Remove </li>
-      <li class="dropdown-item"><i class="fas fa-edit"></i> Update</li>
+      <li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Update</li>
     </ul>
   </div>
 
   <div class="rounded-top" [ngStyle]="{'backgroundColor': background, 'color': color}" style="padding:10px">
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
     <span style="font-size:14pt">{{dashChart.title}}</span>
-
-    <!--<i class="fas fa-sort-down fa-2x float-right icon-card"></i>-->
-
-    <!--<i (click)="openModal(deleteChart)" class="fas fa-times float-right icon-card"></i>-->
-    <!--<i class="fas fa-cog float-right mr-1 icon-card"></i>-->
   </div>
   <div style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
@@ -55,5 +39,44 @@
     <button type="button" class="btn btn-success" (click)="removeChart(dashChart.dashboard_id, dashChart.chart_id)">
       Yes
     </button>
+  </div>
+</ng-template>
+
+<ng-template #updateChart>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Update {{dashChart.title}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="updateChartForm" (ngSubmit)="onSubmit()">
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Title</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" formControlName="chartTitle" placeholder="Chart Title"
+                 [ngClass]="{ 'is-invalid': submitted && f.chartTitle.errors }">
+
+          <div *ngIf="this.submitted && f.chartTitle.errors" class="invalid-feedback">
+            <div *ngIf="f.chartTitle.errors.required">The title of the chart is required</div>
+            <div *ngIf="f.chartTitle.errors.maxlength">The title must not be longer than 30 characters</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Color</label>
+        <div class="col-sm-10">
+          <input type="color" class="form-control" style="min-height: 30px" formControlName="chartColor">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Update</button>
+        <button type="button" class="btn btn-danger" (click)="closeModal()">Cancel</button>
+      </div>
+
+    </form>
   </div>
 </ng-template>
