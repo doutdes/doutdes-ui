@@ -45,29 +45,37 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   loadDashboard() {
     this.dashboardService.getDashboardByType(1)
       .subscribe(dashCharts => {
-        let i = 0;
 
-        this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
+        if(dashCharts['dashboard_id']){
+          this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
+        } else {
 
-        dashCharts.forEach(chart => {
-          const chartToPush = chart;
+          let i = 0;
 
-          this.chartsCallService.getDataByChartId(chart.chart_id)
-            .subscribe(data => {
+          this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
 
-              chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
-              chartToPush.position = ++i;
-              this.chartArray$.push(chartToPush);
-            }, error1 => {
-              console.log('Error querying the chart');
-              console.log(error1);
-            });
-        });
+          dashCharts.forEach(chart => {
+            const chartToPush = chart;
+
+            this.chartsCallService.getDataByChartId(chart.chart_id)
+              .subscribe(data => {
+
+                chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
+                chartToPush.position = ++i;
+                this.chartArray$.push(chartToPush);
+              }, error1 => {
+                console.log('Error querying the chart');
+                console.log(error1);
+              });
+          });
+        }
 
       }, error1 => {
         console.log('Error querying the charts of the Facebook Dashboard');
         console.log(error1);
       });
+
+    console.log(this.chartArray$.length);
   }
 
   addBreadcrumb() {

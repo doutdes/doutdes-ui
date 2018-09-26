@@ -6,7 +6,6 @@ import {first} from 'rxjs/operators';
 import {FormBuilder, FormGroup, Validator, Validators} from '@angular/forms';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
-import {Chart} from '../../shared/_models/Chart';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 
 @Component({
@@ -19,7 +18,7 @@ export class EmptycardComponent implements OnInit {
   @Input() xlOrder: string;
   @Input() lgOrder: string;
   @Input() dashboard_data: any;
-  @HostBinding('class') elementClass = 'col-lg-6 col-xl-4 pt-3'; // TODO add order attributes
+  @HostBinding('class') elementClass = 'col-lg-6 col-xl-4 pt-3';
 
   modalRef: BsModalRef;
   chartSelected: any;

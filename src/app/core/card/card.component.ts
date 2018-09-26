@@ -18,7 +18,7 @@ export class CardComponent implements OnInit {
   @Input() xlOrder: string;
   @Input() lgOrder: string;
   @Input() dashChart: DashboardCharts;
-  @HostBinding('class') elementClass = 'col-xl-4 col-lg-6 pt-3';
+  @HostBinding('class') elementClass = 'pt-3';
   @ViewChild('mychart') mychart;
 
   color = '#fff';
@@ -37,7 +37,7 @@ export class CardComponent implements OnInit {
 
   ngOnInit() {
 
-    this.elementClass = this.elementClass + ' order-xl-' + this.dashChart.position + ' order-lg-' + this.dashChart.position;
+    // this.elementClass = this.elementClass + ' order-xl-' + this.dashChart.position + ' order-lg-' + this.dashChart.position;
 
     // Handling icon nicknames
     switch (this.icon) {
