@@ -129,7 +129,7 @@ export class CardComponent implements OnInit {
   updateChart(toUpdate): void {
     this.dashboardService.updateChart(toUpdate)
       .subscribe(updated => {
-        this.eventManager.removeFromDashboard.next(toUpdate.chart_id);
+        this.eventManager.updateChartInDashboard.next(toUpdate);
         this.closeModal();
       }, error => {
         console.log('Error updating the chart');

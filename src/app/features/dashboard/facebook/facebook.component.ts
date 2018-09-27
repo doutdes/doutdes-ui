@@ -37,17 +37,19 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.globalEventService.addChartInDashboard.subscribe(id => {
-      if(id !== 0) { // TODO Api Call for chart by dashboard_id and chart_id
-
+    this.globalEventService.addChartInDashboard.subscribe(chart => {
+      if(chart) {
+        this.addChartToDashboard(chart);
+        this.globalEventService.addChartInDashboard.next(null);
       }
-    })
+    });
 
-    this.globalEventService.updateChartInDashboard.subscribe(id => {
-      if(id !== 0) { // TODO Api Call for chart by dashboard_id and chart_id
-
+    this.globalEventService.updateChartInDashboard.subscribe(chart => {
+      if(chart) { // TODO Api Call for chart by dashboard_id and chart_id
+        const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+        this.chartArray$[index].title = chart.title;
       }
-    })
+    });
 
   }
 
@@ -63,27 +65,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         if(dashCharts['dashboard_id']){
           this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
         } else {
-
-          let i = 0;
-
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
 
-          dashCharts.forEach(chart => {
-            const chartToPush: DashboardCharts = chart;
-
-            this.chartsCallService.getDataByChartId(chart.chart_id)
-              .subscribe(data => {
-
-                chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
-                chartToPush.position = ++i;
-                chartToPush.color = chartToPush.chartData.options.colors[0]
-
-                this.chartArray$.push(chartToPush);
-              }, error1 => {
-                console.log('Error querying the chart');
-                console.log(error1);
-              });
-          });
+          dashCharts.forEach(chart => this.addChartToDashboard(chart));
         }
 
       }, error1 => {
@@ -108,5 +92,21 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
+  }
+
+  addChartToDashboard(chart: DashboardCharts) {
+    const chartToPush: DashboardCharts = chart;
+
+    this.chartsCallService.getDataByChartId(chart.chart_id)
+      .subscribe(data => {
+
+        chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
+        chartToPush.color = chartToPush.chartData.options.colors[0]
+
+        this.chartArray$.push(chartToPush);
+      }, error1 => {
+        console.log('Error querying the chart');
+        console.log(error1);
+      });
   }
 }

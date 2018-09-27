@@ -105,7 +105,7 @@ export class EmptycardComponent implements OnInit {
     this.dashboardService.addChartToDashboard(chart)
       .pipe(first())
       .subscribe(chartInserted => {
-        this.eventEmitter.removeFromDashboard.next(chart.chart_id);
+        this.eventEmitter.addChartInDashboard.next(chart);
         this.insertChartForm.reset();
         this.chartSelected = null;
         this.closeModal();

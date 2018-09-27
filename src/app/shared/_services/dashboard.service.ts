@@ -18,6 +18,11 @@ export class DashboardService {
     return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardChartsByType/' + type, {headers});
   }
 
+  getChartInDashboard(dashboard_id, chart_id) {
+    const headers = this.getAuthorization();
+    return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChart/' + dashboard_id + '/' + chart_id, {headers});
+  }
+
   // getUserDashboards() {
   //
   // }
