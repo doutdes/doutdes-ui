@@ -108,7 +108,12 @@ export class EmptycardComponent implements OnInit {
         this.eventEmitter.addChartInDashboard.next(chart);
         this.insertChartForm.reset();
         this.chartSelected = null;
+
+        this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== chart.chart_id);
+
         this.closeModal();
+
+
       }, error => {
         console.log('Error inserting the chart in the dashboard');
         console.log(error);

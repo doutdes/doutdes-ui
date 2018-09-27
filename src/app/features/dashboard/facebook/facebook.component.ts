@@ -27,7 +27,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private chartsCallService: ChartsCallsService,
     private globalEventService: GlobalEventsManagerService
   ) {
-
     this.globalEventService.removeFromDashboard.subscribe(id => {
       if(id !== 0 ){
         this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
@@ -41,12 +40,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       }
     });
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
-      if(chart) { // TODO Api Call for chart by dashboard_id and chart_id
+      if(chart) {
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
         this.chartArray$[index].title = chart.title;
       }
     });
-
   }
 
   ngOnInit(): void {
