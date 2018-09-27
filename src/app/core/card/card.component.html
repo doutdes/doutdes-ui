@@ -1,0 +1,76 @@
+<div class="container-fluid p-0">
+
+  <div class="btn-group float-right" dropdown>
+    <button id="button-basic" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+            aria-controls="dropdown-basic"><span class="caret"></span>
+    </button>
+    <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
+        role="menu" aria-labelledby="button-basic">
+      <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Remove </li>
+      <li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Update</li>
+    </ul>
+  </div>
+
+  <div class="rounded-top" [ngStyle]="{'backgroundColor': background, 'color': color}" style="padding:10px">
+    <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
+    <span style="font-size:14pt">{{dashChart.title}}</span>
+  </div>
+  <div style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
+    <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
+    </google-chart>
+  </div>
+
+</div>
+
+<ng-template #deleteChart>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">{{dashChart.title}} dismissal</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    Do you really want to remove this chart from the dashboard?
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="closeModal()">No</button>
+    <button type="button" class="btn btn-success" (click)="removeChart(dashChart.dashboard_id, dashChart.chart_id)">
+      Yes
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #updateChart>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Update {{dashChart.title}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="updateChartForm" (ngSubmit)="onSubmit()">
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Title</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" formControlName="chartTitle" placeholder="Chart Title"
+                 [ngClass]="{ 'is-invalid': submitted && f.chartTitle.errors }">
+
+          <div *ngIf="this.submitted && f.chartTitle.errors" class="invalid-feedback">
+            <div *ngIf="f.chartTitle.errors.required">The title of the chart is required</div>
+            <div *ngIf="f.chartTitle.errors.maxlength">The title must not be longer than 30 characters</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Update</button>
+        <button type="button" class="btn btn-danger" (click)="closeModal()">Cancel</button>
+      </div>
+
+    </form>
+  </div>
+</ng-template>

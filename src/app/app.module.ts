@@ -15,7 +15,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { ReactiveFormsModule } from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { AlertModule } from 'ngx-bootstrap/alert';
 
 import {CoreModule} from './core/core.module';
@@ -23,7 +23,6 @@ import {StoreModule} from './shared/store/store.module';
 import {StoreService} from './shared/_services/store.service';
 import {GlobalEventsManagerService} from './shared/_services/global-event-manager.service';
 import {JwtInterceptor} from './shared/jwt.interceptor';
-import {environment} from '../environments/environment';
 
 @NgModule({
   imports: [

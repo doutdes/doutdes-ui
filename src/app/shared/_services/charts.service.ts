@@ -21,7 +21,7 @@ export class ChartsService {
     return this.http.get<Chart[]>('http://' + environment.host + ':' + environment.port + this.chartsPath + 'getByType/' + type, {headers});
   }
 
-  getAuthorization() {
+  private getAuthorization() {
     return new HttpHeaders()
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`);

@@ -1,8 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {first} from 'rxjs/internal/operators';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
+import {DashboardService} from '../../../shared/_services/dashboard.service';
+import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
+import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
 @Component({
   selector: 'app-feature-dashboard-facebook',
@@ -11,168 +14,62 @@ import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 
 export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
-  private breadcrumb: any[];
+  public HARD_DASH_DATA = {
+    dashboard_type: 1,
+    dashboard_id: null
+  };
+  public chartArray$: Array<DashboardCharts> = [];
 
-  // Fans chart
-  fanChartArray: Array<any> = [];
+  constructor(
+    private facebookService: FacebookService,
+    private breadcrumbActions: BreadcrumbActions,
+    private dashboardService: DashboardService,
+    private chartsCallService: ChartsCallsService,
+    private globalEventService: GlobalEventsManagerService
+  ) {
 
-  // Impressions chart
-  impressChartArray: Array<any> = [];
+    this.globalEventService.removeFromDashboard.subscribe(id => {
+      if(id !== 0 ){
+        this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
+        this.globalEventService.removeFromDashboard.next(0);
+      }
+    });
+    this.globalEventService.addChartInDashboard.subscribe(chart => {
+      if(chart) {
+        this.addChartToDashboard(chart);
+        this.globalEventService.addChartInDashboard.next(null);
+      }
+    });
+    this.globalEventService.updateChartInDashboard.subscribe(chart => {
+      if(chart) { // TODO Api Call for chart by dashboard_id and chart_id
+        const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+        this.chartArray$[index].title = chart.title;
+      }
+    });
 
-  public fanChartData = null;
-  public impressChartData = null;
-  public geoChartData = null;
-  public pieChartData = null;
-
-  constructor(private facebookService: FacebookService, private breadcrumbActions: BreadcrumbActions) {
   }
 
   ngOnInit(): void {
-
-    // Query per recuperare i grafici di questo determinato servizio per l'utente in uso
-    // Disegno successivo dei grafici scelti
-
-    this.initFanWidget();
-    this.initImpressionWidget();
-    this.initGeomapWidget();
-    this.initPieWidget();
+    this.loadDashboard();
     this.addBreadcrumb();
   }
 
-  initFanWidget(): void {
+  loadDashboard() {
+    this.dashboardService.getDashboardByType(1)
+      .subscribe(dashCharts => {
 
-    this.facebookService.fbfancount()
-      .pipe(first())
-      .subscribe(data => {
+        if(dashCharts['dashboard_id']){
+          this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
+        } else {
+          this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
 
-          const header = [['Date', 'Number of fans']];
-
-          // Push data pairs in the chart array
-          for (let i = 0; i < data.length; i++) {
-
-            if (i % 10 === 0) { // Data are greedy sampled by 10 units
-              this.fanChartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
-            }
-          }
-
-          this.fanChartData = {
-            chartType: 'AreaChart',
-            dataTable: header.concat(this.fanChartArray),
-            options: {
-              chartArea: {left: 30, right: 0, height: 280, top: 0},
-              legend: {position: 'none'},
-              height: 310,
-              explorer: {},
-              colors: ['#63c2de'],
-              areaOpacity: 0.4
-            }
-          };
-
-        }, error => {
-          if (error) {
-            console.log('errore'); // TODO FIXME
-          }
+          dashCharts.forEach(chart => this.addChartToDashboard(chart));
         }
-      );
-  }
 
-  initImpressionWidget(): void {
-
-    this.facebookService.fbpageimpressions()
-      .pipe(first())
-      .subscribe(data => {
-
-          const header = [['Date', 'Impressions']];
-          for (let i = 0; i < data.length; i++) {
-
-            // if (i % 2 === 0) {
-            this.impressChartArray.push([new Date(data[i].end_time), data[i].value]);
-            // }
-          }
-
-          this.impressChartData = {
-            chartType: 'AreaChart',
-            dataTable: header.concat(this.impressChartArray),
-            options: {
-              chartArea: {left: 30, right: 0, height: 280, top: 0},
-              legend: {position: 'none'},
-              height: 310,
-              explorer: {},
-              colors: ['#8CCEA0'],
-              areaOpacity: 0.4
-            }
-          };
-        }, error => {
-          if (error) {
-            console.log('errore'); // TODO FIXME
-          }
-        }
-      );
-  }
-
-  initGeomapWidget(): void {
-
-    this.facebookService.fbfancountry()
-      .pipe(first())
-      .subscribe(data => {
-          const header = [['Country', 'Popularity']];
-          const arr = Object.keys(data[0].value).map(function (k) {
-            return [k, data[0].value[k]];
-          });
-
-          this.geoChartData = {
-            chartType: 'GeoChart',
-            dataTable: header.concat(arr)
-            ,
-            options: {
-              region: 'world',
-              colorAxis: {colors: ['#F7DEDE', '#EF7C7C']},
-              backgroundColor: '#fff',
-              datalessRegionColor: '#eee',
-              defaultColor: '#333',
-              height: '300'
-            }
-          };
-        }, error => {
-          if (error) {
-            console.log('errore'); // TODO FIXME
-          }
-        }
-      );
-  }
-
-  initPieWidget(): void {
-
-    this.facebookService.fbfancountry()
-      .pipe()
-      .subscribe(
-        data => {
-          const header = [['Country', 'Popularity']];
-          const arr = Object.keys(data[0].value).map(function (k) {
-            return [k, data[0].value[k]];
-          });
-
-          this.pieChartData = {
-            chartType: 'PieChart',
-            dataTable: header.concat(arr),
-            options: {
-              fontSize: 12,
-              legend: {position: 'labeled', textStyle: {fontSize: 14}},
-              chartArea: {height: 220, left: 0, right: 0},
-              height: 250,
-              sliceVisibilityThreshold: 0.05,
-              pieHole: 0.15,
-              is3D: false,
-              colors: ['#e0440e', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6']
-            }
-          };
-        },
-        error => {
-          if (error) {
-            console.log('errore'); // TODO FIXME
-          }
-        }
-      );
+      }, error1 => {
+        console.log('Error querying the charts of the Facebook Dashboard');
+        console.log(error1);
+      });
   }
 
   addBreadcrumb() {
@@ -193,8 +90,19 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.removeBreadcrumb();
   }
 
-  // Get charts by dashboard type and user
-  loadDashboard() {
+  addChartToDashboard(chart: DashboardCharts) {
+    const chartToPush: DashboardCharts = chart;
 
+    this.chartsCallService.getDataByChartId(chart.chart_id)
+      .subscribe(data => {
+
+        chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
+        chartToPush.color = chartToPush.chartData.options.colors[0]
+
+        this.chartArray$.push(chartToPush);
+      }, error1 => {
+        console.log('Error querying the chart');
+        console.log(error1);
+      });
   }
 }
