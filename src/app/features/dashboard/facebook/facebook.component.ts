@@ -5,6 +5,7 @@ import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
 @Component({
   selector: 'app-feature-dashboard-facebook',
@@ -19,7 +20,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   };
 
 
-  public chartArray$: Array<any> = [];
+  public chartArray$: Array<DashboardCharts> = [];
 
   constructor(
     private facebookService: FacebookService,
@@ -28,13 +29,26 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private chartsCallService: ChartsCallsService,
     private globalEventService: GlobalEventsManagerService
   ) {
-    this.globalEventService.refreshDashboard.subscribe(value => {
-      if(value){
-        this.chartArray$ = [];
-        this.loadDashboard();
-        this.globalEventService.isUserLoggedIn.next(false);
+
+    this.globalEventService.removeFromDashboard.subscribe(id => {
+      if(id !== 0 ){
+        this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
+        this.globalEventService.removeFromDashboard.next(0);
       }
     });
+
+    this.globalEventService.addChartInDashboard.subscribe(id => {
+      if(id !== 0) { // TODO Api Call for chart by dashboard_id and chart_id
+
+      }
+    })
+
+    this.globalEventService.updateChartInDashboard.subscribe(id => {
+      if(id !== 0) { // TODO Api Call for chart by dashboard_id and chart_id
+
+      }
+    })
+
   }
 
   ngOnInit(): void {
@@ -55,13 +69,15 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
 
           dashCharts.forEach(chart => {
-            const chartToPush = chart;
+            const chartToPush: DashboardCharts = chart;
 
             this.chartsCallService.getDataByChartId(chart.chart_id)
               .subscribe(data => {
 
                 chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
                 chartToPush.position = ++i;
+                chartToPush.color = chartToPush.chartData.options.colors[0]
+
                 this.chartArray$.push(chartToPush);
               }, error1 => {
                 console.log('Error querying the chart');
@@ -74,8 +90,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         console.log('Error querying the charts of the Facebook Dashboard');
         console.log(error1);
       });
-
-    console.log(this.chartArray$.length);
   }
 
   addBreadcrumb() {

@@ -19,7 +19,7 @@ export class ChartsCallsService {
     }
   }
 
-  public formatDataByChartId(ID, data) { // TODO Take color and obtain a palette
+  public formatDataByChartId(ID, data) {
     let dataFormat;
     let header;
     let chartArray = [];
@@ -63,6 +63,7 @@ export class ChartsCallsService {
           dataTable: header.concat(arr),
           options: {
             region: 'world',
+            colors: ['#EF7C7C'],
             colorAxis: {colors: ['#F7DEDE', '#EF7C7C']},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',

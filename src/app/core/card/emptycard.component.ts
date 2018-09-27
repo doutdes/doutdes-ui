@@ -64,7 +64,6 @@ export class EmptycardComponent implements OnInit {
 
     this.insertChartForm = this.formBuilder.group({
       chartTitle: ['', Validators.compose([Validators.maxLength(30), Validators.required])],
-      chartColor: ['#000000', Validators.compose([Validators.maxLength(7), Validators.required])],
     });
   }
 
@@ -98,18 +97,17 @@ export class EmptycardComponent implements OnInit {
     const chart: DashboardCharts = {
         dashboard_id: this.dashboard_data.dashboard_id,
         chart_id: this.chartSelected[0].id,
-        title: this.chartSelected[0].title,
-        color: this.insertChartForm.value.chartColor
+        title: this.insertChartForm.value.chartTitle,
     };
-
-    console.log(chart);
 
     this.loading = true;
 
     this.dashboardService.addChartToDashboard(chart)
       .pipe(first())
       .subscribe(chartInserted => {
-        this.eventEmitter.refreshDashboard.next(true);
+        this.eventEmitter.removeFromDashboard.next(chart.chart_id);
+        this.insertChartForm.reset();
+        this.chartSelected = null;
         this.closeModal();
       }, error => {
         console.log('Error inserting the chart in the dashboard');

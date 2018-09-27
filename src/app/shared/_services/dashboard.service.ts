@@ -13,8 +13,6 @@ export class DashboardService {
   ) {
   }
 
-  // TODO Format calls
-
   getDashboardByType(type) {
     const headers = this.getAuthorization();
     return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardChartsByType/' + type, {headers});
