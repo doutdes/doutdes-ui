@@ -18,8 +18,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     dashboard_type: 1,
     dashboard_id: null
   };
-
-
   public chartArray$: Array<DashboardCharts> = [];
 
   constructor(
@@ -36,14 +34,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         this.globalEventService.removeFromDashboard.next(0);
       }
     });
-
     this.globalEventService.addChartInDashboard.subscribe(chart => {
       if(chart) {
         this.addChartToDashboard(chart);
         this.globalEventService.addChartInDashboard.next(null);
       }
     });
-
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
       if(chart) { // TODO Api Call for chart by dashboard_id and chart_id
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
