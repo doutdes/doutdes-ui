@@ -5,6 +5,7 @@ import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
 @Component({
   selector: 'app-feature-dashboard-facebook',
@@ -17,9 +18,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     dashboard_type: 1,
     dashboard_id: null
   };
-
-
-  public chartArray$: Array<any> = [];
+  public chartArray$: Array<DashboardCharts> = [];
 
   constructor(
     private facebookService: FacebookService,
@@ -28,11 +27,22 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private chartsCallService: ChartsCallsService,
     private globalEventService: GlobalEventsManagerService
   ) {
-    this.globalEventService.refreshDashboard.subscribe(value => {
-      if(value){
-        this.chartArray$ = [];
-        this.loadDashboard();
-        this.globalEventService.isUserLoggedIn.next(false);
+    this.globalEventService.removeFromDashboard.subscribe(id => {
+      if(id !== 0 ){
+        this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
+        this.globalEventService.removeFromDashboard.next(0);
+      }
+    });
+    this.globalEventService.addChartInDashboard.subscribe(chart => {
+      if(chart) {
+        this.addChartToDashboard(chart);
+        this.globalEventService.addChartInDashboard.next(null);
+      }
+    });
+    this.globalEventService.updateChartInDashboard.subscribe(chart => {
+      if(chart) {
+        const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+        this.chartArray$[index].title = chart.title;
       }
     });
   }
@@ -45,24 +55,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   loadDashboard() {
     this.dashboardService.getDashboardByType(1)
       .subscribe(dashCharts => {
-        let i = 0;
 
-        this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
+        if(dashCharts['dashboard_id']){
+          this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
+        } else {
+          this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
 
-        dashCharts.forEach(chart => {
-          const chartToPush = chart;
-
-          this.chartsCallService.getDataByChartId(chart.chart_id)
-            .subscribe(data => {
-
-              chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
-              chartToPush.position = ++i;
-              this.chartArray$.push(chartToPush);
-            }, error1 => {
-              console.log('Error querying the chart');
-              console.log(error1);
-            });
-        });
+          dashCharts.forEach(chart => this.addChartToDashboard(chart));
+        }
 
       }, error1 => {
         console.log('Error querying the charts of the Facebook Dashboard');
@@ -86,5 +86,21 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
+  }
+
+  addChartToDashboard(chart: DashboardCharts) {
+    const chartToPush: DashboardCharts = chart;
+
+    this.chartsCallService.getDataByChartId(chart.chart_id)
+      .subscribe(data => {
+
+        chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
+        chartToPush.color = chartToPush.chartData.options.colors[0]
+
+        this.chartArray$.push(chartToPush);
+      }, error1 => {
+        console.log('Error querying the chart');
+        console.log(error1);
+      });
   }
 }

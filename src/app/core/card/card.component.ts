@@ -18,7 +18,7 @@ export class CardComponent implements OnInit {
   @Input() xlOrder: string;
   @Input() lgOrder: string;
   @Input() dashChart: DashboardCharts;
-  @HostBinding('class') elementClass = 'col-xl-4 col-lg-6 pt-3';
+  @HostBinding('class') elementClass = 'pt-3';
   @ViewChild('mychart') mychart;
 
   color = '#fff';
@@ -36,8 +36,6 @@ export class CardComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    this.elementClass = this.elementClass + ' order-xl-' + this.dashChart.position + ' order-lg-' + this.dashChart.position;
 
     // Handling icon nicknames
     switch (this.icon) {
@@ -75,7 +73,6 @@ export class CardComponent implements OnInit {
 
     this.updateChartForm = this.formBuilder.group({
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
-      chartColor: [this.dashChart.color, Validators.compose([Validators.maxLength(7), Validators.required])],
     });
   }
 
@@ -96,7 +93,6 @@ export class CardComponent implements OnInit {
       dashboard_id: this.dashChart.dashboard_id,
       chart_id: this.dashChart.chart_id,
       title: this.updateChartForm.value.chartTitle,
-      color: this.updateChartForm.value.chartColor
     };
 
     console.log(chart);
@@ -121,7 +117,7 @@ export class CardComponent implements OnInit {
     this.dashboardService.removeChart(dashboard_id, chart_id)
       .subscribe(deleted => {
 
-        this.eventManager.refreshDashboard.next(true);
+        this.eventManager.removeFromDashboard.next(chart_id);
         this.closeModal();
 
       }, error => {
@@ -131,16 +127,9 @@ export class CardComponent implements OnInit {
   }
 
   updateChart(toUpdate): void {
-    // const toUpdate: DashboardCharts = {
-    //   dashboard_id: dashboard_id,
-    //   chart_id: chart_id,
-    //   title: title,
-    //   color: color
-    // };
-
     this.dashboardService.updateChart(toUpdate)
       .subscribe(updated => {
-        this.eventManager.refreshDashboard.next(true);
+        this.eventManager.updateChartInDashboard.next(toUpdate);
         this.closeModal();
       }, error => {
         console.log('Error updating the chart');
