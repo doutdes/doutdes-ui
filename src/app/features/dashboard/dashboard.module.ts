@@ -5,6 +5,7 @@ import {CoreModule} from '../../core/core.module';
 import {FeatureDashboardComponent} from './dashboard.component';
 import {FeatureDashboardRoutingModule} from './dashboard.routing';
 import {FeatureDashboardFacebookModule} from './facebook/facebook.module';
+import {FeatureDashboardGoogleAnalyticsModule} from './googleAnalytics/googleAnalytics.module';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import {FeatureDashboardFacebookModule} from './facebook/facebook.module';
     CoreModule,
     AppFooterModule,
     FeatureDashboardFacebookModule,
+    FeatureDashboardGoogleAnalyticsModule,
     FeatureDashboardRoutingModule
   ],
   providers: [

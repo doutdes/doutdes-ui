@@ -6,7 +6,8 @@ import {Observable} from 'rxjs';
 @Injectable()
 export class ChartsCallsService {
 
-  constructor(private facebookService: FacebookService) { }
+  constructor(private facebookService: FacebookService) {
+  }
 
   public getDataByChartId(ID): Observable<any> {
     switch (ID) {

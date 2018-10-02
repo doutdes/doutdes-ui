@@ -53,7 +53,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   loadDashboard() {
-    this.dashboardService.getDashboardByType(1)
+    this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
 
         if(dashCharts['dashboard_id']){
