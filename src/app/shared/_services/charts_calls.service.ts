@@ -18,6 +18,8 @@ export class ChartsCallsService {
         return this.facebookService.fbfancountry();
       case 3:
         return this.facebookService.fbpageimpressions();
+      case 4:
+        return this.googleAnalyticsService.gaPageViews();
     }
   }
 
@@ -97,6 +99,31 @@ export class ChartsCallsService {
           }
         };
         break; // Page Impressions
+
+      case 4:
+        header = [['Date', 'WebViews']];
+        console.log(data);
+        // Push data pairs in the chart array
+        for (let i = 0; i < data.length; i++) {
+
+          //if (i % 10 === 0) { // Data are greedy sampled by 10 units
+            chartArray.push([new Date(data[0].data[i].date), data[0].data[i].value]);
+          //}
+        }
+
+        dataFormat = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            explorer: {},
+            colors: ['#63c2de'],
+            areaOpacity: 0.4
+          }
+        };
+
     }
 
     return dataFormat;
