@@ -2,11 +2,12 @@ import {Injectable} from '@angular/core';
 import {StoreService} from './store.service';
 import {FacebookService} from './facebook.service';
 import {Observable} from 'rxjs';
+import {GoogleAnalyticsService} from './googleAnalytics.service';
 
 @Injectable()
 export class ChartsCallsService {
 
-  constructor(private facebookService: FacebookService) {
+  constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService) {
   }
 
   public getDataByChartId(ID): Observable<any> {

@@ -1,3 +1,7 @@
 export interface GoogleData {
-  value: Array<any>;
-};
+  date: Date;
+  value: number;
+}
+export interface GooglePageViews {
+  data: GoogleData[];
+}
