@@ -109,7 +109,10 @@ export class EmptycardComponent implements OnInit {
         this.insertChartForm.reset();
         this.chartSelected = null;
 
+        // TODO Aggiornare i dropdown options usando dashboardService.getChartsNotAdded(dashboard_id, dashboard_type)
         this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== chart.chart_id);
+
+
 
         this.closeModal();
 

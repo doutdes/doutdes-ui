@@ -15,21 +15,21 @@ export class DashboardService {
 
   getDashboardByType(type) {
     const headers = this.getAuthorization();
-    return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardChartsByType/' + type, {headers});
+    return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardChartsByType/'
+      + type, {headers});
   }
 
   getChartInDashboard(dashboard_id, chart_id) {
     const headers = this.getAuthorization();
-    return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChart/' + dashboard_id + '/' + chart_id, {headers});
+    return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChart/'
+      + dashboard_id + '/' + chart_id, {headers});
   }
 
-  // getUserDashboards() {
-  //
-  // }
-  //
-  // getDashboardCharsByType() {
-  //
-  // }
+  getChartsNotAdded(dashboard_id, dashboard_type) {
+    const headers = this.getAuthorization();
+    return this.http.get('http://' + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboardAndType/'
+      + dashboard_id + '/' + dashboard_type, {headers});
+  }
 
   addChartToDashboard(chart) {
     const headers = this.getAuthorization();
