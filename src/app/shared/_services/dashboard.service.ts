@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {StoreService} from './store.service';
 import {environment} from '../../../environments/environment';
 import {DashboardCharts} from '../_models/DashboardCharts';
+import {Chart} from '../_models/Chart';
 
 @Injectable()
 
@@ -27,7 +28,7 @@ export class DashboardService {
 
   getChartsNotAdded(dashboard_id, dashboard_type) {
     const headers = this.getAuthorization();
-    return this.http.get('http://' + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboardAndType/'
+    return this.http.get<Chart[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboardAndType/'
       + dashboard_id + '/' + dashboard_type, {headers});
   }
 

@@ -8,4 +8,5 @@ export class GlobalEventsManagerService {
   public removeFromDashboard: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public updateChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);
   public addChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);
+  public updateChartList: BehaviorSubject<boolean> = new BehaviorSubject(false);
 }

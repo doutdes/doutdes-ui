@@ -1,9 +1,14 @@
-import {Component, HostBinding, Input, OnInit, TemplateRef} from '@angular/core';
+/* Angular components */
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Component, ElementRef, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+
+/* External Libraries */
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
-import {ChartsService} from '../../shared/_services/charts.service';
 import {first} from 'rxjs/operators';
-import {FormBuilder, FormGroup, Validator, Validators} from '@angular/forms';
+
+/* Local Services */
+import {ChartsService} from '../../shared/_services/charts.service';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
@@ -19,6 +24,9 @@ export class EmptycardComponent implements OnInit {
   @Input() lgOrder: string;
   @Input() dashboard_data: any;
   @HostBinding('class') elementClass = 'col-lg-6 col-xl-4 pt-3';
+
+  @ViewChild('addChart') addChart: ElementRef;
+  @ViewChild('noChartsAvailable') noChartsAvailable: ElementRef;
 
   modalRef: BsModalRef;
   chartSelected: any;
@@ -42,25 +50,22 @@ export class EmptycardComponent implements OnInit {
     private dashboardService: DashboardService,
     private eventEmitter: GlobalEventsManagerService
   ) {
-
+    this.eventEmitter.removeFromDashboard.subscribe(id => {
+      if(id !== 0 ){
+        this.updateDropdownOptions();
+        this.eventEmitter.removeFromDashboard.next(0);
+      }
+    });
+    this.eventEmitter.updateChartList.subscribe(value => {
+      if(value) {
+        this.updateDropdownOptions();
+        this.eventEmitter.updateChartList.next(false);
+      }
+    })
   }
 
   ngOnInit() {
     this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
-
-    this.chartService.getChartsByType(this.dashboard_data.dashboard_type)
-      .pipe(first())
-      .subscribe(charts => {
-        charts.forEach(el => {
-          this.dropdownOptions.push({
-            id: el.id,
-            title: el.title
-          });
-        });
-      }, error1 => {
-        console.log(error1);
-        console.log('Error taking charts by type');
-      });
 
     this.insertChartForm = this.formBuilder.group({
       chartTitle: ['', Validators.compose([Validators.maxLength(30), Validators.required])],
@@ -71,8 +76,12 @@ export class EmptycardComponent implements OnInit {
     return this.insertChartForm.controls;
   }
 
-  openModal(template: TemplateRef<any>) {
-    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  openModal() {
+    if(this.dropdownOptions.length > 0) {
+      this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
+    } else {
+      this.modalRef = this.modalService.show(this.noChartsAvailable, {class: 'modal-md modal-dialog-centered'});
+    }
   }
 
   closeModal(): void {
@@ -109,11 +118,9 @@ export class EmptycardComponent implements OnInit {
         this.insertChartForm.reset();
         this.chartSelected = null;
 
-        // TODO Aggiornare i dropdown options usando dashboardService.getChartsNotAdded(dashboard_id, dashboard_type)
         this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== chart.chart_id);
 
-
-
+        this.updateDropdownOptions();
         this.closeModal();
 
 
@@ -123,4 +130,32 @@ export class EmptycardComponent implements OnInit {
       })
 
   }
+
+  updateDropdownOptions(): void {
+    this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
+      .pipe(first())
+      .subscribe(chartRemaining => {
+
+        this.dropdownOptions = [];
+
+        if(chartRemaining) {
+          chartRemaining.forEach(el => {
+            this.dropdownOptions.push({
+              id: el.ID,
+              title: el.title
+            });
+          });
+        }
+
+      }, err => {
+        console.log('Error in chart remaining call');
+        console.log(err);
+      })
+  }
+
+  selectionChanged($event: any){
+    console.log($event.value[0].title);
+    this.insertChartForm.controls['chartTitle'].setValue($event.value[0].title);
+  }
+
 }

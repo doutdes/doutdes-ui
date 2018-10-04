@@ -62,6 +62,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
 
           dashCharts.forEach(chart => this.addChartToDashboard(chart));
+          this.globalEventService.updateChartList.next(true);
         }
 
       }, error1 => {
