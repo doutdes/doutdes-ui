@@ -12,7 +12,7 @@ export class GoogleAnalyticsService {
 
   gaPageViews() {
     const headers = this.getAuthorization();
-    return this.http.get<GoogleDataWithDate[]>('http://' + environment.host + ':' + environment.port + '/ga/pageviews', {headers});
+    return this.http.get<GooglePageViews>('http://' + environment.host + ':' + environment.port + '/ga/pageviews', {headers});
   }
 
   gaSessions() {
