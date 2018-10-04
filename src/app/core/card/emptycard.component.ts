@@ -132,9 +132,13 @@ export class EmptycardComponent implements OnInit {
   }
 
   updateDropdownOptions(): void {
+    console.log(this.dashboard_data);
+
     this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
       .pipe(first())
       .subscribe(chartRemaining => {
+
+        console.log(chartRemaining);
 
         this.dropdownOptions = [];
 
