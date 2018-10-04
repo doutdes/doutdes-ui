@@ -3,6 +3,7 @@ import {StoreService} from './store.service';
 import {FacebookService} from './facebook.service';
 import {Observable} from 'rxjs';
 import {GoogleAnalyticsService} from './googleAnalytics.service';
+import {parseDate} from 'ngx-bootstrap/chronos';
 
 @Injectable()
 export class ChartsCallsService {
@@ -102,13 +103,10 @@ export class ChartsCallsService {
 
       case 4:
         header = [['Date', 'WebViews']];
-        console.log(data);
+        console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
-
-          //if (i % 10 === 0) { // Data are greedy sampled by 10 units
-            chartArray.push([new Date(data[0].data[i].date), data[0].data[i].value]);
-          //}
+          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
 
         dataFormat = {

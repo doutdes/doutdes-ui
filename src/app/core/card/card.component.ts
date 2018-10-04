@@ -43,6 +43,10 @@ export class CardComponent implements OnInit {
         this.icon = 'fa-facebook-f';
         break;
       }
+      case 'google': {
+        this.icon = 'fab fa-google';
+        break;
+      }
       default: {
         break;
       }
