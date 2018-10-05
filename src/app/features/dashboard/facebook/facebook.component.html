@@ -1,3 +1,7 @@
+<div class="row bg-white rounded p-4" style="margin-top: 10px; margin-right:0px; margin-left:0px; border:1px solid #c8ced3;">
+  <img src="../assets/img/facebook-head.png" style="height:80px; margin-top:-7px" /><h1 class="display-4 my-auto ml-3">Facebook stats</h1>
+</div>
+
 <div class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0; else noContent">
     <div *ngFor="let chart of chartArray$" class="col-xl-4 col-lg-6 pt-3 order-xl-1 order-lg-1">
@@ -5,10 +9,10 @@
     </div>
   </ng-container>
 
-  <ng-template #noContent>
-    <h2 class="col-md-12">There are not charts yet! Start adding the first chart to the dashboard!</h2>
-  </ng-template>
-
   <app-emptycard class="col-lg-6 col-xl-4 " [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
+
+  <!--<ng-template #noContent>
+    <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
+  </ng-template>-->
 
 </div>
