@@ -37,6 +37,13 @@ import {P404Component} from '../errors/404.component';
             path: 'authentication',
             loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
           },
+          {
+            path: 'calendar',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './calendar/calendar.module#FeatureCalendarModule'
+          }
         ],
       },
       {
