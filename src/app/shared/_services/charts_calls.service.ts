@@ -21,6 +21,8 @@ export class ChartsCallsService {
         return this.facebookService.fbpageimpressions();
       case 4:
         return this.googleAnalyticsService.gaPageViews();
+      case 5:
+        return this.googleAnalyticsService.gaSessions();
     }
   }
 
@@ -100,9 +102,29 @@ export class ChartsCallsService {
           }
         };
         break; // Page Impressions
-
       case 4:
         header = [['Date', 'WebViews']];
+        console.log(data[1][0] + ' ' + data[1][1]);
+        // Push data pairs in the chart array
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+
+        dataFormat = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            explorer: {},
+            colors: ['#EF7C7C'],
+            areaOpacity: 0.4
+          }
+        };
+        break; // Google PageViews
+      case 5:
+        header = [['Date', 'Sessions']];
         console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
@@ -121,9 +143,8 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-
+        break; // Google Sessions
     }
-
     return dataFormat;
   }
 

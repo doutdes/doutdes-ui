@@ -1,11 +1,14 @@
+<div class="row bg-white rounded p-4" style="margin-top: 10px; margin-right:0px; margin-left:0px; border:1px solid #c8ced3;">
+  <img src="../assets/img/website-head.png" style="height:80px; margin-top:-7px" /><h1 class="display-4 my-auto ml-3">Configure APIs</h1>
+</div>
+
 <div class="row">
-  <h1>Api Keys list</h1>
   <div class="col-md-12">
     <div class="panel-body">
       <!--<div class="table-responsive">-->
-        <table class="table table-hover" *ngIf="apiKeysList$.length !== 0; else no_content">
+        <table class="table table-hover mt-4" *ngIf="apiKeysList$.length !== 0; else no_content">
           <thead>
-          <tr>
+          <tr class="border" style="background: #ddd; border: 1px solid #999">
             <th scope="col" style="width: 10%">Service</th>
             <th scope="col" style="width: 70%">Token</th>
             <th scope="col" style="width: 10%"></th>
@@ -13,9 +16,9 @@
           </tr>
           </thead>
           <tbody *ngFor="let key of apiKeysList$">
-          <tr>
+          <tr class="border" style="background:#eee">
             <td>{{serviceName(key.service)}}</td>
-            <td>{{key.api_key}}</td>
+            <td>{{"********************"+(key.api_key).slice(-10)}}</td>
             <td>
               <button type="button" class="btn btn-primary">Update</button>
             </td>
@@ -32,8 +35,8 @@
 
 
 <ng-template #no_content>
-  <h4>There are not still keys. Insert a new one!</h4>
+  <h5>No access key added. Insert a new one!</h5>
 </ng-template>
-<button type="button" class="btn btn-success" [routerLink]="['insert']">Insert New Key</button>
+<button type="button" class="btn btn-success" [routerLink]="['insert']">Add new access token</button>
 
 
