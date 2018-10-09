@@ -33,9 +33,9 @@ body {
 
 #main-content .container-fluid {
   margin-bottom: 60px;
-  min-height: calc(100% - 56px - 54px);
-  padding-top: 10px;
-  padding-bottom: 20px;
+  min-height: calc(100% - 56px - 54px - 10px);
+  //padding-top: 10px;
+  //padding-bottom: 20px;
 }
 
 #body-row {
@@ -50,7 +50,7 @@ body {
 }
 
 #main-content {
-  min-height: calc(100vh - 56px);
+  min-height: calc(100vh - 56px - 10px);
 }
 
 /* Sidebar sizes when expanded and expanded */
@@ -169,4 +169,11 @@ ul {
 .add-card:hover {
   color: black;
   cursor: pointer;
+}
+
+.title-header {
+  margin-right:0px;
+  margin-left:0px;
+  margin-top: 10px;
+  border:1px solid #c8ced3;
 }
