@@ -24,6 +24,7 @@
               "node_modules/flag-icon-css/css/flag-icon.css",
               "node_modules/simple-line-icons/css/simple-line-icons.css",
               "node_modules/ngx-select-dropdown/dist/assets/style.css",
+              "node_modules/angular-calendar/css/angular-calendar.css",
               "src/scss/style.scss"
             ],
             "scripts": [
