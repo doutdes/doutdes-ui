@@ -1,4 +1,78 @@
-<div class="row bg-white rounded p-4" style="margin-top: 10px; margin-right:0px; margin-left:0px; border:1px solid #c8ced3;">
+<div class="row bg-white rounded p-4"
+     style="margin-top: 10px; margin-right:0px; margin-left:0px; border:1px solid #c8ced3;">
   <!--<img src="../assets/img/facebook-head.png" style="height:80px; margin-top:-7px" />-->
-  <i class="far fa-calendar-alt fa-4x" style="color: orange;"></i><h1 class="display-4 my-auto ml-3">Calendar</h1>
+  <i class="far fa-calendar-alt fa-4x" style="color: orange;"></i>
+  <h1 class="display-4 my-auto ml-3">Calendar</h1>
+</div>
+
+<div class="row text-center bg-dark p-4 ml-0 mr-0">
+  <div class="col-md-4">
+    <div class="btn-group">
+      <div
+        class="btn btn-outline-light"
+        mwlCalendarPreviousView
+        [view]="view"
+        [(viewDate)]="viewDate"
+        (viewDateChange)="activeDayIsOpen = false">
+        Previous
+      </div>
+      <div
+        class="btn btn-light"
+        mwlCalendarToday
+        [(viewDate)]="viewDate">
+        Today
+      </div>
+      <div
+        class="btn btn-outline-light"
+        mwlCalendarNextView
+        [view]="view"
+        [(viewDate)]="viewDate"
+        (viewDateChange)="activeDayIsOpen = false">
+        Next
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
+  </div>
+  <div class="col-md-4">
+    <div class="btn-group">
+      <div
+        class="btn btn-primary"
+        (click)="changeView(CalendarView.Month)"
+        [class.active]="view === CalendarView.Month">
+        Month
+      </div>
+      <div
+        class="btn btn-primary"
+        (click)="changeView(CalendarView.Week)"
+        [class.active]="view === CalendarView.Week">
+        Week
+      </div>
+      <div
+        class="btn btn-primary"
+        (click)="changeView(CalendarView.Day)"
+        [class.active]="view === CalendarView.Day">
+        Day
+      </div>
+    </div>
+  </div>
+</div>
+
+<div [ngSwitch]="view" class="bg-white" >
+  <mwl-calendar-month-view
+    *ngSwitchCase="CalendarView.Month"
+    [viewDate]="viewDate"
+    [refresh]="refresh">
+  </mwl-calendar-month-view>
+  <mwl-calendar-week-view
+    *ngSwitchCase="CalendarView.Week"
+    [viewDate]="viewDate"
+    [refresh]="refresh">
+  </mwl-calendar-week-view>
+  <mwl-calendar-day-view
+    *ngSwitchCase="CalendarView.Day"
+    [viewDate]="viewDate"
+    [refresh]="refresh">
+  </mwl-calendar-day-view>
 </div>
