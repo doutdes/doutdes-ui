@@ -1,5 +1,5 @@
 <div class="row bg-white rounded p-4"
-     style="margin-top: 10px; margin-right:0px; margin-left:0px; border:1px solid #c8ced3;">
+     style="margin-right:0px; margin-left:0px; border:1px solid #c8ced3;">
   <!--<img src="../assets/img/facebook-head.png" style="height:80px; margin-top:-7px" />-->
   <i class="far fa-calendar-alt fa-4x" style="color: orange;"></i>
   <h1 class="display-4 my-auto ml-3">Calendar</h1>
@@ -63,16 +63,111 @@
   <mwl-calendar-month-view
     *ngSwitchCase="CalendarView.Month"
     [viewDate]="viewDate"
-    [refresh]="refresh">
+    [events]="events"
+    [refresh]="refresh"
+    [activeDayIsOpen]="activeDayIsOpen"
+    (dayClicked)="dayClicked($event.day)"
+    (eventClicked)="handleEvent('Clicked', $event.event)"
+    (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-month-view>
   <mwl-calendar-week-view
     *ngSwitchCase="CalendarView.Week"
     [viewDate]="viewDate"
-    [refresh]="refresh">
+    [events]="events"
+    [refresh]="refresh"
+    (eventClicked)="handleEvent('Clicked', $event.event)"
+    (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-week-view>
   <mwl-calendar-day-view
     *ngSwitchCase="CalendarView.Day"
     [viewDate]="viewDate"
-    [refresh]="refresh">
+    [events]="events"
+    [refresh]="refresh"
+    (eventClicked)="handleEvent('Clicked', $event.event)"
+    (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-day-view>
 </div>
+
+<!--<h3>-->
+<!--Edit events-->
+<!--<button-->
+  <!--class="btn btn-primary pull-right"-->
+  <!--(click)="addEvent()">-->
+  <!--Add new-->
+<!--</button>-->
+<!--<div class="clearfix"></div>-->
+<!--</h3>-->
+
+<!--<table class="table table-bordered mt-5">-->
+
+  <!--<thead>-->
+  <!--<tr>-->
+    <!--<th>Title</th>-->
+    <!--<th>Primary color</th>-->
+    <!--<th>Secondary color</th>-->
+    <!--<th>Starts at</th>-->
+    <!--<th>Ends at</th>-->
+    <!--<th>Remove</th>-->
+  <!--</tr>-->
+  <!--</thead>-->
+
+  <!--<tbody>-->
+  <!--<tr *ngFor="let event of events; let index = index">-->
+    <!--<td>-->
+      <!--<input-->
+        <!--type="text"-->
+        <!--class="form-control"-->
+        <!--[(ngModel)]="event.title"-->
+        <!--(keyup)="refresh.next()">-->
+    <!--</td>-->
+    <!--<td>-->
+      <!--<input-->
+        <!--type="color"-->
+        <!--[(ngModel)]="event.color.primary"-->
+        <!--(change)="refresh.next()">-->
+    <!--</td>-->
+    <!--<td>-->
+      <!--<input-->
+        <!--type="color"-->
+        <!--[(ngModel)]="event.color.secondary"-->
+        <!--(change)="refresh.next()">-->
+    <!--</td>-->
+    <!--<td>-->
+      <!--<input-->
+        <!--class="form-control"-->
+        <!--type="text"-->
+        <!--mwlFlatpickr-->
+        <!--[(ngModel)]="event.start"-->
+        <!--(ngModelChange)="refresh.next()"-->
+        <!--[altInput]="true"-->
+        <!--[convertModelValue]="true"-->
+        <!--[enableTime]="true"-->
+        <!--dateFormat="Y-m-dTH:i"-->
+        <!--altFormat="F j, Y H:i"-->
+        <!--placeholder="Not set">-->
+    <!--</td>-->
+    <!--<td>-->
+      <!--<input-->
+        <!--class="form-control"-->
+        <!--type="text"-->
+        <!--mwlFlatpickr-->
+        <!--[(ngModel)]="event.end"-->
+        <!--(ngModelChange)="refresh.next()"-->
+        <!--[altInput]="true"-->
+        <!--[convertModelValue]="true"-->
+        <!--[enableTime]="true"-->
+        <!--dateFormat="Y-m-dTH:i"-->
+        <!--altFormat="F j, Y H:i"-->
+        <!--placeholder="Not set">-->
+    <!--</td>-->
+    <!--<td>-->
+      <!--<button-->
+        <!--class="btn btn-danger"-->
+        <!--(click)="events.splice(index, 1); refresh.next()">-->
+        <!--Delete-->
+      <!--</button>-->
+    <!--</td>-->
+  <!--</tr>-->
+  <!--</tbody>-->
+
+<!--</table>-->
