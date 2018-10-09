@@ -18,12 +18,11 @@
           <tbody *ngFor="let key of apiKeysList$">
           <tr class="border" style="background:#eee">
             <td>{{serviceName(key.service)}}</td>
-            <td>{{key.api_key}}</td>
+            <td>{{"********************"+(key.api_key).slice(-10)}}</td>
             <td>
-
+              <button type="button" class="btn btn-primary">Update</button>
             </td>
             <td>
-              <button type="button" class="btn btn-primary mr-4">Update</button>
               <button type="button" class="btn btn-danger" (click)="deleteService(key.service)">Delete</button>
             </td>
           </tr>
