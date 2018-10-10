@@ -23,10 +23,12 @@ import {StoreModule} from './shared/store/store.module';
 import {StoreService} from './shared/_services/store.service';
 import {GlobalEventsManagerService} from './shared/_services/global-event-manager.service';
 import {JwtInterceptor} from './shared/jwt.interceptor';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   imports: [
-    BrowserModule,
+    // BrowserModule,
+    BrowserAnimationsModule,
     CoreModule,
     ReactiveFormsModule,
     AppRoutingModule,
