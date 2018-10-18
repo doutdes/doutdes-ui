@@ -18,8 +18,6 @@ export class ApiKeysService {
   }
 
   deleteKey(service) {
-    // let key: ApiKey;
-    // key.service = service;
     return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + '/keys/delete', {body: {service: service}});
   }
 

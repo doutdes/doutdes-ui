@@ -16,8 +16,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.updateList();
     this.addBreadcrumb();
+    this.updateList();
   }
 
   ngOnDestroy(): void {
@@ -28,7 +28,9 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.apiKeyService.getAllKeys()
       .pipe()
       .subscribe(data => {
+        // console.log(data);
         this.apiKeysList$ = data;
+        console.log(this.apiKeysList$);
       }, error => {
         console.log(error);
       });
