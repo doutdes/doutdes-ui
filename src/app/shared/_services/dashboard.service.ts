@@ -39,7 +39,6 @@ export class DashboardService {
 
   updateChart(chart)  {
     const headers = this.getAuthorization();
-    console.log(chart);
     return this.http.put('http://' + environment.host + ':' + environment.port + '/dashboards/updateChartInDashboard/', {chart}, {headers});
   }
 

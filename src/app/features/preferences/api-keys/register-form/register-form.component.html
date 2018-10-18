@@ -6,9 +6,9 @@
           <div class="card-body">
             <h2 class="text-center display-4 mb-4">Insert new api key</h2>
             <div class="form-group row mb-4">
-              <label for="userType" class="col-form-label col-md-4">Type of service</label>
+              <label for="serviceType" class="col-form-label col-md-4">Type of service</label>
               <div class="col-md-8">
-                <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="userType">
+                <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="serviceType">
                   <option value=0 selected>Facebook Insights</option>
                   <option value=1>Google Analytics</option>
                 </select>
@@ -16,7 +16,7 @@
             </div>
             <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
               <div class="form-group row">
-                <label for="userType" class="col-form-label col-md-4">API Key</label>
+                <label for="serviceType" class="col-form-label col-md-4">API Key</label>
                 <div class="input-group col-md-8 mb-4">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-key"></i></span>
