@@ -1,8 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {Breadcrumb} from '../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
 
 import {Subject} from 'rxjs';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+
+import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import {BsModalService} from 'ngx-bootstrap/modal';
 
 import {
   CalendarEvent,
@@ -21,6 +25,7 @@ import {
   isSameMonth,
   addHours
 } from 'date-fns';
+import {CalendarService} from '../../shared/_services/calendar.service';
 
 const colors: any = {
   red: {
@@ -43,74 +48,73 @@ const colors: any = {
 })
 export class FeatureCalendarComponent implements OnInit, OnDestroy{
 
+  @ViewChild('showEvent') showEvent: ElementRef;
+
+  modalRef: BsModalRef;
+  modalData: any;
+
+  updateForm: FormGroup;
+
   viewDate: Date = new Date();
   view: CalendarView = CalendarView.Month;
   CalendarView = CalendarView;
   activeDayIsOpen: boolean = false;
   refresh: Subject<any> = new Subject();
 
-  actions: CalendarEventAction[] = [
-    {
-      label: '<i class="fa fa-fw fa-pencil"></i>',
-      onClick: ({ event }: { event: CalendarEvent }): void => {
-        this.handleEvent('Edited', event);
-      }
-    },
-    {
-      label: '<i class="fa fa-fw fa-times"></i>',
-      onClick: ({ event }: { event: CalendarEvent }): void => {
-        this.events = this.events.filter(iEvent => iEvent !== event);
-        this.handleEvent('Deleted', event);
-      }
-    }
-  ];
+  // events: CalendarEvent[] = [
+  //   {
+  //     start: subDays(startOfDay(new Date()), 1),
+  //     end: addDays(new Date(), 1),
+  //     title: 'A 3 day event',
+  //     color: colors.red,
+  //     allDay: true,
+  //     resizable: {
+  //       beforeStart: true,
+  //       afterEnd: true
+  //     },
+  //     draggable: true
+  //   },
+  //   {
+  //     start: subDays(endOfMonth(new Date()), 3),
+  //     end: addDays(endOfMonth(new Date()), 3),
+  //     title: 'A long event that spans 2 months',
+  //     color: colors.blue,
+  //     allDay: true
+  //   },
+  //   {
+  //     start: addHours(startOfDay(new Date()), 2),
+  //     end: new Date(),
+  //     title: 'A draggable and resizable event',
+  //     color: colors.yellow,
+  //     resizable: {
+  //       beforeStart: true,
+  //       afterEnd: true
+  //     },
+  //     draggable: true
+  //   }
+  // ];
 
-  events: CalendarEvent[] = [
-    {
-      start: subDays(startOfDay(new Date()), 1),
-      end: addDays(new Date(), 1),
-      title: 'A 3 day event',
-      color: colors.red,
-      actions: this.actions,
-      allDay: true,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true
-      },
-      draggable: true
-    },
-    {
-      start: startOfDay(new Date()),
-      title: 'An event with no end date',
-      color: colors.yellow,
-      actions: this.actions
-    },
-    {
-      start: subDays(endOfMonth(new Date()), 3),
-      end: addDays(endOfMonth(new Date()), 3),
-      title: 'A long event that spans 2 months',
-      color: colors.blue,
-      allDay: true
-    },
-    {
-      start: addHours(startOfDay(new Date()), 2),
-      end: new Date(),
-      title: 'A draggable and resizable event',
-      color: colors.yellow,
-      actions: this.actions,
-      resizable: {
-        beforeStart: true,
-        afterEnd: true
-      },
-      draggable: true
-    }
-  ];
+  events: CalendarEvent[] = [];
 
-
-  constructor(private breadcrumbActions: BreadcrumbActions) {
+  constructor(
+    private breadcrumbActions: BreadcrumbActions,
+    private calendarService: CalendarService,
+    private modalService: BsModalService,
+    private formBuilder: FormBuilder
+    ) {
   }
 
   ngOnInit(): void {
+
+    this.updateForm = this.formBuilder.group({
+      eventTitle: ['', Validators.compose([Validators.maxLength(50), Validators.required])],
+      dataStart: ['', Validators.compose([Validators.required])],
+      dataEnd: ['', Validators.compose([Validators.required])],
+      primaryColor: ['', Validators.compose([Validators.required])],
+      secondaryColor: ['', Validators.compose([Validators.required])]
+    });
+
+    this.loadEvents();
     this.addBreadcrumb();
   }
 
@@ -150,8 +154,9 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   }
 
   handleEvent(action: string, event: CalendarEvent): void {
-    // this.modalData = { event, action };
-    // this.modal.open(this.modalContent, { size: 'lg' });
+    this.modalData = {event, action};
+    this.updateControls(event);
+    this.openModal();
   }
 
   eventTimesChanged({event, newStart, newEnd}: CalendarEventTimesChangedEvent): void {
@@ -174,5 +179,53 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
       }
     });
     this.refresh.next();
+  }
+
+  openModal() {
+    this.modalRef = this.modalService.show(this.showEvent, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  closeModal(): void {
+    this.modalRef.hide();
+  }
+
+  updateControls(event: CalendarEvent) {
+    this.updateForm.controls['eventTitle'].setValue(event.title);
+    this.updateForm.controls['dataStart'].setValue(event.start.toISOString().substring(0, 23));
+    this.updateForm.controls['dataEnd'].setValue(event.end.toISOString().substring(0, 23));
+    this.updateForm.controls['primaryColor'].setValue(event.color.primary);
+    this.updateForm.controls['secondaryColor'].setValue(event.color.secondary);
+  }
+
+  loadEvents() {
+    this.calendarService.getEvents()
+      .subscribe(eventsToLoad => {
+
+        console.log(eventsToLoad);
+
+        eventsToLoad.forEach(el => {
+          const colors = {
+            primary: el.primaryColor,
+            secondary: el.secondaryColor
+          };
+
+          const toAdd: CalendarEvent = {
+            title: el.title,
+            start: new Date(el.dataStart),
+            end: new Date(el.dataEnd),
+            color: colors,
+            draggable: true,
+            resizable: {
+              beforeStart: true,
+              afterEnd: true
+            }
+          };
+
+          this.events.push(toAdd);
+          this.refresh.next();
+        });
+      }, err => {
+        console.log(err);
+      });
   }
 }

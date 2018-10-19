@@ -8,14 +8,13 @@ import {Calendar} from '../_models/Calendar';
 @Injectable()
 export class CalendarService {
 
-  calendarPath = 'calendar/';
+  calendarPath = '/calendar/';
 
   constructor(private http: HttpClient, private storeService: StoreService) {
   }
 
   getEvents(){
-    const headers = this.getAuthorization();
-    return this.http.get<Calendar[]>('http://' + environment.host + ':' + environment.port + this.calendarPath + 'getEvents/', {headers});
+    return this.http.get<Calendar[]>('http://' + environment.host + ':' + environment.port + this.calendarPath + 'getEvents/');
   }
 
   addEvent(event) {

@@ -11,7 +11,6 @@ import {CardComponent} from './card/card.component';
 import {EmptycardComponent} from './card/emptycard.component';
 import {BsDropdownModule, BsModalService, ModalModule} from 'ngx-bootstrap';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
-import {ChartsService} from '../shared/_services/charts.service';
 import {DashboardService} from '../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../shared/_services/global-event-manager.service';
 
@@ -36,7 +35,6 @@ import {GlobalEventsManagerService} from '../shared/_services/global-event-manag
     GlobalEventsManagerService,
     LoginActions,
     BsModalService,
-    ChartsService,
     DashboardService
   ],
   exports: [
