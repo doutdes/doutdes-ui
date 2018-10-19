@@ -32,6 +32,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
           this.apiKeysList$ = [];
         } else {
           this.apiKeysList$ = data;
+
+          data.filter(el => el == null);
         }
       }, error => {
         console.log(error);
