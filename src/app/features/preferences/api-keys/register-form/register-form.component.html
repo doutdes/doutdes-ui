@@ -31,7 +31,7 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-key"></i></span>
                   </div>
-                  <input type="file" id="gg_json" formControlName="api_key" class="form-control">
+                  <input type="file" class="form-control-file" (change)="onFileChange($event)">
                 </div>
               </div>
 
