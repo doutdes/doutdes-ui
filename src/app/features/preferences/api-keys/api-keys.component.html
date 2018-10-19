@@ -10,29 +10,24 @@
       <table class="table table-hover mt-4" *ngIf="apiKeysList$; else no_content">
         <thead>
         <tr class="border" style="background: #ddd; border: 1px solid #999">
-          <th scope="col" style="width: 10%">Service</th>
-          <th scope="col" style="width: 70%">Token</th>
-          <th scope="col" style="width: 10%"></th>
-          <th scope="col" style="width: 10%"></th>
+          <th scope="col" style="width: 15%">Service</th>
+          <th scope="col" style="width: 60%">Token</th>
+          <th scope="col" style="width: 15%"></th>
         </tr>
         </thead>
         <tr class="border" style="background:#eee" *ngIf="apiKeysList$['fb_token']">
           <td>{{serviceName(0)}}</td>
-          <td>{{apiKeysList$['fb_token']}}</td>
+          <td>{{apiKeysList$['fb_token'].substr(0,25) + "********"}}</td>
           <td>
-            <button type="button" class="btn btn-primary">Update</button>
-          </td>
-          <td>
+            <button type="button" class="btn btn-primary mr-3">Update</button>
             <button type="button" class="btn btn-danger" (click)="deleteService(0)">Delete</button>
           </td>
         </tr>
         <tr class="border" style="background:#eee" *ngIf="apiKeysList$['ga_token']">
           <td>{{serviceName(1)}}</td>
-          <td>{{apiKeysList$['ga_token']}}</td>
+          <td>{{apiKeysList$['ga_token'].substr(0,25) + "********"}}</td>
           <td>
-            <button type="button" class="btn btn-primary">Update</button>
-          </td>
-          <td>
+            <button type="button" class="btn btn-primary mr-3">Update</button>
             <button type="button" class="btn btn-danger" (click)="deleteService(1)">Delete</button>
           </td>
         </tr>

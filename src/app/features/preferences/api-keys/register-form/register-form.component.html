@@ -16,22 +16,21 @@
             </div>
             <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
               <div *ngIf ="selectedService == 0"  class="form-group row">
-                <label for="serviceType" class="col-form-label col-md-4">API Key</label>
+                <label for="serviceType" class="col-form-label col-md-4">API-key token</label>
                 <div class="input-group col-md-8 mb-4">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-key"></i></span>
                   </div>
                   <input type="text" id="fb_token" formControlName="api_key" class="form-control"
-                         placeholder="Insert Token"/>
+                         placeholder="Insert token"/>
                 </div>
               </div>
               <div *ngIf ="selectedService == 1"  class="form-group row">
-                <label for="serviceType" class="col-form-label col-md-4">JSON file</label>
+                <label for="serviceType" class="col-form-label col-md-4">JSON-file token</label>
                 <div class="input-group col-md-8 mb-4">
                   <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-key"></i></span>
+                    <input type="file" class="form-control rounded py-1" style="padding-left:4px; padding-right:16px" (change)="onFileChange($event)">
                   </div>
-                  <input type="file" class="form-control-file" (change)="onFileChange($event)">
                 </div>
               </div>
 

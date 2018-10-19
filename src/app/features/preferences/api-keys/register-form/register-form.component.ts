@@ -28,7 +28,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
 
   ngOnInit(): void {
     this.registrationForm = this.formBuilder.group({
-      api_key: ['', Validators.compose([Validators.maxLength(200), Validators.required])],
+      api_key: ['', Validators.compose([Validators.maxLength(200)])],
     });
 
     this.addBreadcrumb();
@@ -44,17 +44,14 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     if (event.target.files && event.target.files.length) {
       const [file] = event.target.files;
       reader.readAsText(file);
-    }
 
-    reader.onload = () => {
-      const results = reader.result;
-      console.log(results);
-    };
-    
-    this.registrationForm.value.client_email = event.target.files.client_email;
-    this.registrationForm.value.private_key = event.target.files.private_key;
-    // console.log(event.target.files);
-    // console.log(this.registrationForm.value);
+      reader.onload = () => {
+        const results = JSON.parse(reader.result);
+
+        this.registrationForm.value.client_email = results['client_email'];
+        this.registrationForm.value.private_key = results['private_key'];
+      };
+    }
   }
 
   get f() {
@@ -62,7 +59,9 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   }
 
   selectChangeHandler(event: any) {
+
     this.selectedService = event.target.value;
+    this.registrationForm.value.service_id = event.target.value;
   }
 
   onSubmit() {
@@ -73,8 +72,6 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
       this.loading = false;
       return;
     }
-
-    this.registrationForm.value.service_id = this.selectedService;
 
     this.registrationForm.value.user_id = this.store.getId();
 
@@ -87,7 +84,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
         if (error.status === 400) {
           this.error400 = true;
         }
-        console.log(error.status);
+        console.log(error);
       });
   }
 
