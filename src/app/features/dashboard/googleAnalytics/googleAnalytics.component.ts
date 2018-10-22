@@ -51,7 +51,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
 
-        if(dashCharts['dashboard_id']){
+        if (dashCharts['dashboard_id']) {
           this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
         } else {
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
@@ -74,7 +74,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       .subscribe(data => {
 
         chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
-        chartToPush.color = chartToPush.chartData.options.colors[0]
+        chartToPush.color = chartToPush.chartData.options.colors[0];
 
         this.chartArray$.push(chartToPush);
       }, error1 => {

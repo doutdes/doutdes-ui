@@ -1,33 +1,38 @@
 <div class="row bg-white rounded p-4 title-header">
-  <img src="../assets/img/website-head.png" style="height:80px; margin-top:-7px" /><h1 class="display-4 my-auto ml-3">Configure APIs</h1>
+  <img src="../assets/img/api-head.png" style="height:80px; margin-top:-7px"/>
+  <h1 class="display-4 my-auto ml-3">Data sources</h1>
 </div>
 
 <div class="row">
   <div class="col-md-12">
     <div class="panel-body">
       <!--<div class="table-responsive">-->
-        <table class="table table-hover mt-4" *ngIf="apiKeysList$.length !== 0; else no_content">
-          <thead>
-          <tr class="border" style="background: #ddd; border: 1px solid #999">
-            <th scope="col" style="width: 10%">Service</th>
-            <th scope="col" style="width: 70%">Token</th>
-            <th scope="col" style="width: 10%"></th>
-            <th scope="col" style="width: 10%"></th>
-          </tr>
-          </thead>
-          <tbody *ngFor="let key of apiKeysList$">
-          <tr class="border" style="background:#eee">
-            <td>{{serviceName(key.service)}}</td>
-            <td>{{"********************"+(key.api_key).slice(-10)}}</td>
-            <td>
-              <button type="button" class="btn btn-primary">Update</button>
-            </td>
-            <td>
-              <button type="button" class="btn btn-danger" (click)="deleteService(key.service)">Delete</button>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+      <table class="table table-hover mt-4" *ngIf="apiKeysList$; else no_content">
+        <thead>
+        <tr class="border" style="background: #ddd; border: 1px solid #999">
+          <th scope="col" style="width: 15%">Service</th>
+          <th scope="col" style="width: 60%">Token</th>
+          <th scope="col" style="width: 15%"></th>
+        </tr>
+        </thead>
+        <tr class="border" style="background:#eee" *ngIf="apiKeysList$['fb_token']">
+          <td>{{serviceName(0)}}</td>
+          <td>{{apiKeysList$['fb_token'].substr(0,25) + "********"}}</td>
+          <td>
+            <button type="button" class="btn btn-primary mr-3">Update</button>
+            <button type="button" class="btn btn-danger" (click)="deleteService(0)">Delete</button>
+          </td>
+        </tr>
+        <tr class="border" style="background:#eee" *ngIf="apiKeysList$['ga_token']">
+          <td>{{serviceName(1)}}</td>
+          <td>{{apiKeysList$['ga_token'].substr(0,25) + "********"}}</td>
+          <td>
+            <button type="button" class="btn btn-primary mr-3">Update</button>
+            <button type="button" class="btn btn-danger" (click)="deleteService(1)">Delete</button>
+          </td>
+        </tr>
+
+      </table>
       <!--</div>-->
     </div>
   </div>
@@ -35,8 +40,10 @@
 
 
 <ng-template #no_content>
-  <h5>No access key added. Insert a new one!</h5>
+  <div class="mt-3 mb-5 ml-1">
+  <h5 style="color: #666">No external data source added yet. To add a new one, you must provide its access token.</h5>
+  </div>
 </ng-template>
-<button type="button" class="btn btn-success" [routerLink]="['insert']">Add new access token</button>
+<button type="button" class="btn btn-success" [routerLink]="['insert']">Add new data source</button>
 
 

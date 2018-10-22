@@ -10,14 +10,14 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 
 export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
-  apiKeysList$: Array<any> = [];
+  apiKeysList$: any;
 
   constructor(private apiKeyService: ApiKeysService, private breadcrumbActions: BreadcrumbActions) {
   }
 
   ngOnInit(): void {
-    this.updateList();
     this.addBreadcrumb();
+    this.updateList();
   }
 
   ngOnDestroy(): void {
@@ -28,7 +28,11 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.apiKeyService.getAllKeys()
       .pipe()
       .subscribe(data => {
-        this.apiKeysList$ = data;
+        if (data == null) {
+          this.apiKeysList$ = null;
+        } else {
+          this.apiKeysList$ = data;
+        }
       }, error => {
         console.log(error);
       });

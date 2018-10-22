@@ -31,15 +31,15 @@ export class StoreService {
     localStorage.removeItem('id');
   }
 
-  setUserNames(name: string){
+  setUserNames(name: string) {
     localStorage.setItem('usernames', name);
   }
 
-  getUserNames(){
+  getUserNames() {
     return localStorage.getItem('usernames');
   }
 
-  removeUserNames(){
+  removeUserNames() {
     localStorage.removeItem('usernames');
   }
 

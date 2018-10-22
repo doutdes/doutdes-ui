@@ -13,7 +13,7 @@ export class CalendarService {
   constructor(private http: HttpClient, private storeService: StoreService) {
   }
 
-  getEvents(){
+  getEvents() {
     const headers = this.getAuthorization();
     return this.http.get<Calendar[]>('http://' + environment.host + ':' + environment.port + this.calendarPath + 'getEvents/', {headers});
   }
@@ -23,7 +23,7 @@ export class CalendarService {
     return this.http.post('http://' + environment.host + ':' + environment.port + this.calendarPath + 'addEvent/', {event}, {headers});
   }
 
-  updateEvent(event){
+  updateEvent(event) {
     const headers = this.getAuthorization();
     return this.http.put('http://' + environment.host + ':' + environment.port + this.calendarPath + 'updateEvent/', {event}, {headers});
   }
