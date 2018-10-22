@@ -4,7 +4,7 @@
   <h1 class="display-4 my-auto ml-3">Calendar</h1>
 </div>
 
-<div class="row text-center bg-dark p-4 ml-0 mr-0">
+<div class="row text-center bg-dark p-4 ml-0 mr-0 mt-5">
   <div class="col-md-4">
     <div class="btn-group">
       <div
@@ -86,6 +86,86 @@
     (eventTimesChanged)="eventTimesChanged($event)">
   </mwl-calendar-day-view>
 </div>
+
+<br><br><br>
+
+<h3>
+  Edit events
+  <button class="btn btn-primary float-right" (click)="addEvent()">Add new</button>
+</h3>
+
+<table class="table table-bordered bg-white mt-4">
+
+  <thead>
+  <tr>
+    <th>Title</th>
+    <th>Primary color</th>
+    <th>Secondary color</th>
+    <th>Starts at</th>
+    <th>Ends at</th>
+    <th>Remove</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let event of events; let index = index">
+      <td>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="event.title"
+          (keyup)="refresh.next()">
+      </td>
+      <td>
+        <input
+          type="color"
+          [(ngModel)]="event.color.primary"
+          (change)="refresh.next()">
+      </td>
+      <td>
+        <input
+          type="color"
+          [(ngModel)]="event.color.secondary"
+          (change)="refresh.next()">
+      </td>
+      <td>
+        <input
+          class="form-control"
+          type="text"
+          mwlFlatpickr
+          [(ngModel)]="event.start"
+          (ngModelChange)="refresh.next()"
+          [altInput]="true"
+          [convertModelValue]="true"
+          [enableTime]="true"
+          dateFormat="Y-m-dTH:i"
+          altFormat="F j, Y H:i"
+          placeholder="Not set">
+      </td>
+      <td>
+        <input
+          class="form-control"
+          type="text"
+          mwlFlatpickr
+          [(ngModel)]="event.end"
+          (ngModelChange)="refresh.next()"
+          [altInput]="true"
+          [convertModelValue]="true"
+          [enableTime]="true"
+          dateFormat="Y-m-dTH:i"
+          altFormat="F j, Y H:i"
+          placeholder="Not set">
+      </td>
+      <td>
+        <button
+          class="btn btn-danger"
+          (click)="events.splice(index, 1); refresh.next()">
+          Delete
+        </button>
+      </td>
+    </tr>
+  </tbody>
+
+</table>
 
 <ng-template #showEvent>
   <div class="modal-header">

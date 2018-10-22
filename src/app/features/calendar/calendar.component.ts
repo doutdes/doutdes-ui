@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {Breadcrumb} from '../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
 
@@ -8,23 +8,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
 
-import {
-  CalendarEvent,
-  CalendarEventAction,
-  CalendarEventTimesChangedEvent,
-  CalendarView
-} from 'angular-calendar';
+import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarView} from 'angular-calendar';
 
-import {
-  startOfDay,
-  endOfDay,
-  subDays,
-  addDays,
-  endOfMonth,
-  isSameDay,
-  isSameMonth,
-  addHours
-} from 'date-fns';
+import {endOfDay, isSameDay, isSameMonth, startOfDay} from 'date-fns';
 import {CalendarService} from '../../shared/_services/calendar.service';
 
 const colors: any = {
@@ -45,6 +31,8 @@ const colors: any = {
 @Component({
   selector: 'app-feature-calendar',
   templateUrl: './calendar.component.html',
+  styleUrls: ['./calendar.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class FeatureCalendarComponent implements OnInit, OnDestroy{
 
@@ -200,8 +188,6 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   loadEvents() {
     this.calendarService.getEvents()
       .subscribe(eventsToLoad => {
-
-        console.log(eventsToLoad);
 
         eventsToLoad.forEach(el => {
           const colors = {
