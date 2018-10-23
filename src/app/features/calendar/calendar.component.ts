@@ -203,7 +203,7 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
       .subscribe(updated => {
       }, err => {
         console.log(err);
-      })
+      });
 
   }
 
@@ -212,13 +212,12 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
 
     this.calendarService.deleteEvent(event.meta.id)
       .subscribe(deleted => {
-        console.log('deleted: ' + deleted.deleted);
       }, err => {
         console.log(err);
-      })
+      });
   }
 
   formatData(data: Date) {
-    return data.toDateString() + ' - ' + data.toLocaleTimeString();//' - ' + data.getHours() + ':' + data.getMinutes() + ':' + data.getSeconds();
+    return data.toDateString() + ' - ' + data.toLocaleTimeString();
   }
 }
