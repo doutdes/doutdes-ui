@@ -25,7 +25,7 @@
         </tr>
         <tr class="border" style="background:#eee" *ngIf="apiKeysList$['ga_token']">
           <td>{{serviceName(1)}}</td>
-          <td>{{apiKeysList$['ga_token'].substr(0,25) + "********"}}</td>
+          <td>{{apiKeysList$['ga_token']}}</td>
           <td>
             <button type="button" class="btn btn-primary mr-3">Update</button>
             <button type="button" class="btn btn-danger" (click)="deleteService(1)">Delete</button>
