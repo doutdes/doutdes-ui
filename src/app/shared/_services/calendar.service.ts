@@ -18,29 +18,19 @@ export class CalendarService {
   }
 
   addEvent(event) {
-    const headers = this.getAuthorization();
-    return this.http.post('http://' + environment.host + ':' + environment.port + this.calendarPath + 'addEvent/', {event}, {headers});
+    return this.http.post('http://' + environment.host + ':' + environment.port + this.calendarPath + 'addEvent/', {event});
   }
 
   updateEvent(event){
-    const headers = this.getAuthorization();
-    return this.http.put('http://' + environment.host + ':' + environment.port + this.calendarPath + 'updateEvent/', {event}, {headers});
+    return this.http.put('http://' + environment.host + ':' + environment.port + this.calendarPath + 'updateEvent/', {event});
   }
 
   deleteEvent(id) {
-    const headers = this.getAuthorization();
     const body = {id: id};
 
     return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + this.calendarPath + 'deleteEvent/', {
-      headers,
       body
     });
-  }
-
-  private getAuthorization() {
-    return new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${this.storeService.getToken()}`);
   }
 
 }

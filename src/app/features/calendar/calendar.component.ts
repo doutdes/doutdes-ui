@@ -8,10 +8,12 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
 
-import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarView} from 'angular-calendar';
+import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarView, DAYS_OF_WEEK} from 'angular-calendar';
 
 import {endOfDay, isSameDay, isSameMonth, startOfDay} from 'date-fns';
 import {CalendarService} from '../../shared/_services/calendar.service';
+import {NewCalendar} from '../../shared/_models/Calendar';
+import {e} from '@angular/core/src/render3';
 
 const colors: any = {
   red: {
@@ -43,44 +45,12 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
 
   updateForm: FormGroup;
 
+  weekStartsOn: number = DAYS_OF_WEEK.MONDAY;
   viewDate: Date = new Date();
   view: CalendarView = CalendarView.Month;
   CalendarView = CalendarView;
   activeDayIsOpen: boolean = false;
   refresh: Subject<any> = new Subject();
-
-  // events: CalendarEvent[] = [
-  //   {
-  //     start: subDays(startOfDay(new Date()), 1),
-  //     end: addDays(new Date(), 1),
-  //     title: 'A 3 day event',
-  //     color: colors.red,
-  //     allDay: true,
-  //     resizable: {
-  //       beforeStart: true,
-  //       afterEnd: true
-  //     },
-  //     draggable: true
-  //   },
-  //   {
-  //     start: subDays(endOfMonth(new Date()), 3),
-  //     end: addDays(endOfMonth(new Date()), 3),
-  //     title: 'A long event that spans 2 months',
-  //     color: colors.blue,
-  //     allDay: true
-  //   },
-  //   {
-  //     start: addHours(startOfDay(new Date()), 2),
-  //     end: new Date(),
-  //     title: 'A draggable and resizable event',
-  //     color: colors.yellow,
-  //     resizable: {
-  //       beforeStart: true,
-  //       afterEnd: true
-  //     },
-  //     draggable: true
-  //   }
-  // ];
 
   events: CalendarEvent[] = [];
 
@@ -155,7 +125,8 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   }
 
   addEvent(): void {
-    this.events.push({
+
+    let event: CalendarEvent = {
       title: 'New event',
       start: startOfDay(new Date()),
       end: endOfDay(new Date()),
@@ -164,8 +135,16 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
       resizable: {
         beforeStart: true,
         afterEnd: true
+      },
+      meta: {
+        id: null
       }
-    });
+    };
+
+    this.calendarService.addEvent(event)
+      .subscribe((eventAdded: NewCalendar) => event.meta.id = eventAdded.id, err => console.log(err));
+
+    this.events.push(event);
     this.refresh.next();
   }
 
@@ -204,6 +183,10 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
             resizable: {
               beforeStart: true,
               afterEnd: true
+            },
+            meta: {
+              id: el.id,
+              user_id: el.user_id
             }
           };
 
@@ -213,5 +196,29 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
       }, err => {
         console.log(err);
       });
+  }
+
+  eventUpdated(event) {
+    this.calendarService.updateEvent(event)
+      .subscribe(updated => {
+      }, err => {
+        console.log(err);
+      })
+
+  }
+
+  deleteEvent(event, index) {
+    this.events.splice(index, 1);
+
+    this.calendarService.deleteEvent(event.meta.id)
+      .subscribe(deleted => {
+        console.log('deleted: ' + deleted.deleted);
+      }, err => {
+        console.log(err);
+      })
+  }
+
+  formatData(data: Date) {
+    return data.toDateString() + ' - ' + data.toLocaleTimeString();//' - ' + data.getHours() + ':' + data.getMinutes() + ':' + data.getSeconds();
   }
 }

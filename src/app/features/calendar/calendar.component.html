@@ -62,6 +62,7 @@
   <mwl-calendar-month-view
     *ngSwitchCase="CalendarView.Month"
     [viewDate]="viewDate"
+    [weekStartsOn]="weekStartsOn"
     [events]="events"
     [refresh]="refresh"
     [activeDayIsOpen]="activeDayIsOpen"
@@ -72,6 +73,7 @@
   <mwl-calendar-week-view
     *ngSwitchCase="CalendarView.Week"
     [viewDate]="viewDate"
+    [weekStartsOn]="weekStartsOn"
     [events]="events"
     [refresh]="refresh"
     (eventClicked)="handleEvent('Clicked', $event.event)"
@@ -87,14 +89,12 @@
   </mwl-calendar-day-view>
 </div>
 
-<br><br><br>
-
-<h3>
+<h3 class="mt-4">
   Edit events
   <button class="btn btn-primary float-right" (click)="addEvent()">Add new</button>
 </h3>
 
-<table class="table table-bordered bg-white mt-4">
+<table class="table table-bordered bg-white mt-4" *ngIf="events.length > 0">
 
   <thead>
   <tr>
@@ -103,7 +103,7 @@
     <th>Secondary color</th>
     <th>Starts at</th>
     <th>Ends at</th>
-    <th>Remove</th>
+    <th>Actions</th>
   </tr>
   </thead>
   <tbody>
@@ -111,29 +111,27 @@
       <td>
         <input
           type="text"
-          class="form-control"
-          [(ngModel)]="event.title"
-          (keyup)="refresh.next()">
+          class="form-control bg-light"
+          [(ngModel)]="event.title">
       </td>
       <td>
         <input
           type="color"
-          [(ngModel)]="event.color.primary"
-          (change)="refresh.next()">
+          class="bg-light"
+          [(ngModel)]="event.color.primary">
       </td>
       <td>
         <input
           type="color"
-          [(ngModel)]="event.color.secondary"
-          (change)="refresh.next()">
+          class="bg-light"
+          [(ngModel)]="event.color.secondary">
       </td>
       <td>
         <input
-          class="form-control"
+          class="form-control bg-light"
           type="text"
           mwlFlatpickr
           [(ngModel)]="event.start"
-          (ngModelChange)="refresh.next()"
           [altInput]="true"
           [convertModelValue]="true"
           [enableTime]="true"
@@ -143,11 +141,10 @@
       </td>
       <td>
         <input
-          class="form-control"
+          class="form-control bg-light"
           type="text"
           mwlFlatpickr
           [(ngModel)]="event.end"
-          (ngModelChange)="refresh.next()"
           [altInput]="true"
           [convertModelValue]="true"
           [enableTime]="true"
@@ -156,11 +153,8 @@
           placeholder="Not set">
       </td>
       <td>
-        <button
-          class="btn btn-danger"
-          (click)="events.splice(index, 1); refresh.next()">
-          Delete
-        </button>
+        <button class="btn btn-info" (click)="eventUpdated(event); refresh.next()">Update</button>
+        <button class="btn btn-danger ml-4" (click)="deleteEvent(event, index); refresh.next()">Delete</button>
       </td>
     </tr>
   </tbody>
@@ -176,48 +170,67 @@
   </div>
 
   <div class="modal-body">
+
+    <div class="container" style="padding-bottom: 16px;">
+      <div class="row">
+        <div class="col-md-3 font-weight-bold">Data start</div>
+        <div class="col-md-9">{{formatData(modalData.event.start)}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 font-weight-bold">Data end</div>
+        <div class="col-md-9">{{formatData(modalData.event.end)}}</div>
+      </div>
+    </div>
+
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-danger" (click)="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <!--<div class="modal-body">
     <form [formGroup]="updateForm">
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"><b>Title</b></label>
         <div class="col-sm-9">
-          <input type="text" class="form-control" formControlName="eventTitle" placeholder="Chart Title">
+          <input type="text" class="form-control" formControlName="eventTitle" placeholder="Chart Title" disabled>
         </div>
       </div>
 
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"><b>Starts at</b></label>
         <div class="col-sm-9">
-          <input type="datetime-local" formControlName="dataStart" class="form-control">
+          <input type="datetime-local" formControlName="dataStart" class="form-control" disabled>
         </div>
       </div>
 
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"><b>Ends at</b></label>
         <div class="col-sm-9">
-          <input type="datetime-local" formControlName="dataEnd" class="form-control">
+          <input type="datetime-local" formControlName="dataEnd" class="form-control" disabled>
         </div>
       </div>
 
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"><b>Primary Color</b></label>
         <div class="col-sm-9">
-          <input type="color" formControlName="primaryColor" class="form-control" style="height: 36px;">
+          <input type="color" formControlName="primaryColor" class="form-control" style="height: 36px;" disabled>
         </div>
       </div>
 
       <div class="form-group row">
         <label class="col-sm-3 col-form-label"><b>Secondary Color</b></label>
         <div class="col-sm-9">
-          <input type="color" formControlName="secondaryColor" class="form-control" style="height: 36px;">
+          <input type="color" formControlName="secondaryColor" class="form-control" style="height: 36px;" disabled>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-        <button type="submit" class="btn btn-success">Update</button>
-        <button type="submit" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-danger" (click)="closeModal()">Close</button>
+        &lt;!&ndash;<button type="submit" class="btn btn-success" (click)="eventUpdated(modalData.event)">Update</button>&ndash;&gt;
+        &lt;!&ndash;<button type="submit" class="btn btn-danger" (click)="">Delete</button>&ndash;&gt;
       </div>
 
     </form>
-  </div>
+  </div>-->
 </ng-template>
