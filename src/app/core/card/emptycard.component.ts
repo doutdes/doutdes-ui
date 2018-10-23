@@ -8,7 +8,6 @@ import {BsModalService} from 'ngx-bootstrap/modal';
 import {first} from 'rxjs/operators';
 
 /* Local Services */
-import {ChartsService} from '../../shared/_services/charts.service';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
@@ -46,7 +45,6 @@ export class EmptycardComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
-    private chartService: ChartsService,
     private dashboardService: DashboardService,
     private eventEmitter: GlobalEventsManagerService
   ) {

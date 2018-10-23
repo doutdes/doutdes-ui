@@ -8,40 +8,29 @@ import {Calendar} from '../_models/Calendar';
 @Injectable()
 export class CalendarService {
 
-  calendarPath = 'calendar/';
+  calendarPath = '/calendar/';
 
   constructor(private http: HttpClient, private storeService: StoreService) {
   }
 
-  getEvents() {
-    const headers = this.getAuthorization();
-    return this.http.get<Calendar[]>('http://' + environment.host + ':' + environment.port + this.calendarPath + 'getEvents/', {headers});
+  getEvents(){
+    return this.http.get<Calendar[]>('http://' + environment.host + ':' + environment.port + this.calendarPath + 'getEvents/');
   }
 
   addEvent(event) {
-    const headers = this.getAuthorization();
-    return this.http.post('http://' + environment.host + ':' + environment.port + this.calendarPath + 'addEvent/', {event}, {headers});
+    return this.http.post('http://' + environment.host + ':' + environment.port + this.calendarPath + 'addEvent/', {event});
   }
 
-  updateEvent(event) {
-    const headers = this.getAuthorization();
-    return this.http.put('http://' + environment.host + ':' + environment.port + this.calendarPath + 'updateEvent/', {event}, {headers});
+  updateEvent(event){
+    return this.http.put('http://' + environment.host + ':' + environment.port + this.calendarPath + 'updateEvent/', {event});
   }
 
   deleteEvent(id) {
-    const headers = this.getAuthorization();
     const body = {id: id};
 
     return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + this.calendarPath + 'deleteEvent/', {
-      headers,
       body
     });
-  }
-
-  private getAuthorization() {
-    return new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${this.storeService.getToken()}`);
   }
 
 }
