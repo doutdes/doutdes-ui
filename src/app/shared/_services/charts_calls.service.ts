@@ -179,7 +179,7 @@ export class ChartsCallsService {
         dataFormat = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
-          option: {
+          options: {
             alternatingRowStyle: true,
             allowHtml: true
           }
