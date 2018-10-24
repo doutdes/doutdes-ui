@@ -62,7 +62,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.globalEventService.updateChartList.next(true);
 
       }, error1 => {
-        console.log('Error querying the charts of the Facebook Dashboard');
+        console.log('Error querying the charts');
         console.log(error1);
       });
   }
