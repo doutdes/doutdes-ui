@@ -23,6 +23,8 @@ export class ChartsCallsService {
         return this.googleAnalyticsService.gaPageViews();
       case 5:
         return this.googleAnalyticsService.gaSessions();
+      case 6:
+        return this.googleAnalyticsService.gaSources();
     }
   }
 
@@ -144,6 +146,29 @@ export class ChartsCallsService {
           }
         };
         break; // Google Sessions
+      case 6:
+        header = [['Type', 'Number']];
+        console.log(data[1][0] + ' ' + data[1][1]);
+        // Push data pairs in the chart array
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([data[i][0], parseInt(data[i][1], 10)]);
+        }
+
+        dataFormat = {
+          chartType: 'PieChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            is3D: true,
+            pieSliceText: 'label',
+            pieSliceTextStyle: {fontSize: 13, color: 'black'},
+            colors: ['#8CCEA0', '#e3eaa7', '#b5e7a0', '#86af49'],
+            areaOpacity: 0.4
+          }
+        };
+        break; // Google sessions
     }
     return dataFormat;
   }
