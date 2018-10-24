@@ -25,6 +25,8 @@ export class ChartsCallsService {
         return this.googleAnalyticsService.gaSessions();
       case 6:
         return this.googleAnalyticsService.gaSources();
+      case 7:
+        return this.googleAnalyticsService.gaMostViews();
     }
   }
 
@@ -169,6 +171,20 @@ export class ChartsCallsService {
           }
         };
         break; // Google sessions
+      case 7:
+        header = [['Website', 'Number Of Views']];
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([data[i][0], parseInt(data[i][1], 10)]);
+        }
+        dataFormat = {
+          chartType: 'Table',
+          dataTable: header.concat(chartArray),
+          option: {
+            alternatingRowStyle: true,
+            allowHtml: true
+          }
+        };
+        break; // Google Table
     }
     return dataFormat;
   }

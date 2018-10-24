@@ -52,27 +52,33 @@ export class CardComponent implements OnInit {
       }
     }
 
-    // Handling background nicknames
-    switch (this.background) {
-      case 'lightblue': {
-        this.background = '#0B9AC1';
-        break;
+    if (this.background) {
+
+      // Handling background nicknames
+      switch (this.background) {
+        case 'lightblue': {
+          this.background = '#0B9AC1';
+          break;
+        }
+        case 'green': {
+          this.background = '#2C994B';
+          break;
+        }
+        case 'red': {
+          this.background = '#E04545';
+          break;
+        }
+        case 'peach': {
+          this.background = '#FF703D';
+          break;
+        }
+        default: {
+          break;
+        }
       }
-      case 'green': {
-        this.background = '#2C994B';
-        break;
-      }
-      case 'red': {
-        this.background = '#E04545';
-        break;
-      }
-      case 'peach': {
-        this.background = '#FF703D';
-        break;
-      }
-      default: {
-        break;
-      }
+
+    } else {
+      this.background = '#FF703D';
     }
 
     this.updateChartForm = this.formBuilder.group({
@@ -126,8 +132,8 @@ export class CardComponent implements OnInit {
 
       }, error => {
         console.log(error);
-        console.log("Cannot delete chart from dashboard");
-      })
+        console.log('Cannot delete chart from dashboard');
+      });
   }
 
   updateChart(toUpdate): void {
@@ -138,7 +144,7 @@ export class CardComponent implements OnInit {
       }, error => {
         console.log('Error updating the chart');
         console.log(error);
-      })
+      });
 
   }
 
