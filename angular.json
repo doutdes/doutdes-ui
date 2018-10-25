@@ -26,6 +26,7 @@
               "node_modules/ngx-select-dropdown/dist/assets/style.css",
               "node_modules/angular-calendar/css/angular-calendar.css",
               "node_modules/flatpickr/dist/flatpickr.css",
+              "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
               "src/scss/style.scss"
             ],
             "scripts": [

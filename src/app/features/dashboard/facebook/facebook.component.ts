@@ -7,6 +7,10 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
+import {subDays, addDays} from 'date-fns';
+import {FilterActions} from '../redux-filter/filter.actions';
+import {IntervalDate} from '../redux-filter/filter.model';
+
 @Component({
   selector: 'app-feature-dashboard-facebook',
   templateUrl: './facebook.component.html'
@@ -18,14 +22,28 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     dashboard_type: 1,
     dashboard_id: null
   };
+  public FILTER_DAYS = {
+    seven: 7,
+    thirty: 30,
+    ninety: 90
+  };
+
   public chartArray$: Array<DashboardCharts> = [];
+
+  firstDateRange: Date;
+  lastDateRange: Date;
+  minDate: Date = new Date('2018-01-01');
+  maxDate: Date = new Date();
+  bsRangeValue: Date[];
+  dateChoice: String = 'Preset';
 
   constructor(
     private facebookService: FacebookService,
     private breadcrumbActions: BreadcrumbActions,
     private dashboardService: DashboardService,
     private chartsCallService: ChartsCallsService,
-    private globalEventService: GlobalEventsManagerService
+    private globalEventService: GlobalEventsManagerService,
+    private filterActions: FilterActions
   ) {
     this.globalEventService.removeFromDashboard.subscribe(id => {
       if(id !== 0 ){
@@ -45,6 +63,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         this.chartArray$[index].title = chart.title;
       }
     });
+
+    this.firstDateRange = this.minDate;
+    this.lastDateRange = this.maxDate;
+    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
   }
 
   ngOnInit(): void {
@@ -65,6 +87,15 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         }
 
         this.globalEventService.updateChartList.next(true);
+
+        console.log(this.chartArray$);
+
+        let dateInterval: IntervalDate = {
+          dataStart: this.firstDateRange,
+          dataEnd: this.lastDateRange
+        };
+
+        this.filterActions.initData(this.chartArray$, dateInterval);
 
       }, error1 => {
         console.log('Error querying the charts of the Facebook Dashboard');
@@ -97,12 +128,32 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       .subscribe(data => {
 
         chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
-        chartToPush.color = chartToPush.chartData.options.colors[0]
+        chartToPush.color = chartToPush.chartData.options.colors[0];
 
         this.chartArray$.push(chartToPush);
       }, error1 => {
         console.log('Error querying the chart');
         console.log(error1);
       });
+  }
+
+  changeData(days: number) {
+    this.bsRangeValue = [subDays(new Date(), days), this.lastDateRange];
+
+    switch (days) {
+      case this.FILTER_DAYS.seven:
+        this.dateChoice = 'Last 7 days';
+        break;
+      case this.FILTER_DAYS.thirty:
+        this.dateChoice = 'Last 30 days';
+        break;
+      case this.FILTER_DAYS.ninety:
+        this.dateChoice = 'Last 90 days';
+        break;
+      default:
+        this.dateChoice = 'Custom';
+        break;
+    }
+
   }
 }
