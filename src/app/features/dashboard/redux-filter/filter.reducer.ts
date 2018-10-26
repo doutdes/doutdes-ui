@@ -1,5 +1,5 @@
 import {FILTER_INITIAL_STATE, FilterState, IntervalDate} from './filter.model';
-import {FILTER_INIT, FILTER_BY_DATA, FILTER_RESET} from './filter.actions';
+import {FILTER_INIT, FILTER_BY_DATA, FILTER_RESET, FILTER_CLEAR} from './filter.actions';
 
 export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action): FilterState {
   switch (action.type) {
@@ -20,6 +20,14 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
           dataFiltered: filterByDate(JSON.stringify(state.originalData), action.filterInterval),
           filterInterval: action.filterInterval
         });
+
+    case FILTER_CLEAR:
+      return Object.assign({}, state, {
+        originalData: null,
+        originalInterval: null,
+        dataFiltered: null,
+        filterInterval: null
+      });
 
     case FILTER_RESET:
       return Object.assign({}, state,

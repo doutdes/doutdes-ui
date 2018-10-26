@@ -74,17 +74,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     this.filter.subscribe(elements => {
       if(elements['dataFiltered'] !== null) {
-        // console.log('AGGIORNAMENTO');
-
         this.chartArray$ = elements['dataFiltered'];
-
-        // console.log(elements['dataFiltered']);
-        // console.log(elements['originalData']);
-
-        // if(elements['dataFiltered'] == elements['originalData']) {
-        //   console.log("Sono uguali");
-        // }
-
       }
     });
   }
@@ -136,6 +126,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
+    this.filterActions.clear();
   }
 
   addChartToDashboard(chart: DashboardCharts) { // TODO Gestire aggiunta tenendo conto di Redux
@@ -177,6 +168,5 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         this.dateChoice = 'Custom';
         break;
     }
-
   }
 }

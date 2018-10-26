@@ -7,12 +7,11 @@ import {IntervalDate} from './filter.model';
 
 export const FILTER_INIT    = 'FILTER_INIT';
 export const FILTER_RESET   = 'FILTER_RESET';
+export const FILTER_CLEAR   = 'FILTER_CLEAR';
 export const FILTER_BY_DATA = 'FILTER_BY_DATA';
 
 @Injectable()
 export class FilterActions {
-
-
 
   constructor(private ngRedux: NgRedux<IAppState>) {}
 
@@ -22,6 +21,10 @@ export class FilterActions {
 
   filterData(dateInterval: IntervalDate) {
     this.ngRedux.dispatch({type: FILTER_BY_DATA, filterInterval: dateInterval});
+  }
+
+  clear(){
+    this.ngRedux.dispatch({type: FILTER_CLEAR});
   }
 
 
