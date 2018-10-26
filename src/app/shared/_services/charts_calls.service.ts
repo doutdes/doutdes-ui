@@ -46,9 +46,9 @@ export class ChartsCallsService {
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
 
-          // if (i % 10 === 0) { // Data are greedy sampled by 10 units
-          chartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
-          // }
+          //if (i % 10 === 0) { // Data are greedy sampled by 10 units
+            chartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
+          //}
         }
 
         dataFormat = {

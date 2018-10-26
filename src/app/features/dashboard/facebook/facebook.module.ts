@@ -12,7 +12,8 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
-import {BsDropdownModule} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
+import {FilterActions} from '../redux-filter/filter.actions';
 
 
 @NgModule({
@@ -26,13 +27,16 @@ import {BsDropdownModule} from 'ngx-bootstrap';
     Ng2GoogleChartsModule,
     AppFooterModule,
     RouterModule,
-    HttpClientModule
+    HttpClientModule,
+    BsDatepickerModule.forRoot(),
+    BsDropdownModule.forRoot()
   ],
   providers: [
     FacebookService,
     DashboardService,
     ChartsCallsService,
     BreadcrumbActions,
+    FilterActions,
     GlobalEventsManagerService
   ],
   exports: [

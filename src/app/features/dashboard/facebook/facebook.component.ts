@@ -7,6 +7,12 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
+import {subDays, addDays} from 'date-fns';
+import {FilterActions} from '../redux-filter/filter.actions';
+import {IntervalDate} from '../redux-filter/filter.model';
+import {select} from '@angular-redux/store';
+import {Observable} from 'rxjs';
+
 @Component({
   selector: 'app-feature-dashboard-facebook',
   templateUrl: './facebook.component.html'
@@ -18,14 +24,30 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     dashboard_type: 1,
     dashboard_id: null
   };
-  public chartArray$: Array<DashboardCharts> = [];
+  public FILTER_DAYS = {
+    seven: 7,
+    thirty: 30,
+    ninety: 90
+  };
+
+  public chartArray$: Array<DashboardCharts> = []; // TODO invece che ciclare su questo, ciclare sul redux store
+
+  @select() filter: Observable<any>;
+
+  firstDateRange: Date;
+  lastDateRange: Date;
+  minDate: Date = new Date('2018-01-01');
+  maxDate: Date = new Date();
+  bsRangeValue: Date[];
+  dateChoice: String = 'Preset';
 
   constructor(
     private facebookService: FacebookService,
     private breadcrumbActions: BreadcrumbActions,
     private dashboardService: DashboardService,
     private chartsCallService: ChartsCallsService,
-    private globalEventService: GlobalEventsManagerService
+    private globalEventService: GlobalEventsManagerService,
+    private filterActions: FilterActions
   ) {
     this.globalEventService.removeFromDashboard.subscribe(id => {
       if(id !== 0 ){
@@ -43,6 +65,26 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       if(chart) {
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
         this.chartArray$[index].title = chart.title;
+      }
+    });
+
+    this.firstDateRange = this.minDate;
+    this.lastDateRange = this.maxDate;
+    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+    this.filter.subscribe(elements => {
+      if(elements['dataFiltered'] !== null) {
+        // console.log('AGGIORNAMENTO');
+
+        this.chartArray$ = elements['dataFiltered'];
+
+        // console.log(elements['dataFiltered']);
+        // console.log(elements['originalData']);
+
+        // if(elements['dataFiltered'] == elements['originalData']) {
+        //   console.log("Sono uguali");
+        // }
+
       }
     });
   }
@@ -63,6 +105,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
           dashCharts.forEach(chart => this.addChartToDashboard(chart));
         }
+
+        let dateInterval: IntervalDate = {
+          dataStart: this.firstDateRange,
+          dataEnd: this.lastDateRange
+        };
+        this.filterActions.initData(this.chartArray$, dateInterval);
 
         this.globalEventService.updateChartList.next(true);
 
@@ -90,19 +138,45 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.removeBreadcrumb();
   }
 
-  addChartToDashboard(chart: DashboardCharts) {
+  addChartToDashboard(chart: DashboardCharts) { // TODO Gestire aggiunta tenendo conto di Redux
     const chartToPush: DashboardCharts = chart;
 
     this.chartsCallService.getDataByChartId(chart.chart_id)
       .subscribe(data => {
 
         chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
-        chartToPush.color = chartToPush.chartData.options.colors[0]
+        chartToPush.color = chartToPush.chartData.options.colors[0];
 
         this.chartArray$.push(chartToPush);
       }, error1 => {
         console.log('Error querying the chart');
         console.log(error1);
       });
+  }
+
+  changeData(days: number) {
+    this.bsRangeValue = [subDays(new Date(), days), this.lastDateRange];
+
+    const dateInterval: IntervalDate = {
+      dataStart: subDays(new Date(), days),
+      dataEnd: this.lastDateRange
+    };
+    this.filterActions.filterData(dateInterval);
+
+    switch (days) {
+      case this.FILTER_DAYS.seven:
+        this.dateChoice = 'Last 7 days';
+        break;
+      case this.FILTER_DAYS.thirty:
+        this.dateChoice = 'Last 30 days';
+        break;
+      case this.FILTER_DAYS.ninety:
+        this.dateChoice = 'Last 90 days';
+        break;
+      default:
+        this.dateChoice = 'Custom';
+        break;
+    }
+
   }
 }
