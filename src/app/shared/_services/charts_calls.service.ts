@@ -27,6 +27,8 @@ export class ChartsCallsService {
         return this.googleAnalyticsService.gaSources();
       case 7:
         return this.googleAnalyticsService.gaMostViews();
+      case 8:
+        return this.facebookService.fbfancount();
     }
   }
 
@@ -44,9 +46,9 @@ export class ChartsCallsService {
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
 
-          if (i % 10 === 0) { // Data are greedy sampled by 10 units
-            chartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
-          }
+          // if (i % 10 === 0) { // Data are greedy sampled by 10 units
+          chartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
+          // }
         }
 
         dataFormat = {
@@ -55,6 +57,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            curveType: 'function',
             height: 310,
             explorer: {},
             colors: ['#63c2de'],
@@ -99,6 +102,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            curveType: 'function',
             height: 310,
             explorer: {},
             colors: ['#8CCEA0'],
@@ -120,6 +124,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            curveType: 'function',
             height: 310,
             explorer: {},
             colors: ['#EF7C7C'],
@@ -141,6 +146,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            curveType: 'function',
             height: 310,
             explorer: {},
             colors: ['#63c2de'],
@@ -185,6 +191,25 @@ export class ChartsCallsService {
           }
         };
         break; // Google Table
+      case 8:
+        header = [['Date', 'Number of fans']];
+        // Push data pairs in the chart array
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
+        }
+        dataFormat = {
+          chartType: 'BarChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            curveType: 'function',
+            height: 310,
+            explorer: {},
+            colors: ['#bccad6', '#8d9db6', '#667292', '#cfe0e8'],
+            areaOpacity: 0.4
+          }
+        };
     }
     return dataFormat;
   }
