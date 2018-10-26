@@ -11,16 +11,17 @@ export const FILTER_BY_DATA = 'FILTER_BY_DATA';
 
 @Injectable()
 export class FilterActions {
+
+
+
   constructor(private ngRedux: NgRedux<IAppState>) {}
 
   initData(originalData, dateInterval: IntervalDate) {
-    console.log('Ho ricevuto: ');
-    console.log(dateInterval);
     this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval});
   }
 
-  filterData() {
-
+  filterData(dateInterval: IntervalDate) {
+    this.ngRedux.dispatch({type: FILTER_BY_DATA, filterInterval: dateInterval});
   }
 
 
