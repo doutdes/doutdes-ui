@@ -23,6 +23,12 @@ export class ChartsCallsService {
         return this.googleAnalyticsService.gaPageViews();
       case 5:
         return this.googleAnalyticsService.gaSessions();
+      case 6:
+        return this.googleAnalyticsService.gaSources();
+      case 7:
+        return this.googleAnalyticsService.gaMostViews();
+      case 8:
+        return this.facebookService.fbfancount();
     }
   }
 
@@ -51,6 +57,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            curveType: 'function',
             height: 310,
             explorer: {},
             colors: ['#63c2de'],
@@ -95,6 +102,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            curveType: 'function',
             height: 310,
             explorer: {},
             colors: ['#8CCEA0'],
@@ -116,6 +124,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            curveType: 'function',
             height: 310,
             explorer: {},
             colors: ['#EF7C7C'],
@@ -137,6 +146,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            curveType: 'function',
             height: 310,
             explorer: {},
             colors: ['#63c2de'],
@@ -144,6 +154,62 @@ export class ChartsCallsService {
           }
         };
         break; // Google Sessions
+      case 6:
+        header = [['Type', 'Number']];
+        console.log(data[1][0] + ' ' + data[1][1]);
+        // Push data pairs in the chart array
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([data[i][0], parseInt(data[i][1], 10)]);
+        }
+
+        dataFormat = {
+          chartType: 'PieChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            is3D: true,
+            pieSliceText: 'label',
+            pieSliceTextStyle: {fontSize: 13, color: 'black'},
+            colors: ['#8CCEA0', '#e3eaa7', '#b5e7a0', '#86af49'],
+            areaOpacity: 0.4
+          }
+        };
+        break; // Google sessions
+      case 7:
+        header = [['Website', 'Number Of Views']];
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([data[i][0], parseInt(data[i][1], 10)]);
+        }
+        dataFormat = {
+          chartType: 'Table',
+          dataTable: header.concat(chartArray),
+          options: {
+            alternatingRowStyle: true,
+            allowHtml: true
+          }
+        };
+        break; // Google Table
+      case 8:
+        header = [['Date', 'Number of fans']];
+        // Push data pairs in the chart array
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
+        }
+        dataFormat = {
+          chartType: 'BarChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            curveType: 'function',
+            height: 310,
+            explorer: {},
+            colors: ['#bccad6', '#8d9db6', '#667292', '#cfe0e8'],
+            areaOpacity: 0.4
+          }
+        };
     }
     return dataFormat;
   }

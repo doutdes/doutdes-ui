@@ -62,7 +62,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.globalEventService.updateChartList.next(true);
 
       }, error1 => {
-        console.log('Error querying the charts of the Facebook Dashboard');
+        console.log('Error querying the charts');
         console.log(error1);
       });
   }
@@ -74,7 +74,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       .subscribe(data => {
 
         chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
-        chartToPush.color = chartToPush.chartData.options.colors[0];
+        chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
 
         this.chartArray$.push(chartToPush);
       }, error1 => {
