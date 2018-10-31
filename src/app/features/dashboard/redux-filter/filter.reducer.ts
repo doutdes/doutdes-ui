@@ -41,15 +41,15 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
   }
 }
 
-function filterByDate (originalData, filterInterval: IntervalDate) : any {
+function filterByDate(originalData, filterInterval: IntervalDate): any {
 
-  let originalReceived = JSON.parse(originalData);
-  let filtered = [];
+  const originalReceived = JSON.parse(originalData);
+  const filtered = [];
 
   originalReceived.forEach(chart => {
-    if(chart['title'] !== 'Geomap') {
+    if (chart['title'] !== 'Geomap') {
 
-      let header = [chart['chartData']['dataTable'].shift()];
+      const header = [chart['chartData']['dataTable'].shift()];
       let newArray = [];
 
       chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));

@@ -49,17 +49,17 @@ export class EmptycardComponent implements OnInit {
     private eventEmitter: GlobalEventsManagerService
   ) {
     this.eventEmitter.removeFromDashboard.subscribe(id => {
-      if(id !== 0 ){
+      if (id !== 0) {
         this.updateDropdownOptions();
         this.eventEmitter.removeFromDashboard.next(0);
       }
     });
     this.eventEmitter.updateChartList.subscribe(value => {
-      if(value) {
+      if (value) {
         this.updateDropdownOptions();
         this.eventEmitter.updateChartList.next(false);
       }
-    })
+    });
   }
 
   ngOnInit() {
@@ -75,7 +75,7 @@ export class EmptycardComponent implements OnInit {
   }
 
   openModal() {
-    if(this.dropdownOptions.length > 0) {
+    if (this.dropdownOptions.length > 0) {
       this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
     } else {
       this.modalRef = this.modalService.show(this.noChartsAvailable, {class: 'modal-md modal-dialog-centered'});
@@ -102,9 +102,9 @@ export class EmptycardComponent implements OnInit {
     }
 
     const chart: DashboardCharts = {
-        dashboard_id: this.dashboard_data.dashboard_id,
-        chart_id: this.chartSelected[0].id,
-        title: this.insertChartForm.value.chartTitle,
+      dashboard_id: this.dashboard_data.dashboard_id,
+      chart_id: this.chartSelected[0].id,
+      title: this.insertChartForm.value.chartTitle,
     };
 
     this.loading = true;
@@ -125,7 +125,7 @@ export class EmptycardComponent implements OnInit {
       }, error => {
         console.log('Error inserting the chart in the dashboard');
         console.log(error);
-      })
+      });
 
   }
 
@@ -136,7 +136,7 @@ export class EmptycardComponent implements OnInit {
 
         this.dropdownOptions = [];
 
-        if(chartRemaining) {
+        if (chartRemaining) {
           chartRemaining.forEach(el => {
             this.dropdownOptions.push({
               id: el.ID,
@@ -148,10 +148,10 @@ export class EmptycardComponent implements OnInit {
       }, err => {
         console.log('Error in chart remaining call');
         console.log(err);
-      })
+      });
   }
 
-  selectionChanged($event: any){
+  selectionChanged($event: any) {
     this.insertChartForm.controls['chartTitle'].setValue($event.value[0].title);
   }
 

@@ -50,19 +50,19 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private filterActions: FilterActions
   ) {
     this.globalEventService.removeFromDashboard.subscribe(id => {
-      if(id !== 0 ){
+      if (id !== 0) {
         this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
         this.globalEventService.removeFromDashboard.next(0);
       }
     });
     this.globalEventService.addChartInDashboard.subscribe(chart => {
-      if(chart) {
+      if (chart) {
         this.addChartToDashboard(chart);
         this.globalEventService.addChartInDashboard.next(null);
       }
     });
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
-      if(chart) {
+      if (chart) {
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
         this.chartArray$[index].title = chart.title;
       }
@@ -73,7 +73,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
     this.filter.subscribe(elements => {
-      if(elements['dataFiltered'] !== null) {
+      if (elements['dataFiltered'] !== null) {
         this.chartArray$ = elements['dataFiltered'];
       }
     });
@@ -88,7 +88,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
 
-        if(dashCharts['dashboard_id']){
+        if (dashCharts['dashboard_id']) {
           this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
         } else {
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
@@ -96,7 +96,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           dashCharts.forEach(chart => this.addChartToDashboard(chart));
         }
 
-        let dateInterval: IntervalDate = {
+        const dateInterval: IntervalDate = {
           dataStart: this.firstDateRange,
           dataEnd: this.lastDateRange
         };
