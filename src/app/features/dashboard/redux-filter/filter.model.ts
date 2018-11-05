@@ -1,13 +1,13 @@
 export interface IntervalDate {
-  dataStart: Date,
-  dataEnd: Date
+  dataStart: Date;
+  dataEnd: Date;
 }
 
 export interface FilterState {
   originalData: any;
-  originalInterval: IntervalDate,
+  originalInterval: IntervalDate;
   dataFiltered: any;
-  filterInterval: IntervalDate
+  filterInterval: IntervalDate;
 }
 
 export const FILTER_INITIAL_STATE: FilterState = {

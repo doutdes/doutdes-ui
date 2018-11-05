@@ -4,6 +4,7 @@ import {CoreModule} from '../../core/core.module';
 import {CommonModule} from '@angular/common';
 import {FeatureTutorialRoutingModule} from './tutorial.routing';
 import {FeatureTutorialComponent} from './tutorial.component';
+import {ModalModule} from 'ngx-bootstrap';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import {FeatureTutorialComponent} from './tutorial.component';
   imports: [
     CoreModule,
     CommonModule,
-    FeatureTutorialRoutingModule
+    FeatureTutorialRoutingModule,
+    ModalModule.forRoot()
   ],
   providers: [
     BreadcrumbActions
