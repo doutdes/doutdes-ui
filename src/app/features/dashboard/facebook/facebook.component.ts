@@ -30,7 +30,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     ninety: 90
   };
 
-  public chartArray$: Array<DashboardCharts> = []; // TODO invece che ciclare su questo, ciclare sul redux store
+  public chartArray$: Array<DashboardCharts> = [];
 
   @select() filter: Observable<any>;
 
