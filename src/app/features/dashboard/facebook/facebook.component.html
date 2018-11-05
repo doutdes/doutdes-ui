@@ -17,7 +17,7 @@
           <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
           <li class="dropdown-item">Custom</li>
         </ul>
-      </div>
+      </div> <!-- TODO Create a component custom like card -->
       <input type="text" class="form-control float-right filterDatePicker" #drp="bsDaterangepicker"
              [(ngModel)]="bsRangeValue"
              [minDate]="minDate"
