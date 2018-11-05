@@ -28,7 +28,9 @@ export class ChartsCallsService {
       case 7:
         return this.googleAnalyticsService.gaMostViews();
       case 8:
-        return this.facebookService.fbfancount();
+        return this.facebookService.fbfancountry();
+      case 9:
+        return this.googleAnalyticsService.gaSources();
     }
   }
 
@@ -46,9 +48,9 @@ export class ChartsCallsService {
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
 
-           // if (i % 10 === 0) { // Data are greedy sampled by 10 units
+          // if (i % 10 === 0) { // Data are greedy sampled by 10 units
           chartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
-           // }
+          // }
         }
 
         dataFormat = {
@@ -159,9 +161,9 @@ export class ChartsCallsService {
         console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0], parseInt(data[i][1], 10)]);
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
+          // Ternary operator trivially replaces 'none' with 'unknown'
         }
-
         dataFormat = {
           chartType: 'PieChart',
           dataTable: header.concat(chartArray),
@@ -176,7 +178,7 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Google sessions
+        break; // Google sources Pie
       case 7:
         header = [['Website', 'Number Of Views']];
         for (let i = 0; i < data.length; i++) {
@@ -192,24 +194,48 @@ export class ChartsCallsService {
         };
         break; // Google Table
       case 8:
-        header = [['Date', 'Number of fans']];
+        header = [['Country', 'Popularity']];
+        // Push data pairs in the chart array
+        const arrPie = Object.keys(data[0].value).map(function (k) {
+          return [k, data[0].value[k]];
+        });
+        dataFormat = {
+          chartType: 'PieChart',
+          dataTable: header.concat(arrPie),
+          options: {
+            chartArea: {left: 0, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            sliceVisibilityThreshold: 0.05,
+            height: 310,
+            is3D: true,
+            pieSliceText: 'label',
+            pieSliceTextStyle: {fontSize: 13, color: 'black'},
+            pieHole: 0.2,
+            colors: ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'],
+            areaOpacity: 0.4
+          }
+        };
+        break; //Fan Country Pie
+      case 9:
+        header = [['Type', 'Number']];
+        console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
+          // Ternary operator trivially replaces 'none' with 'unknown'
         }
         dataFormat = {
-          chartType: 'BarChart',
+          chartType: 'ColumnChart',
           dataTable: header.concat(chartArray),
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
-            curveType: 'function',
             height: 310,
-            explorer: {},
-            colors: ['#bccad6', '#8d9db6', '#667292', '#cfe0e8'],
+            colors: ['#618685'],
             areaOpacity: 0.4
           }
         };
+        break; // Google sources Column Chart
     }
     return dataFormat;
   }
