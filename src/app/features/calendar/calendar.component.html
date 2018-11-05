@@ -89,10 +89,15 @@
   </mwl-calendar-day-view>
 </div>
 
-<h3 class="mt-4">
-  Edit events
-  <button class="btn btn-primary float-right" (click)="addEvent()">Add new</button>
-</h3>
+
+<div class="row my-4">
+  <div class="col-md-2">
+    <h3 *ngIf="events.length > 0">Edit events</h3>
+  </div>
+  <div class="offset-md-8 col-md-2">
+    <button class="btn btn-primary float-right" (click)="addEvent()">Add new</button>
+  </div>
+</div>
 
 <table class="table table-bordered bg-white mt-4" *ngIf="events.length > 0">
 

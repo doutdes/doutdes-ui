@@ -145,6 +145,19 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       });
   }
 
+  onValueChange(value): void {
+
+    if(value) {
+      const dateInterval: IntervalDate = {
+        dataStart: value[0],
+        dataEnd: value[1].setHours(23,59,59,999)
+      };
+
+      this.dateChoice = 'Custom';
+      this.filterActions.filterData(dateInterval);
+    }
+  }
+
   changeData(days: number) {
     this.bsRangeValue = [subDays(new Date(), days), this.lastDateRange];
 
@@ -169,4 +182,5 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         break;
     }
   }
+
 }

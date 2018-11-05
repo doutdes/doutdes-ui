@@ -46,21 +46,24 @@ function filterByDate (originalData, filterInterval: IntervalDate) : any {
   let originalReceived = JSON.parse(originalData);
   let filtered = [];
 
-  originalReceived.forEach(chart => {
-    if(chart['title'] !== 'Geomap') {
+  if(originalReceived) {
 
-      let header = [chart['chartData']['dataTable'].shift()];
-      let newArray = [];
+    originalReceived.forEach(chart => {
+      if (chart['title'] !== 'Geomap') {
 
-      chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
-      newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
+        let header = [chart['chartData']['dataTable'].shift()];
+        let newArray = [];
 
-      chart['chartData']['dataTable'] = header.concat(newArray);
-    }
+        chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
+        newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
 
-    filtered.push(chart);
+        chart['chartData']['dataTable'] = header.concat(newArray);
+      }
 
-  });
+      filtered.push(chart);
+    });
+
+  }
 
   return filtered;
 }
