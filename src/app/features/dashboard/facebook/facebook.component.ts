@@ -136,7 +136,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       .subscribe(data => {
 
         chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
-        chartToPush.color = chartToPush.chartData.options.colors[0];
+        chartToPush.color = chartToPush.chartData.chartType === 'PieChart' ? null : chartToPush.chartData.options.colors[0];
 
         this.chartArray$.push(chartToPush);
       }, error1 => {

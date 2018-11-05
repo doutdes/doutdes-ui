@@ -211,7 +211,7 @@ export class ChartsCallsService {
             pieSliceText: 'label',
             pieSliceTextStyle: {fontSize: 13, color: 'black'},
             pieHole: 0.2,
-            colors: ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'],
+            slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
             areaOpacity: 0.4
           }
         };
