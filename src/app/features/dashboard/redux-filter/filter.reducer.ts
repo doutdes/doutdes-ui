@@ -4,7 +4,7 @@ import {FILTER_INIT, FILTER_BY_DATA, FILTER_RESET, FILTER_CLEAR} from './filter.
 export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action): FilterState {
   switch (action.type) {
     case FILTER_INIT:
-      return Object.assign({}, state,
+      return Object.assign({}, state, // TODO Per la GeoMap basta inizializzare l'indice 0 come filtered e tutta la lista come original
         {
           originalData: action.originalData,
           originalInterval: action.originalInterval,
@@ -13,11 +13,14 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
         });
 
     case FILTER_BY_DATA:
+
+      console.log(action.dataFiltered);
+
       return Object.assign({}, state,
         {
           originalData: state.originalData,
           originalInterval: state.originalInterval,
-          dataFiltered: filterByDate(JSON.stringify(state.originalData), action.filterInterval),
+          dataFiltered: action.dataFiltered,
           filterInterval: action.filterInterval
         });
 
@@ -41,59 +44,3 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
   }
 }
 
-function filterByDate (originalData, filterInterval: IntervalDate) : any {
-
-  let originalReceived = JSON.parse(originalData);
-  let filtered = [];
-
-  if(originalReceived) {
-
-    originalReceived.forEach(chart => {
-
-      // console.log(chart['chartData']);
-
-      if (chart['title'] !== 'Geomap') {
-
-        if(chart['chartData']['chartType'] == 'PieChart' || chart['chartData']['chartType'] == 'Table' || chart['chartData']['chartType'] == 'ColumnChart') {
-          console.log(chart['Chart']['title']);
-          // return originalReceived;
-        } else {
-
-          let header = [chart['chartData']['dataTable'].shift()];
-          let newArray = [];
-
-          chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
-          newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
-
-          chart['chartData']['dataTable'] = header.concat(newArray);
-        }
-      }
-
-      filtered.push(chart);
-    });
-  }
-
-  return filtered;
-}
-
-function getCallForDataFiltered(chartName: string, filterInterval: IntervalDate) {
-
-  let filtered;
-
-  switch (chartName) {
-    case 'Geomap':
-      break;
-    case 'Sources Pie Chart':
-      break;
-    case 'Referral':
-      break;
-    case 'Fan By Country Pie Chart':
-      break;
-    case 'Sources Column Chart':
-      break;
-    default:
-      filtered = null;
-  }
-
-  return filtered;
-}
