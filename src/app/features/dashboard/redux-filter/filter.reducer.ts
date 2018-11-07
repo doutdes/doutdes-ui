@@ -49,20 +49,50 @@ function filterByDate (originalData, filterInterval: IntervalDate) : any {
   if(originalReceived) {
 
     originalReceived.forEach(chart => {
+
+      // console.log(chart['chartData']);
+
       if (chart['title'] !== 'Geomap') {
 
-        let header = [chart['chartData']['dataTable'].shift()];
-        let newArray = [];
+        if(chart['chartData']['chartType'] == 'PieChart' || chart['chartData']['chartType'] == 'Table' || chart['chartData']['chartType'] == 'ColumnChart') {
+          console.log(chart['Chart']['title']);
+          // return originalReceived;
+        } else {
 
-        chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
-        newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
+          let header = [chart['chartData']['dataTable'].shift()];
+          let newArray = [];
 
-        chart['chartData']['dataTable'] = header.concat(newArray);
+          chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
+          newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
+
+          chart['chartData']['dataTable'] = header.concat(newArray);
+        }
       }
 
       filtered.push(chart);
     });
+  }
 
+  return filtered;
+}
+
+function getCallForDataFiltered(chartName: string, filterInterval: IntervalDate) {
+
+  let filtered;
+
+  switch (chartName) {
+    case 'Geomap':
+      break;
+    case 'Sources Pie Chart':
+      break;
+    case 'Referral':
+      break;
+    case 'Fan By Country Pie Chart':
+      break;
+    case 'Sources Column Chart':
+      break;
+    default:
+      filtered = null;
   }
 
   return filtered;
