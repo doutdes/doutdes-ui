@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
-import {GoogleData, GoogleDataWithDate, GoogleMostViews, GooglePageViews, GoogleSessions, GoogleSources} from '../_models/GoogleData';
+import {GoogleMostViews, GooglePageViews, GoogleSessions, GoogleSources} from '../_models/GoogleData';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import * as moment from 'moment';
 

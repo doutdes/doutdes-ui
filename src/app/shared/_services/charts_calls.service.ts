@@ -114,8 +114,10 @@ export class ChartsCallsService {
         break; // Page Impressions
       case 4:
         header = [['Date', 'WebViews']];
-        console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
+
+        // console.log(data);
+
         for (let i = 0; i < data.length; i++) {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
@@ -136,7 +138,6 @@ export class ChartsCallsService {
         break; // Google PageViews
       case 5:
         header = [['Date', 'Sessions']];
-        console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
@@ -158,9 +159,6 @@ export class ChartsCallsService {
         break; // Google Sessions
       case 6:
         header = [['Type', 'Number']];
-        console.log(data[1][0] + ' ' + data[1][1]);
-
-        console.log(data);
 
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
@@ -221,7 +219,6 @@ export class ChartsCallsService {
         break; // Fan Country Pie
       case 9:
         header = [['Type', 'Number']];
-        console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
           chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);

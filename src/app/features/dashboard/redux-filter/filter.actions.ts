@@ -5,10 +5,8 @@ import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../shared/store/model';
 import {IntervalDate} from './filter.model';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
-import {Chart} from '../../../shared/_models/Chart';
-import {Observable} from 'rxjs';
-import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
-import {first} from 'rxjs/operators';
+import {forkJoin, Observable} from 'rxjs';
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_RESET = 'FILTER_RESET';
@@ -24,7 +22,6 @@ export class FilterActions {
   constructor(
     private ngRedux: NgRedux<IAppState>,
     private chartCallService: ChartsCallsService,
-    private googleAnalyticsService: GoogleAnalyticsService
   ) {
     this.filter.subscribe(elements => {
       this.originalData = elements['originalData'];
@@ -37,37 +34,30 @@ export class FilterActions {
 
   filterData(dateInterval: IntervalDate) {
 
-    // this.filterByDate(JSON.stringify(this.originalData), dateInterval);
-    //
     const filteredData = this.filterByDate(JSON.stringify(this.originalData), dateInterval);
-
     this.ngRedux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
+
   }
 
   clear() {
     this.ngRedux.dispatch({type: FILTER_CLEAR});
   }
 
-  async filterByDate(originalData, filterInterval: IntervalDate){
+  filterByDate(originalData, filterInterval: IntervalDate){
 
     let originalReceived = JSON.parse(originalData);
     let filtered = [];
+    let observables: Observable<any>[] = [];
+    let chartsToRetrieve: Array<DashboardCharts> = [];
 
     if (originalReceived) {
       originalReceived.forEach(chart => {
 
-        console.log(chart['Chart']['title']);
-
         if (chart['title'] !== 'Geomap') { // TODO Eliminare
           if (chart['Chart']['type'] == 2) {
 
-            const pdpm = this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval)
-              .subscribe(data => {
-                let newData = this.chartCallService.formatDataByChartId(chart['Chart']['id'], data);
-
-                chart['chartData']['dataTable'] = newData['dataTable'];
-                console.log(filtered);
-              });
+            observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
+            chartsToRetrieve.push(chart);
 
           } else {
 
@@ -76,13 +66,28 @@ export class FilterActions {
 
             chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
             newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
-
             chart['chartData']['dataTable'] = header.concat(newArray);
+
+            filtered.push(chart);
           }
         }
-
-        filtered.push(chart);
       });
+
+      if(observables.length !== 0) {
+        console.log('Devo filtrare ' + observables.length + ' grafici');
+
+        forkJoin(observables)
+          .subscribe(dataArray => {
+            console.log(dataArray);
+
+            for(let i=0;i<dataArray.length; i++){
+              let newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id ,dataArray[i]);
+
+              chartsToRetrieve[i].chartData['dataTable'] = newData['dataTable'];
+              filtered.push(chartsToRetrieve[i]);
+            }
+          });
+      }
     }
 
     return filtered;

@@ -73,6 +73,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     this.filter.subscribe(elements => {
       if(elements['dataFiltered'] !== null) {
+        console.log(elements['dataFiltered']);
         this.chartArray$ = elements['dataFiltered'];
       }
     });
@@ -135,26 +136,18 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   onValueChange(value): void {
-
     if(value) {
       const dateInterval: IntervalDate = {
         dataStart: value[0],
         dataEnd: value[1].setHours(23,59,59,999)
       };
 
-      this.dateChoice = 'Custom';
       this.filterActions.filterData(dateInterval);
     }
   }
 
   changeData(days: number) {
     this.bsRangeValue = [subDays(new Date(), days), this.lastDateRange];
-
-    const dateInterval: IntervalDate = {
-      dataStart: subDays(new Date(), days),
-      dataEnd: this.lastDateRange
-    };
-    this.filterActions.filterData(dateInterval);
 
     switch (days) {
       case this.FILTER_DAYS.seven:

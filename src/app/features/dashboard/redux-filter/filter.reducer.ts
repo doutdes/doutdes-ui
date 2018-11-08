@@ -14,7 +14,7 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
 
     case FILTER_BY_DATA:
 
-      console.log(action.dataFiltered);
+      // console.log(action.dataFiltered);
 
       return Object.assign({}, state,
         {
