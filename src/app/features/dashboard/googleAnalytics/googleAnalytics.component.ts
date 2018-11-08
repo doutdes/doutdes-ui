@@ -8,9 +8,12 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
-import {Observable} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from "date-fns";
+import {ngxLoadingAnimationTypes} from 'ngx-loading';
+
+const PrimaryWhite = '#ffffff';
 
 @Component({
   selector: 'app-feature-dashboard-google',
@@ -30,6 +33,15 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+
+  public loading = false;
+  public config = {
+    animationType: ngxLoadingAnimationTypes.threeBounce,
+    backdropBackgroundColour: 'rgba(0,0,0,0.1)',
+    backdropBorderRadius: '4px',
+    primaryColour: PrimaryWhite,
+    secondaryColour: PrimaryWhite
+  };
 
   @select() filter: Observable<any>;
 
@@ -66,6 +78,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.chartArray$[index].title = chart.title;
       }
     });
+    this.globalEventService.loadingScreen.subscribe(value => {
+      console.log(value);
+      this.loading = value;
+    });
+
 
     this.firstDateRange = this.minDate;
     this.lastDateRange = this.maxDate;
@@ -73,13 +90,16 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     this.filter.subscribe(elements => {
       if(elements['dataFiltered'] !== null) {
-        console.log(elements['dataFiltered']);
         this.chartArray$ = elements['dataFiltered'];
       }
     });
   }
 
   loadDashboard() {
+
+    let observables: Observable<any>[] = [];
+    let chartsToShow: Array<DashboardCharts> = [];
+
     this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
 
@@ -88,15 +108,30 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         } else {
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
 
-          dashCharts.forEach(chart => this.addChartToDashboard(chart));
+          dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id)));
+
+          forkJoin(observables)
+            .subscribe(dataArray => {
+              for(let i=0;i<dataArray.length; i++){
+
+                let chartToPush: DashboardCharts = dashCharts[i];
+                chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
+                chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
+
+                chartsToShow.push(chartToPush);
+              }
+
+              this.chartArray$ = chartsToShow;
+              this.globalEventService.loadingScreen.next(false);
+            });
         }
 
         let dateInterval: IntervalDate = {
           dataStart: this.firstDateRange,
           dataEnd: this.lastDateRange
         };
-        this.filterActions.initData(this.chartArray$, dateInterval);
 
+        this.filterActions.initData(chartsToShow, dateInterval);
         this.globalEventService.updateChartList.next(true);
 
       }, error1 => {
@@ -142,6 +177,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         dataEnd: value[1].setHours(23,59,59,999)
       };
 
+      console.log('Aggiornamento true');
+
+      this.globalEventService.loadingScreen.next(true);
       this.filterActions.filterData(dateInterval);
     }
   }

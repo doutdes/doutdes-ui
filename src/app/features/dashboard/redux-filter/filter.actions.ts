@@ -7,6 +7,7 @@ import {IntervalDate} from './filter.model';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {forkJoin, Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
+import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_RESET = 'FILTER_RESET';
@@ -22,6 +23,7 @@ export class FilterActions {
   constructor(
     private ngRedux: NgRedux<IAppState>,
     private chartCallService: ChartsCallsService,
+    private globalEventEmitter: GlobalEventsManagerService
   ) {
     this.filter.subscribe(elements => {
       this.originalData = elements['originalData'];
@@ -33,10 +35,8 @@ export class FilterActions {
   }
 
   filterData(dateInterval: IntervalDate) {
-
     const filteredData = this.filterByDate(JSON.stringify(this.originalData), dateInterval);
     this.ngRedux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
-
   }
 
   clear() {
@@ -73,12 +73,9 @@ export class FilterActions {
         }
       });
 
-      if(observables.length !== 0) {
-        console.log('Devo filtrare ' + observables.length + ' grafici');
-
+      if(observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
         forkJoin(observables)
           .subscribe(dataArray => {
-            console.log(dataArray);
 
             for(let i=0;i<dataArray.length; i++){
               let newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id ,dataArray[i]);
@@ -86,6 +83,8 @@ export class FilterActions {
               chartsToRetrieve[i].chartData['dataTable'] = newData['dataTable'];
               filtered.push(chartsToRetrieve[i]);
             }
+
+            this.globalEventEmitter.loadingScreen.next(false);
           });
       }
     }

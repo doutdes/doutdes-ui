@@ -11,6 +11,7 @@ import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.
 import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics.component';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
+import {ngxLoadingAnimationTypes, NgxLoadingModule} from 'ngx-loading';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
     RouterModule,
     HttpClientModule,
     BsDatepickerModule.forRoot(),
-    BsDropdownModule.forRoot()
+    BsDropdownModule.forRoot(),
+    NgxLoadingModule.forRoot({}),
   ],
   providers: [
     GoogleAnalyticsService,
