@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
-import {FeatureTutorialComponent} from './google/tutorial.component';
+import {FeatureTutorialGaComponent} from './google/tutorialGa.component';
 import {FeatureTutorialFbComponent} from './facebook/tutorialFb.component';
 
 @NgModule({
@@ -13,7 +13,7 @@ import {FeatureTutorialFbComponent} from './facebook/tutorialFb.component';
       },
       {
         path: 'google',
-        component: FeatureTutorialComponent
+        component: FeatureTutorialGaComponent
       },
       {
         path: 'facebook',
