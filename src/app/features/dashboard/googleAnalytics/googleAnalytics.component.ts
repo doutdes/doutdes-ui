@@ -79,7 +79,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       }
     });
     this.globalEventService.loadingScreen.subscribe(value => {
-      console.log(value);
       this.loading = value;
     });
 
@@ -156,29 +155,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       });
   }
 
-  addBreadcrumb() {
-    const bread = [] as Breadcrumb[];
-
-    bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
-    bread.push(new Breadcrumb('Website', '/dashboard/google/'));
-
-    this.breadcrumbActions.updateBreadcrumb(bread);
-  }
-
-  removeBreadcrumb() {
-    this.breadcrumbActions.deleteBreadcrumb();
-  }
-
   onValueChange(value): void {
     if(value) {
       const dateInterval: IntervalDate = {
         dataStart: value[0],
         dataEnd: value[1].setHours(23,59,59,999)
       };
-
-      console.log('Aggiornamento true');
-
       this.globalEventService.loadingScreen.next(true);
       this.filterActions.filterData(dateInterval);
     }
@@ -201,6 +183,20 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.dateChoice = 'Custom';
         break;
     }
+  }
+
+  addBreadcrumb() {
+    const bread = [] as Breadcrumb[];
+
+    bread.push(new Breadcrumb('Home', '/'));
+    bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
+    bread.push(new Breadcrumb('Website', '/dashboard/google/'));
+
+    this.breadcrumbActions.updateBreadcrumb(bread);
+  }
+
+  removeBreadcrumb() {
+    this.breadcrumbActions.deleteBreadcrumb();
   }
 
   ngOnInit(): void {
