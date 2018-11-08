@@ -7,10 +7,25 @@
   <p>In this tutorial, you can find the instructions to import your Facebook Insights API key (access token), in order to configure your Facebook dashboard in <b>Doutdes</b>.
     Please perform the following steps in strict order, and do not forget to <b>contact us</b> for any problem.</p>
   <p>Also remember that you can click over any image, to zoom it.</p>
+
   <p class="pt-5">1) Sign up on <a href="https://developers.facebook.com/" target="_blank">developers.facebook.com</a> and create a new Facebook app or use an existing app if you already have one. </p>
   <p><img src="../assets/img/tutorialFacebook/01-fbDevelopers.png"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
   <p><img src="../assets/img/tutorialFacebook/02-app.png"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
 
+  <p>2) Now go to <a href="https://developers.facebook.com/tools/explorer" target="_blank">Facebook Graph API Explorer</a>. First select the application created, then select <b>Get user access token</b>.</p>
+  <p><img src="../assets/img/tutorialFacebook/03-token1.png"  (click)="openModal(zooming, 2)" title="Click here to zoom"/></p>
+
+  <p>3) A pop-up window will appear like below. Select <b>read_insights</b> and <b>pages_show_list</b>. Click on <b>Get Access Token</b> button to obtain a short-lived user access token.</p>
+  <p><img src="../assets/img/tutorialFacebook/04-auth.png"  (click)="openModal(zooming, 3)" title="Click here to zoom"/></p>
+
+  <p>4) Now, go to <a href="https://developers.facebook.com/tools/accesstoken" target="_blank"> Access Token Tool</a>. There you will see the access token for all the apps you have under your account. Click on <b>Debug</b> button.</p>
+  <p><img src="../assets/img/tutorialFacebook/05-accessTool.png"  (click)="openModal(zooming, 4)" title="Click here to zoom"/></p>
+
+  <p>5) In this page you will see that your access token will expire after an hour. So, click on <b>Extend Access Token</b> and you will get a long-lived access token. <b>Copy</b> the token (is needed for the next step).</p>
+  <p><img src="../assets/img/tutorialFacebook/06-extend.png"  (click)="openModal(zooming, 5)" title="Click here to zoom"/></p>
+
+  <p>6) Go again to <a href="https://developers.facebook.com/tools/explorer" target="_blank">Facebook Graph API Explorer</a>. <b>Paste</b> the recently created long-lived token in the <em>Access Token field</em>. Now change the API endpoint with "<b>/me/accounts</b>" and click on <b>Submit</b> button. Now you can see the result with all pages information including the <b>never expiring token</b>. Copy that token like the image below.</p>
+  <p><img src="../assets/img/tutorialFacebook/07-neverExpToken.png"  (click)="openModal(zooming, 6)" title="Click here to zoom"/></p>
 </div>
 
 
