@@ -1,16 +1,16 @@
 import {Component, OnDestroy, OnInit, TemplateRef, ViewEncapsulation} from '@angular/core';
-import {Breadcrumb} from '../../core/breadcrumb/Breadcrumb';
-import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
+import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
+import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component({
-  selector: 'app-feature-tutorial',
-  templateUrl: './tutorial.component.html',
-  styleUrls: ['./tutorial.component.scss'],
+  selector: 'app-feature-tutorial-facebook',
+  templateUrl: './tutorialFb.component.html',
+  styleUrls: ['./tutorialFb.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 
-export class FeatureTutorialComponent implements OnInit, OnDestroy {
+export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
 
   modalRef: BsModalRef;
   imgSrc: string;
@@ -32,6 +32,7 @@ export class FeatureTutorialComponent implements OnInit, OnDestroy {
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Tutorial', '/tutorial/'));
+    bread.push(new Breadcrumb('Facebook', '/tutorial/facebook/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -46,43 +47,43 @@ export class FeatureTutorialComponent implements OnInit, OnDestroy {
     switch (imgNumber) {
 
       case 0:
-        this.imgSrc = '02-NewProject.png';
+        this.imgSrc = '01-fbDevelopers.png';
         break;
       case 1:
-        this.imgSrc = '03-APIEnable.png';
+        this.imgSrc = '02-app.png';
         break;
       case 2:
-        this.imgSrc = '04-AnalyticsReporting.png';
+        this.imgSrc = '03-token1.png';
         break;
       case 3:
-        this.imgSrc = '05-Analytics.png';
+        this.imgSrc = '04-auth.png';
         break;
       case 4:
-        this.imgSrc = '06-ServiceAccountKey.png';
+        this.imgSrc = '05-accessTool.png';
         break;
       case 5:
-        this.imgSrc = '07-JSON.png';
+        this.imgSrc = '06-extend.png';
         break;
       case 6:
-        this.imgSrc = '08-doutdesPreferences.png';
+        this.imgSrc = '07-neverExpToken.png';
         break;
       case 7:
-        this.imgSrc = '09-AddJSON.png';
+        this.imgSrc = '08-finish.png';
         break;
       case 8:
-        this.imgSrc = '10-CopyEmail.png';
+        this.imgSrc = '09-doutdes.png';
         break;
       case 9:
-        this.imgSrc = '11-analyticsManagment.png';
+        this.imgSrc = '10-keys.png';
         break;
       case 10:
-        this.imgSrc = '12-AddUser.png';
+        this.imgSrc = '11-addKey.png';
         break;
       case 11:
-        this.imgSrc = '13-addEmail.png';
+        this.imgSrc = '12-last.png';
         break;
       case 12:
-        this.imgSrc = '14-end.png';
+        this.imgSrc = '13-done.png';
         break;
     }
   }

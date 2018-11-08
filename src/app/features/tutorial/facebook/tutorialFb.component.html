@@ -1,0 +1,21 @@
+<div class="row bg-white rounded p-4 title-header col-xl-10 col-lg-12">
+  <img src="../assets/img/tutorial-head.png" style="height:80px; margin-top:-7px"/>
+  <h1 class="display-4 my-auto ml-3">How to > Configure Facebook Insights</h1>
+</div>
+
+<div class="rounded mt-2 col-xl-10 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
+  <p>In this tutorial, you can find the instructions to import your Facebook Insights API key (access token), in order to configure your Facebook dashboard in <b>Doutdes</b>.
+    Please perform the following steps in strict order, and do not forget to <b>contact us</b> for any problem.</p>
+  <p>Also remember that you can click over any image, to zoom it.</p>
+  <p class="pt-5">1) Sign up on <a href="https://developers.facebook.com/" target="_blank">developers.facebook.com</a> and create a new Facebook app or use an existing app if you already have one. </p>
+  <p><img src="../assets/img/tutorialFacebook/01-fbDevelopers.png"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
+  <p><img src="../assets/img/tutorialFacebook/02-app.png"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
+
+</div>
+
+
+<ng-template #zooming>
+  <div class="modal-body" style="text-align:center">
+    <img src="../assets/img/tutorialFacebook/{{imgSrc}}" class="img-fluid" style="border: 1px solid #ccc;" />
+  </div>
+</ng-template>
