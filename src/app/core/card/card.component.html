@@ -1,23 +1,43 @@
 <div class="container-fluid p-0">
 
-  <div class="btn-group float-right" dropdown>
+  <div class="btn-group float-right" *ngIf="!dashChart.error" dropdown>
     <button id="button-basic" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
             aria-controls="dropdown-basic"><span class="caret"></span>
     </button>
     <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
         role="menu" aria-labelledby="button-basic">
-      <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Remove </li>
+      <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Remove</li>
       <li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Update</li>
     </ul>
   </div>
 
-  <div class="rounded-top" [ngStyle]="{'backgroundColor': background, 'color': color}" style="padding:10px">
+  <div class="rounded-top" *ngIf="!dashChart.error" [ngStyle]="{'backgroundColor': background, 'color': color}"
+       style="padding:10px">
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
     <span style="font-size:14pt">{{dashChart.title}}</span>
   </div>
-  <div style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
+  <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
     </google-chart>
+  </div>
+
+  <div class="rounded-top" *ngIf="dashChart.error" [ngStyle]="{'backgroundColor': background, 'color': color}"
+       style="padding:10px">
+    <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
+    <span style="font-size:14pt">{{dashChart.title}}</span>
+  </div>
+
+  <div *ngIf="dashChart.error" style="background:#fff; min-height:350px; padding:20px"
+       class="rounded-bottom border d-table w-100 h-100">
+
+    <div class="align-middle d-table-cell">
+      <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
+        <h4 class="text-center mb-0" style="font-size: 17px;">
+          <i class="fas fa-exclamation-triangle text-warning mr-1"></i>
+          Error retrieving the data!
+        </h4>
+      </div>
+    </div>
   </div>
 
 </div>

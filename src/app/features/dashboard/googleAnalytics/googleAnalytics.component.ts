@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
-import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
+import {DashboardCharts, ErrorDashChart} from '../../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
@@ -114,17 +114,24 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             .subscribe(dataArray => {
               for(let i=0;i<dataArray.length; i++){
 
+                let chartToPush: DashboardCharts;
+
                 if(!dataArray[i]['status']) { // Se la chiamata non rende errori
 
-                  let chartToPush: DashboardCharts = dashCharts[i];
+                  chartToPush = dashCharts[i];
                   chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
-
-                  chartsToShow.push(chartToPush);
+                  chartToPush.error = false;
                 } else {
-                  console.log('Errore recuperando dati per un grafico');
+
+                  chartToPush = ErrorDashChart;
+                  chartToPush.title = dashCharts[i].title;
+
+                  console.log('Errore recuperando dati per ' + dashCharts[i].title);
                   console.log(dataArray[i]);
                 }
+
+                chartsToShow.push(chartToPush);
               }
 
               this.chartArray$ = chartsToShow;
