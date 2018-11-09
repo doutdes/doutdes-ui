@@ -37,11 +37,11 @@
     </div>
   </ng-container>
 
-  <ng-template #noContent>
+  <ng-template *ngIf="!loading" #noContent>
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
   </ng-template>
 
-  <app-emptycard class="col-lg-6 col-xl-4 " [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
+  <app-emptycard *ngIf="!loading" class="col-lg-6 col-xl-4 " [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
 
   <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>

@@ -5,9 +5,11 @@ import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../shared/store/model';
 import {IntervalDate} from './filter.model';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
-import {forkJoin, Observable} from 'rxjs';
+import {forkJoin, Observable, of, throwError} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {catchError} from 'rxjs/operators';
+import {HttpErrorResponse} from '@angular/common/http';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_RESET = 'FILTER_RESET';
@@ -74,14 +76,25 @@ export class FilterActions {
       });
 
       if(observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
+
+        // observables.push(throwError ('This will error').pipe(catchError(error => of(error))));
+
         forkJoin(observables)
           .subscribe(dataArray => {
 
             for(let i=0;i<dataArray.length; i++){
-              let newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id ,dataArray[i]);
 
-              chartsToRetrieve[i].chartData['dataTable'] = newData['dataTable'];
-              filtered.push(chartsToRetrieve[i]);
+              console.log(dataArray[i]);
+
+              if(dataArray[i] instanceof HttpErrorResponse)  {
+                console.log('Errore per il grafico ' + chartsToRetrieve[i].title);
+              } else {
+
+                let newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
+
+                chartsToRetrieve[i].chartData['dataTable'] = newData['dataTable'];
+                filtered.push(chartsToRetrieve[i]);
+              }
             }
 
             this.globalEventEmitter.loadingScreen.next(false);

@@ -12,6 +12,7 @@ import {forkJoin, Observable} from 'rxjs';
 import {IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from "date-fns";
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import {HttpErrorResponse} from '@angular/common/http';
 
 const PrimaryWhite = '#ffffff';
 
@@ -113,11 +114,17 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             .subscribe(dataArray => {
               for(let i=0;i<dataArray.length; i++){
 
-                let chartToPush: DashboardCharts = dashCharts[i];
-                chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
-                chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
+                if(!dataArray[i]['status']) { // Se la chiamata non rende errori
 
-                chartsToShow.push(chartToPush);
+                  let chartToPush: DashboardCharts = dashCharts[i];
+                  chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
+                  chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
+
+                  chartsToShow.push(chartToPush);
+                } else {
+                  console.log('Errore recuperando dati per un grafico');
+                  console.log(dataArray[i]);
+                }
               }
 
               this.chartArray$ = chartsToShow;

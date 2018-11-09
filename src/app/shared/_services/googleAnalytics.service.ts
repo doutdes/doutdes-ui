@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
 import {GoogleMostViews, GooglePageViews, GoogleSessions, GoogleSources} from '../_models/GoogleData';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import * as moment from 'moment';
+import {Observable, of} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
 
 @Injectable()
 export class GoogleAnalyticsService {
@@ -15,25 +17,26 @@ export class GoogleAnalyticsService {
   ) {
   }
 
-  gaPageViews(intervalDate: IntervalDate) {
+  gaPageViews(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
     return this.http.get<GooglePageViews>(this.getUrlFormatted(intervalDate, '/ga/pageviews/'), {headers});
   }
 
-  gaSessions(intervalDate: IntervalDate) {
+  gaSessions(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleSessions>(this.getUrlFormatted(intervalDate, '/ga/sessions/'), {headers});
+    return this.http.get<GoogleSessions>(this.getUrlFormatted(intervalDate, '/ga/sessions/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
   }
 
-  gaSources(intervalDate: IntervalDate) {
+  gaSources(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
     return this.http.get<GoogleSources>(this.getUrlFormatted(intervalDate, '/ga/sources/'), {headers});
   }
 
-  gaMostViews(intervalDate: IntervalDate) {
+  gaMostViews(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
     return this.http.get<GoogleMostViews>(this.getUrlFormatted(intervalDate, '/ga/mostviews/'), {headers});
