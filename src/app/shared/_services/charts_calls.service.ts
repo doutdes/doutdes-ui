@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {StoreService} from './store.service';
 import {FacebookService} from './facebook.service';
 import {Observable} from 'rxjs';
 import {GoogleAnalyticsService} from './googleAnalytics.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
+import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 
 @Injectable()
 export class ChartsCallsService {
@@ -11,7 +11,7 @@ export class ChartsCallsService {
   constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService) {
   }
 
-  public getDataByChartId(ID): Observable<any> {
+  public getDataByChartId(ID, intervalDate?: IntervalDate): Observable<any> {
     switch (ID) {
       case 1:
         return this.facebookService.fbfancount();
@@ -20,17 +20,17 @@ export class ChartsCallsService {
       case 3:
         return this.facebookService.fbpageimpressions();
       case 4:
-        return this.googleAnalyticsService.gaPageViews();
+        return this.googleAnalyticsService.gaPageViews(intervalDate); // TODO passare intervalDate
       case 5:
-        return this.googleAnalyticsService.gaSessions();
+        return this.googleAnalyticsService.gaSessions(intervalDate);
       case 6:
-        return this.googleAnalyticsService.gaSources();
+        return this.googleAnalyticsService.gaSources(intervalDate);
       case 7:
-        return this.googleAnalyticsService.gaMostViews();
+        return this.googleAnalyticsService.gaMostViews(intervalDate);
       case 8:
         return this.facebookService.fbfancountry();
       case 9:
-        return this.googleAnalyticsService.gaSources();
+        return this.googleAnalyticsService.gaSources(intervalDate);
     }
   }
 
@@ -114,8 +114,10 @@ export class ChartsCallsService {
         break; // Page Impressions
       case 4:
         header = [['Date', 'WebViews']];
-        console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
+
+        // console.log(data);
+
         for (let i = 0; i < data.length; i++) {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
@@ -136,7 +138,6 @@ export class ChartsCallsService {
         break; // Google PageViews
       case 5:
         header = [['Date', 'Sessions']];
-        console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
@@ -158,7 +159,7 @@ export class ChartsCallsService {
         break; // Google Sessions
       case 6:
         header = [['Type', 'Number']];
-        console.log(data[1][0] + ' ' + data[1][1]);
+
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
           chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
@@ -178,7 +179,7 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Google sources Pie
+        break; // Google Sources Pie
       case 7:
         header = [['Website', 'Number Of Views']];
         for (let i = 0; i < data.length; i++) {
@@ -215,10 +216,9 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; //Fan Country Pie
+        break; // Fan Country Pie
       case 9:
         header = [['Type', 'Number']];
-        console.log(data[1][0] + ' ' + data[1][1]);
         // Push data pairs in the chart array
         for (let i = 0; i < data.length; i++) {
           chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
@@ -235,7 +235,7 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Google sources Column Chart
+        break; // Google Sources Column Chart
     }
     return dataFormat;
   }

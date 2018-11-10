@@ -9,6 +9,9 @@ import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
 import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics.component';
+import {FilterActions} from '../redux-filter/filter.actions';
+import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
+import {ngxLoadingAnimationTypes, NgxLoadingModule} from 'ngx-loading';
 
 @NgModule({
   declarations: [
@@ -21,11 +24,15 @@ import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics.compon
     Ng2GoogleChartsModule,
     AppFooterModule,
     RouterModule,
-    HttpClientModule
+    HttpClientModule,
+    BsDatepickerModule.forRoot(),
+    BsDropdownModule.forRoot(),
+    NgxLoadingModule.forRoot({}),
   ],
   providers: [
     GoogleAnalyticsService,
-    BreadcrumbActions
+    BreadcrumbActions,
+    FilterActions
   ],
   exports: [
     FeatureDashboardGoogleAnalyticsComponent

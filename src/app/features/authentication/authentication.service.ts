@@ -32,9 +32,9 @@ export class AuthenticationService {
     return this.http.post<any>('http://' + environment.host + ':' + environment.port + '/login', {}, httpOptions)
       .pipe(map(response => {
 
-        if (response['user'] && response['token']) {
+        if (response['User'] && response['token']) {
 
-          this.loginActions.loginUserSuccess(response['user'], response['token']);
+          this.loginActions.loginUserSuccess(response['User'], response['token']);
 
           return response;
         } else {

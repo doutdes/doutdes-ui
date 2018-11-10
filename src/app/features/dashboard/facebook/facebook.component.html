@@ -1,29 +1,31 @@
-<div class="row bg-white rounded p-4 title-header">
-  <div class="col-md-9">
-    <img src="../assets/img/facebook-head.png" class="float-left" style="height:80px; margin-top:-7px"/>
+<div class="row bg-white rounded p-4 title-header h-100">
+  <div class="col-xl-8 col-lg-6 col-md-8">
+    <img src="../assets/img/facebook-head.png" class="float-left"/>
     <h1 class="display-4 my-auto ml-3">Facebook stats</h1>
   </div>
-  <div class="col-md-2">
-    <input type="text" class="form-control" #drp="bsDaterangepicker"
-           [(ngModel)]="bsRangeValue" [minDate]="minDate" [maxDate]="maxDate" bsDaterangepicker>
-    <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
-  </div>
-  <div class="col-md-1">
-    <div class="btn-group" dropdown>
-      <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
-              aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
-      </button>
+  <div class="col-xl-4 col-lg-6 col-md-4 my-auto">
+    <div>
+      <div class="btn-group float-right" dropdown>
+        <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+                aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
+        </button>
 
-      <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="button-date-filter">
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Last 7 days</li>
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Last 30 days</li>
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
-        <!--<li class="dropdown-item" (click)="drp.toggle()">Custom</li>-->
-        <!--<li class="dropdown-item">6 months</li>-->
-        <!--<li class="dropdown-item">1 year</li>-->
-        <!--<li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Remove </li>-->
-        <!--<li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Update</li>-->
-      </ul>
+        <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+            aria-labelledby="button-date-filter">
+          <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Last 7 days</li>
+          <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Last 30 days</li>
+          <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
+          <li class="dropdown-item">Custom</li>
+        </ul>
+      </div> <!-- TODO Create a component custom like card -->
+      <input type="text" class="form-control float-right filterDatePicker" #drp="bsDaterangepicker"
+             [(ngModel)]="bsRangeValue"
+             [minDate]="minDate"
+             [maxDate]="maxDate"
+             [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY' }"
+             (bsValueChange)="onValueChange($event)"
+             bsDaterangepicker>
+      <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
     </div>
   </div>
 </div>

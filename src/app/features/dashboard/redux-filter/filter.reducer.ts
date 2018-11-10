@@ -4,7 +4,7 @@ import {FILTER_INIT, FILTER_BY_DATA, FILTER_RESET, FILTER_CLEAR} from './filter.
 export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action): FilterState {
   switch (action.type) {
     case FILTER_INIT:
-      return Object.assign({}, state,
+      return Object.assign({}, state, // TODO Per la GeoMap basta inizializzare l'indice 0 come filtered e tutta la lista come original
         {
           originalData: action.originalData,
           originalInterval: action.originalInterval,
@@ -13,11 +13,12 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
         });
 
     case FILTER_BY_DATA:
+
       return Object.assign({}, state,
         {
           originalData: state.originalData,
           originalInterval: state.originalInterval,
-          dataFiltered: filterByDate(JSON.stringify(state.originalData), action.filterInterval),
+          dataFiltered: action.dataFiltered,
           filterInterval: action.filterInterval
         });
 
@@ -41,26 +42,3 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
   }
 }
 
-function filterByDate(originalData, filterInterval: IntervalDate): any {
-
-  const originalReceived = JSON.parse(originalData);
-  const filtered = [];
-
-  originalReceived.forEach(chart => {
-    if (chart['title'] !== 'Geomap') {
-
-      const header = [chart['chartData']['dataTable'].shift()];
-      let newArray = [];
-
-      chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
-      newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
-
-      chart['chartData']['dataTable'] = header.concat(newArray);
-    }
-
-    filtered.push(chart);
-
-  });
-
-  return filtered;
-}
