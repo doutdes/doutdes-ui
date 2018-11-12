@@ -3,12 +3,14 @@ import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
 import {CoreModule} from '../../core/core.module';
 import {CommonModule} from '@angular/common';
 import {FeatureTutorialRoutingModule} from './tutorial.routing';
-import {FeatureTutorialComponent} from './tutorial.component';
+import {FeatureTutorialGaComponent} from './google/tutorialGa.component';
 import {ModalModule} from 'ngx-bootstrap';
+import {FeatureTutorialFbComponent} from './facebook/tutorialFb.component';
 
 @NgModule({
   declarations: [
-    FeatureTutorialComponent
+    FeatureTutorialGaComponent,
+    FeatureTutorialFbComponent
   ],
   imports: [
     CoreModule,
@@ -20,7 +22,7 @@ import {ModalModule} from 'ngx-bootstrap';
     BreadcrumbActions
   ],
   exports: [
-    FeatureTutorialComponent
+    FeatureTutorialGaComponent
   ]
 })
 

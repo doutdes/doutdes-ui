@@ -1,16 +1,16 @@
 import {Component, OnDestroy, OnInit, TemplateRef, ViewEncapsulation} from '@angular/core';
-import {Breadcrumb} from '../../core/breadcrumb/Breadcrumb';
-import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
+import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
+import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component({
-  selector: 'app-feature-tutorial',
-  templateUrl: './tutorial.component.html',
-  styleUrls: ['./tutorial.component.scss'],
+  selector: 'app-feature-tutorial-google',
+  templateUrl: './tutorialGa.component.html',
+  styleUrls: ['./tutorialGa.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 
-export class FeatureTutorialComponent implements OnInit, OnDestroy {
+export class FeatureTutorialGaComponent implements OnInit, OnDestroy {
 
   modalRef: BsModalRef;
   imgSrc: string;
@@ -32,6 +32,7 @@ export class FeatureTutorialComponent implements OnInit, OnDestroy {
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Tutorial', '/tutorial/'));
+    bread.push(new Breadcrumb('Google', '/tutorial/google/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
