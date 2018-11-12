@@ -20,7 +20,8 @@ export class GoogleAnalyticsService {
   gaPageViews(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GooglePageViews>(this.getUrlFormatted(intervalDate, '/ga/pageviews/'), {headers});
+    return this.http.get<GooglePageViews>(this.getUrlFormatted(intervalDate, '/ga/pageviews/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaSessions(intervalDate: IntervalDate): Observable<any> {
@@ -33,13 +34,15 @@ export class GoogleAnalyticsService {
   gaSources(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleSources>(this.getUrlFormatted(intervalDate, '/ga/sources/'), {headers});
+    return this.http.get<GoogleSources>(this.getUrlFormatted(intervalDate, '/ga/sources/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaMostViews(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleMostViews>(this.getUrlFormatted(intervalDate, '/ga/mostviews/'), {headers});
+    return this.http.get<GoogleMostViews>(this.getUrlFormatted(intervalDate, '/ga/mostviews/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   private getUrlFormatted(intervalDate: IntervalDate, urlCall: string){

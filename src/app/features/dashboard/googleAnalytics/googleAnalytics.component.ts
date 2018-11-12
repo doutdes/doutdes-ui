@@ -62,20 +62,22 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   ) {
     this.globalEventService.removeFromDashboard.subscribe(id => {
       if (id !== 0) {
-        this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
+        // this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
+        this.filterActions.removeChart(id);
         this.globalEventService.removeFromDashboard.next(0);
       }
     });
     this.globalEventService.addChartInDashboard.subscribe(chart => {
       if (chart) {
         this.addChartToDashboard(chart);
+        this.filterActions.addChart(chart);
         this.globalEventService.addChartInDashboard.next(null);
       }
     });
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
       if (chart) {
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-        this.chartArray$[index].title = chart.title;
+        this.filterActions.updateData(index, chart.title);
       }
     });
     this.globalEventService.loadingScreen.subscribe(value => {
@@ -90,11 +92,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.filter.subscribe(elements => {
 
       if(elements['dataFiltered'] !== null) {
-        console.log(this.chartArray$);
-
         this.chartArray$ = elements['dataFiltered'];
-
-        console.log(this.chartArray$);
       }
     });
   }
@@ -159,8 +157,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   addChartToDashboard(chart: DashboardCharts) {
     const chartToPush: DashboardCharts = chart;
+    let intervalDate: IntervalDate = {
+      dataStart: this.bsRangeValue[0],
+      dataEnd: this.bsRangeValue[1]
+    };
 
-    this.chartsCallService.getDataByChartId(chart.chart_id)
+    this.chartsCallService.getDataByChartId(chart.chart_id, intervalDate)
       .subscribe(data => {
 
         chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
