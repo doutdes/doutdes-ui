@@ -108,8 +108,8 @@ export class FilterActions {
 
               } else {
                 console.log('Errore per il grafico ' + chartsToRetrieve[i].title);
-
                 console.log(chartsToRetrieve[i]);
+                filtered.push(chartsToRetrieve[i]);
 
               }
             }
