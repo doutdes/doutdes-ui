@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
-import {DashboardCharts, ErrorDashChart} from '../../../shared/_models/DashboardCharts';
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
@@ -12,7 +12,6 @@ import {forkJoin, Observable} from 'rxjs';
 import {IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from "date-fns";
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
-import {HttpErrorResponse} from '@angular/common/http';
 
 const PrimaryWhite = '#ffffff';
 
@@ -63,20 +62,22 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   ) {
     this.globalEventService.removeFromDashboard.subscribe(id => {
       if (id !== 0) {
-        this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
+        // this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
+        this.filterActions.removeChart(id);
         this.globalEventService.removeFromDashboard.next(0);
       }
     });
     this.globalEventService.addChartInDashboard.subscribe(chart => {
       if (chart) {
         this.addChartToDashboard(chart);
+        this.filterActions.addChart(chart);
         this.globalEventService.addChartInDashboard.next(null);
       }
     });
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
       if (chart) {
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-        this.chartArray$[index].title = chart.title;
+        this.filterActions.updateData(index, chart.title);
       }
     });
     this.globalEventService.loadingScreen.subscribe(value => {
@@ -89,6 +90,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
     this.filter.subscribe(elements => {
+
       if(elements['dataFiltered'] !== null) {
         this.chartArray$ = elements['dataFiltered'];
       }
@@ -124,8 +126,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                   chartToPush.error = false;
                 } else {
 
-                  chartToPush = ErrorDashChart;
-                  chartToPush.title = dashCharts[i].title;
+                  chartToPush = dashCharts[i];
+                  chartToPush.error = true;
 
                   console.log('Errore recuperando dati per ' + dashCharts[i].title);
                   console.log(dataArray[i]);
@@ -155,8 +157,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   addChartToDashboard(chart: DashboardCharts) {
     const chartToPush: DashboardCharts = chart;
+    let intervalDate: IntervalDate = {
+      dataStart: this.bsRangeValue[0],
+      dataEnd: this.bsRangeValue[1]
+    };
 
-    this.chartsCallService.getDataByChartId(chart.chart_id)
+    this.chartsCallService.getDataByChartId(chart.chart_id, intervalDate)
       .subscribe(data => {
 
         chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);

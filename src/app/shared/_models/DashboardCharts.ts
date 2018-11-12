@@ -11,10 +11,3 @@ export interface DashboardCharts {
   error?: boolean;
 }
 
-export let ErrorDashChart: DashboardCharts = {
-  dashboard_id: null,
-  chart_id: null,
-  title: 'Error retrieving the chart data',
-  color: '#FF703D',
-  error: true
-};

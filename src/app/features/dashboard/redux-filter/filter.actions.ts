@@ -5,22 +5,23 @@ import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../shared/store/model';
 import {IntervalDate} from './filter.model';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
-import {forkJoin, Observable, of, throwError} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
-import {catchError} from 'rxjs/operators';
-import {HttpErrorResponse} from '@angular/common/http';
 
 export const FILTER_INIT = 'FILTER_INIT';
+export const FILTER_UPDATE = 'FILTER_UPDATE';
+export const FILTER_BY_DATA = 'FILTER_BY_DATA';
 export const FILTER_RESET = 'FILTER_RESET';
 export const FILTER_CLEAR = 'FILTER_CLEAR';
-export const FILTER_BY_DATA = 'FILTER_BY_DATA';
+
 
 @Injectable()
 export class FilterActions {
 
   @select() filter: Observable<any>;
   originalData: any;
+  filteredData: any;
 
   constructor(
     private ngRedux: NgRedux<IAppState>,
@@ -29,6 +30,7 @@ export class FilterActions {
   ) {
     this.filter.subscribe(elements => {
       this.originalData = elements['originalData'];
+      this.filteredData = elements['dataFiltered'];
     });
   }
 
@@ -38,11 +40,29 @@ export class FilterActions {
 
   filterData(dateInterval: IntervalDate) {
     const filteredData = this.filterByDate(JSON.stringify(this.originalData), dateInterval);
+
     this.ngRedux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
   }
 
-  clear() {
-    this.ngRedux.dispatch({type: FILTER_CLEAR});
+  updateData(index: number, newTitle: string) {
+    this.originalData[index].title = newTitle;
+    this.filteredData[index].title = newTitle;
+
+    this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+  }
+
+  addChart(chart: DashboardCharts) {
+    this.originalData.push(chart);
+    this.filteredData.push(chart);
+
+    this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+  }
+
+  removeChart(id: number) {
+    this.originalData = this.originalData.filter((chart) => chart.chart_id !== id);
+    this.filteredData = this.originalData.filter((chart) => chart.chart_id !== id);
+
+    this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }
 
   filterByDate(originalData, filterInterval: IntervalDate){
@@ -53,46 +73,48 @@ export class FilterActions {
     let chartsToRetrieve: Array<DashboardCharts> = [];
 
     if (originalReceived) {
+
       originalReceived.forEach(chart => {
 
         if (chart['title'] !== 'Geomap') { // TODO Eliminare
-          if (chart['Chart']['type'] == 2) {
 
-            observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
-            chartsToRetrieve.push(chart);
+          if(chart['Chart']) {
 
-          } else {
+            if (chart['Chart']['type'] == 2) {
 
-            let header = [chart['chartData']['dataTable'].shift()];
-            let newArray = [];
+              observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
+              chartsToRetrieve.push(chart);
 
-            chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
-            newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
-            chart['chartData']['dataTable'] = header.concat(newArray);
+            } else {
 
-            filtered.push(chart);
+              let header = [chart['chartData']['dataTable'].shift()];
+              let newArray = [];
+
+              chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
+              newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
+              chart['chartData']['dataTable'] = header.concat(newArray);
+
+              filtered.push(chart);
+            }
           }
         }
       });
 
       if(observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
 
-        // observables.push(throwError ('This will error').pipe(catchError(error => of(error))));
-
         forkJoin(observables)
           .subscribe(dataArray => {
 
             for(let i=0;i<dataArray.length; i++){
 
-              console.log(dataArray[i]);
-
-              if(dataArray[i] instanceof HttpErrorResponse)  {
-                console.log('Errore per il grafico ' + chartsToRetrieve[i].title);
-              } else {
-
+              if(!dataArray[i]['status']) { // Se la chiamata non rende errori
                 let newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
 
                 chartsToRetrieve[i].chartData['dataTable'] = newData['dataTable'];
+                filtered.push(chartsToRetrieve[i]);
+              } else {
+                console.log('Errore per il grafico ' + chartsToRetrieve[i].title);
+                console.log(chartsToRetrieve[i]);
                 filtered.push(chartsToRetrieve[i]);
               }
             }
@@ -105,4 +127,7 @@ export class FilterActions {
     return filtered;
   }
 
+  clear() {
+    this.ngRedux.dispatch({type: FILTER_CLEAR});
+  }
 }

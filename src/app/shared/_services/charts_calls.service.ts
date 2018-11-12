@@ -20,7 +20,7 @@ export class ChartsCallsService {
       case 3:
         return this.facebookService.fbpageimpressions();
       case 4:
-        return this.googleAnalyticsService.gaPageViews(intervalDate); // TODO passare intervalDate
+        return this.googleAnalyticsService.gaPageViews(intervalDate);
       case 5:
         return this.googleAnalyticsService.gaSessions(intervalDate);
       case 6:
