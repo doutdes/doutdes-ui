@@ -62,7 +62,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   ) {
     this.globalEventService.removeFromDashboard.subscribe(id => {
       if (id !== 0) {
-        // this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
         this.filterActions.removeChart(id);
         this.globalEventService.removeFromDashboard.next(0);
       }
@@ -70,7 +69,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.globalEventService.addChartInDashboard.subscribe(chart => {
       if (chart) {
         this.addChartToDashboard(chart);
-        this.filterActions.addChart(chart);
         this.globalEventService.addChartInDashboard.next(null);
       }
     });
@@ -83,7 +81,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.globalEventService.loadingScreen.subscribe(value => {
       this.loading = value;
     });
-
 
     this.firstDateRange = this.minDate;
     this.lastDateRange = this.maxDate;
@@ -135,8 +132,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
                 chartsToShow.push(chartToPush);
               }
-
-              this.chartArray$ = chartsToShow;
               this.globalEventService.loadingScreen.next(false);
             });
         }
@@ -165,10 +160,17 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.chartsCallService.getDataByChartId(chart.chart_id, intervalDate)
       .subscribe(data => {
 
-        chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
-        chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
+        if(!data['status']) { // Se la chiamata non rende errori
+          chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
+          chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
+          chartToPush.error = false;
+        } else {
+          chartToPush.error = true;
+          console.log('Errore recuperando dati per ' + chart);
+        }
 
-        this.chartArray$.push(chartToPush);
+        this.filterActions.addChart(chartToPush);
+
       }, error1 => {
         console.log('Error querying the chart');
         console.log(error1);

@@ -36,6 +36,7 @@ export class EmptycardComponent implements OnInit {
   };
 
   dropdownOptions = [];
+  chartsAvailable = false;
 
   insertChartForm: FormGroup;
   loading = false;
@@ -68,6 +69,8 @@ export class EmptycardComponent implements OnInit {
     this.insertChartForm = this.formBuilder.group({
       chartTitle: ['', Validators.compose([Validators.maxLength(30), Validators.required])],
     });
+
+    this.updateDropdownOptions();
   }
 
   get f() {
@@ -75,7 +78,7 @@ export class EmptycardComponent implements OnInit {
   }
 
   openModal() {
-    if (this.dropdownOptions.length > 0) {
+    if (this.chartsAvailable) {
       this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
     } else {
       this.modalRef = this.modalService.show(this.noChartsAvailable, {class: 'modal-md modal-dialog-centered'});
@@ -130,11 +133,12 @@ export class EmptycardComponent implements OnInit {
   }
 
   updateDropdownOptions(): void {
-    this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
-      .pipe(first())
-      .subscribe(chartRemaining => {
 
-        this.dropdownOptions = [];
+    this.chartsAvailable = false;
+    this.dropdownOptions = [];
+
+    this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
+      .subscribe(chartRemaining => {
 
         if (chartRemaining) {
           chartRemaining.forEach(el => {
@@ -143,6 +147,9 @@ export class EmptycardComponent implements OnInit {
               title: el.title
             });
           });
+          this.chartsAvailable = true;
+
+          console.log(chartRemaining);
         }
 
       }, err => {
