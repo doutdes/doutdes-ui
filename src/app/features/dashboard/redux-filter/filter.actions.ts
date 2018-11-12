@@ -38,6 +38,9 @@ export class FilterActions {
 
   filterData(dateInterval: IntervalDate) {
     const filteredData = this.filterByDate(JSON.stringify(this.originalData), dateInterval);
+
+    console.log('Ho ricevuto ' + filteredData.length + ' dati filtrati');
+
     this.ngRedux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
   }
 
@@ -53,27 +56,38 @@ export class FilterActions {
     let chartsToRetrieve: Array<DashboardCharts> = [];
 
     if (originalReceived) {
+
+      console.log('Ho ricevuto ' + originalReceived.length + ' grafici');
+
       originalReceived.forEach(chart => {
 
         if (chart['title'] !== 'Geomap') { // TODO Eliminare
-          if (chart['Chart']['type'] == 2) {
 
-            observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
-            chartsToRetrieve.push(chart);
+          console.log(chart);
 
-          } else {
+          if(chart['Chart']) {
 
-            let header = [chart['chartData']['dataTable'].shift()];
-            let newArray = [];
+            if (chart['Chart']['type'] == 2) {
 
-            chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
-            newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
-            chart['chartData']['dataTable'] = header.concat(newArray);
+              observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
+              chartsToRetrieve.push(chart);
 
-            filtered.push(chart);
+            } else {
+
+              let header = [chart['chartData']['dataTable'].shift()];
+              let newArray = [];
+
+              chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
+              newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
+              chart['chartData']['dataTable'] = header.concat(newArray);
+
+              filtered.push(chart);
+            }
           }
         }
       });
+
+      console.log('Ora filtered ha ' + filtered.length + ' grafici al suo interno');
 
       if(observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
 
@@ -84,16 +98,19 @@ export class FilterActions {
 
             for(let i=0;i<dataArray.length; i++){
 
-              console.log(dataArray[i]);
+              let chartToPush: DashboardCharts;
 
-              if(dataArray[i] instanceof HttpErrorResponse)  {
-                console.log('Errore per il grafico ' + chartsToRetrieve[i].title);
-              } else {
-
+              if(!dataArray[i]['status']) { // Se la chiamata non rende errori
                 let newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
 
                 chartsToRetrieve[i].chartData['dataTable'] = newData['dataTable'];
                 filtered.push(chartsToRetrieve[i]);
+
+              } else {
+                console.log('Errore per il grafico ' + chartsToRetrieve[i].title);
+
+                console.log(chartsToRetrieve[i]);
+
               }
             }
 

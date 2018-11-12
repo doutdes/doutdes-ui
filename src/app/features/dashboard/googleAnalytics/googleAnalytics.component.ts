@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
-import {DashboardCharts, ErrorDashChart} from '../../../shared/_models/DashboardCharts';
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
@@ -12,7 +12,6 @@ import {forkJoin, Observable} from 'rxjs';
 import {IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from "date-fns";
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
-import {HttpErrorResponse} from '@angular/common/http';
 
 const PrimaryWhite = '#ffffff';
 
@@ -89,8 +88,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
     this.filter.subscribe(elements => {
+
       if(elements['dataFiltered'] !== null) {
+        console.log(this.chartArray$);
+
         this.chartArray$ = elements['dataFiltered'];
+
+        console.log(this.chartArray$);
       }
     });
   }
@@ -124,8 +128,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                   chartToPush.error = false;
                 } else {
 
-                  chartToPush = ErrorDashChart;
-                  chartToPush.title = dashCharts[i].title;
+                  chartToPush = dashCharts[i];
+                  chartToPush.error = true;
 
                   console.log('Errore recuperando dati per ' + dashCharts[i].title);
                   console.log(dataArray[i]);
