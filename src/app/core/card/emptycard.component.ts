@@ -105,6 +105,7 @@ export class EmptycardComponent implements OnInit {
       dashboard_id: this.dashboard_data.dashboard_id,
       chart_id: this.chartSelected[0].id,
       title: this.insertChartForm.value.chartTitle,
+      format: ''
     };
 
     this.loading = true;
@@ -140,7 +141,7 @@ export class EmptycardComponent implements OnInit {
           chartRemaining.forEach(el => {
             this.dropdownOptions.push({
               id: el.ID,
-              title: el.title
+              title: el.title + ' (' + el.format + ')'
             });
           });
         }
