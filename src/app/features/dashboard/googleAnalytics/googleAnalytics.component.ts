@@ -75,7 +75,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
       if (chart) {
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-        this.filterActions.updateData(index, chart.title);
+        this.filterActions.updateChart(index, chart.title);
       }
     });
     this.globalEventService.loadingScreen.subscribe(value => {
@@ -87,6 +87,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
     this.filter.subscribe(elements => {
+
+      console.log(elements);
 
       if(elements['dataFiltered'] !== null) {
         this.chartArray$ = elements['dataFiltered'];

@@ -124,7 +124,6 @@ export class EmptycardComponent implements OnInit {
         this.updateDropdownOptions();
         this.closeModal();
 
-
       }, error => {
         console.log('Error inserting the chart in the dashboard');
         console.log(error);
