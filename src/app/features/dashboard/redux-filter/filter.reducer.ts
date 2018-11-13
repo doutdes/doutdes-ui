@@ -10,13 +10,17 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
           originalInterval: action.originalInterval,
           dataFiltered: action.originalData,
           filterInterval: action.originalInterval
+          // dataFiltered: Object.create(action.originalData),
+          // filterInterval: Object.create(action.originalInterval)
         });
 
     case FILTER_UPDATE:
       return Object.assign({}, state,
         {
           originalData: action.originalData,
+          originalInterval: state.originalInterval,
           dataFiltered: action.dataFiltered,
+          filterInterval: state.filterInterval
         });
 
     case FILTER_BY_DATA:
