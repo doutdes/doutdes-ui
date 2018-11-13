@@ -139,7 +139,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             });
         }
 
-        let dateInterval: IntervalDate = {
+        const dateInterval: IntervalDate = {
           dataStart: this.firstDateRange,
           dataEnd: this.lastDateRange
         };
@@ -155,13 +155,15 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   addChartToDashboard(chart: DashboardCharts) {
     const chartToPush: DashboardCharts = chart;
-    let intervalDate: IntervalDate = {
+    const intervalDate: IntervalDate = {
       dataStart: this.bsRangeValue[0],
       dataEnd: this.bsRangeValue[1]
     };
 
     this.chartsCallService.getDataByChartId(chart.chart_id, intervalDate)
       .subscribe(data => {
+
+        console.log(data);
 
         if(!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
