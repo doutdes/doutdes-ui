@@ -87,7 +87,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   loadDashboard() {
     this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
-
         if (dashCharts['dashboard_id']) {
           this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
         } else {
@@ -147,10 +146,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   onValueChange(value): void {
 
-    if(value) {
+    if (value) {
       const dateInterval: IntervalDate = {
         dataStart: value[0],
-        dataEnd: value[1].setHours(23,59,59,999)
+        dataEnd: value[1].setHours(23, 59, 59, 999)
       };
 
       this.dateChoice = 'Custom';

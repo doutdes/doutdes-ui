@@ -4,6 +4,7 @@ export interface DashboardCharts {
   dashboard_id: number;
   chart_id: number;
   title: string;
+  format: string;
   color?: string;
   chart?: Chart;
   chartData?: any;
