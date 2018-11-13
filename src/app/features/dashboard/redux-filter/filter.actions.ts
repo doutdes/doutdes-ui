@@ -9,8 +9,6 @@ import {forkJoin, Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 
-import * as _ from 'lodash';
-
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
 export const FILTER_BY_DATA = 'FILTER_BY_DATA';

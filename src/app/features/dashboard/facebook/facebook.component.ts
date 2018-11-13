@@ -7,12 +7,13 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
-import {subDays, addDays} from 'date-fns';
+import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import {Chart} from '../../../shared/_models/Chart';
 
 const PrimaryWhite = '#ffffff';
 
@@ -97,9 +98,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   loadDashboard() {
 
-    let observables: Observable<any>[] = [];
-    let chartsToShow: Array<DashboardCharts> = [];
-    let chartsClone: Array<DashboardCharts> = [];
+    const observables: Observable<any>[] = [];
+    const chartsToShow: Array<DashboardCharts> = [];
+    const chartsClone: Array<DashboardCharts> = [];
 
     this.globalEventService.loadingScreen.next(true);
 
@@ -157,23 +158,31 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       });
   }
 
-  addChartToDashboard(chart: DashboardCharts) {
-    const chartToPush: DashboardCharts = chart;
+  addChartToDashboard(dashChart: DashboardCharts) {
+    const chartToPush: DashboardCharts = dashChart;
+    const innerChart: Chart = {
+      ID: dashChart.chart_id,
+      format: dashChart.format,
+      type: 1, // FacebookInsight
+      title: dashChart.title
+    };
+
     const intervalDate: IntervalDate = {
       dataStart: this.bsRangeValue[0],
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.chartsCallService.getDataByChartId(chart.chart_id)
+    this.chartsCallService.getDataByChartId(dashChart.chart_id)
       .subscribe(data => {
 
-        if(!data['status']) { // Se la chiamata non rende errori
-          chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
+        if (!data['status']) { // Se la chiamata non rende errori
+          chartToPush.Chart = innerChart;
+          chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashChart.chart_id, data);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
         } else {
           chartToPush.error = true;
-          console.log('Errore recuperando dati per ' + chart);
+          console.log('Errore recuperando dati per ' + dashChart);
         }
 
         this.filterActions.addChart(chartToPush);
@@ -216,10 +225,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   createClone(chart: DashboardCharts): DashboardCharts {
-    let cloneChart = JSON.parse(JSON.stringify(chart)); // Conversione e parsing con JSON per perdere la referenza
+    const cloneChart = JSON.parse(JSON.stringify(chart)); // Conversione e parsing con JSON per perdere la referenza
 
-    if(cloneChart.chartData['dataTable'][0][0] == 'Date') {// Se esiste il campo Date nel JSON, creare data a partire dalla stringa (serve per le label)
-      let header = [cloneChart['chartData']['dataTable'].shift()];
+    // Se esiste il campo Date nel JSON, creare data a partire dalla stringa (serve per le label)
+    if (cloneChart.chartData['dataTable'][0][0] === 'Date') {
+      const header = [cloneChart['chartData']['dataTable'].shift()];
 
       cloneChart.chartData['dataTable'] = cloneChart.chartData['dataTable'].map(el => [new Date(el[0]), el[1]]);
       cloneChart['chartData']['dataTable'] = header.concat(cloneChart.chartData['dataTable']);
