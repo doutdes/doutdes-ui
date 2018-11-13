@@ -63,7 +63,7 @@ export class FilterActions {
 
   removeChart(id: number) {
     this.originalData = this.originalData.filter((chart) => chart.chart_id !== id);
-    this.filteredData = this.originalData.filter((chart) => chart.chart_id !== id);
+    this.filteredData = this.filteredData.filter((chart) => chart.chart_id !== id);
 
     this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }

@@ -5,7 +5,7 @@ import {DashboardCharts} from '../_models/DashboardCharts';
 @Injectable()
 export class GlobalEventsManagerService {
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public removeFromDashboard: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  public removeFromDashboard: BehaviorSubject<[number, number]> = new BehaviorSubject<[number, number]>([0, 0]);
   public updateChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);
   public addChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);
   public updateChartList: BehaviorSubject<boolean> = new BehaviorSubject(false);
