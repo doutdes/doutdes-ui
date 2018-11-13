@@ -60,20 +60,20 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private globalEventService: GlobalEventsManagerService,
     private filterActions: FilterActions
   ) {
-    this.globalEventService.removeFromDashboard.subscribe(id => {
-      if (id !== 0) {
-        this.filterActions.removeChart(id);
-        this.globalEventService.removeFromDashboard.next(0);
+    this.globalEventService.removeFromDashboard.subscribe(values => {
+      if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+        this.filterActions.removeChart(values[0]);
+        this.globalEventService.removeFromDashboard.next([0, 0]);
       }
     });
     this.globalEventService.addChartInDashboard.subscribe(chart => {
-      if (chart) {
+      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         this.addChartToDashboard(chart);
         this.globalEventService.addChartInDashboard.next(null);
       }
     });
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
-      if (chart) {
+      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
         this.filterActions.updateChart(index, chart.title);
       }

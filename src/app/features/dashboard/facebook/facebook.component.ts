@@ -49,20 +49,20 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private globalEventService: GlobalEventsManagerService,
     private filterActions: FilterActions
   ) {
-    this.globalEventService.removeFromDashboard.subscribe(id => {
-      if (id !== 0) {
-        this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== id);
-        this.globalEventService.removeFromDashboard.next(0);
+    this.globalEventService.removeFromDashboard.subscribe(values => {
+      if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+        this.chartArray$ = this.chartArray$.filter((chart) => chart.chart_id !== values[0]);
+        this.globalEventService.removeFromDashboard.next([0, 0]);
       }
     });
     this.globalEventService.addChartInDashboard.subscribe(chart => {
-      if (chart) {
+      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         this.addChartToDashboard(chart);
         this.globalEventService.addChartInDashboard.next(null);
       }
     });
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
-      if (chart) {
+      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
         this.chartArray$[index].title = chart.title;
       }

@@ -49,12 +49,13 @@ export class EmptycardComponent implements OnInit {
     private dashboardService: DashboardService,
     private eventEmitter: GlobalEventsManagerService
   ) {
-    this.eventEmitter.removeFromDashboard.subscribe(id => {
-      if (id !== 0) {
+    this.eventEmitter.removeFromDashboard.subscribe(values => {
+      if (values[0] !== 0 && values[1] !== 0) {
         this.updateDropdownOptions();
-        this.eventEmitter.removeFromDashboard.next(0);
+        this.eventEmitter.removeFromDashboard.next([0, 0]);
       }
     });
+
     this.eventEmitter.updateChartList.subscribe(value => {
       if (value) {
         this.updateDropdownOptions();

@@ -5,6 +5,7 @@ import {DashboardService} from '../../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {first} from 'rxjs/operators';
+import {d} from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-card',
@@ -128,7 +129,7 @@ export class CardComponent implements OnInit {
     this.dashboardService.removeChart(dashboard_id, chart_id)
       .subscribe(deleted => {
 
-        this.eventManager.removeFromDashboard.next(chart_id);
+        this.eventManager.removeFromDashboard.next([chart_id, dashboard_id]);
         this.closeModal();
 
       }, error => {
