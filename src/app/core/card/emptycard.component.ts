@@ -144,12 +144,10 @@ export class EmptycardComponent implements OnInit {
           chartRemaining.forEach(el => {
             this.dropdownOptions.push({
               id: el.ID,
-              title: el.title + ' (' + el.format + ')'
+              title: el['Title'] + ' (' + el.format + ')',
             });
           });
           this.chartsAvailable = true;
-
-          console.log(chartRemaining);
         }
 
       }, err => {
