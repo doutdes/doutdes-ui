@@ -147,8 +147,6 @@ export class EmptycardComponent implements OnInit {
             });
           });
           this.chartsAvailable = true;
-
-          console.log(chartRemaining);
         }
 
       }, err => {
