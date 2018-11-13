@@ -9,7 +9,7 @@ import {forkJoin, Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -68,12 +68,12 @@ export class FilterActions {
     this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }
 
-  filterByDate(originalData, filterInterval: IntervalDate){
+  filterByDate(originalData, filterInterval: IntervalDate) {
 
-    let originalReceived = JSON.parse(originalData);
-    let filtered = [];
-    let observables: Observable<any>[] = [];
-    let chartsToRetrieve: Array<DashboardCharts> = [];
+    const originalReceived = JSON.parse(originalData);
+    const filtered = [];
+    const observables: Observable<any>[] = [];
+    const chartsToRetrieve: Array<DashboardCharts> = [];
 
     if (originalReceived) {
 
@@ -81,16 +81,16 @@ export class FilterActions {
 
         if (chart['title'] !== 'Geomap') { // TODO Eliminare
 
-          if(chart['Chart']) {
+          if (chart['Chart']) {
 
-            if (chart['Chart']['type'] == 2) {
+            if (chart['Chart']['type'] === 2) {
 
               observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
               chartsToRetrieve.push(chart);
 
             } else {
 
-              let header = [chart['chartData']['dataTable'].shift()];
+              const header = [chart['chartData']['dataTable'].shift()];
               let newArray = [];
 
               chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
@@ -103,15 +103,15 @@ export class FilterActions {
         }
       });
 
-      if(observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
+      if (observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
 
         forkJoin(observables)
           .subscribe(dataArray => {
 
-            for(let i=0;i<dataArray.length; i++){
+            for (let i = 0; i < dataArray.length; i++) {
 
-              if(!dataArray[i]['status']) { // Se la chiamata non rende errori
-                let newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
+              if (!dataArray[i]['status']) { // Se la chiamata non rende errori
+                const newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
 
                 chartsToRetrieve[i].chartData['dataTable'] = newData['dataTable'];
                 filtered.push(chartsToRetrieve[i]);

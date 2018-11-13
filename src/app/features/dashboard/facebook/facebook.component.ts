@@ -130,6 +130,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   addChartToDashboard(chart: DashboardCharts) { // TODO Gestire aggiunta tenendo conto di Redux
     const chartToPush: DashboardCharts = chart;
+    chartToPush.format = 'pippo';
 
     this.chartsCallService.getDataByChartId(chart.chart_id)
       .subscribe(data => {

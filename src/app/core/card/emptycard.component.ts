@@ -31,7 +31,7 @@ export class EmptycardComponent implements OnInit {
   chartSelected: any;
 
   config = {
-    displayKey: 'title', // if objects array passed which key to be displayed defaults to description,
+    displayKey: 'global', // if objects array passed which key to be displayed defaults to description,
     search: true
   };
 
@@ -141,10 +141,13 @@ export class EmptycardComponent implements OnInit {
       .subscribe(chartRemaining => {
 
         if (chartRemaining) {
+          console.log(chartRemaining);
           chartRemaining.forEach(el => {
             this.dropdownOptions.push({
               id: el.ID,
-              title: el['Title'] + ' (' + el.format + ')',
+              title: el['Title'],
+              format: el.format,
+              global: el['Title'] + ' (' + el.format + ')'
             });
           });
           this.chartsAvailable = true;

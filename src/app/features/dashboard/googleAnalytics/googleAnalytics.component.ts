@@ -10,7 +10,7 @@ import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {IntervalDate} from '../redux-filter/filter.model';
-import {subDays} from "date-fns";
+import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 
 const PrimaryWhite = '#ffffff';
@@ -87,7 +87,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
     this.filter.subscribe(elements => {
-      if(elements['dataFiltered'] !== null) {
+      if (elements['dataFiltered'] !== null) {
         this.chartArray$ = elements['dataFiltered'];
       }
     });
@@ -95,9 +95,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   loadDashboard() {
 
-    let observables: Observable<any>[] = [];
-    let chartsToShow: Array<DashboardCharts> = [];
-    let chartsClone: Array<DashboardCharts> = [];
+    const observables: Observable<any>[] = [];
+    const chartsToShow: Array<DashboardCharts> = [];
+    const chartsClone: Array<DashboardCharts> = [];
 
     this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
@@ -111,12 +111,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
           forkJoin(observables)
             .subscribe(dataArray => {
-              for(let i=0;i<dataArray.length; i++){
+              for (let i = 0; i < dataArray.length; i++) {
 
                 let chartToPush: DashboardCharts;
                 let cloneChart: DashboardCharts;
 
-                if(!dataArray[i]['status']) { // Se la chiamata non rende errori
+                if (!dataArray[i]['status']) { // Se la chiamata non rende errori
 
                   chartToPush = dashCharts[i];
                   chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
@@ -139,7 +139,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             });
         }
 
-        let dateInterval: IntervalDate = {
+        const dateInterval: IntervalDate = {
           dataStart: this.firstDateRange,
           dataEnd: this.lastDateRange
         };
@@ -155,7 +155,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   addChartToDashboard(chart: DashboardCharts) {
     const chartToPush: DashboardCharts = chart;
-    let intervalDate: IntervalDate = {
+
+    const intervalDate: IntervalDate = {
       dataStart: this.bsRangeValue[0],
       dataEnd: this.bsRangeValue[1]
     };
@@ -163,7 +164,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.chartsCallService.getDataByChartId(chart.chart_id, intervalDate)
       .subscribe(data => {
 
-        if(!data['status']) { // Se la chiamata non rende errori
+        if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
@@ -181,10 +182,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   onValueChange(value): void {
-    if(value) {
+    if (value) {
       const dateInterval: IntervalDate = {
         dataStart: value[0],
-        dataEnd: value[1].setHours(23,59,59,999)
+        dataEnd: value[1].setHours(23, 59, 59, 999)
       };
       this.globalEventService.loadingScreen.next(true);
       this.filterActions.filterData(dateInterval);
@@ -211,10 +212,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   createClone(chart: DashboardCharts): DashboardCharts {
-    let cloneChart = JSON.parse(JSON.stringify(chart)); // Conversione e parsing con JSON per perdere la referenza
+    const cloneChart = JSON.parse(JSON.stringify(chart)); // Conversione e parsing con JSON per perdere la referenza
 
-    if(cloneChart.chartData['dataTable'][0][0] == 'Date') {// Se esiste il campo Date nel JSON, creare data a partire dalla stringa (serve per le label)
-      let header = [cloneChart['chartData']['dataTable'].shift()];
+    // Se esiste il campo Date nel JSON, creare data a partire dalla stringa (serve per le label)
+    if (cloneChart.chartData['dataTable'][0][0] === 'Date') {
+      const header = [cloneChart['chartData']['dataTable'].shift()];
 
       cloneChart.chartData['dataTable'] = cloneChart.chartData['dataTable'].map(el => [new Date(el[0]), el[1]]);
       cloneChart['chartData']['dataTable'] = header.concat(cloneChart.chartData['dataTable']);
