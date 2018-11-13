@@ -98,36 +98,36 @@ export class EmptycardComponent implements OnInit {
       this.chartRequired = true;
       this.loading = false;
       return;
-    } // If no chart has been selected, then it shows an error
+    } // If no Chart has been selected, then it shows an error
 
     if (this.insertChartForm.invalid) {
       this.loading = false;
       return;
     }
 
-    const chart: DashboardCharts = {
+    const dashChart: DashboardCharts = {
       dashboard_id: this.dashboard_data.dashboard_id,
       chart_id: this.chartSelected[0].id,
       title: this.insertChartForm.value.chartTitle,
-      format: ''
+      format: this.chartSelected[0].format
     };
 
     this.loading = true;
 
-    this.dashboardService.addChartToDashboard(chart)
+    this.dashboardService.addChartToDashboard(dashChart)
       .pipe(first())
       .subscribe(chartInserted => {
-        this.eventEmitter.addChartInDashboard.next(chart);
+        this.eventEmitter.addChartInDashboard.next(dashChart);
         this.insertChartForm.reset();
         this.chartSelected = null;
 
-        this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== chart.chart_id);
+        this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
 
         this.updateDropdownOptions();
         this.closeModal();
 
       }, error => {
-        console.log('Error inserting the chart in the dashboard');
+        console.log('Error inserting the Chart in the dashboard');
         console.log(error);
       });
 
@@ -142,7 +142,6 @@ export class EmptycardComponent implements OnInit {
       .subscribe(chartRemaining => {
 
         if (chartRemaining) {
-          console.log(chartRemaining);
           chartRemaining.forEach(el => {
             this.dropdownOptions.push({
               id: el.ID,
@@ -155,7 +154,7 @@ export class EmptycardComponent implements OnInit {
         }
 
       }, err => {
-        console.log('Error in chart remaining call');
+        console.log('Error in Chart remaining call');
         console.log(err);
       });
   }

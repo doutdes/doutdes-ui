@@ -45,7 +45,7 @@ export class ChartsCallsService {
 
         header = [['Date', 'Number of fans']];
 
-        // Push data pairs in the chart array
+        // Push data pairs in the Chart array
         for (let i = 0; i < data.length; i++) {
 
           // if (i % 10 === 0) { // Data are greedy sampled by 10 units
@@ -114,7 +114,7 @@ export class ChartsCallsService {
         break; // Page Impressions
       case 4:
         header = [['Date', 'WebViews']];
-        // Push data pairs in the chart array
+        // Push data pairs in the Chart array
 
         // console.log(data);
 
@@ -138,7 +138,7 @@ export class ChartsCallsService {
         break; // Google PageViews
       case 5:
         header = [['Date', 'Sessions']];
-        // Push data pairs in the chart array
+        // Push data pairs in the Chart array
         for (let i = 0; i < data.length; i++) {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
@@ -160,7 +160,7 @@ export class ChartsCallsService {
       case 6:
         header = [['Type', 'Number']];
 
-        // Push data pairs in the chart array
+        // Push data pairs in the Chart array
         for (let i = 0; i < data.length; i++) {
           chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
           // Ternary operator trivially replaces 'none' with 'unknown'
@@ -196,7 +196,7 @@ export class ChartsCallsService {
         break; // Google Table
       case 8:
         header = [['Country', 'Popularity']];
-        // Push data pairs in the chart array
+        // Push data pairs in the Chart array
         const arrPie = Object.keys(data[0].value).map(function (k) {
           return [k, data[0].value[k]];
         });
@@ -219,7 +219,7 @@ export class ChartsCallsService {
         break; // Fan Country Pie
       case 9:
         header = [['Type', 'Number']];
-        // Push data pairs in the chart array
+        // Push data pairs in the Chart array
         for (let i = 0; i < data.length; i++) {
           chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
           // Ternary operator trivially replaces 'none' with 'unknown'

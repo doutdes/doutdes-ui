@@ -12,6 +12,7 @@ import {forkJoin, Observable} from 'rxjs';
 import {IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import {Chart} from '../../../shared/_models/Chart';
 
 const PrimaryWhite = '#ffffff';
 
@@ -106,7 +107,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
         } else {
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
-
           dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id)));
 
           forkJoin(observables)
@@ -153,30 +153,36 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       });
   }
 
-  addChartToDashboard(chart: DashboardCharts) {
-    const chartToPush: DashboardCharts = chart;
+  addChartToDashboard(dashChart: DashboardCharts) {
+    const chartToPush: DashboardCharts = dashChart;
+    const innerChart: Chart = {
+      ID: dashChart.chart_id,
+      format: dashChart.format,
+      type: 2, // GoogleAnalytics
+      title: dashChart.title
+    };
 
     const intervalDate: IntervalDate = {
       dataStart: this.bsRangeValue[0],
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.chartsCallService.getDataByChartId(chart.chart_id, intervalDate)
+    this.chartsCallService.getDataByChartId(dashChart.chart_id, intervalDate)
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
-          chartToPush.chartData = this.chartsCallService.formatDataByChartId(chart.chart_id, data);
+          chartToPush.Chart = innerChart;
+          chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashChart.chart_id, data);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
         } else {
           chartToPush.error = true;
-          console.log('Errore recuperando dati per ' + chart);
+          console.log('Errore recuperando dati per ' + dashChart);
         }
 
         this.filterActions.addChart(chartToPush);
-
       }, error1 => {
-        console.log('Error querying the chart');
+        console.log('Error querying the Chart');
         console.log(error1);
       });
   }

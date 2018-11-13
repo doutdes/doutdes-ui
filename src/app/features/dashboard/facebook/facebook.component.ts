@@ -130,7 +130,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   addChartToDashboard(chart: DashboardCharts) { // TODO Gestire aggiunta tenendo conto di Redux
     const chartToPush: DashboardCharts = chart;
-    chartToPush.format = 'pippo';
 
     this.chartsCallService.getDataByChartId(chart.chart_id)
       .subscribe(data => {
@@ -140,7 +139,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
         this.chartArray$.push(chartToPush);
       }, error1 => {
-        console.log('Error querying the chart');
+        console.log('Error querying the Chart');
         console.log(error1);
       });
   }

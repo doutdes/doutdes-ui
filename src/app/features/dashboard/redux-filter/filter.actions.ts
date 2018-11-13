@@ -54,7 +54,6 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
-
     this.originalData.push(chart);
     this.filteredData.push(Object.assign({}, chart));
 

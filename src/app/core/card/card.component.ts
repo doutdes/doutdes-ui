@@ -134,7 +134,7 @@ export class CardComponent implements OnInit {
 
       }, error => {
         console.log(error);
-        console.log('Cannot delete chart from dashboard');
+        console.log('Cannot delete Chart from dashboard');
       });
   }
 
@@ -144,7 +144,7 @@ export class CardComponent implements OnInit {
         this.eventManager.updateChartInDashboard.next(toUpdate);
         this.closeModal();
       }, error => {
-        console.log('Error updating the chart');
+        console.log('Error updating the Chart');
         console.log(error);
       });
 
