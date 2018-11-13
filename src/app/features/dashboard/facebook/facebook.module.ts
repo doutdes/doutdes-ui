@@ -14,6 +14,7 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
 import {FilterActions} from '../redux-filter/filter.actions';
+import {NgxLoadingModule} from 'ngx-loading';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import {FilterActions} from '../redux-filter/filter.actions';
     RouterModule,
     HttpClientModule,
     BsDatepickerModule.forRoot(),
-    BsDropdownModule.forRoot()
+    BsDropdownModule.forRoot(),
+    NgxLoadingModule.forRoot({}),
   ],
   providers: [
     FacebookService,

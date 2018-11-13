@@ -126,6 +126,7 @@ export class FilterActions {
       }
     }
 
+    // this.globalEventEmitter.loadingScreen.next(false);
     return filtered;
   }
 
