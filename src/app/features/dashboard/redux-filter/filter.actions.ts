@@ -35,7 +35,11 @@ export class FilterActions {
   }
 
   initData(originalData, dateInterval: IntervalDate) {
-    this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval});
+    const clone = Object.assign({}, originalData);
+
+    console.log(originalData === clone);
+
+    this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: clone});
   }
 
   filterData(dateInterval: IntervalDate) {
@@ -44,7 +48,7 @@ export class FilterActions {
     this.ngRedux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
   }
 
-  updateData(index: number, newTitle: string) {
+  updateChart(index: number, newTitle: string) {
     this.originalData[index].title = newTitle;
     this.filteredData[index].title = newTitle;
 
@@ -52,8 +56,13 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
+
     this.originalData.push(chart);
-    this.filteredData.push(chart);
+    this.filteredData.push(Object.assign({}, chart));
+
+    console.log('I dati filtrati ora valgono ' + this.filteredData.length);
+
+    console.log(new Set(this.originalData));
 
     this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }
