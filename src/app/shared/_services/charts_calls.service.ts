@@ -157,7 +157,7 @@ export class ChartsCallsService {
           }
         };
         break; // Google Sessions
-      case 6:
+      case 6: // google pie begin
         header = [['Type', 'Number']];
 
         // Push data pairs in the Chart array
@@ -179,7 +179,7 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Google Sources Pie
+        break; // google pie end
       case 7:
         header = [['Website', 'Number Of Views']];
         for (let i = 0; i < data.length; i++) {
@@ -208,11 +208,12 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             sliceVisibilityThreshold: 0.05,
             height: 310,
-            is3D: true,
+            // is3D: true,
+            colors: ['#8CCEA0', '#e3eaa7', '#b5e7a0', '#86af49'],
             pieSliceText: 'label',
             pieSliceTextStyle: {fontSize: 13, color: 'black'},
-            pieHole: 0.2,
-            slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
+            pieHole: 0.1,
+            // slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
             areaOpacity: 0.4
           }
         };

@@ -122,11 +122,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 let cloneChart: DashboardCharts;
 
                 if (!dataArray[i]['status']) { // Se la chiamata non rende errori
-
                   chartToPush = dashCharts[i];
                   chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
                   chartToPush.error = false;
+
                 } else {
 
                   chartToPush = dashCharts[i];
