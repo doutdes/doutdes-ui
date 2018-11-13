@@ -99,7 +99,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           dataStart: this.firstDateRange,
           dataEnd: this.lastDateRange
         };
-        this.filterActions.initData(this.chartArray$, dateInterval);
+        this.filterActions.initData(this.chartArray$, this.chartArray$, dateInterval);
 
         this.globalEventService.updateChartList.next(true);
 

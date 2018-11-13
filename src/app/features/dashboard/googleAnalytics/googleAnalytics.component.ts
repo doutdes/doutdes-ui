@@ -87,9 +87,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
     this.filter.subscribe(elements => {
-
-      console.log(elements);
-
       if(elements['dataFiltered'] !== null) {
         this.chartArray$ = elements['dataFiltered'];
       }
@@ -100,6 +97,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     let observables: Observable<any>[] = [];
     let chartsToShow: Array<DashboardCharts> = [];
+    let chartsClone: Array<DashboardCharts> = [];
 
     this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
@@ -116,6 +114,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
               for(let i=0;i<dataArray.length; i++){
 
                 let chartToPush: DashboardCharts;
+                let cloneChart: DashboardCharts;
 
                 if(!dataArray[i]['status']) { // Se la chiamata non rende errori
 
@@ -131,8 +130,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                   console.log('Errore recuperando dati per ' + dashCharts[i].title);
                   console.log(dataArray[i]);
                 }
+                cloneChart = this.createClone(chartToPush);
 
                 chartsToShow.push(chartToPush);
+                chartsClone.push(cloneChart);
               }
               this.globalEventService.loadingScreen.next(false);
             });
@@ -143,7 +144,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           dataEnd: this.lastDateRange
         };
 
-        this.filterActions.initData(chartsToShow, dateInterval);
+        this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
         this.globalEventService.updateChartList.next(true);
 
       }, error1 => {
@@ -207,6 +208,19 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.dateChoice = 'Custom';
         break;
     }
+  }
+
+  createClone(chart: DashboardCharts): DashboardCharts {
+    let cloneChart = JSON.parse(JSON.stringify(chart)); // Conversione e parsing con JSON per perdere la referenza
+
+    if(cloneChart.chartData['dataTable'][0][0] == 'Date') {// Se esiste il campo Date nel JSON, creare data a partire dalla stringa (serve per le label)
+      let header = [cloneChart['chartData']['dataTable'].shift()];
+
+      cloneChart.chartData['dataTable'] = cloneChart.chartData['dataTable'].map(el => [new Date(el[0]), el[1]]);
+      cloneChart['chartData']['dataTable'] = header.concat(cloneChart.chartData['dataTable']);
+    }
+
+    return cloneChart;
   }
 
   addBreadcrumb() {

@@ -9,6 +9,8 @@ import {forkJoin, Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 
+import * as _ from "lodash";
+
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
 export const FILTER_BY_DATA = 'FILTER_BY_DATA';
@@ -34,12 +36,8 @@ export class FilterActions {
     });
   }
 
-  initData(originalData, dateInterval: IntervalDate) {
-    const clone = Object.assign({}, originalData);
-
-    console.log(originalData === clone);
-
-    this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: clone});
+  initData(originalData, dataFiltered, dateInterval: IntervalDate) {
+    this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: dataFiltered});
   }
 
   filterData(dateInterval: IntervalDate) {
@@ -59,10 +57,6 @@ export class FilterActions {
 
     this.originalData.push(chart);
     this.filteredData.push(Object.assign({}, chart));
-
-    console.log('I dati filtrati ora valgono ' + this.filteredData.length);
-
-    console.log(new Set(this.originalData));
 
     this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }
