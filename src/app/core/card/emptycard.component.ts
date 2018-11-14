@@ -31,7 +31,7 @@ export class EmptycardComponent implements OnInit {
   chartSelected: any;
 
   config = {
-    displayKey: 'title', // if objects array passed which key to be displayed defaults to description,
+    displayKey: 'global', // if objects array passed which key to be displayed defaults to description,
     search: true
   };
 
@@ -49,12 +49,13 @@ export class EmptycardComponent implements OnInit {
     private dashboardService: DashboardService,
     private eventEmitter: GlobalEventsManagerService
   ) {
-    this.eventEmitter.removeFromDashboard.subscribe(id => {
-      if (id !== 0) {
+    this.eventEmitter.removeFromDashboard.subscribe(values => {
+      if (values[0] !== 0 && values[1] !== 0) {
         this.updateDropdownOptions();
-        this.eventEmitter.removeFromDashboard.next(0);
+        this.eventEmitter.removeFromDashboard.next([0, 0]);
       }
     });
+
     this.eventEmitter.updateChartList.subscribe(value => {
       if (value) {
         this.updateDropdownOptions();
@@ -97,36 +98,36 @@ export class EmptycardComponent implements OnInit {
       this.chartRequired = true;
       this.loading = false;
       return;
-    } // If no chart has been selected, then it shows an error
+    } // If no Chart has been selected, then it shows an error
 
     if (this.insertChartForm.invalid) {
       this.loading = false;
       return;
     }
 
-    const chart: DashboardCharts = {
+    const dashChart: DashboardCharts = {
       dashboard_id: this.dashboard_data.dashboard_id,
       chart_id: this.chartSelected[0].id,
       title: this.insertChartForm.value.chartTitle,
-      format: ''
+      format: this.chartSelected[0].format
     };
 
     this.loading = true;
 
-    this.dashboardService.addChartToDashboard(chart)
+    this.dashboardService.addChartToDashboard(dashChart)
       .pipe(first())
       .subscribe(chartInserted => {
-        this.eventEmitter.addChartInDashboard.next(chart);
+        this.eventEmitter.addChartInDashboard.next(dashChart);
         this.insertChartForm.reset();
         this.chartSelected = null;
 
-        this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== chart.chart_id);
+        this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
 
         this.updateDropdownOptions();
         this.closeModal();
 
       }, error => {
-        console.log('Error inserting the chart in the dashboard');
+        console.log('Error inserting the Chart in the dashboard');
         console.log(error);
       });
 
@@ -144,16 +145,16 @@ export class EmptycardComponent implements OnInit {
           chartRemaining.forEach(el => {
             this.dropdownOptions.push({
               id: el.ID,
-              title: el.title + ' (' + el.format + ')'
+              title: el['Title'],
+              format: el.format,
+              global: el['Title'] + ' (' + el.format + ')'
             });
           });
           this.chartsAvailable = true;
-
-          console.log(chartRemaining);
         }
 
       }, err => {
-        console.log('Error in chart remaining call');
+        console.log('Error in Chart remaining call');
         console.log(err);
       });
   }

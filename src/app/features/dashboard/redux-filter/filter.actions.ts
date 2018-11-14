@@ -34,12 +34,8 @@ export class FilterActions {
     });
   }
 
-  initData(originalData, dateInterval: IntervalDate) {
-    const clone = Object.assign({}, originalData);
-
-    console.log(originalData === clone);
-
-    this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: clone});
+  initData(originalData, dataFiltered, dateInterval: IntervalDate) {
+    this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: dataFiltered});
   }
 
   filterData(dateInterval: IntervalDate) {
@@ -56,30 +52,25 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
-
     this.originalData.push(chart);
     this.filteredData.push(Object.assign({}, chart));
-
-    console.log('I dati filtrati ora valgono ' + this.filteredData.length);
-
-    console.log(new Set(this.originalData));
 
     this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }
 
   removeChart(id: number) {
     this.originalData = this.originalData.filter((chart) => chart.chart_id !== id);
-    this.filteredData = this.originalData.filter((chart) => chart.chart_id !== id);
+    this.filteredData = this.filteredData.filter((chart) => chart.chart_id !== id);
 
     this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }
 
-  filterByDate(originalData, filterInterval: IntervalDate){
+  filterByDate(originalData, filterInterval: IntervalDate) {
 
-    let originalReceived = JSON.parse(originalData);
-    let filtered = [];
-    let observables: Observable<any>[] = [];
-    let chartsToRetrieve: Array<DashboardCharts> = [];
+    const originalReceived = JSON.parse(originalData);
+    const filtered = [];
+    const observables: Observable<any>[] = [];
+    const chartsToRetrieve: Array<DashboardCharts> = [];
 
     if (originalReceived) {
 
@@ -87,16 +78,16 @@ export class FilterActions {
 
         if (chart['title'] !== 'Geomap') { // TODO Eliminare
 
-          if(chart['Chart']) {
+          if (chart['Chart']) {
 
-            if (chart['Chart']['type'] == 2) {
+            if (chart['Chart']['type'] === 2) {
 
               observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
               chartsToRetrieve.push(chart);
 
             } else {
 
-              let header = [chart['chartData']['dataTable'].shift()];
+              const header = [chart['chartData']['dataTable'].shift()];
               let newArray = [];
 
               chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
@@ -109,15 +100,15 @@ export class FilterActions {
         }
       });
 
-      if(observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
+      if (observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
 
         forkJoin(observables)
           .subscribe(dataArray => {
 
-            for(let i=0;i<dataArray.length; i++){
+            for (let i = 0; i < dataArray.length; i++) {
 
-              if(!dataArray[i]['status']) { // Se la chiamata non rende errori
-                let newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
+              if (!dataArray[i]['status']) { // Se la chiamata non rende errori
+                const newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
 
                 chartsToRetrieve[i].chartData['dataTable'] = newData['dataTable'];
                 filtered.push(chartsToRetrieve[i]);
@@ -133,6 +124,7 @@ export class FilterActions {
       }
     }
 
+    // this.globalEventEmitter.loadingScreen.next(false);
     return filtered;
   }
 

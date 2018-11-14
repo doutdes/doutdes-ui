@@ -8,7 +8,7 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
         {
           originalData: action.originalData,
           originalInterval: action.originalInterval,
-          dataFiltered: action.originalData,
+          dataFiltered: action.dataFiltered,
           filterInterval: action.originalInterval
           // dataFiltered: Object.create(action.originalData),
           // filterInterval: Object.create(action.originalInterval)

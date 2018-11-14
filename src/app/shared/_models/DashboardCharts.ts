@@ -6,7 +6,7 @@ export interface DashboardCharts {
   title: string;
   format: string;
   color?: string;
-  chart?: Chart;
+  Chart?: Chart;
   chartData?: any;
   position?: number;
   error?: boolean;
