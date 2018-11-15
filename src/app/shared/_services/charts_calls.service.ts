@@ -31,6 +31,8 @@ export class ChartsCallsService {
         return this.facebookService.fbfancountry();
       case 9:
         return this.googleAnalyticsService.gaSources(intervalDate);
+      case 10:
+        return this.googleAnalyticsService.gaBounceRate(intervalDate);
     }
   }
 
@@ -237,6 +239,31 @@ export class ChartsCallsService {
           }
         };
         break; // Google Sources Column Chart
+
+      case 10:
+        header = [['Date', 'BounceRate']];
+        // Push data pairs in the Chart array
+
+        // console.log(data);
+
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+
+        dataFormat = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            curveType: 'function',
+            height: 310,
+            explorer: {},
+            colors: ['#EF7C7C'],
+            areaOpacity: 0.4
+          }
+        };
+        break; // Google BounceRate
     }
     return dataFormat;
   }
