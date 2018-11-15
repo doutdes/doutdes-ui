@@ -193,7 +193,7 @@ export class ChartsCallsService {
         break; // google pie end
       case 7:
         header = [['Website', 'Views']];
-        paddingRows = 10 - (data.length % 10);
+        paddingRows = data.length % 10 ? data.length : 10 - (data.length % 10);
 
         console.log('DATI: ' + data.length + '\nPADDING: ' + paddingRows);
 
@@ -314,7 +314,7 @@ export class ChartsCallsService {
       case 12:
         header = [['Browser', 'Sessions']];
 
-        paddingRows = 10 - (data.length % 10);
+        paddingRows = data.length % 10 ? data.length : 10 - (data.length % 10);
 
         for (let i = 0; i < data.length + paddingRows; i++) {
           if (i >= data.length) {
