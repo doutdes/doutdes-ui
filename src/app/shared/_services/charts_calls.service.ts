@@ -11,6 +11,10 @@ export class ChartsCallsService {
   constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService) {
   }
 
+  private cutString(str, maxLength) {
+    return str.length > maxLength ? str.substr(0, 30) + '...' : str;
+  }
+
   public getDataByChartId(ID, intervalDate?: IntervalDate): Observable<any> {
     switch (ID) {
       case 1:
@@ -33,6 +37,10 @@ export class ChartsCallsService {
         return this.googleAnalyticsService.gaSources(intervalDate);
       case 10:
         return this.googleAnalyticsService.gaBounceRate(intervalDate);
+      case 11:
+        return this.googleAnalyticsService.gaAvgSessionDuration(intervalDate);
+      case 12:
+        return this.googleAnalyticsService.gaBrowsers(intervalDate);
     }
   }
 
@@ -41,6 +49,7 @@ export class ChartsCallsService {
     let header;
     const chartArray = [];
     const impressChartArray = [];
+    let paddingRows = 0;
 
     switch (ID) {
       case 1:
@@ -183,19 +192,33 @@ export class ChartsCallsService {
         };
         break; // google pie end
       case 7:
-        header = [['Website', 'Number Of Views']];
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0], parseInt(data[i][1], 10)]);
+        header = [['Website', 'Views']];
+        paddingRows = 10 - (data.length % 10);
+
+        console.log('DATI: ' + data.length + '\nPADDING: ' + paddingRows);
+
+        for (let i = 0; i < data.length + paddingRows; i++) {
+          if (i >= data.length) {
+            chartArray.push(['', null]);
+          } else {
+            chartArray.push([this.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
+          }
         }
         dataFormat = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
           options: {
             alternatingRowStyle: true,
-            allowHtml: true
+            allowHtml: true,
+            sort: 'enable',
+            sortAscending: false,
+            sortColumn: 1,
+            pageSize: 10,
+            height: '100%',
+            width: '100%'
           }
         };
-        break; // Google Table
+        break; // Google List Refferal
       case 8:
         header = [['Country', 'Popularity']];
         // Push data pairs in the Chart array
@@ -264,6 +287,55 @@ export class ChartsCallsService {
           }
         };
         break; // Google BounceRate
+      case 11:
+        header = [['Date', 'Time (s)']];
+        // Push data pairs in the Chart array
+
+        // console.log(data);
+
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+
+        dataFormat = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            curveType: 'function',
+            height: 310,
+            explorer: {},
+            colors: ['#EF7C7C'],
+            areaOpacity: 0.4
+          }
+        };
+        break; // Google Average Session Duration
+      case 12:
+        header = [['Browser', 'Sessions']];
+
+        paddingRows = 10 - (data.length % 10);
+
+        for (let i = 0; i < data.length + paddingRows; i++) {
+          if (i >= data.length) {
+            chartArray.push(['', null]);
+          } else {
+            chartArray.push([this.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
+          }
+        }
+        dataFormat = {
+          chartType: 'Table',
+          dataTable: header.concat(chartArray),
+          options: {
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sortColumn: 1,
+            pageSize: 10,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; // Google list sessions per browser
     }
     return dataFormat;
   }
