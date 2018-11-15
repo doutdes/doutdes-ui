@@ -82,6 +82,9 @@ export class FilterActions {
 
             if (chart['Chart']['type'] === 2) {
 
+              console.log(chart);
+              console.log(chart['Chart']['id']);
+
               observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
               chartsToRetrieve.push(chart);
 
@@ -101,6 +104,8 @@ export class FilterActions {
       });
 
       if (observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
+
+        console.log(observables);
 
         forkJoin(observables)
           .subscribe(dataArray => {
