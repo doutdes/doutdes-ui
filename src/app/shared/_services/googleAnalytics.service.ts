@@ -6,12 +6,15 @@ import {
   GoogleAvgSessionDuration,
   GoogleBounceRate,
   GoogleBrowsers,
-  GoogleMostViews, GoogleNewUsers,
-  GooglePageViews, GooglePageViewsPerSession,
+  GoogleMostViews,
+  GoogleNewUsers,
+  GooglePageViews,
+  GooglePageViewsPerSession,
   GoogleSessions,
   GoogleSources,
   GoogleViewsByCountry
 } from '../_models/GoogleData';
+
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import * as moment from 'moment';
 import {Observable, of} from 'rxjs';

@@ -10,5 +10,6 @@ export interface DashboardCharts {
   chartData?: any;
   position?: number;
   error?: boolean;
+  geoData?: any;
 }
 

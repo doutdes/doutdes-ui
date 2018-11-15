@@ -122,23 +122,27 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 let cloneChart: DashboardCharts;
 
                 if (!dataArray[i]['status']) { // Se la chiamata non rende errori
+
                   chartToPush = dashCharts[i];
                   chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
                   chartToPush.error = false;
 
-                } else {
+                  // Se i tipi di dati sono schematizzati per country, allora vengono salvati per riutilizzarli in seguito coi filtri
+                  chartToPush.geoData = dashCharts[i].Chart.title.includes('country') ? dataArray[i] : null;
 
+                } else {
                   chartToPush = dashCharts[i];
                   chartToPush.error = true;
 
                   console.log('Errore recuperando dati per ' + dashCharts[i].title);
                   console.log(dataArray[i]);
                 }
+
                 cloneChart = this.createClone(chartToPush);
 
-                chartsToShow.push(chartToPush);
-                chartsClone.push(cloneChart);
+                chartsToShow.push(chartToPush); // Original Data
+                chartsClone.push(cloneChart);  // Filtered Data
               }
               this.globalEventService.loadingScreen.next(false);
             });
