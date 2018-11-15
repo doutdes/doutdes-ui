@@ -79,8 +79,8 @@ export class ChartsCallsService {
           dataTable: header.concat(arr),
           options: {
             region: 'world',
-            colors: ['#EF7C7C'],
-            colorAxis: {colors: ['#F7DEDE', '#EF7C7C']},
+            colors: ['#63c2de'],
+            colorAxis: {colors: ['#9EDEEF', '#63c2de']},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
             defaultColor: '#333',
@@ -107,7 +107,7 @@ export class ChartsCallsService {
             curveType: 'function',
             height: 310,
             explorer: {},
-            colors: ['#8CCEA0'],
+            colors: ['#63c2de'],
             areaOpacity: 0.4
           }
         };
@@ -209,11 +209,11 @@ export class ChartsCallsService {
             sliceVisibilityThreshold: 0.05,
             height: 310,
             // is3D: true,
-            colors: ['#8CCEA0', '#e3eaa7', '#b5e7a0', '#86af49'],
+            colors: ['#63c2de'],
             pieSliceText: 'label',
             pieSliceTextStyle: {fontSize: 13, color: 'black'},
             pieHole: 0.1,
-            // slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
+            slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
             areaOpacity: 0.4
           }
         };
