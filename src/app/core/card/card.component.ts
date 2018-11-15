@@ -42,44 +42,17 @@ export class CardComponent implements OnInit {
     switch (this.icon) {
       case 'facebook': {
         this.icon = 'fa-facebook-f';
+        this.background = '#407CA5';
         break;
       }
       case 'google': {
         this.icon = 'fab fa-google';
+        this.background = '#DB5D43';
         break;
       }
       default: {
         break;
       }
-    }
-
-    if (this.background) {
-
-      // Handling background nicknames
-      switch (this.background) {
-        case 'lightblue': {
-          this.background = '#0B9AC1';
-          break;
-        }
-        case 'green': {
-          this.background = '#2C994B';
-          break;
-        }
-        case 'red': {
-          this.background = '#E04545';
-          break;
-        }
-        case 'peach': {
-          this.background = '#FF703D';
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-
-    } else {
-      this.background = '#FF703D';
     }
 
     this.updateChartForm = this.formBuilder.group({

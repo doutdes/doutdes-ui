@@ -1,7 +1,7 @@
 <div class="row bg-white rounded p-4 title-header h-100">
   <div class="col-xl-8 col-lg-6 col-md-8">
     <img src="../assets/img/website-head.png" class="float-left"/>
-    <h1 class="display-4 my-auto ml-3">Website stats</h1>
+    <h1 class="display-4 my-auto float-left ml-3" style="color:#888">Website stats</h1>
   </div>
   <div class="col-xl-4 col-lg-6 col-md-4 my-auto">
     <div>
@@ -18,7 +18,7 @@
           <li class="dropdown-item">Custom</li>
         </ul>
       </div> <!-- TODO Create a component custom like card -->
-      <input type="text" class="form-control float-right filterDatePicker"
+      <input type="text" class="form-control float-right mr-3 filterDatePicker"
              [(ngModel)]="bsRangeValue"
              [minDate]="minDate"
              [maxDate]="maxDate"

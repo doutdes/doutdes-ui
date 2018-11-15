@@ -142,7 +142,7 @@ export class ChartsCallsService {
             curveType: 'function',
             height: 310,
             explorer: {},
-            colors: ['#EF7C7C'],
+            colors: ['#FFA647'],
             areaOpacity: 0.4
           }
         };
@@ -163,7 +163,7 @@ export class ChartsCallsService {
             curveType: 'function',
             height: 310,
             explorer: {},
-            colors: ['#63c2de'],
+            colors: ['#FFA647'],
             areaOpacity: 0.4
           }
         };
@@ -183,10 +183,10 @@ export class ChartsCallsService {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
             height: 310,
-            is3D: true,
+            is3D: false,
             pieSliceText: 'label',
-            pieSliceTextStyle: {fontSize: 13, color: 'black'},
-            colors: ['#8CCEA0', '#e3eaa7', '#b5e7a0', '#86af49'],
+            pieSliceTextStyle: {fontSize: 16, color: '#222'},
+            colors: ['#FFAF60', '#FFBD7F', '#FFCB9B', '#FFD7B5', '#FFE2CC'],
             areaOpacity: 0.4
           }
         };
@@ -257,7 +257,7 @@ export class ChartsCallsService {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
             height: 310,
-            colors: ['#618685'],
+            colors: ['#FFC993'],
             areaOpacity: 0.4
           }
         };
@@ -282,7 +282,7 @@ export class ChartsCallsService {
             curveType: 'function',
             height: 310,
             explorer: {},
-            colors: ['#EF7C7C'],
+            colors: ['#FFA647'],
             areaOpacity: 0.4
           }
         };
@@ -306,7 +306,7 @@ export class ChartsCallsService {
             curveType: 'function',
             height: 310,
             explorer: {},
-            colors: ['#EF7C7C'],
+            colors: ['#FFA647'],
             areaOpacity: 0.4
           }
         };
