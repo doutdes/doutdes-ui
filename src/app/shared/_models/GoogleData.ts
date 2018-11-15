@@ -8,7 +8,6 @@ export interface GoogleData {
   value: number;
 }
 
-
 export interface GooglePageViews {
   data: GoogleDataWithDate[];
 }
@@ -23,4 +22,28 @@ export interface GoogleMostViews {
 
 export interface GoogleSources {
   data: GoogleData[];
+}
+
+export interface GoogleViewsByCountry {
+  data: GoogleData[];
+}
+
+export interface GoogleBrowsers {
+  data: GoogleData[];
+}
+
+export interface GoogleBounceRate {
+  data: GoogleDataWithDate[];
+}
+
+export interface GoogleAvgSessionDuration {
+  data: GoogleDataWithDate[];
+}
+
+export interface GooglePageViewsPerSession {
+  data: GoogleDataWithDate[];
+}
+
+export interface GoogleNewUsers {
+  data: GoogleDataWithDate[];
 }
