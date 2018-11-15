@@ -11,6 +11,10 @@ export class ChartsCallsService {
   constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService) {
   }
 
+  private cutString(str, maxLength) {
+    return str.length > maxLength ? str.substr(0, 30) + '...' : str;
+  }
+
   public getDataByChartId(ID, intervalDate?: IntervalDate): Observable<any> {
     switch (ID) {
       case 1:
@@ -31,6 +35,12 @@ export class ChartsCallsService {
         return this.facebookService.fbfancountry();
       case 9:
         return this.googleAnalyticsService.gaSources(intervalDate);
+      case 10:
+        return this.googleAnalyticsService.gaBounceRate(intervalDate);
+      case 11:
+        return this.googleAnalyticsService.gaAvgSessionDuration(intervalDate);
+      case 12:
+        return this.googleAnalyticsService.gaBrowsers(intervalDate);
     }
   }
 
@@ -39,6 +49,7 @@ export class ChartsCallsService {
     let header;
     const chartArray = [];
     const impressChartArray = [];
+    let paddingRows = 0;
 
     switch (ID) {
       case 1:
@@ -79,8 +90,8 @@ export class ChartsCallsService {
           dataTable: header.concat(arr),
           options: {
             region: 'world',
-            colors: ['#EF7C7C'],
-            colorAxis: {colors: ['#F7DEDE', '#EF7C7C']},
+            colors: ['#63c2de'],
+            colorAxis: {colors: ['#9EDEEF', '#63c2de']},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
             defaultColor: '#333',
@@ -107,7 +118,7 @@ export class ChartsCallsService {
             curveType: 'function',
             height: 310,
             explorer: {},
-            colors: ['#8CCEA0'],
+            colors: ['#63c2de'],
             areaOpacity: 0.4
           }
         };
@@ -157,7 +168,7 @@ export class ChartsCallsService {
           }
         };
         break; // Google Sessions
-      case 6:
+      case 6: // google pie begin
         header = [['Type', 'Number']];
 
         // Push data pairs in the Chart array
@@ -179,21 +190,35 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Google Sources Pie
+        break; // google pie end
       case 7:
-        header = [['Website', 'Number Of Views']];
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0], parseInt(data[i][1], 10)]);
+        header = [['Website', 'Views']];
+        paddingRows = 10 - (data.length % 10);
+
+        console.log('DATI: ' + data.length + '\nPADDING: ' + paddingRows);
+
+        for (let i = 0; i < data.length + paddingRows; i++) {
+          if (i >= data.length) {
+            chartArray.push(['', null]);
+          } else {
+            chartArray.push([this.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
+          }
         }
         dataFormat = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
           options: {
             alternatingRowStyle: true,
-            allowHtml: true
+            allowHtml: true,
+            sort: 'enable',
+            sortAscending: false,
+            sortColumn: 1,
+            pageSize: 10,
+            height: '100%',
+            width: '100%'
           }
         };
-        break; // Google Table
+        break; // Google List Refferal
       case 8:
         header = [['Country', 'Popularity']];
         // Push data pairs in the Chart array
@@ -208,10 +233,11 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             sliceVisibilityThreshold: 0.05,
             height: 310,
-            is3D: true,
+            // is3D: true,
+            colors: ['#63c2de'],
             pieSliceText: 'label',
             pieSliceTextStyle: {fontSize: 13, color: 'black'},
-            pieHole: 0.2,
+            pieHole: 0.1,
             slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
             areaOpacity: 0.4
           }
@@ -236,6 +262,80 @@ export class ChartsCallsService {
           }
         };
         break; // Google Sources Column Chart
+
+      case 10:
+        header = [['Date', 'BounceRate']];
+        // Push data pairs in the Chart array
+
+        // console.log(data);
+
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+
+        dataFormat = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            curveType: 'function',
+            height: 310,
+            explorer: {},
+            colors: ['#EF7C7C'],
+            areaOpacity: 0.4
+          }
+        };
+        break; // Google BounceRate
+      case 11:
+        header = [['Date', 'Time (s)']];
+        // Push data pairs in the Chart array
+
+        // console.log(data);
+
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+
+        dataFormat = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            curveType: 'function',
+            height: 310,
+            explorer: {},
+            colors: ['#EF7C7C'],
+            areaOpacity: 0.4
+          }
+        };
+        break; // Google Average Session Duration
+      case 12:
+        header = [['Browser', 'Sessions']];
+
+        paddingRows = 10 - (data.length % 10);
+
+        for (let i = 0; i < data.length + paddingRows; i++) {
+          if (i >= data.length) {
+            chartArray.push(['', null]);
+          } else {
+            chartArray.push([this.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
+          }
+        }
+        dataFormat = {
+          chartType: 'Table',
+          dataTable: header.concat(chartArray),
+          options: {
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sortColumn: 1,
+            pageSize: 10,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; // Google list sessions per browser
     }
     return dataFormat;
   }

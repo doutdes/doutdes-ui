@@ -2,7 +2,16 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
-import {GoogleMostViews, GooglePageViews, GoogleSessions, GoogleSources} from '../_models/GoogleData';
+import {
+  GoogleAvgSessionDuration,
+  GoogleBounceRate,
+  GoogleBrowsers,
+  GoogleMostViews, GoogleNewUsers,
+  GooglePageViews, GooglePageViewsPerSession,
+  GoogleSessions,
+  GoogleSources,
+  GoogleViewsByCountry
+} from '../_models/GoogleData';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import * as moment from 'moment';
 import {Observable, of} from 'rxjs';
@@ -45,7 +54,49 @@ export class GoogleAnalyticsService {
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
-  private getUrlFormatted(intervalDate: IntervalDate, urlCall: string){
+  gaViewsByCountry(intervalDate: IntervalDate): Observable<any> {
+    const headers = this.getAuthorization();
+
+    return this.http.get<GoogleViewsByCountry>(this.getUrlFormatted(intervalDate, '/ga/viewsbycountry/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
+  }
+
+  gaBrowsers(intervalDate: IntervalDate): Observable<any> {
+    const headers = this.getAuthorization();
+
+    return this.http.get<GoogleBrowsers>(this.getUrlFormatted(intervalDate, '/ga/browsers/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
+  }
+
+  gaBounceRate(intervalDate: IntervalDate): Observable<any> {
+    const headers = this.getAuthorization();
+
+    return this.http.get<GoogleBounceRate>(this.getUrlFormatted(intervalDate, '/ga/bouncerate/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
+  }
+
+  gaAvgSessionDuration(intervalDate: IntervalDate): Observable<any> {
+    const headers = this.getAuthorization();
+
+    return this.http.get<GoogleAvgSessionDuration>(this.getUrlFormatted(intervalDate, '/ga/avgsessionduration/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
+  }
+
+  gaPageViewsPerSession(intervalDate: IntervalDate): Observable<any> {
+    const headers = this.getAuthorization();
+
+    return this.http.get<GooglePageViewsPerSession>(this.getUrlFormatted(intervalDate, '/ga/pageviewspersession/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
+  }
+
+  gaNewUsers(intervalDate: IntervalDate): Observable<any> {
+    const headers = this.getAuthorization();
+
+    return this.http.get<GoogleNewUsers>(this.getUrlFormatted(intervalDate, '/ga/newusers/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
+  }
+
+  private getUrlFormatted(intervalDate: IntervalDate, urlCall: string) {
     const startDate = (intervalDate == undefined || intervalDate.dataStart == undefined || intervalDate.dataStart == null)
       ? '365daysAgo'
       : this.formatDate(intervalDate.dataStart);
@@ -65,7 +116,5 @@ export class GoogleAnalyticsService {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`);
   }
-
-
 
 }
