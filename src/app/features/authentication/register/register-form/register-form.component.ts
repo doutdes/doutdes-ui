@@ -58,14 +58,12 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
     this.selectedUser = event.target.value;
 
     if (this.selectedUser === 'company') {
-      console.log('sto nel set');
       this.registrationForm.controls['company_name'].setValidators(Validators.required);
       this.registrationForm.controls['company_name'].updateValueAndValidity();
 
       this.registrationForm.controls['vat_number'].setValidators(Validators.required);
       this.registrationForm.controls['vat_number'].updateValueAndValidity();
     } else {
-      console.log('pulisco');
       this.registrationForm.controls['company_name'].setValidators(null);
       this.registrationForm.controls['company_name'].updateValueAndValidity();
 

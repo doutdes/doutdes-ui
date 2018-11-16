@@ -111,6 +111,7 @@ export class FilterActions {
 
       if (observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
 
+        console.log('Observables: ');
         console.log(observables);
 
         forkJoin(observables)
