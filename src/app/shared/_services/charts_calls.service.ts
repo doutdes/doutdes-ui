@@ -201,8 +201,6 @@ export class ChartsCallsService {
         header = [['Website', 'Views']];
         paddingRows = data.length % 10 ? 10 - (data.length % 10) : 0; // if data.length % 10 != 0, add padding
 
-        console.log('DATI: ' + data.length + '\nPADDING: ' + paddingRows);
-
         for (let i = 0; i < data.length + paddingRows; i++) {
           if (i >= data.length) {
             chartArray.push(['', null]);

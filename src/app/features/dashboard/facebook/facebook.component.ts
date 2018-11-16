@@ -137,7 +137,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   chartToPush = dashCharts[i];
                   chartToPush.error = true;
 
-                  console.log('Errore recuperando dati per ' + dashCharts[i].title);
+                  console.log('facebook component ts:');
                   console.log(dataArray[i]);
                 }
 

@@ -81,6 +81,7 @@ export class FilterActions {
 
           if (chart['Chart']['type'] === 2) { // Grafici di Google Analytics
 
+            console.log('filter actions: ');
             console.log(chart);
             console.log(chart['Chart']['id']);
 

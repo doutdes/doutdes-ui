@@ -65,7 +65,6 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   }
 
   onSubmit() {
-    console.log(this.registrationForm);
     this.submitted = true;
 
     if (this.registrationForm.invalid) {

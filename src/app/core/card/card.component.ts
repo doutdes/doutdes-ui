@@ -80,6 +80,7 @@ export class CardComponent implements OnInit {
       format: this.dashChart.format
     };
 
+    console.log('card component ts:');
     console.log(chart);
     this.loading = true;
 

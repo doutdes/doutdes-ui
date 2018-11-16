@@ -96,8 +96,6 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
 
     delete this.registrationForm.value.r_password;
 
-    console.log(this.registrationForm.value);
-
     this.loading = true;
 
     this.userService.register(<User> this.registrationForm.value)

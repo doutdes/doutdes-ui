@@ -127,7 +127,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                   chartToPush = dashCharts[i];
                   chartToPush.error = true;
 
-                  console.log('Errore recuperando dati per ' + dashCharts[i].title);
+                  console.log('google analytics component ts:');
                   console.log(dataArray[i]);
                 }
                 cloneChart = this.createClone(chartToPush);
