@@ -111,19 +111,20 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
         } else {
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
+        }
 
+        if(dashCharts instanceof Array) {
           dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id)));
 
           forkJoin(observables)
             .subscribe(dataArray => {
               for (let i = 0; i < dataArray.length; i++) {
 
-                let chartToPush: DashboardCharts;
+                let chartToPush: DashboardCharts = dashCharts[i];
                 let cloneChart: DashboardCharts;
 
                 if (!dataArray[i]['status']) { // Se la chiamata non rende errori
 
-                  chartToPush = dashCharts[i];
                   chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
                   chartToPush.error = false;
@@ -134,7 +135,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                     : null;
 
                 } else {
-                  chartToPush = dashCharts[i];
                   chartToPush.error = true;
 
                   console.log('facebook component ts:');
@@ -148,15 +148,18 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
               }
               this.globalEventService.loadingScreen.next(false);
             });
+
+
+          const dateInterval: IntervalDate = {
+            dataStart: this.firstDateRange,
+            dataEnd: this.lastDateRange
+          };
+
+          this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
+          this.globalEventService.updateChartList.next(true);
+        } else {
+          this.globalEventService.loadingScreen.next(false);
         }
-
-        const dateInterval: IntervalDate = {
-          dataStart: this.firstDateRange,
-          dataEnd: this.lastDateRange
-        };
-
-        this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
-        this.globalEventService.updateChartList.next(true);
 
       }, error1 => {
         console.log('Error querying the charts of the Facebook Dashboard');
@@ -169,7 +172,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const innerChart: Chart = {
       ID: dashChart.chart_id,
       format: dashChart.format,
-      type: 1, // FacebookInsight
+      type: dashChart.type,
       title: dashChart.title
     };
 

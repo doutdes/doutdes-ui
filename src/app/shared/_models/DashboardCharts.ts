@@ -11,5 +11,6 @@ export interface DashboardCharts {
   position?: number;
   error?: boolean;
   geoData?: any;
+  type?: number;
 }
 

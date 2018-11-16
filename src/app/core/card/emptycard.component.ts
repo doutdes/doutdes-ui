@@ -117,6 +117,8 @@ export class EmptycardComponent implements OnInit {
     this.dashboardService.addChartToDashboard(dashChart)
       .pipe(first())
       .subscribe(chartInserted => {
+        dashChart.type = this.chartSelected[0].type;
+
         this.eventEmitter.addChartInDashboard.next(dashChart);
         this.insertChartForm.reset();
         this.chartSelected = null;
@@ -134,33 +136,41 @@ export class EmptycardComponent implements OnInit {
   }
 
   updateDropdownOptions(): void {
-
     this.chartsAvailable = false;
     this.dropdownOptions = [];
 
-    this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
-      .subscribe(chartRemaining => {
-
-        if (chartRemaining) {
-          chartRemaining.forEach(el => {
-            this.dropdownOptions.push({
-              id: el.ID,
-              title: el['Title'],
-              format: el.format,
-              global: el['Title'] + ' (' + el.format + ')'
-            });
-          });
-          this.chartsAvailable = true;
-        }
-
-      }, err => {
-        console.log('Error in Chart remaining call');
-        console.log(err);
+    if(this.dashboard_data.dashboard_type !== 0) {
+      this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
+        .subscribe(chartRemaining => this.popolateDropdown(chartRemaining), err => {
+          console.log('Error in Chart remaining call');
+          console.log(err);
+        });
+    } else {
+      this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id)
+        .subscribe(chartRemaining => this.popolateDropdown(chartRemaining), err => {
+          console.log('Error in Chart remaining call');
+          console.log(err);
       });
+    }
   }
 
   selectionChanged($event: any) {
     this.insertChartForm.controls['chartTitle'].setValue($event.value[0].title);
+  }
+
+  popolateDropdown(charts) {
+    if (charts) {
+      charts.forEach(el => {
+        this.dropdownOptions.push({
+          id: el.ID,
+          title: el['Title'],
+          format: el.format,
+          type: el['Type'],
+          global: el['Title'] + ' (' + el.format + ')'
+        });
+      });
+      this.chartsAvailable = true;
+    }
   }
 
 }

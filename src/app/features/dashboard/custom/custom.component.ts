@@ -13,18 +13,19 @@ import {IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {Chart} from '../../../shared/_models/Chart';
+import {FacebookService} from '../../../shared/_services/facebook.service';
 
 const PrimaryWhite = '#ffffff';
 
 @Component({
-  selector: 'app-feature-dashboard-google',
-  templateUrl: './googleAnalytics.component.html'
+  selector: 'app-feature-dashboard-custom',
+  templateUrl: './custom.component.html'
 })
 
-export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestroy {
+export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   public HARD_DASH_DATA = {
-    dashboard_type: 2,
+    dashboard_type: 0,
     dashboard_id: null
   };
   public FILTER_DAYS = {
@@ -55,6 +56,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   constructor(
     private googleAnalyticsService: GoogleAnalyticsService,
+    private facebookService: FacebookService,
     private breadcrumbActions: BreadcrumbActions,
     private dashboardService: DashboardService,
     private chartsCallService: ChartsCallsService,
@@ -125,11 +127,16 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                   chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
                   chartToPush.error = false;
+
+                  // Se i tipi di dati sono schematizzati per country, allora vengono salvati per riutilizzarli in seguito coi filtri
+                  chartToPush.geoData = (dashCharts[i].Chart.title.includes('country') || dashCharts[i].Chart.title.includes('city'))
+                    ? dataArray[i]
+                    : null;
                 } else {
 
                   chartToPush.error = true;
 
-                  console.log('google analytics component ts:');
+                  console.log('Errore recuperando dati per ' + dashCharts[i].title);
                   console.log(dataArray[i]);
                 }
                 cloneChart = this.createClone(chartToPush);
@@ -163,7 +170,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     const innerChart: Chart = {
       ID: dashChart.chart_id,
       format: dashChart.format,
-      type: dashChart.type, // GoogleAnalytics
+      type: dashChart.type,
       title: dashChart.title
     };
 
@@ -184,6 +191,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
         }
+
+        console.log(chartToPush);
 
         this.filterActions.addChart(chartToPush);
       }, error1 => {

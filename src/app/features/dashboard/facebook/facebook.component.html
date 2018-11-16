@@ -33,7 +33,7 @@
 <div class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-xl-4 col-lg-6 pt-3 order-xl-1 order-lg-1">
-      <app-card background="{{chart.color}}" icon="facebook" [dashChart]="chart"></app-card>
+      <app-card [dashChart]="chart"></app-card>
     </div>
   </ng-container>
 

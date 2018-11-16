@@ -26,10 +26,16 @@ export class DashboardService {
       + dashboard_id + '/' + chart_id, {headers});
   }
 
-  getChartsNotAdded(dashboard_id, dashboard_type) {
+  getChartsNotAddedByDashboardType(dashboard_id, dashboard_type) {
     const headers = this.getAuthorization();
     return this.http.get<Chart[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboardAndType/'
       + dashboard_id + '/' + dashboard_type, {headers});
+  }
+
+  getChartsNotAdded(dashboard_id) {
+    const headers = this.getAuthorization();
+    return this.http.get<Chart[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboard/'
+      + dashboard_id, {headers});
   }
 
   addChartToDashboard(chart) {

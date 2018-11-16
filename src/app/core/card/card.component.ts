@@ -4,8 +4,11 @@ import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {first} from 'rxjs/operators';
-import {d} from '@angular/core/src/render3';
+
+const enum Type {
+  Facebook = 1,
+  Google = 2
+};
 
 @Component({
   selector: 'app-card',
@@ -14,14 +17,14 @@ import {d} from '@angular/core/src/render3';
 })
 
 export class CardComponent implements OnInit {
-  @Input() background = '#000';
-  @Input() icon: string;
+  @Input() dashChart: DashboardCharts;
   @Input() xlOrder: string;
   @Input() lgOrder: string;
-  @Input() dashChart: DashboardCharts;
   @HostBinding('class') elementClass = 'pt-3';
   @ViewChild('mychart') mychart;
 
+  icon: string;
+  background = '#000';
   color = '#fff';
   modalRef: BsModalRef;
 
@@ -39,13 +42,13 @@ export class CardComponent implements OnInit {
   ngOnInit() {
 
     // Handling icon nicknames
-    switch (this.icon) {
-      case 'facebook': {
+    switch (this.dashChart.Chart.type) {
+      case Type.Facebook: {
         this.icon = 'fa-facebook-f';
         this.background = '#407CA5';
         break;
       }
-      case 'google': {
+      case Type.Google: {
         this.icon = 'fab fa-google';
         this.background = '#DB5D43';
         break;

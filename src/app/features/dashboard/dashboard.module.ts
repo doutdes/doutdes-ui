@@ -7,6 +7,7 @@ import {FeatureDashboardRoutingModule} from './dashboard.routing';
 import {FeatureDashboardFacebookModule} from './facebook/facebook.module';
 import {FeatureDashboardGoogleAnalyticsModule} from './googleAnalytics/googleAnalytics.module';
 import {BsDatepickerModule} from 'ngx-bootstrap';
+import {FeatureDashboardCustomModule} from './custom/custom.module';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import {BsDatepickerModule} from 'ngx-bootstrap';
     AppFooterModule,
     FeatureDashboardFacebookModule,
     FeatureDashboardGoogleAnalyticsModule,
+    FeatureDashboardCustomModule,
     FeatureDashboardRoutingModule
   ],
   providers: [

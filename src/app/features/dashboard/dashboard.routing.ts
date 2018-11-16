@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {FeatureDashboardFacebookComponent} from './facebook/facebook.component';
 import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics/googleAnalytics.component';
+import {FeatureDashboardCustomComponent} from './custom/custom.component';
 
 /** App Components **/
 
@@ -22,6 +23,10 @@ import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics/google
       {
         path: 'google',
         component: FeatureDashboardGoogleAnalyticsComponent
+      },
+      {
+        path: 'custom',
+        component: FeatureDashboardCustomComponent
       }
     ])
   ],
