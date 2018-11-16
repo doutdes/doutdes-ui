@@ -12,3 +12,8 @@ export interface FaceBookFanCountry {
   value: Array<any>;
   end_time: Date;
 }
+
+export interface FacebookPageViewsTotal {
+  value: number;
+  end_time: Date;
+}

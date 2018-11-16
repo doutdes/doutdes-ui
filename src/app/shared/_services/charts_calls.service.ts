@@ -41,6 +41,8 @@ export class ChartsCallsService {
         return this.googleAnalyticsService.gaAvgSessionDuration(intervalDate);
       case 12:
         return this.googleAnalyticsService.gaBrowsers(intervalDate);
+      case 13:
+        return this.facebookService.fbpageviewstotal();
     }
   }
 
@@ -336,6 +338,28 @@ export class ChartsCallsService {
           }
         };
         break; // Google list sessions per browser
+
+      case 13:
+
+        header = [['Date', 'Views']];
+        // Push data pairs in the Chart array
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([new Date(data[i].end_time), data[i].value]);
+        }
+
+        dataFormat = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(chartArray),
+          options: {
+            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            legend: {position: 'none'},
+            curveType: 'function',
+            height: 310,
+            explorer: {},
+            colors: ['#63c2de'],
+            areaOpacity: 0.4
+          }
+        };
     }
     return dataFormat;
   }
