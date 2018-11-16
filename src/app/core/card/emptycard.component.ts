@@ -6,6 +6,7 @@ import {Component, ElementRef, HostBinding, Input, OnInit, TemplateRef, ViewChil
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
 import {first} from 'rxjs/operators';
+import * as _ from 'lodash';
 
 /* Local Services */
 import {DashboardService} from '../../shared/_services/dashboard.service';
@@ -147,7 +148,7 @@ export class EmptycardComponent implements OnInit {
         });
     } else {
       this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id)
-        .subscribe(chartRemaining => this.popolateDropdown(chartRemaining), err => {
+        .subscribe(chartRemaining => this.popolateDropdown(chartRemaining, true), err => {
           console.log('Error in Chart remaining call');
           console.log(err);
       });
@@ -158,18 +159,30 @@ export class EmptycardComponent implements OnInit {
     this.insertChartForm.controls['chartTitle'].setValue($event.value[0].title);
   }
 
-  popolateDropdown(charts) {
+  popolateDropdown(charts, writeType = false) {
     if (charts) {
       charts.forEach(el => {
+        let global = writeType ? this.getStringType(el['Type']) + el['Title'] + ' (' + el.format + ')' : el['Title'] + ' (' + el.format + ')';
         this.dropdownOptions.push({
           id: el.ID,
           title: el['Title'],
           format: el.format,
           type: el['Type'],
-          global: el['Title'] + ' (' + el.format + ')'
+          global: global
         });
       });
+
+      this.dropdownOptions = _.orderBy(this.dropdownOptions, ['global', 'title', 'id']);
       this.chartsAvailable = true;
+    }
+  }
+
+  getStringType(type: number){
+    switch (type) {
+      case 1:
+        return 'FACEBOOK - ';
+      case 2:
+        return 'GOOGLE - ';
     }
   }
 
