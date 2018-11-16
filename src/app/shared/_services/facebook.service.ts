@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {FacebookFanCount, FaceBookFanCountry, FacebookImpressions, FacebookPageViewsTotal} from '../_models/FacebookData';
+import {FacebookFanCity, FacebookFanCount, FaceBookFanCountry, FacebookImpressions, FacebookPageViewsTotal} from '../_models/FacebookData';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
 
@@ -34,7 +34,7 @@ export class FacebookService {
 
   fbfancity(){
     const headers = this.getAuthorization();
-    return this.http.get<FacebookPageViewsTotal[]>('http://' + environment.host + ':' + environment.port + '/fb/fancity', {headers});
+    return this.http.get<FacebookFanCity[]>('http://' + environment.host + ':' + environment.port + '/fb/fancity', {headers});
   }
 
 
