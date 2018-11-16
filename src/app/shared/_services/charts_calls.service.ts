@@ -83,8 +83,9 @@ export class ChartsCallsService {
         break; // Fb Fan Count
       case 2:
         header = [['Country', 'Popularity']];
-        const arr = Object.keys(data[0].value).map(function (k) {
-          return [k, data[0].value[k]];
+
+        const arr = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
         });
 
         dataFormat = {
@@ -224,8 +225,8 @@ export class ChartsCallsService {
       case 8:
         header = [['Country', 'Popularity']];
         // Push data pairs in the Chart array
-        const arrPie = Object.keys(data[0].value).map(function (k) {
-          return [k, data[0].value[k]];
+        const arrPie = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
         });
         dataFormat = {
           chartType: 'PieChart',
@@ -264,7 +265,6 @@ export class ChartsCallsService {
           }
         };
         break; // Google Sources Column Chart
-
       case 10:
         header = [['Date', 'BounceRate']];
         // Push data pairs in the Chart array
