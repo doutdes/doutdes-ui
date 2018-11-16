@@ -11,7 +11,7 @@ export class ChartsCallsService {
   constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService) {
   }
 
-  private cutString(str, maxLength) {
+  public static cutString(str, maxLength) {
     return str.length > maxLength ? str.substr(0, 30) + '...' : str;
   }
 
@@ -207,7 +207,7 @@ export class ChartsCallsService {
           if (i >= data.length) {
             chartArray.push(['', null]);
           } else {
-            chartArray.push([this.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
+            chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
           }
         }
         dataFormat = {
@@ -325,7 +325,7 @@ export class ChartsCallsService {
           if (i >= data.length) {
             chartArray.push(['', null]);
           } else {
-            chartArray.push([this.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
+            chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
           }
         }
         dataFormat = {
@@ -368,8 +368,15 @@ export class ChartsCallsService {
         header = [['City', 'Fans']];
 
         arr = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [k, data[data.length - 1].value[k]];
+          return [ChartsCallsService.cutString(k,30), data[data.length - 1].value[k]];
         });
+
+        paddingRows = arr.length % 10 ? 10 - (arr.length % 10) : 0;
+
+        for (let i=0; i < paddingRows; i++) {
+          arr.push(['',null]);
+        }
+
         dataFormat = {
           chartType: 'Table',
           dataTable: header.concat(arr),

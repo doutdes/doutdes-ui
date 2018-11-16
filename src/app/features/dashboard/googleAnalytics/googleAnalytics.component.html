@@ -1,6 +1,6 @@
 <div class="row bg-white rounded p-4 title-header h-100">
   <div class="col-xl-8 col-lg-6 col-md-8">
-    <img src="../assets/img/website-head.png" class="float-left"/>
+    <img src="/assets/img/website-head.png" class="float-left"/>
     <h1 class="display-4 my-auto float-left ml-3" style="color:#888">Website stats</h1>
   </div>
   <div class="col-xl-4 col-lg-6 col-md-4 my-auto">
@@ -31,13 +31,13 @@
 </div>
 
 <div class="row" style="padding-bottom: 30px">
-  <ng-container *ngIf="chartArray$.length > 0; else noContent">
+  <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-xl-4 col-lg-6 pt-3 order-xl-1 order-lg-1">
       <app-card [dashChart]="chart"></app-card>
     </div>
   </ng-container>
 
-  <ng-template *ngIf="!loading" #noContent>
+  <ng-template *ngIf="!loading && chartArray$.length == 0">
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
   </ng-template>
 

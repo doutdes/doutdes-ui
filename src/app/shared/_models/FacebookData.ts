@@ -1,3 +1,8 @@
+export interface FbData {
+  str: string;
+  value: number;
+}
+
 export interface FacebookFanCount {
   value: number;
   end_time: Date;
@@ -19,7 +24,7 @@ export interface FacebookPageViewsTotal {
 }
 
 export interface FacebookFanCity {
-  value: Array<any>;
+  pippo: Array<any>;
   end_time: Date;
 }
 
