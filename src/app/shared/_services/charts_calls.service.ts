@@ -366,7 +366,7 @@ export class ChartsCallsService {
         break; // Facebook Page Views
       case 14:
         header = [['City', 'Fans']];
-        
+
         arr = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
@@ -387,3 +387,4 @@ export class ChartsCallsService {
     }
     return dataFormat;
   }
+}

@@ -1,31 +1,31 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FacebookService} from '../../../shared/_services/facebook.service';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
+import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
-import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
-
-import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
+import {IntervalDate} from '../redux-filter/filter.model';
+import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {Chart} from '../../../shared/_models/Chart';
+import {FacebookService} from '../../../shared/_services/facebook.service';
 
 const PrimaryWhite = '#ffffff';
 
 @Component({
-  selector: 'app-feature-dashboard-facebook',
-  templateUrl: './facebook.component.html'
+  selector: 'app-feature-dashboard-custom',
+  templateUrl: './custom.component.html'
 })
 
-export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
+export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   public HARD_DASH_DATA = {
-    dashboard_type: 1,
+    dashboard_type: 0,
     dashboard_id: null
   };
   public FILTER_DAYS = {
@@ -55,6 +55,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   dateChoice: String = 'Preset';
 
   constructor(
+    private googleAnalyticsService: GoogleAnalyticsService,
     private facebookService: FacebookService,
     private breadcrumbActions: BreadcrumbActions,
     private dashboardService: DashboardService,
@@ -80,7 +81,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         this.filterActions.updateChart(index, chart.title);
       }
     });
-
     this.globalEventService.loadingScreen.subscribe(value => {
       this.loading = value;
     });
@@ -102,8 +102,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const chartsToShow: Array<DashboardCharts> = [];
     const chartsClone: Array<DashboardCharts> = [];
 
-    this.globalEventService.loadingScreen.next(true);
-
     this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
 
@@ -113,7 +111,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
         }
 
-        if(dashCharts instanceof Array) {
+        if(dashCharts instanceof Array) { // Se vero, ci sono dei grafici nella dashboard, altrimenti è vuota
+
           dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id)));
 
           forkJoin(observables)
@@ -133,18 +132,17 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   chartToPush.geoData = (dashCharts[i].Chart.title.includes('country') || dashCharts[i].Chart.title.includes('city'))
                     ? dataArray[i]
                     : null;
-
                 } else {
+
                   chartToPush.error = true;
 
                   console.log('Errore recuperando dati per ' + dashCharts[i].title);
                   console.log(dataArray[i]);
                 }
-
                 cloneChart = this.createClone(chartToPush);
 
-                chartsToShow.push(chartToPush); // Original Data
-                chartsClone.push(cloneChart);  // Filtered Data
+                chartsToShow.push(chartToPush);
+                chartsClone.push(cloneChart);
               }
               this.globalEventService.loadingScreen.next(false);
             });
@@ -162,7 +160,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         }
 
       }, error1 => {
-        console.log('Error querying the charts of the Facebook Dashboard');
+        console.log('Error querying the charts');
         console.log(error1);
       });
   }
@@ -181,7 +179,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.chartsCallService.getDataByChartId(dashChart.chart_id)
+    this.chartsCallService.getDataByChartId(dashChart.chart_id, intervalDate)
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
@@ -194,22 +192,22 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           console.log('Errore recuperando dati per ' + dashChart);
         }
 
+        console.log(chartToPush);
+
         this.filterActions.addChart(chartToPush);
-        this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
       }, error1 => {
-        console.log('Error querying the chart');
+        console.log('Error querying the Chart');
         console.log(error1);
       });
   }
 
   onValueChange(value): void {
-
     if (value) {
       const dateInterval: IntervalDate = {
         dataStart: value[0],
         dataEnd: value[1].setHours(23, 59, 59, 999)
       };
-
+      this.globalEventService.loadingScreen.next(true);
       this.filterActions.filterData(dateInterval);
     }
   }
@@ -252,7 +250,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
-    bread.push(new Breadcrumb('Facebook', '/dashboard/facebook/'));
+    bread.push(new Breadcrumb('Website', '/dashboard/google/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -262,8 +260,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadDashboard();
     this.addBreadcrumb();
+    this.loadDashboard();
   }
 
   ngOnDestroy() {

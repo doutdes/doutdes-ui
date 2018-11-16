@@ -78,16 +78,11 @@ export class FilterActions {
       originalReceived.forEach(chart => {
 
         if (chart['Chart']) {
-
           if (chart['Chart']['type'] === 2) { // Grafici di Google Analytics
-
-            console.log(chart);
-            console.log(chart['Chart']['id']);
 
             // In un array vengono inserite tutte le chiamate da effettuare
             observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
             chartsToRetrieve.push(chart);
-
           } else { // Grafici di Facebook
 
             const header = [chart['chartData']['dataTable'].shift()];
@@ -109,8 +104,6 @@ export class FilterActions {
       });
 
       if (observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
-
-        console.log(observables);
 
         forkJoin(observables)
           .subscribe(dataArray => {

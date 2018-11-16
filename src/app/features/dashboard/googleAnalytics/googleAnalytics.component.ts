@@ -107,24 +107,26 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
         } else {
           this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
+        }
+
+        if(dashCharts instanceof Array) { // Se vero, ci sono dei grafici nella dashboard, altrimenti è vuota
+
           dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id)));
 
           forkJoin(observables)
             .subscribe(dataArray => {
               for (let i = 0; i < dataArray.length; i++) {
 
-                let chartToPush: DashboardCharts;
+                let chartToPush: DashboardCharts = dashCharts[i];
                 let cloneChart: DashboardCharts;
 
                 if (!dataArray[i]['status']) { // Se la chiamata non rende errori
 
-                  chartToPush = dashCharts[i];
                   chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
                   chartToPush.error = false;
                 } else {
 
-                  chartToPush = dashCharts[i];
                   chartToPush.error = true;
 
                   console.log('Errore recuperando dati per ' + dashCharts[i].title);
@@ -137,15 +139,18 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
               }
               this.globalEventService.loadingScreen.next(false);
             });
+
+
+          const dateInterval: IntervalDate = {
+            dataStart: this.firstDateRange,
+            dataEnd: this.lastDateRange
+          };
+
+          this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
+          this.globalEventService.updateChartList.next(true);
+        } else {
+          this.globalEventService.loadingScreen.next(false);
         }
-
-        const dateInterval: IntervalDate = {
-          dataStart: this.firstDateRange,
-          dataEnd: this.lastDateRange
-        };
-
-        this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
-        this.globalEventService.updateChartList.next(true);
 
       }, error1 => {
         console.log('Error querying the charts');
@@ -158,7 +163,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     const innerChart: Chart = {
       ID: dashChart.chart_id,
       format: dashChart.format,
-      type: 2, // GoogleAnalytics
+      type: dashChart.type, // GoogleAnalytics
       title: dashChart.title
     };
 
