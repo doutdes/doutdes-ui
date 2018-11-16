@@ -129,7 +129,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   chartToPush.error = false;
 
                   // Se i tipi di dati sono schematizzati per country, allora vengono salvati per riutilizzarli in seguito coi filtri
-                  chartToPush.geoData = dashCharts[i].Chart.title.includes('country') ? dataArray[i] : null;
+                  chartToPush.geoData = (dashCharts[i].Chart.title.includes('country') || dashCharts[i].Chart.title.includes('city'))
+                    ? dataArray[i]
+                    : null;
 
                 } else {
                   chartToPush = dashCharts[i];

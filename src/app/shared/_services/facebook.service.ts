@@ -32,6 +32,12 @@ export class FacebookService {
     return this.http.get<FacebookPageViewsTotal[]>('http://' + environment.host + ':' + environment.port + '/fb/pageviewstotal', {headers});
   }
 
+  fbfancity(){
+    const headers = this.getAuthorization();
+    return this.http.get<FacebookPageViewsTotal[]>('http://' + environment.host + ':' + environment.port + '/fb/fancity', {headers});
+  }
+
+
   private getAuthorization() {
     return new HttpHeaders()
       .set('Content-Type', 'application/json')

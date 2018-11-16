@@ -43,6 +43,8 @@ export class ChartsCallsService {
         return this.googleAnalyticsService.gaBrowsers(intervalDate);
       case 13:
         return this.facebookService.fbpageviewstotal();
+      case 14:
+        return this.facebookService.fbfancity();
     }
   }
 
@@ -360,8 +362,27 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
+        break; // Facebook Page Views
+      case 14:
+        header = [['City', 'Fans']];
+
+        const arr = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
+        });
+        dataFormat = {
+          chartType: 'Table',
+          dataTable: header.concat(arr),
+          options: {
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sortColumn: 1,
+            pageSize: 10,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; // Facebook Fan City
+
     }
     return dataFormat;
   }
-
-}

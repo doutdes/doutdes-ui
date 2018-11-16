@@ -77,34 +77,35 @@ export class FilterActions {
 
       originalReceived.forEach(chart => {
 
-          if (chart['Chart']) {
+        if (chart['Chart']) {
 
-            if (chart['Chart']['type'] === 2) { // Grafici di Google Analytics
+          if (chart['Chart']['type'] === 2) { // Grafici di Google Analytics
 
-              console.log(chart);
-              console.log(chart['Chart']['id']);
+            console.log(chart);
+            console.log(chart['Chart']['id']);
 
-              // In un array vengono inserite tutte le chiamate da effettuare
-              observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
-              chartsToRetrieve.push(chart);
+            // In un array vengono inserite tutte le chiamate da effettuare
+            observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
+            chartsToRetrieve.push(chart);
 
-            } else { // Grafici di Facebook
+          } else { // Grafici di Facebook
 
-              const header = [chart['chartData']['dataTable'].shift()];
-              let newArray = [];
+            const header = [chart['chartData']['dataTable'].shift()];
+            let newArray = [];
 
-              if(chart['Chart']['title'] === 'Fans by country') { // Se un grafico è di tipo geomap, recupera i dati da geoData e li filtra
-                newArray = chart['geoData'].filter(element => (new Date(element['end_time'])) <= (new Date(filterInterval.dataEnd)));
-                chart['chartData'] = this.chartCallService.formatDataByChartId(chart['Chart']['id'], newArray);
-              } else {
-                chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
-                newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
-                chart['chartData']['dataTable'] = header.concat(newArray);
-              }
-
-              filtered.push(chart);
+            // Se un grafico è di tipo geomap, recupera i dati da geoData e li filtra
+            if (chart['Chart']['title'].includes('country') || chart['Chart']['title'].includes('city')) {
+              newArray = chart['geoData'].filter(element => (new Date(element['end_time'])) <= (new Date(filterInterval.dataEnd)));
+              chart['chartData'] = this.chartCallService.formatDataByChartId(chart['Chart']['id'], newArray);
+            } else {
+              chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
+              newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
+              chart['chartData']['dataTable'] = header.concat(newArray);
             }
+
+            filtered.push(chart);
           }
+        }
       });
 
       if (observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
