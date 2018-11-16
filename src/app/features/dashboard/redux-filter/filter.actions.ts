@@ -8,7 +8,6 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {forkJoin, Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
-import {element} from 'protractor';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -81,12 +80,10 @@ export class FilterActions {
 
           if (chart['Chart']['type'] === 2) { // Grafici di Google Analytics
 
-            console.log('filter actions: ');
-            console.log(chart);
-            console.log(chart['Chart']['id']);
+            const chart_id = !chart['Chart']['id'] ? chart['Chart']['ID'] : chart['Chart']['id']; // TODO Eliminare dopo Refactor del modello
 
             // In un array vengono inserite tutte le chiamate da effettuare
-            observables.push(this.chartCallService.getDataByChartId(chart['Chart']['id'], filterInterval));
+            observables.push(this.chartCallService.getDataByChartId(chart_id, filterInterval));
             chartsToRetrieve.push(chart);
 
           } else { // Grafici di Facebook
@@ -111,9 +108,6 @@ export class FilterActions {
 
       if (observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
 
-        console.log('Observables: ');
-        console.log(observables);
-
         forkJoin(observables)
           .subscribe(dataArray => {
 
@@ -136,7 +130,6 @@ export class FilterActions {
       }
     }
 
-    // this.globalEventEmitter.loadingScreen.next(false);
     return filtered;
   }
 
