@@ -22,3 +22,4 @@ export interface FacebookFanCity {
   value: Array<any>;
   end_time: Date;
 }
+

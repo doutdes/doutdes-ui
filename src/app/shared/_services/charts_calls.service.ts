@@ -54,6 +54,7 @@ export class ChartsCallsService {
     const chartArray = [];
     const impressChartArray = [];
     let paddingRows = 0;
+    let arr = [];
 
     switch (ID) {
       case 1:
@@ -86,7 +87,7 @@ export class ChartsCallsService {
       case 2:
         header = [['Country', 'Popularity']];
 
-        const arr = Object.keys(data[data.length - 1].value).map(function (k) {
+        arr = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
 
@@ -365,8 +366,8 @@ export class ChartsCallsService {
         break; // Facebook Page Views
       case 14:
         header = [['City', 'Fans']];
-
-        const arr = Object.keys(data[data.length - 1].value).map(function (k) {
+        
+        arr = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
         dataFormat = {
