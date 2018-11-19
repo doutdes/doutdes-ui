@@ -147,12 +147,12 @@
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fas fa-code"></i></span>
       </div>
-      <input type="text" formControlName="zip_code" class="form-control" placeholder="Zip Code"
-             [ngClass]="{ 'is-invalid': submitted && f.zip_code.errors }" maxlength="5"/>
+      <input type="text" formControlName="zip" class="form-control" placeholder="Zip Code"
+             [ngClass]="{ 'is-invalid': submitted && f.zip.errors }" maxlength="5"/>
 
-      <div *ngIf="submitted && f.zip_code.errors" class="invalid-feedback">
-        <div *ngIf="f.zip_code.errors.required">Zip Code is required</div>
-        <div *ngIf="f.zip_code.errors.maxlength">Zip Code must be long at max 5 numbers</div>
+      <div *ngIf="submitted && f.zip.errors" class="invalid-feedback">
+        <div *ngIf="f.zip.errors.required">Zip Code is required</div>
+        <div *ngIf="f.zip.errors.maxlength">Zip Code must be long at max 5 numbers</div>
       </div>
     </div>
   </div> <!-- Province and Zip Code-->

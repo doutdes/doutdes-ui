@@ -39,7 +39,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       fiscal_code: ['', Validators.compose([Validators.maxLength(16), Validators.required])],
       address:     ['', Validators.compose([Validators.maxLength(100), Validators.required])],
       city:        ['', Validators.compose([Validators.maxLength(50), Validators.required])],
-      zip_code:    ['', Validators.compose([Validators.maxLength(5), Validators.required])],
+      zip:         ['', Validators.compose([Validators.maxLength(5), Validators.required])],
       province:    ['', Validators.compose([Validators.maxLength(2), Validators.required])],
       username:    ['', Validators.compose([Validators.maxLength(20), Validators.required])],
       email:       ['', Validators.required],
@@ -101,7 +101,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       .subscribe(
         data => {
           // this.setSignedUp(this.registrationForm.value.username);
-          this.router.navigate(['/login']);
+          this.router.navigate(['authentication/login']);
         }, error => {
           this.loading = false;
           console.log(error);
