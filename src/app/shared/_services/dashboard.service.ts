@@ -43,7 +43,7 @@ export class DashboardService {
     return this.http.post('http://' + environment.host + ':' + environment.port + '/dashboards/addChartToDashboard/', {chart}, {headers});
   }
 
-  updateChart(chart)  {
+  updateChart(chart) {
     const headers = this.getAuthorization();
     return this.http.put('http://' + environment.host + ':' + environment.port + '/dashboards/updateChartInDashboard/', {chart}, {headers});
   }
@@ -62,6 +62,61 @@ export class DashboardService {
       body
     });
   }
+
+  addDashboard(dashboard_name, dashboard_category) {
+
+    const headers = this.getAuthorization();
+
+    const body = {
+      dashboard_name: dashboard_name,
+      dashboard_category: dashboard_category
+    };
+
+    return this.http.post('http://' + environment.host + ':' + environment.port + '/dashboards/addDashboard/', body, {headers});
+
+  }
+
+  deleteDashboard(dashboard_id){
+
+    const headers = this.getAuthorization();
+
+    const body = {
+      dashboard_id: dashboard_id
+    };
+
+    return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + '/dashboards/deleteDashboard', {
+      headers,
+      body
+    });
+  }
+
+  addUserDashboard(dashboard_id){
+
+    const headers = this.getAuthorization();
+
+    const body = {
+      dashboard_id: dashboard_id
+    };
+
+    return this.http.post('http://' + environment.host + ':' + environment.port + '/dashboards/addUserDashboard/', body, {headers});
+  }
+
+  deleteUserDashboard(dashboard_id){
+
+    const headers = this.getAuthorization();
+
+    const body = {
+      dashboard_id: dashboard_id
+    };
+
+    return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + '/dashboards/deleteUserDashboard', {
+      headers,
+      body
+    });
+  }
+
+
+
 
   getAuthorization() {
     return new HttpHeaders()
