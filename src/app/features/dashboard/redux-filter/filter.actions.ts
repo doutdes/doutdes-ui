@@ -94,7 +94,7 @@ export class FilterActions {
             // Se un grafico è di tipo geomap, recupera i dati da geoData e li filtra
             if (chart['Chart']['title'].includes('country') || chart['Chart']['title'].includes('city')) {
               newArray = chart['geoData'].filter(element => (new Date(element['end_time'])) <= (new Date(filterInterval.dataEnd)));
-              chart['chartData'] = this.chartCallService.formatDataByChartId(chart['Chart']['id'], newArray);
+              chart['chartData'] = this.chartCallService.formatDataByChartId(chart['Chart']['id'], newArray).data;
             } else {
               chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
               newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
@@ -116,7 +116,8 @@ export class FilterActions {
               if (!dataArray[i]['status']) { // Se la chiamata non rende errori
                 const newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
 
-                chartsToRetrieve[i].chartData['dataTable'] = newData['dataTable'];
+                chartsToRetrieve[i].chartData['dataTable'] = newData.data['dataTable'];
+                chartsToRetrieve[i].average = newData.average;
                 filtered.push(chartsToRetrieve[i]);
               } else {
                 console.log('Errore per il grafico ' + chartsToRetrieve[i].title);

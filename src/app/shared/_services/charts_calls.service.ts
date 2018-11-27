@@ -50,6 +50,8 @@ export class ChartsCallsService {
 
   public formatDataByChartId(ID, data) {
     let dataFormat;
+    let average;
+    let highest;
     let header;
     const chartArray = [];
     const impressChartArray = [];
@@ -130,7 +132,7 @@ export class ChartsCallsService {
         };
         break; // Page Impressions
       case 4:
-        header = [['Date', 'WebViews']];
+        header = [['Date', 'Impressions']];
         // Push data pairs in the Chart array
 
         // console.log(data);
@@ -143,11 +145,11 @@ export class ChartsCallsService {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
-            curveType: 'function',
             height: 310,
-            explorer: {},
+            hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontName : 'Roboto'}, minTextSpacing: 15},
+            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}},
             colors: ['#FFA647'],
             areaOpacity: 0.4
           }
@@ -164,11 +166,11 @@ export class ChartsCallsService {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 30, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
-            curveType: 'function',
+            hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontName : 'Roboto'}, minTextSpacing: 15},
+            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}, minValue: 0},
             height: 310,
-            explorer: {},
             colors: ['#FFA647'],
             areaOpacity: 0.4
           }
@@ -186,7 +188,7 @@ export class ChartsCallsService {
           chartType: 'PieChart',
           dataTable: header.concat(chartArray),
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 30, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
             height: 310,
             is3D: false,
@@ -233,7 +235,7 @@ export class ChartsCallsService {
           chartType: 'PieChart',
           dataTable: header.concat(arrPie),
           options: {
-            chartArea: {left: 0, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
             sliceVisibilityThreshold: 0.05,
             height: 310,
@@ -258,37 +260,48 @@ export class ChartsCallsService {
           chartType: 'ColumnChart',
           dataTable: header.concat(chartArray),
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
             height: 310,
+            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}},
             colors: ['#FFC993'],
             areaOpacity: 0.4
           }
         };
         break; // Google Sources Column Chart
       case 10:
-        header = [['Date', 'BounceRate']];
+        header = [['Date', 'Bounce rate']];
         // Push data pairs in the Chart array
 
+        let sum = 0.;
+        highest = 0;
         // console.log(data);
 
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+          const value = parseInt(data[i][1], 10) / 100.;
+          sum += value;
+          highest = value > highest ? value : highest;
+
+          chartArray.push([parseDate(data[i][0]), value]);
         }
 
         dataFormat = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
-            curveType: 'function',
-            height: 310,
+            hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontSize: 12, fontName : 'Roboto'}, minTextSpacing: 15},
+            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}, minValue: 0, format: 'percent'},
+            height: 210,
             explorer: {},
             colors: ['#FFA647'],
             areaOpacity: 0.4
           }
         };
+
+        average = sum / data.length;
+
         break; // Google BounceRate
       case 11:
         header = [['Date', 'Time (s)']];
@@ -304,9 +317,11 @@ export class ChartsCallsService {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
             curveType: 'function',
+            hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontName : 'Roboto'}, minTextSpacing: 15},
+            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}, minValue: 0},
             height: 310,
             explorer: {},
             colors: ['#FFA647'],
@@ -339,7 +354,6 @@ export class ChartsCallsService {
           }
         };
         break; // Google list sessions per browser
-
       case 13:
 
         header = [['Date', 'Views']];
@@ -390,6 +404,6 @@ export class ChartsCallsService {
         break; // Facebook Fan City
 
     }
-    return dataFormat;
+    return { data: dataFormat, aggregated: { average: average, highest: highest }};
   }
 }

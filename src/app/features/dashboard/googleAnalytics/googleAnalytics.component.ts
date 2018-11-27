@@ -51,7 +51,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   minDate: Date = new Date('2018-01-01');
   maxDate: Date = new Date();
   bsRangeValue: Date[];
-  dateChoice: String = 'Preset';
+  dateChoice: String = 'Last 30 days';
 
   constructor(
     private googleAnalyticsService: GoogleAnalyticsService,
@@ -83,9 +83,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       this.loading = value;
     });
 
-    this.firstDateRange = this.minDate;
+    this.firstDateRange = subDays(new Date(), 30); //this.minDate;
     this.lastDateRange = this.maxDate;
-    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+    //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+    this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
 
     this.filter.subscribe(elements => {
       if (elements['dataFiltered'] !== null) {
@@ -111,7 +112,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
         if(dashCharts instanceof Array) { // Se vero, ci sono dei grafici nella dashboard, altrimenti è vuota
 
-          dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id)));
+          const dateInterval: IntervalDate = {
+            dataStart: this.firstDateRange,
+            dataEnd: this.lastDateRange
+          };
+
+          dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id, dateInterval)));
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -122,9 +128,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
                 if (!dataArray[i]['status']) { // Se la chiamata non rende errori
 
-                  chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
+                  const formatted = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
+
+                  chartToPush.chartData = formatted.data;
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
                   chartToPush.error = false;
+                  chartToPush.aggregated = formatted.aggregated;
                 } else {
 
                   chartToPush.error = true;
@@ -139,12 +148,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
               }
               this.globalEventService.loadingScreen.next(false);
             });
-
-
-          const dateInterval: IntervalDate = {
-            dataStart: this.firstDateRange,
-            dataEnd: this.lastDateRange
-          };
 
           this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
           this.globalEventService.updateChartList.next(true);
@@ -176,10 +179,14 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
+
+          const formatted = this.chartsCallService.formatDataByChartId(dashChart.chart_id, data);
+
           chartToPush.Chart = innerChart;
-          chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashChart.chart_id, data);
+          chartToPush.chartData = formatted.data;
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
+          chartToPush.aggregated = formatted.aggregated;
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);

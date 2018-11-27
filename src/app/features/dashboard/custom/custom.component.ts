@@ -124,7 +124,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
                 if (!dataArray[i]['status']) { // Se la chiamata non rende errori
 
-                  chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
+                  chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]).data;
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
                   chartToPush.error = false;
 
@@ -184,7 +184,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.Chart = innerChart;
-          chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashChart.chart_id, data);
+          chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashChart.chart_id, data).data;
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
         } else {
