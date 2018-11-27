@@ -34,7 +34,7 @@
                 </div>
               </div>
 
-              <div *ngIf="submitted && error400" class="text-danger mb-4">Service already exists</div>
+              <div *ngIf="submitted && error400" class="text-danger mb-4"><b>Error: </b>cannot add the service.</div>
               <div class="form-group-row">
                 <button [disabled]="loading" class="btn btn-lg btn-success" style="width: 49%; margin-right: 2%" [ngClass]="{'is-invalid': submitted && error400}">
                   Insert

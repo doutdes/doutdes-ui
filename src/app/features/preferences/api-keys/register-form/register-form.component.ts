@@ -73,6 +73,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     }
 
     this.registrationForm.value.user_id = this.store.getId();
+    this.registrationForm.value.service_id = this.selectedService;
 
     this.apiKeysService.registerKey(this.registrationForm.value)
       .pipe()
