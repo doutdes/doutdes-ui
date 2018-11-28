@@ -23,6 +23,7 @@ export class CardComponent implements OnInit {
   @HostBinding('class') elementClass = 'pt-3';
   @ViewChild('mychart') mychart;
 
+  type: string;
   avg: string;
   high: string;
 
@@ -44,6 +45,7 @@ export class CardComponent implements OnInit {
 
   ngOnInit() {
 
+    this.type = this.dashChart.aggregated.type;
     this.avg = (this.dashChart.aggregated.average * 100).toString();
     this.high = (this.dashChart.aggregated.highest * 100).toString();
 
@@ -65,8 +67,10 @@ export class CardComponent implements OnInit {
     }
 
     // Formatting extra data, if exists
-    this.avg ? this.avg = (parseFloat(this.avg)).toFixed(2) : null;                // Average
-    this.high ? this.high = (parseFloat(this.high)).toFixed(2) : null;  // Highest value
+    if (this.type == 'ga_bounce') {
+      this.avg = (parseFloat(this.avg)).toFixed(2);    // Average
+      this.high = (parseFloat(this.high)).toFixed(2);  // Highest value
+    }
 
     this.updateChartForm = this.formBuilder.group({
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],

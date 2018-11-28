@@ -53,6 +53,7 @@ export class ChartsCallsService {
     let average;
     let highest;
     let header;
+    let type;
     const chartArray = [];
     const impressChartArray = [];
     let paddingRows = 0;
@@ -270,6 +271,7 @@ export class ChartsCallsService {
         };
         break; // Google Sources Column Chart
       case 10:
+        type = 'ga_bounce';
         header = [['Date', 'Bounce rate']];
         // Push data pairs in the Chart array
 
@@ -405,6 +407,6 @@ export class ChartsCallsService {
 
     }
 
-    return { data: dataFormat, aggregated: { average: average, highest: highest }};
+    return { data: dataFormat, aggregated: { average: average, highest: highest, type: type }};
   }
 }
