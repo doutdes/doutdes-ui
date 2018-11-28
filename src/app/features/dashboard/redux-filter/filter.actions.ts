@@ -117,7 +117,7 @@ export class FilterActions {
                 const newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
 
                 chartsToRetrieve[i].chartData['dataTable'] = newData.data['dataTable'];
-                chartsToRetrieve[i].average = newData.average;
+                chartsToRetrieve[i].aggregated.average = newData.aggregated.average;
                 filtered.push(chartsToRetrieve[i]);
               } else {
                 console.log('Errore per il grafico ' + chartsToRetrieve[i].title);
