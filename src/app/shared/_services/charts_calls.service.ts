@@ -404,6 +404,7 @@ export class ChartsCallsService {
         break; // Facebook Fan City
 
     }
+
     return { data: dataFormat, aggregated: { average: average, highest: highest }};
   }
 }

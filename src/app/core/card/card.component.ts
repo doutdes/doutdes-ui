@@ -23,6 +23,9 @@ export class CardComponent implements OnInit {
   @HostBinding('class') elementClass = 'pt-3';
   @ViewChild('mychart') mychart;
 
+  avg: string;
+  high: string;
+
   icon: string;
   background = '#000';
   color = '#fff';
@@ -41,6 +44,9 @@ export class CardComponent implements OnInit {
 
   ngOnInit() {
 
+    this.avg = (this.dashChart.aggregated.average * 100).toString();
+    this.high = (this.dashChart.aggregated.highest * 100).toString();
+
     // Handling icon nicknames
     switch (this.dashChart.Chart.type) {
       case Type.Facebook: {
@@ -57,6 +63,10 @@ export class CardComponent implements OnInit {
         break;
       }
     }
+
+    // Formatting extra data, if exists
+    this.avg ? this.avg = (parseFloat(this.avg)).toFixed(2) : null;                // Average
+    this.high ? this.high = (parseFloat(this.high)).toFixed(2) : null;  // Highest value
 
     this.updateChartForm = this.formBuilder.group({
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],

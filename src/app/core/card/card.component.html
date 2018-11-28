@@ -19,8 +19,8 @@
   </div>
   <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
     <div *ngIf="dashChart.aggregated.average && dashChart.aggregated.highest" style="font-size:18px; min-height: 100px; font-weight:100; font-family:Roboto;">
-      Average bounce rate: <b>{{dashChart.aggregated.average.toFixed(4) * 100}}%</b><br>
-      Highest value: <b style="color: #267F00">{{dashChart.aggregated.highest.toFixed(4) * 100}}%</b>
+      Average bounce rate: <b>{{this.avg}}%</b><br>
+      Highest value: <b style="color: #267F00">{{this.high}}%</b>
     </div>
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
     </google-chart>
