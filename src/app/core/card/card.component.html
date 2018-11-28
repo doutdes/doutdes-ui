@@ -19,11 +19,12 @@
   </div>
   <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
     <div *ngIf="this.type == 'ga_bounce'" style="font-size:18px; font-variant:small-caps; min-height: 100px; font-weight:400; font-family:Roboto;">
-      Average bounce rate: <b>{{this.avg}}%</b>
-      <div style="font-size:15px;">
-        Lowest: <b style="color: #267F00">{{this.low}}%</b><br />
-        Highest: <b style="color: #960500">{{this.high}}%</b>
+      Average bounce rate: <b>{{this.avg}}%</b><!-- (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb">*</span>-->
+      <div style="font-size:13px;">
+        Lowest: <b>{{this.low}}%</b><br /> <!-- <b style="color: #267F00"> COLORE  VERDE-->
+        Highest: <b>{{this.high}}%</b>
       </div>
+      <div style="font-size:11px; font-variant:none; color:#bbb">* previous interval</div>
     </div>
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
     </google-chart>
