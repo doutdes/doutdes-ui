@@ -18,9 +18,12 @@
     <span style="font-size:14pt">{{dashChart.title}}</span><span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart['Chart']['format']}})</span>
   </div>
   <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
-    <div *ngIf="this.type == 'ga_bounce'" style="font-size:18px; min-height: 100px; font-weight:100; font-family:Roboto;">
-      Average bounce rate: <b>{{this.avg}}%</b><br>
-      Highest value: <b style="color: #267F00">{{this.high}}%</b>
+    <div *ngIf="this.type == 'ga_bounce'" style="font-size:18px; font-variant:small-caps; min-height: 100px; font-weight:400; font-family:Roboto;">
+      Average bounce rate: <b>{{this.avg}}%</b>
+      <div style="font-size:15px;">
+        Lowest: <b style="color: #267F00">{{this.low}}%</b><br />
+        Highest: <b style="color: #960500">{{this.high}}%</b>
+      </div>
     </div>
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
     </google-chart>

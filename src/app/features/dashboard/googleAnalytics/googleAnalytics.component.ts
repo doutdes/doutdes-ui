@@ -13,6 +13,7 @@ import {IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {Chart} from '../../../shared/_models/Chart';
+import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
 const PrimaryWhite = '#ffffff';
 
@@ -59,7 +60,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private dashboardService: DashboardService,
     private chartsCallService: ChartsCallsService,
     private globalEventService: GlobalEventsManagerService,
-    private filterActions: FilterActions
+    private filterActions: FilterActions,
+    private aggrDataService: AggregatedDataService,
   ) {
     this.globalEventService.removeFromDashboard.subscribe(values => {
       if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
@@ -117,6 +119,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             dataEnd: this.lastDateRange
           };
 
+          // Right data
           dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id, dateInterval)));
 
           forkJoin(observables)
@@ -133,7 +136,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                   chartToPush.chartData = formatted.data;
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
                   chartToPush.error = false;
-                  chartToPush.aggregated = formatted.aggregated;
+                  chartToPush.aggregated = this.aggrDataService.getAggregatedData(dataArray[i], dashCharts[i].chart_id);
                 } else {
 
                   chartToPush.error = true;
@@ -186,7 +189,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           chartToPush.chartData = formatted.data;
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.aggregated = formatted.aggregated;
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);

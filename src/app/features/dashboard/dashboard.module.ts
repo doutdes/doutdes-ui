@@ -6,8 +6,8 @@ import {FeatureDashboardComponent} from './dashboard.component';
 import {FeatureDashboardRoutingModule} from './dashboard.routing';
 import {FeatureDashboardFacebookModule} from './facebook/facebook.module';
 import {FeatureDashboardGoogleAnalyticsModule} from './googleAnalytics/googleAnalytics.module';
-import {BsDatepickerModule} from 'ngx-bootstrap';
 import {FeatureDashboardCustomModule} from './custom/custom.module';
+import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
 
 @NgModule({
   declarations: [
@@ -23,7 +23,7 @@ import {FeatureDashboardCustomModule} from './custom/custom.module';
     FeatureDashboardRoutingModule
   ],
   providers: [
-
+    AggregatedDataService
   ],
   exports: [
     FeatureDashboardComponent

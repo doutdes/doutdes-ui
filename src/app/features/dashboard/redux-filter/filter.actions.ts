@@ -8,6 +8,7 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {forkJoin, Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -26,6 +27,7 @@ export class FilterActions {
   constructor(
     private ngRedux: NgRedux<IAppState>,
     private chartCallService: ChartsCallsService,
+    private aggrDataService: AggregatedDataService,
     private globalEventEmitter: GlobalEventsManagerService
   ) {
     this.filter.subscribe(elements => {
@@ -116,8 +118,8 @@ export class FilterActions {
               if (!dataArray[i]['status']) { // Se la chiamata non rende errori
                 const newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
 
+                chartsToRetrieve[i].aggregated = this.aggrDataService.getAggregatedData(dataArray[i], chartsToRetrieve[i].chart_id);
                 chartsToRetrieve[i].chartData['dataTable'] = newData.data['dataTable'];
-                chartsToRetrieve[i].aggregated = newData.aggregated;
                 filtered.push(chartsToRetrieve[i]);
               } else {
                 console.log('Errore per il grafico ' + chartsToRetrieve[i].title);

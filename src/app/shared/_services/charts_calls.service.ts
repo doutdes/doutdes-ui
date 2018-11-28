@@ -52,6 +52,7 @@ export class ChartsCallsService {
     let dataFormat;
     let average;
     let highest;
+    let lowest;
     let header;
     let type;
     const chartArray = [];
@@ -275,14 +276,18 @@ export class ChartsCallsService {
         header = [['Date', 'Bounce rate']];
         // Push data pairs in the Chart array
 
+        /*
         let sum = 0.;
         highest = 0;
+        lowest = 1;
         // console.log(data);
+        **/
 
         for (let i = 0; i < data.length; i++) {
           const value = parseInt(data[i][1], 10) / 100.;
-          sum += value;
-          highest = value > highest ? value : highest;
+          //sum += value;
+          //highest = value > highest ? value : highest;
+          //lowest = value < lowest ? value : lowest;
 
           chartArray.push([parseDate(data[i][0]), value]);
         }
@@ -302,7 +307,7 @@ export class ChartsCallsService {
           }
         };
 
-        average = sum / data.length;
+        //average = sum / data.length;
 
         break; // Google BounceRate
       case 11:
@@ -407,6 +412,6 @@ export class ChartsCallsService {
 
     }
 
-    return { data: dataFormat, aggregated: { average: average, highest: highest, type: type }};
+    return { data: dataFormat };
   }
 }
