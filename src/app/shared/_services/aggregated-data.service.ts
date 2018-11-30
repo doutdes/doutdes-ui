@@ -39,6 +39,19 @@ export class AggregatedDataService {
         }
         resultData = {average: sum / data.length, highest: highest, lowest: lowest, type: type};
         break;
+      case 11: // GA Avg Session duration
+        type = 'ga_avgsessionduration';
+        // Calculates aggregated extra data
+        for (let i = 0; i < data.length; i++) {
+
+          const value = parseFloat(data[i][1]);
+          sum += value;
+          highest = value > highest ? value : highest;
+          lowest = value < lowest ? value : lowest;
+        }
+        resultData = {average: sum / data.length, highest: highest, lowest: lowest, type: type};
+        break;
+
     }
 
     return resultData;

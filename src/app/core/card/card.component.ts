@@ -81,6 +81,12 @@ export class CardComponent implements OnInit {
         this.low = this.dashChart.aggregated.lowest ? this.dashChart.aggregated.lowest : -1;                                 // Lowest value
         this.high = this.dashChart.aggregated.highest ? this.dashChart.aggregated.highest : -1;                              // Highest value
       }
+
+      if (this.type == 'ga_avgsessionduration') {
+        this.avg = this.dashChart.aggregated.average ? (this.dashChart.aggregated.average).toFixed(2) : -1;      // Average
+        this.low = this.dashChart.aggregated.lowest ? (this.dashChart.aggregated.lowest).toFixed(2) : -1;        // Lowest value
+        this.high = this.dashChart.aggregated.highest ? (this.dashChart.aggregated.highest).toFixed(2) : -1;     // Highest value
+      }
     }
 
     this.updateChartForm = this.formBuilder.group({

@@ -324,12 +324,12 @@ export class ChartsCallsService {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
             curveType: 'function',
             hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontName : 'Roboto'}, minTextSpacing: 15},
             vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}, minValue: 0},
-            height: 310,
+            height: 210,
             explorer: {},
             colors: ['#FFA647'],
             areaOpacity: 0.4
