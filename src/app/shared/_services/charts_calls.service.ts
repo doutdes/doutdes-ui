@@ -147,9 +147,9 @@ export class ChartsCallsService {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
-            height: 310,
+            height: 210,
             hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontName : 'Roboto'}, minTextSpacing: 15},
             vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}},
             colors: ['#FFA647'],

@@ -84,7 +84,7 @@ export class GoogleAnalyticsService {
     return this.http.get<GoogleAvgSessionDuration>(this.getUrlFormatted(intervalDate, '/ga/avgsessionduration/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
-  
+
   gaNewUsers(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
