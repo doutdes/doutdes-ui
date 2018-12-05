@@ -85,6 +85,16 @@ export class FeatureTutorialGaComponent implements OnInit, OnDestroy {
       case 12:
         this.imgSrc = '14-end.png';
         break;
+      case 13:
+        this.imgSrc = 'back-logo.jpg';
+        break;
+      case 14:
+        this.imgSrc = 'createCredential.jpg';
+        break;
+      case 15:
+        this.imgSrc = 'cancel.jpg';
+        break;
+
     }
   }
 
