@@ -50,7 +50,7 @@ export class CardComponent implements OnInit {
     this.aggregated = this.dashChart.aggregated ? true : false;
 
     // Handling icon nicknames
-    switch (this.dashChart.Chart.type) {
+    switch (this.dashChart.type) {
       case Type.Facebook: {
         this.icon = 'fa-facebook-f';
         this.background = '#407CA5';
@@ -114,8 +114,6 @@ export class CardComponent implements OnInit {
       format: this.dashChart.format
     };
 
-    console.log('card component ts:');
-    console.log(chart);
     this.loading = true;
 
     this.updateChart(chart);

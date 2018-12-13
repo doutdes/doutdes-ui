@@ -120,7 +120,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           };
 
           // Right data
-          dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id, dateInterval)));
+          dashCharts.forEach(chart => observables.push(this.chartsCallService.retrieveChartData(chart.chart_id, dateInterval)));
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -131,7 +131,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
                 if (!dataArray[i]['status']) { // Se la chiamata non rende errori
 
-                  const formatted = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]);
+                  const formatted = this.chartsCallService.formatChart(dashCharts[i].chart_id, dataArray[i]);
 
                   chartToPush.chartData = formatted.data;
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
@@ -178,12 +178,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.chartsCallService.getDataByChartId(dashChart.chart_id, intervalDate)
+    this.chartsCallService.retrieveChartData(dashChart.chart_id, intervalDate)
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
 
-          const formatted = this.chartsCallService.formatDataByChartId(dashChart.chart_id, data);
+          const formatted = this.chartsCallService.formatChart(dashChart.chart_id, data);
 
           chartToPush.Chart = innerChart;
           chartToPush.chartData = formatted.data;

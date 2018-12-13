@@ -15,7 +15,7 @@
   <div class="rounded-top" *ngIf="!dashChart.error" [ngStyle]="{'backgroundColor': background}"
        style="padding:10px; color: #fff">
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
-    <span style="font-size:14pt">{{dashChart.title}}</span><span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart['Chart']['format']}})</span>
+    <span style="font-size:14pt">{{dashChart.title}}</span><span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart.format}})</span>
   </div>
   <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
 

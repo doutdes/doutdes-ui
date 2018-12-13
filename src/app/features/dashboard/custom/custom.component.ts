@@ -113,7 +113,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
         if(dashCharts instanceof Array) { // Se vero, ci sono dei grafici nella dashboard, altrimenti è vuota
 
-          dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id)));
+          dashCharts.forEach(chart => observables.push(this.chartsCallService.retrieveChartData(chart.chart_id)));
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -124,7 +124,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
                 if (!dataArray[i]['status']) { // Se la chiamata non rende errori
 
-                  chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]).data;
+                  chartToPush.chartData = this.chartsCallService.formatChart(dashCharts[i].chart_id, dataArray[i]);
                   chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
                   chartToPush.error = false;
 
@@ -179,12 +179,12 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.chartsCallService.getDataByChartId(dashChart.chart_id, intervalDate)
+    this.chartsCallService.retrieveChartData(dashChart.chart_id, intervalDate)
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.Chart = innerChart;
-          chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashChart.chart_id, data).data;
+          chartToPush.chartData = this.chartsCallService.formatChart(dashChart.chart_id, data);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
         } else {

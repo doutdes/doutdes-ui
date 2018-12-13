@@ -26,9 +26,9 @@ export class FilterActions {
 
   constructor(
     private ngRedux: NgRedux<IAppState>,
-    private chartCallService: ChartsCallsService,
-    private aggrDataService: AggregatedDataService,
-    private globalEventEmitter: GlobalEventsManagerService
+    private CCService: ChartsCallsService,
+    private ADService: AggregatedDataService,
+    private GEEmitter: GlobalEventsManagerService
   ) {
     this.filter.subscribe(elements => {
       this.originalData = elements['originalData'];
@@ -37,11 +37,12 @@ export class FilterActions {
   }
 
   initData(originalData, dataFiltered, dateInterval: IntervalDate) {
+
     this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: dataFiltered});
   }
 
   filterData(dateInterval: IntervalDate) {
-    const filteredData = this.filterByDate(JSON.stringify(this.originalData), dateInterval);
+    const filteredData = this.filterByDateInterval(JSON.stringify(this.originalData), dateInterval);
 
     this.ngRedux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
   }
@@ -67,46 +68,54 @@ export class FilterActions {
     this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }
 
-  filterByDate(originalData, filterInterval: IntervalDate) {
+  filterByDateInterval(unfilteredData, filterInterval: IntervalDate) {
 
-    const originalReceived = JSON.parse(originalData);
     const filtered = [];
     const observables: Observable<any>[] = [];
     const chartsToRetrieve: Array<DashboardCharts> = [];
 
-    if (originalReceived) {
+    const FACEBOOK_TYPE = 1;
+    const GOOGLE_TYPE = 2;
 
-      originalReceived.forEach(chart => {
+    if (unfilteredData) {
 
-        if (chart['Chart']) {
+      console.dir(unfilteredData);
 
-          if (chart['Chart']['type'] === 2) { // Grafici di Google Analytics
+      for (let i=0; i < unfilteredData.length; i++) {
 
-            const chart_id = !chart['Chart']['id'] ? chart['Chart']['ID'] : chart['Chart']['id']; // TODO Eliminare dopo Refactor del modello
+        const chart = unfilteredData[i];
 
-            // In un array vengono inserite tutte le chiamate da effettuare
-            observables.push(this.chartCallService.getDataByChartId(chart_id, filterInterval));
-            chartsToRetrieve.push(chart);
+        if (chart.type === GOOGLE_TYPE) { // Google Analytics charts
 
-          } else { // Grafici di Facebook
+          // Puts into 'observables' all the calls to do
+          //observables.push(this.chartCallService.retrieveChartData(chartID, filterInterval));
+          //chartsToRetrieve.push(item);
 
-            const header = [chart['chartData']['dataTable'].shift()];
-            let newArray = [];
+        } else if (chart.type === FACEBOOK_TYPE) { // Facebook Insights charts
 
-            // Se un grafico è di tipo geomap, recupera i dati da geoData e li filtra
-            if (chart['Chart']['title'].includes('country') || chart['Chart']['title'].includes('city')) {
-              newArray = chart['geoData'].filter(element => (new Date(element['end_time'])) <= (new Date(filterInterval.dataEnd)));
-              chart['chartData'] = this.chartCallService.formatDataByChartId(chart['Chart']['id'], newArray).data;
-            } else {
-              chart['chartData']['dataTable'].forEach(element => newArray.push([new Date(element[0]), element[1]]));
-              newArray = newArray.filter(element => element[0] >= filterInterval.dataStart && element[0] <= filterInterval.dataEnd);
-              chart['chartData']['dataTable'] = header.concat(newArray);
-            }
+          let tmpData = [];
 
-            filtered.push(chart);
+          // If the chart is a geomap, it just take data of the last day of the interval
+          if (chart.format === 'geomap') {
+
+            tmpData = chart.geoData.filter(el => (new Date(el.end_time)) <= (new Date(filterInterval.dataEnd)));
+            chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
+          } else {
+
+            let datatable = chart.chartData.dataTable;
+
+            datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
+            tmpData = tmpData.filter(el => el[0] >= filterInterval.dataStart && el[0] <= filterInterval.dataEnd);
+
+            chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
           }
+
+          filtered.push(chart);
+
+        } else {
+          console.log('Error in FILTER_ACTIONS. A chart of unknown type was found, filter action skipped.');
         }
-      });
+      }
 
       if (observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
 
@@ -116,9 +125,9 @@ export class FilterActions {
             for (let i = 0; i < dataArray.length; i++) {
 
               if (!dataArray[i]['status']) { // Se la chiamata non rende errori
-                const newData = this.chartCallService.formatDataByChartId(chartsToRetrieve[i].chart_id, dataArray[i]);
+                const newData = this.CCService.formatChart(chartsToRetrieve[i].chart_id, dataArray[i]);
 
-                chartsToRetrieve[i].aggregated = this.aggrDataService.getAggregatedData(dataArray[i], chartsToRetrieve[i].chart_id);
+                chartsToRetrieve[i].aggregated = this.ADService.getAggregatedData(dataArray[i], chartsToRetrieve[i].chart_id);
                 chartsToRetrieve[i].chartData['dataTable'] = newData.data['dataTable'];
                 filtered.push(chartsToRetrieve[i]);
               } else {
@@ -128,9 +137,13 @@ export class FilterActions {
               }
             }
 
-            this.globalEventEmitter.loadingScreen.next(false);
+            this.GEEmitter.loadingScreen.next(false);
           });
       }
+    }
+    else {
+      console.log('Error in FILTER_ACTIONS. No unfiltered data found.');
+      console.log(unfilteredData);
     }
 
     return filtered;

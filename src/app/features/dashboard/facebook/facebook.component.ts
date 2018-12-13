@@ -55,33 +55,33 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   dateChoice: String = 'Preset';
 
   constructor(
-    private facebookService: FacebookService,
+    private FBService: FacebookService,
     private breadcrumbActions: BreadcrumbActions,
-    private dashboardService: DashboardService,
-    private chartsCallService: ChartsCallsService,
-    private globalEventService: GlobalEventsManagerService,
+    private DService: DashboardService,
+    private CCService: ChartsCallsService,
+    private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions
   ) {
-    this.globalEventService.removeFromDashboard.subscribe(values => {
+    this.GEService.removeFromDashboard.subscribe(values => {
       if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
         this.filterActions.removeChart(values[0]);
-        this.globalEventService.removeFromDashboard.next([0, 0]);
+        this.GEService.removeFromDashboard.next([0, 0]);
       }
     });
-    this.globalEventService.addChartInDashboard.subscribe(chart => {
+    this.GEService.addChartInDashboard.subscribe(chart => {
       if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         this.addChartToDashboard(chart);
-        this.globalEventService.addChartInDashboard.next(null);
+        this.GEService.addChartInDashboard.next(null);
       }
     });
-    this.globalEventService.updateChartInDashboard.subscribe(chart => {
+    this.GEService.updateChartInDashboard.subscribe(chart => {
       if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
         this.filterActions.updateChart(index, chart.title);
       }
     });
 
-    this.globalEventService.loadingScreen.subscribe(value => {
+    this.GEService.loadingScreen.subscribe(value => {
       this.loading = value;
     });
 
@@ -102,93 +102,97 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const chartsToShow: Array<DashboardCharts> = [];
     const chartsClone: Array<DashboardCharts> = [];
 
-    this.globalEventService.loadingScreen.next(true);
+    this.GEService.loadingScreen.next(true);
 
-    this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
-      .subscribe(dashCharts => {
+    this.DService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
+      .subscribe(charts => {
 
-        if (dashCharts['dashboard_id']) {
-          this.HARD_DASH_DATA.dashboard_id = dashCharts['dashboard_id'];
+        if (charts['dashboard_id']) {
+          this.HARD_DASH_DATA.dashboard_id = charts['dashboard_id'];
         } else {
-          this.HARD_DASH_DATA.dashboard_id = dashCharts[0].dashboard_id;
+          this.HARD_DASH_DATA.dashboard_id = charts[0].dashboard_id;
         }
 
-        if(dashCharts instanceof Array) {
-          dashCharts.forEach(chart => observables.push(this.chartsCallService.getDataByChartId(chart.chart_id)));
+        if(charts instanceof Array) {
+          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id)));
 
           forkJoin(observables)
             .subscribe(dataArray => {
               for (let i = 0; i < dataArray.length; i++) {
 
-                let chartToPush: DashboardCharts = dashCharts[i];
+                let chart: DashboardCharts = charts[i];
+
+                // Cleaning data
+                chart.format = chart['Chart'].format;
+                chart.type = chart['Chart'].type;
+                chart.originalTitle = chart['Chart'].title;
+                delete chart['Chart'];
+
                 let cloneChart: DashboardCharts;
 
-                if (!dataArray[i]['status']) { // Se la chiamata non rende errori
+                if (!dataArray[i].status) { // If no error is occurred when retrieving chart data
 
-                  chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashCharts[i].chart_id, dataArray[i]).data;
-                  chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
-                  chartToPush.error = false;
+                  // TODO: filter data
+                  chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
+                  chart.color = chart.chartData.options.colors[0] || null;
+                  chart.error = false;
 
-                  // Se i tipi di dati sono schematizzati per country, allora vengono salvati per riutilizzarli in seguito coi filtri
-                  chartToPush.geoData = (dashCharts[i].Chart.title.includes('country') || dashCharts[i].Chart.title.includes('city'))
-                    ? dataArray[i]
-                    : null;
+                  // Handling geomap data (different from standard data) TODO check this
+                  if (chart.format === 'geomap') {
+                    chart.geoData = dataArray[i];
+                  }
 
                 } else {
-                  chartToPush.error = true;
+                  chart.error = true;
 
-                  console.log('facebook component ts:');
+                  console.log('ERROR in FACEBOOK COMPONENT. Cannot retrieve data from one of the charts. More info:');
                   console.log(dataArray[i]);
                 }
 
-                cloneChart = this.createClone(chartToPush);
+                cloneChart = this.createClone(chart);
 
-                chartsToShow.push(chartToPush); // Original Data
-                chartsClone.push(cloneChart);  // Filtered Data
+                chartsToShow.push(chart); // Original Data
+                chartsClone.push(cloneChart);  // Filtered Data TODO we need this?
               }
-              this.globalEventService.loadingScreen.next(false);
+              this.GEService.loadingScreen.next(false);
+
+              const dateInterval: IntervalDate = {
+                dataStart: this.minDate,
+                dataEnd: this.maxDate
+              };
+
+              this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
+              this.filterActions.filterData(dateInterval);
+              this.GEService.updateChartList.next(true);
             });
 
-
-          const dateInterval: IntervalDate = {
-            dataStart: this.firstDateRange,
-            dataEnd: this.lastDateRange
-          };
-
-          this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
-          this.globalEventService.updateChartList.next(true);
         } else {
-          this.globalEventService.loadingScreen.next(false);
+          this.GEService.loadingScreen.next(false);
         }
-
-      }, error1 => {
-        console.log('Error querying the charts of the Facebook Dashboard');
-        console.log(error1);
+      }, err => {
+        console.log('ERROR in FACEBOOK COMPONENT, when fetching charts.');
+        console.log(err);
       });
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
-    const innerChart: Chart = {
-      ID: dashChart.chart_id,
-      format: dashChart.format,
-      type: dashChart.type,
-      title: dashChart.title
-    };
 
     const intervalDate: IntervalDate = {
       dataStart: this.bsRangeValue[0],
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.chartsCallService.getDataByChartId(dashChart.chart_id)
+    this.CCService.retrieveChartData(dashChart.chart_id)
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
-          chartToPush.Chart = innerChart;
-          chartToPush.chartData = this.chartsCallService.formatDataByChartId(dashChart.chart_id, data).data;
+          //chartToPush.Chart = innerChart;
+          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, data);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
+          chartToPush.type = dashChart.type;
+          chartToPush.format = dashChart.format;
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
@@ -210,6 +214,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         dataEnd: value[1].setHours(23, 59, 59, 999)
       };
 
+      console.log('ON VALUE CHANGE:');
+      console.log(dateInterval);
       this.filterActions.filterData(dateInterval);
     }
   }
@@ -234,17 +240,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   createClone(chart: DashboardCharts): DashboardCharts {
-    const cloneChart = JSON.parse(JSON.stringify(chart)); // Conversione e parsing con JSON per perdere la referenza
 
-    // Se esiste il campo Date nel JSON, creare data a partire dalla stringa (serve per le label)
-    if (cloneChart.chartData['dataTable'][0][0] === 'Date') {
-      const header = [cloneChart['chartData']['dataTable'].shift()];
-
-      cloneChart.chartData['dataTable'] = cloneChart.chartData['dataTable'].map(el => [new Date(el[0]), el[1]]);
-      cloneChart['chartData']['dataTable'] = header.concat(cloneChart.chartData['dataTable']);
-    }
-
-    return cloneChart;
+    return JSON.parse(JSON.stringify(chart));
   }
 
   addBreadcrumb() {

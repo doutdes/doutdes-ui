@@ -15,7 +15,7 @@ export class ChartsCallsService {
     return str.length > maxLength ? str.substr(0, 30) + '...' : str;
   }
 
-  public getDataByChartId(ID, intervalDate?: IntervalDate): Observable<any> {
+  public retrieveChartData(ID, intervalDate?: IntervalDate): Observable<any> {
     switch (ID) {
       case 1:
         return this.facebookService.fbfancount();
@@ -48,11 +48,8 @@ export class ChartsCallsService {
     }
   }
 
-  public formatDataByChartId(ID, data) {
-    let dataFormat;
-    let average;
-    let highest;
-    let lowest;
+  public formatChart(ID, data) {
+    let formattedData;
     let header;
     let type;
     const chartArray = [];
@@ -73,7 +70,7 @@ export class ChartsCallsService {
           // }
         }
 
-        dataFormat = {
+        formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
@@ -95,7 +92,7 @@ export class ChartsCallsService {
           return [k, data[data.length - 1].value[k]];
         });
 
-        dataFormat = {
+        formattedData = {
           chartType: 'GeoChart',
           dataTable: header.concat(arr),
           options: {
@@ -119,7 +116,7 @@ export class ChartsCallsService {
           // }
         }
 
-        dataFormat = {
+        formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(impressChartArray),
           options: {
@@ -143,7 +140,7 @@ export class ChartsCallsService {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
 
-        dataFormat = {
+        formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
@@ -164,7 +161,7 @@ export class ChartsCallsService {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
 
-        dataFormat = {
+        formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
@@ -186,7 +183,7 @@ export class ChartsCallsService {
           chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
           // Ternary operator trivially replaces 'none' with 'unknown'
         }
-        dataFormat = {
+        formattedData = {
           chartType: 'PieChart',
           dataTable: header.concat(chartArray),
           options: {
@@ -212,7 +209,7 @@ export class ChartsCallsService {
             chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
           }
         }
-        dataFormat = {
+        formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
           options: {
@@ -233,7 +230,7 @@ export class ChartsCallsService {
         const arrPie = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
-        dataFormat = {
+        formattedData = {
           chartType: 'PieChart',
           dataTable: header.concat(arrPie),
           options: {
@@ -258,7 +255,7 @@ export class ChartsCallsService {
           chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
           // Ternary operator trivially replaces 'none' with 'unknown'
         }
-        dataFormat = {
+        formattedData = {
           chartType: 'ColumnChart',
           dataTable: header.concat(chartArray),
           options: {
@@ -292,7 +289,7 @@ export class ChartsCallsService {
           chartArray.push([parseDate(data[i][0]), value]);
         }
 
-        dataFormat = {
+        formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
@@ -320,7 +317,7 @@ export class ChartsCallsService {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
 
-        dataFormat = {
+        formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
@@ -348,7 +345,7 @@ export class ChartsCallsService {
             chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
           }
         }
-        dataFormat = {
+        formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
           options: {
@@ -369,7 +366,7 @@ export class ChartsCallsService {
           chartArray.push([new Date(data[i].end_time), data[i].value]);
         }
 
-        dataFormat = {
+        formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
           options: {
@@ -396,7 +393,7 @@ export class ChartsCallsService {
           arr.push(['', null]);
         }
 
-        dataFormat = {
+        formattedData = {
           chartType: 'Table',
           dataTable: header.concat(arr),
           options: {
@@ -412,6 +409,6 @@ export class ChartsCallsService {
 
     }
 
-    return { data: dataFormat };
+    return formattedData;
   }
 }
