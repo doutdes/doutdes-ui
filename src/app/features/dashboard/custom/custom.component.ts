@@ -155,7 +155,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             dataEnd: this.lastDateRange
           };
 
-          this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
+          this.filterActions.initData(chartsToShow, dateInterval);
           this.globalEventService.updateChartList.next(true);
         } else {
           this.globalEventService.loadingScreen.next(false);

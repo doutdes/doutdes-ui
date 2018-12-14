@@ -101,7 +101,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
-    const chartsToShowDeepCopies: Array<DashboardCharts> = [];
 
     this.GEService.loadingScreen.next(true);
 
@@ -139,11 +138,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   delete chart['Chart'];
                   
                   chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
-                  chart.color = chart.chartData.options.colors[0] || null;
+                  chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
 
-                  // Handling geomap data (different from standard data) TODO check this
-                  if (chart.format === 'geomap') {
+                  if (this.CCService.containsGeoData(chart)) { // Add field geoData for charts with geographical data
                     chart.geoData = dataArray[i];
                   }
 
@@ -155,7 +153,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 }
 
                 chartsToShow.push(chart); // Original Data
-                chartsToShowDeepCopies.push(this.cloneChart(chart));  // Filtered Data TODO we need this?
               }
               this.GEService.loadingScreen.next(false);
 
@@ -164,10 +161,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 dataEnd: this.maxDate
               };
 
-              this.filterActions.initData(chartsToShow, chartsToShowDeepCopies, dateInterval);
-              //this.filterActions.filterData(dateInterval);
+              this.filterActions.initData(chartsToShow, dateInterval);
               this.GEService.updateChartList.next(true);
-              
+
+              // Shows last 30 days
               this.datePickerEnabled = true;
               this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
             });
@@ -185,7 +182,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
 
-    /*
     const intervalDate: IntervalDate = {
       dataStart: this.bsRangeValue[0],
       dataEnd: this.bsRangeValue[1]
@@ -212,7 +208,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         console.log('Error querying the chart');
         console.log(error1);
       });
-      */
   }
 
   onValueChange(value): void {

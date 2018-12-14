@@ -36,9 +36,9 @@ export class FilterActions {
     });
   }
 
-  initData(originalData, dataFiltered, dateInterval: IntervalDate) {
+  initData(originalData, dateInterval: IntervalDate) {
 
-    this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: dataFiltered});
+    this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: originalData});
     //this.filterData(dateInterval);
   }
 
@@ -73,15 +73,11 @@ export class FilterActions {
 
     const unfiltered = JSON.parse(JSON.stringify(unfilteredData)); // Losing the reference to original data
     const filtered = [];
-    const observables: Observable<any>[] = [];
-    const chartsToRetrieve: Array<DashboardCharts> = [];
 
     const FACEBOOK_TYPE = 1;
     const GOOGLE_TYPE = 2;
 
     if (unfiltered) {
-
-      console.log(unfiltered);
 
       for (let i=0; i < unfiltered.length; i++) {
 
@@ -89,18 +85,23 @@ export class FilterActions {
 
         if (chart.type == GOOGLE_TYPE) { // Google Analytics charts
 
+          let tmpData = [];
+
           // TODO fix this
 
-          // Puts into 'observables' all the calls to do
-          //observables.push(this.chartCallService.retrieveChartData(chartID, filterInterval));
-          //chartsToRetrieve.push(item);
+          let datatable = chart.chartData.dataTable;
+
+          datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
+          tmpData = tmpData.filter(el => el[0] >= filterInterval.dataStart && el[0] <= filterInterval.dataEnd);
+
+          chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
 
         } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
 
           let tmpData = [];
 
-          // If the chart is a geomap, it just take data of the last day of the interval
-          if (chart.format === 'geomap') {
+          // If the chart is a geomap or a pie, it just take data of the last day of the interval
+          if (this.CCService.containsGeoData(chart)) {
 
             tmpData = chart.geoData.filter(el => (new Date(el.end_time)) <= (new Date(filterInterval.dataEnd)));
             chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
@@ -121,30 +122,6 @@ export class FilterActions {
           console.log('MORE DETAILS (unfiltered data in input):');
           console.log(chart);
         }
-      }
-
-      if (observables.length !== 0) { // If there are observables, then there are Google Analytics data charts to retrieve doing API calls
-
-        forkJoin(observables)
-          .subscribe(dataArray => {
-
-            for (let i = 0; i < dataArray.length; i++) {
-
-              if (!dataArray[i]['status']) { // Se la chiamata non rende errori
-                const newData = this.CCService.formatChart(chartsToRetrieve[i].chart_id, dataArray[i]);
-
-                chartsToRetrieve[i].aggregated = this.ADService.getAggregatedData(dataArray[i], chartsToRetrieve[i].chart_id);
-                chartsToRetrieve[i].chartData['dataTable'] = newData.data['dataTable'];
-                filtered.push(chartsToRetrieve[i]);
-              } else {
-                console.log('Errore per il grafico ' + chartsToRetrieve[i].title);
-                console.log(chartsToRetrieve[i]);
-                filtered.push(chartsToRetrieve[i]);
-              }
-            }
-
-            this.GEEmitter.loadingScreen.next(false);
-          });
       }
     }
     else {

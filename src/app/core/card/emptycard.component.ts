@@ -38,7 +38,6 @@ export class EmptycardComponent implements OnInit {
   };
 
   dropdownOptions = [];
-  chartsAvailable = false;
 
   insertChartForm: FormGroup;
   loading = false;
@@ -53,15 +52,13 @@ export class EmptycardComponent implements OnInit {
   ) {
     this.eventEmitter.removeFromDashboard.subscribe(values => {
       if (values[0] !== 0 && values[1] !== 0) {
-        this.updateDropdownOptions();
-        this.eventEmitter.removeFromDashboard.next([0, 0]);
+        this.updateDropdownOptions().then(result => this.eventEmitter.removeFromDashboard.next([0, 0]));
       }
     });
 
     this.eventEmitter.updateChartList.subscribe(value => {
       if (value) {
-        this.updateDropdownOptions();
-        this.eventEmitter.updateChartList.next(false);
+        this.updateDropdownOptions().then(result => this.eventEmitter.updateChartList.next(false));
       }
     });
   }
@@ -80,8 +77,11 @@ export class EmptycardComponent implements OnInit {
     return this.insertChartForm.controls;
   }
 
-  openModal() {
-    if (this.chartsAvailable) {
+  async openModal() {
+
+    const chartsAvailable = await this.updateDropdownOptions();
+
+    if (chartsAvailable) {
       this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
     } else {
       this.modalRef = this.modalService.show(this.noChartsAvailable, {class: 'modal-md modal-dialog-centered'});
@@ -116,8 +116,6 @@ export class EmptycardComponent implements OnInit {
 
     this.loading = true;
 
-    console.warn(dashChart);
-
     this.dashboardService.addChartToDashboard(dashChart)
       .pipe(first())
       .subscribe(chartInserted => {
@@ -139,24 +137,35 @@ export class EmptycardComponent implements OnInit {
 
   }
 
-  updateDropdownOptions(): void {
-    this.chartsAvailable = false;
+  updateDropdownOptions(): Promise<boolean> {
+
+    // this.chartsAvailable = false;
     this.dropdownOptions = [];
 
-    if(this.dashboard_data.dashboard_type !== 0) {
+    return new Promise((resolve, reject) => {
+      if (this.dashboard_data.dashboard_type !== 0) {
 
-      this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
-        .subscribe(chartRemaining => this.populateDropdown(chartRemaining), err => {
-          console.log('Error in Chart remaining call');
-          console.log(err);
-        });
-    } else {
-      this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id)
-        .subscribe(chartRemaining => this.populateDropdown(chartRemaining, true), err => {
-          console.log('Error in Chart remaining call');
-          console.log(err);
-      });
-    }
+        this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
+          .subscribe(chartRemaining => {
+            this.populateDropdown(chartRemaining);
+            resolve(true);
+          }, err => {
+            console.log('Error in Chart remaining call');
+            console.log(err);
+            resolve(false);
+          });
+      } else {
+        this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id)
+          .subscribe(chartRemaining => {
+            this.populateDropdown(chartRemaining, true);
+            resolve(true);
+          }, err => {
+              console.log('Error in Chart remaining call');
+              console.log(err);
+              resolve(false);
+          });
+      }
+    });
   }
 
   selectionChanged($event: any) {
@@ -178,7 +187,6 @@ export class EmptycardComponent implements OnInit {
       });
 
       this.dropdownOptions = _.orderBy(this.dropdownOptions, ['global', 'title', 'id']);
-      this.chartsAvailable = true;
     }
   }
 
