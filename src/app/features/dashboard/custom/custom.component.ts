@@ -69,10 +69,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.globalEventService.removeFromDashboard.next([0, 0]);
       }
     });
-    this.globalEventService.addChartInDashboard.subscribe(chart => {
+    this.globalEventService.showChartInDashboard.subscribe(chart => {
       if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         this.addChartToDashboard(chart);
-        this.globalEventService.addChartInDashboard.next(null);
+        this.globalEventService.showChartInDashboard.next(null);
       }
     });
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
@@ -102,7 +102,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     const chartsToShow: Array<DashboardCharts> = [];
     const chartsClone: Array<DashboardCharts> = [];
 
-    this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
+    this.dashboardService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
 
         if (dashCharts['dashboard_id']) {
@@ -129,9 +129,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
                   chartToPush.error = false;
 
                   // Se i tipi di dati sono schematizzati per country, allora vengono salvati per riutilizzarli in seguito coi filtri
-                  chartToPush.geoData = (dashCharts[i].Chart.title.includes('country') || dashCharts[i].Chart.title.includes('city'))
-                    ? dataArray[i]
-                    : null;
+
+                  // Handling geomap data (different from standard data) TODO check this
+                  if (dashCharts[i].format === 'geomap') {
+                    dashCharts[i].geoData = dataArray[i];
+                  }
                 } else {
 
                   chartToPush.error = true;
@@ -170,8 +172,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     const innerChart: Chart = {
       ID: dashChart.chart_id,
       format: dashChart.format,
-      type: dashChart.type,
-      title: dashChart.title
+      Type: dashChart.type,
+      Title: dashChart.title
     };
 
     const intervalDate: IntervalDate = {
@@ -182,8 +184,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.chartsCallService.retrieveChartData(dashChart.chart_id, intervalDate)
       .subscribe(data => {
 
+        // TODO FIX ALL
+
         if (!data['status']) { // Se la chiamata non rende errori
-          chartToPush.Chart = innerChart;
+          //chartToPush.Chart = innerChart;
           chartToPush.chartData = this.chartsCallService.formatChart(dashChart.chart_id, data);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;

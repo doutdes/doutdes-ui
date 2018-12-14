@@ -53,6 +53,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Preset';
+  datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
   constructor(
     private FBService: FacebookService,
@@ -68,10 +69,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         this.GEService.removeFromDashboard.next([0, 0]);
       }
     });
-    this.GEService.addChartInDashboard.subscribe(chart => {
+    this.GEService.showChartInDashboard.subscribe(chart => {
       if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         this.addChartToDashboard(chart);
-        this.GEService.addChartInDashboard.next(null);
+        this.GEService.showChartInDashboard.next(null);
       }
     });
     this.GEService.updateChartInDashboard.subscribe(chart => {
@@ -96,25 +97,32 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadDashboard() {
+  async loadDashboard() {
 
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
-    const chartsClone: Array<DashboardCharts> = [];
+    const chartsToShowDeepCopies: Array<DashboardCharts> = [];
 
     this.GEService.loadingScreen.next(true);
 
-    this.DService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
+    // Retrieving dashboard ID
+    const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
+
+    if (dash.id) {
+      this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
+    }
+    else {
+      console.error('Cannot retrieve a valid ID for the Facebook dashboard.');
+      return;
+    }
+
+    // Retrieving dashboard charts
+    this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
       .subscribe(charts => {
 
-        if (charts['dashboard_id']) {
-          this.HARD_DASH_DATA.dashboard_id = charts['dashboard_id'];
-        } else {
-          this.HARD_DASH_DATA.dashboard_id = charts[0].dashboard_id;
-        }
+        if(charts && charts.length > 0) { // Checking if dashboard is not empty
 
-        if(charts instanceof Array) {
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id)));
+          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -122,17 +130,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
                 let chart: DashboardCharts = charts[i];
 
-                // Cleaning data
-                chart.format = chart['Chart'].format;
-                chart.type = chart['Chart'].type;
-                chart.originalTitle = chart['Chart'].title;
-                delete chart['Chart'];
+                if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
-                let cloneChart: DashboardCharts;
-
-                if (!dataArray[i].status) { // If no error is occurred when retrieving chart data
-
-                  // TODO: filter data
+                  // Cleaning data // TODO this should be fixed at mount
+                  chart.format = chart['Chart'].format;
+                  chart.type = chart['Chart'].type;
+                  chart.originalTitle = chart['Chart'].title;
+                  delete chart['Chart'];
+                  
                   chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
                   chart.color = chart.chartData.options.colors[0] || null;
                   chart.error = false;
@@ -145,14 +150,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 } else {
                   chart.error = true;
 
-                  console.log('ERROR in FACEBOOK COMPONENT. Cannot retrieve data from one of the charts. More info:');
-                  console.log(dataArray[i]);
+                  console.error('ERROR in FACEBOOK COMPONENT. Cannot retrieve data from one of the charts. More info:');
+                  console.error(dataArray[i]);
                 }
 
-                cloneChart = this.createClone(chart);
-
                 chartsToShow.push(chart); // Original Data
-                chartsClone.push(cloneChart);  // Filtered Data TODO we need this?
+                chartsToShowDeepCopies.push(this.cloneChart(chart));  // Filtered Data TODO we need this?
               }
               this.GEService.loadingScreen.next(false);
 
@@ -161,23 +164,28 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 dataEnd: this.maxDate
               };
 
-              this.filterActions.initData(chartsToShow, chartsClone, dateInterval);
-              this.filterActions.filterData(dateInterval);
+              this.filterActions.initData(chartsToShow, chartsToShowDeepCopies, dateInterval);
+              //this.filterActions.filterData(dateInterval);
               this.GEService.updateChartList.next(true);
+              
+              this.datePickerEnabled = true;
+              this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
             });
 
         } else {
           this.GEService.loadingScreen.next(false);
+          console.log('Dashboard is empty.');
         }
       }, err => {
-        console.log('ERROR in FACEBOOK COMPONENT, when fetching charts.');
-        console.log(err);
+        console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
+        console.warn(err);
       });
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
 
+    /*
     const intervalDate: IntervalDate = {
       dataStart: this.bsRangeValue[0],
       dataEnd: this.bsRangeValue[1]
@@ -204,23 +212,23 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         console.log('Error querying the chart');
         console.log(error1);
       });
+      */
   }
 
   onValueChange(value): void {
 
-    if (value) {
+    if (value && this.datePickerEnabled) {
+
       const dateInterval: IntervalDate = {
         dataStart: value[0],
         dataEnd: value[1].setHours(23, 59, 59, 999)
       };
 
-      console.log('ON VALUE CHANGE:');
-      console.log(dateInterval);
       this.filterActions.filterData(dateInterval);
     }
   }
 
-  changeData(days: number) {
+  changeDateFilter(days: number) {
     this.bsRangeValue = [subDays(new Date(), days), this.lastDateRange];
 
     switch (days) {
@@ -239,7 +247,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     }
   }
 
-  createClone(chart: DashboardCharts): DashboardCharts {
+  cloneChart(chart: DashboardCharts): DashboardCharts {
 
     return JSON.parse(JSON.stringify(chart));
   }

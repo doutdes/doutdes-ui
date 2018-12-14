@@ -1,5 +1,5 @@
 export interface Dashboard {
-  ID: number,
+  id: number,
   name: string,
   category: number
 }

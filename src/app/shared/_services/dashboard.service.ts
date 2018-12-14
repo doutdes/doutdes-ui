@@ -4,6 +4,7 @@ import {StoreService} from './store.service';
 import {environment} from '../../../environments/environment';
 import {DashboardCharts} from '../_models/DashboardCharts';
 import {Chart} from '../_models/Chart';
+import {Dashboard} from '../_models/Dashboard';
 
 @Injectable()
 
@@ -16,11 +17,17 @@ export class DashboardService {
 
   getDashboardByType(type) {
     const headers = this.getAuthorization();
-    return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardChartsByType/'
+    return this.http.get<Dashboard>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardByType/'
       + type, {headers});
   }
 
-  getChartInDashboard(dashboard_id, chart_id) {
+  getAllDashboardCharts(dashboard_id) {
+    const headers = this.getAuthorization();
+    return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardByID/'
+      + dashboard_id, {headers});
+  }
+
+  getDashboardChart(dashboard_id, chart_id) {
     const headers = this.getAuthorization();
     return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChart/'
       + dashboard_id + '/' + chart_id, {headers});

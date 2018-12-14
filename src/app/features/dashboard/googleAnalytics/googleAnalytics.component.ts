@@ -69,10 +69,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.globalEventService.removeFromDashboard.next([0, 0]);
       }
     });
-    this.globalEventService.addChartInDashboard.subscribe(chart => {
+    this.globalEventService.showChartInDashboard.subscribe(chart => {
       if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         this.addChartToDashboard(chart);
-        this.globalEventService.addChartInDashboard.next(null);
+        this.globalEventService.showChartInDashboard.next(null);
       }
     });
     this.globalEventService.updateChartInDashboard.subscribe(chart => {
@@ -103,7 +103,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     const chartsToShow: Array<DashboardCharts> = [];
     const chartsClone: Array<DashboardCharts> = [];
 
-    this.dashboardService.getDashboardByType(this.HARD_DASH_DATA.dashboard_type)
+    this.dashboardService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_type)
       .subscribe(dashCharts => {
 
         if (dashCharts['dashboard_id']) {
@@ -169,8 +169,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     const innerChart: Chart = {
       ID: dashChart.chart_id,
       format: dashChart.format,
-      type: dashChart.type, // GoogleAnalytics
-      title: dashChart.title
+      Type: dashChart.type, // GoogleAnalytics
+      Title: dashChart.title
     };
 
     const intervalDate: IntervalDate = {
@@ -185,7 +185,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
           const formatted = this.chartsCallService.formatChart(dashChart.chart_id, data);
 
-          chartToPush.Chart = innerChart;
+          // TODO FIX ALL
+
+          //chartToPush.Chart = innerChart;
           chartToPush.chartData = formatted.data;
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;

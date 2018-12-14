@@ -39,10 +39,11 @@ export class FilterActions {
   initData(originalData, dataFiltered, dateInterval: IntervalDate) {
 
     this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: dataFiltered});
+    //this.filterData(dateInterval);
   }
 
   filterData(dateInterval: IntervalDate) {
-    const filteredData = this.filterByDateInterval(JSON.stringify(this.originalData), dateInterval);
+    const filteredData = this.filterByDateInterval(this.originalData, dateInterval);
 
     this.ngRedux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
   }
@@ -70,6 +71,7 @@ export class FilterActions {
 
   filterByDateInterval(unfilteredData, filterInterval: IntervalDate) {
 
+    const unfiltered = JSON.parse(JSON.stringify(unfilteredData)); // Losing the reference to original data
     const filtered = [];
     const observables: Observable<any>[] = [];
     const chartsToRetrieve: Array<DashboardCharts> = [];
@@ -77,21 +79,23 @@ export class FilterActions {
     const FACEBOOK_TYPE = 1;
     const GOOGLE_TYPE = 2;
 
-    if (unfilteredData) {
+    if (unfiltered) {
 
-      console.dir(unfilteredData);
+      console.log(unfiltered);
 
-      for (let i=0; i < unfilteredData.length; i++) {
+      for (let i=0; i < unfiltered.length; i++) {
 
-        const chart = unfilteredData[i];
+        const chart = unfiltered[i];
 
-        if (chart.type === GOOGLE_TYPE) { // Google Analytics charts
+        if (chart.type == GOOGLE_TYPE) { // Google Analytics charts
+
+          // TODO fix this
 
           // Puts into 'observables' all the calls to do
           //observables.push(this.chartCallService.retrieveChartData(chartID, filterInterval));
           //chartsToRetrieve.push(item);
 
-        } else if (chart.type === FACEBOOK_TYPE) { // Facebook Insights charts
+        } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
 
           let tmpData = [];
 
@@ -113,7 +117,9 @@ export class FilterActions {
           filtered.push(chart);
 
         } else {
-          console.log('Error in FILTER_ACTIONS. A chart of unknown type was found, filter action skipped.');
+          console.log('Error in FILTER_ACTIONS. A chart of unknown type (' + chart.type + ') was found, filter action skipped.');
+          console.log('MORE DETAILS (unfiltered data in input):');
+          console.log(chart);
         }
       }
 
@@ -143,7 +149,7 @@ export class FilterActions {
     }
     else {
       console.log('Error in FILTER_ACTIONS. No unfiltered data found.');
-      console.log(unfilteredData);
+      console.log(unfiltered);
     }
 
     return filtered;

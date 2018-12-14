@@ -12,6 +12,7 @@ import * as _ from 'lodash';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
+import {Chart} from '../../shared/_models/Chart';
 
 @Component({
   selector: 'app-emptycard',
@@ -115,12 +116,14 @@ export class EmptycardComponent implements OnInit {
 
     this.loading = true;
 
+    console.warn(dashChart);
+
     this.dashboardService.addChartToDashboard(dashChart)
       .pipe(first())
       .subscribe(chartInserted => {
         dashChart.type = this.chartSelected[0].type;
 
-        this.eventEmitter.addChartInDashboard.next(dashChart);
+        this.eventEmitter.showChartInDashboard.next(dashChart); // TODO fix this
         this.insertChartForm.reset();
         this.chartSelected = null;
 
@@ -141,14 +144,15 @@ export class EmptycardComponent implements OnInit {
     this.dropdownOptions = [];
 
     if(this.dashboard_data.dashboard_type !== 0) {
+
       this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
-        .subscribe(chartRemaining => this.popolateDropdown(chartRemaining), err => {
+        .subscribe(chartRemaining => this.populateDropdown(chartRemaining), err => {
           console.log('Error in Chart remaining call');
           console.log(err);
         });
     } else {
       this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id)
-        .subscribe(chartRemaining => this.popolateDropdown(chartRemaining, true), err => {
+        .subscribe(chartRemaining => this.populateDropdown(chartRemaining, true), err => {
           console.log('Error in Chart remaining call');
           console.log(err);
       });
@@ -159,15 +163,16 @@ export class EmptycardComponent implements OnInit {
     this.insertChartForm.controls['chartTitle'].setValue($event.value[0].title);
   }
 
-  popolateDropdown(charts, writeType = false) {
+  populateDropdown(charts : Chart[], writeType = false) {
+
     if (charts) {
       charts.forEach(el => {
-        let global = writeType ? this.getStringType(el['Type']) + el['Title'] + ' (' + el.format + ')' : el['Title'] + ' (' + el.format + ')';
+        let global = writeType ? this.getStringType(el.Type) + el.Title + ' (' + el.format + ')' : el.Title + ' (' + el.format + ')';
         this.dropdownOptions.push({
           id: el.ID,
-          title: el['Title'],
+          title: el.Title,
           format: el.format,
-          type: el['Type'],
+          type: el.Type,
           global: global
         });
       });

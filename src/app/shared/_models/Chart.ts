@@ -1,6 +1,6 @@
 export interface Chart {
   ID: number;
-  type: number;
-  title: string;
+  Type: number;
+  Title: string;
   format: string;
 }
