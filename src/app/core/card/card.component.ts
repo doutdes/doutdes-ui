@@ -133,7 +133,7 @@ export class CardComponent implements OnInit {
 
   removeChart(dashboard_id, chart_id): void {
     this.dashboardService.removeChart(dashboard_id, chart_id)
-      .subscribe(deleted => {
+      .subscribe(() => {
 
         this.eventManager.removeFromDashboard.next([chart_id, dashboard_id]);
         this.closeModal();

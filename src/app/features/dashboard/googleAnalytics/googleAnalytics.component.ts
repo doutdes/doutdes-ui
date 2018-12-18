@@ -64,38 +64,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private filterActions: FilterActions,
     private ADService: AggregatedDataService,
   ) {
-    this.GEService.removeFromDashboard.subscribe(values => {
-      if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
-        this.filterActions.removeChart(values[0]);
-        this.GEService.removeFromDashboard.next([0, 0]);
-      }
-    });
-    this.GEService.showChartInDashboard.subscribe(chart => {
-      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-        this.addChartToDashboard(chart);
-        this.GEService.showChartInDashboard.next(null);
-      }
-    });
-    this.GEService.updateChartInDashboard.subscribe(chart => {
-      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-        const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-        this.filterActions.updateChart(index, chart.title);
-      }
-    });
-    this.GEService.loadingScreen.subscribe(value => {
-      this.loading = value;
-    });
-
-    this.firstDateRange = subDays(new Date(), 30); //this.minDate;
-    this.lastDateRange = this.maxDate;
-    //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-    this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
-
-    this.filter.subscribe(elements => {
-      if (elements['dataFiltered'] !== null) {
-        this.chartArray$ = elements['dataFiltered'];
-      }
-    });
   }
 
   async loadDashboard() {
@@ -186,23 +154,23 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     };
 
     this.CCService.retrieveChartData(dashChart.chart_id, intervalDate)
-      .subscribe(data => {
+      .subscribe(chartData => {
 
-        if (!data['status']) { // Se la chiamata non rende errori
+        if (!chartData['status']) { // Se la chiamata non rende errori
 
-          const formatted = this.CCService.formatChart(dashChart.chart_id, data);
-
-          // TODO FIX ALL
-
-          //chartToPush.Chart = innerChart;
-          chartToPush.chartData = formatted.data;
+          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, chartData);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
+          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id);
+
+          console.log(chartToPush);
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
         }
 
+        console.log('ADD-CHART-TO-DASHBORD:');
+        console.log(chartToPush);
         this.filterActions.addChart(chartToPush);
       }, error1 => {
         console.log('Error querying the Chart');
@@ -256,6 +224,41 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   ngOnInit(): void {
+
+    this.GEService.removeFromDashboard.subscribe(values => {
+      if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+        this.filterActions.removeChart(values[0]);
+      }
+    });
+    this.GEService.showChartInDashboard.subscribe(chart => {
+      console.log('EMITTER showChart');
+      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+        this.addChartToDashboard(chart);
+      }
+    });
+    this.GEService.updateChartInDashboard.subscribe(chart => {
+      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+        const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+        this.filterActions.updateChart(index, chart.title);
+      }
+    });
+    this.GEService.loadingScreen.subscribe(value => {
+      this.loading = value;
+    });
+
+    this.firstDateRange = subDays(new Date(), 30); //this.minDate;
+    this.lastDateRange = this.maxDate;
+    //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+    this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
+
+    this.filter.subscribe(elements => {
+      console.log('FILTER-SUBSCRIBE elements -> dataFiltered:');
+      console.log(elements);
+      if (elements['dataFiltered'] !== null) {
+        this.chartArray$ = elements['dataFiltered'];
+      }
+    });
+
     this.addBreadcrumb();
     let promise = this.loadDashboard();
   }

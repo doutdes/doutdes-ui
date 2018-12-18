@@ -49,28 +49,33 @@ export class EmptycardComponent implements OnInit {
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private eventEmitter: GlobalEventsManagerService
-  ) {
-    this.eventEmitter.removeFromDashboard.subscribe(values => {
-      if (values[0] !== 0 && values[1] !== 0) {
-        this.updateDropdownOptions().then(result => this.eventEmitter.removeFromDashboard.next([0, 0]));
-      }
-    });
-
-    this.eventEmitter.updateChartList.subscribe(value => {
-      if (value) {
-        this.updateDropdownOptions().then(result => this.eventEmitter.updateChartList.next(false));
-      }
-    });
-  }
+  ) {}
 
   ngOnInit() {
+
+    const dashData = this.dashboard_data;
+
     this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
 
     this.insertChartForm = this.formBuilder.group({
       chartTitle: ['', Validators.compose([Validators.maxLength(30), Validators.required])],
     });
 
-    this.updateDropdownOptions();
+    if (!dashData) {
+      console.error('ERROR in EMPTY-CARD. Cannot get retrieve dashboard data.');
+    } else {
+      this.eventEmitter.removeFromDashboard.subscribe(values => {
+        if (values[0] !== 0 && values[1] !== 0) {
+          this.updateDropdownOptions().then(() => this.eventEmitter.removeFromDashboard.next([0, 0]));
+        }
+      });
+
+      this.eventEmitter.updateChartList.subscribe(value => {
+        if (value) {
+          this.updateDropdownOptions().then(() => this.eventEmitter.updateChartList.next(false));
+        }
+      });
+    }
   }
 
   get f() {
@@ -118,16 +123,21 @@ export class EmptycardComponent implements OnInit {
 
     this.dashboardService.addChartToDashboard(dashChart)
       .pipe(first())
-      .subscribe(chartInserted => {
+      .subscribe(() => {
         dashChart.type = this.chartSelected[0].type;
 
-        this.eventEmitter.showChartInDashboard.next(dashChart); // TODO fix this
+        this.eventEmitter.showChartInDashboard.next(dashChart);
         this.insertChartForm.reset();
         this.chartSelected = null;
 
         this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
 
-        this.updateDropdownOptions();
+        this.updateDropdownOptions()
+          .then(() => {}) // No charts available
+          .catch(() => {
+            console.error('ERROR in EMPTY-CARD. Cannotttt update dropdown options after adding a chart in the dashboard.');
+          });
+
         this.closeModal();
 
       }, error => {
@@ -139,7 +149,12 @@ export class EmptycardComponent implements OnInit {
 
   updateDropdownOptions(): Promise<boolean> {
 
-    // this.chartsAvailable = false;
+    if (!this.dashboard_data) {
+
+      console.error('ERROR in EMPTY-CARD. Cannot retrieve dashboard data.');
+      return new Promise( (resolve, reject) => { resolve(false); });
+    }
+
     this.dropdownOptions = [];
 
     return new Promise((resolve, reject) => {
@@ -147,20 +162,32 @@ export class EmptycardComponent implements OnInit {
 
         this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
           .subscribe(chartRemaining => {
-            this.populateDropdown(chartRemaining);
-            resolve(true);
+
+            if (chartRemaining && chartRemaining.length > 0) { // Checking for array size > 0
+              this.populateDropdown(chartRemaining);
+              resolve(true);
+            }
+            else {
+              resolve(false);
+            }
           }, err => {
-            console.log('Error in Chart remaining call');
+            console.error('ERROR in EMPTY-CARD. Cannot get the list of not added charts - getChartsNotAddedByDashboardType().');
             console.log(err);
             resolve(false);
           });
       } else {
         this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id)
           .subscribe(chartRemaining => {
-            this.populateDropdown(chartRemaining, true);
-            resolve(true);
-          }, err => {
-              console.log('Error in Chart remaining call');
+
+              if (chartRemaining && chartRemaining.length > 0) {
+                this.populateDropdown(chartRemaining,true);
+                resolve(true);
+              }
+              else {
+                resolve(false);
+              }
+            }, err => {
+              console.error('ERROR in EMPTY-CARD. Cannot get the list of not added charts - getChartsNotAdded().');
               console.log(err);
               resolve(false);
           });
