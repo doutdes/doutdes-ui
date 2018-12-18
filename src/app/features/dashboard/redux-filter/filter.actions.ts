@@ -5,10 +5,8 @@ import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../shared/store/model';
 import {IntervalDate} from './filter.model';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
-import {forkJoin, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
-import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
-import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -25,10 +23,8 @@ export class FilterActions {
   filteredData: any;
 
   constructor(
-    private ngRedux: NgRedux<IAppState>,
-    private CCService: ChartsCallsService,
-    private ADService: AggregatedDataService,
-    private GEEmitter: GlobalEventsManagerService
+    private Redux: NgRedux<IAppState>,
+    private CCService: ChartsCallsService
   ) {
     this.filter.subscribe(elements => {
       this.originalData = elements['originalData'];
@@ -38,40 +34,52 @@ export class FilterActions {
 
   initData(originalData, dateInterval: IntervalDate) {
 
-    this.ngRedux.dispatch({type: FILTER_INIT, originalData: originalData, originalInterval: dateInterval, dataFiltered: originalData});
+    let original = originalData;
+    let filtered = JSON.parse(JSON.stringify(originalData));
+
+    this.Redux.dispatch({type: FILTER_INIT, originalData: original, originalInterval: dateInterval, dataFiltered: filtered});
     //this.filterData(dateInterval);
   }
 
   filterData(dateInterval: IntervalDate) {
     const filteredData = this.filterByDateInterval(this.originalData, dateInterval);
 
-    this.ngRedux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
+    this.Redux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
   }
 
   updateChart(index: number, newTitle: string) {
     this.originalData[index].title = newTitle;
     this.filteredData[index].title = newTitle;
 
-    this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+    this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }
 
   addChart(chart: DashboardCharts) {
-    this.originalData.push(chart);
-    this.filteredData.push(Object.assign({}, chart));
 
-    this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+    let chartCopy = JSON.parse(JSON.stringify(chart));
+    console.log(chartCopy);
+    console.log('ADD-CHART CALLED');
+    console.log('Original-data size = ' + JSON.parse(JSON.stringify(this.originalData)).length);
+    console.log('Filtered-data size = ' + JSON.parse(JSON.stringify(this.filteredData)).length);
+    this.originalData.push(chart);
+    this.filteredData.push(chart);
+
+    this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+
+    console.log('Original-data size = ' + JSON.parse(JSON.stringify(this.originalData)).length);
+    console.log('Filtered-data size = ' + JSON.parse(JSON.stringify(this.filteredData)).length);
   }
 
   removeChart(id: number) {
-    this.originalData = this.originalData.filter((chart) => chart.chart_id !== id);
-    this.filteredData = this.filteredData.filter((chart) => chart.chart_id !== id);
+    let original = this.originalData.filter((chart) => chart.chart_id !== id);
+    let filtered = this.filteredData.filter((chart) => chart.chart_id !== id);
 
-    this.ngRedux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+    this.Redux.dispatch({type: FILTER_UPDATE, originalData: original, dataFiltered: filtered});
   }
 
   filterByDateInterval(unfilteredData, filterInterval: IntervalDate) {
 
-    const unfiltered = JSON.parse(JSON.stringify(unfilteredData)); // Losing the reference to original data
+    const unfiltered = JSON.parse(JSON.stringify(unfilteredData)); // Loses the reference to original data
     const filtered = [];
 
     const FACEBOOK_TYPE = 1;
@@ -133,6 +141,6 @@ export class FilterActions {
   }
 
   clear() {
-    this.ngRedux.dispatch({type: FILTER_CLEAR});
+    this.Redux.dispatch({type: FILTER_CLEAR});
   }
 }

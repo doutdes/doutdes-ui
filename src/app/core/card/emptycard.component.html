@@ -8,7 +8,7 @@
 
 <ng-template #addChart>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Add Chart</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>Add new chart</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -17,7 +17,7 @@
   <div class="modal-body">
     <form [formGroup]="insertChartForm" (ngSubmit)="onSubmit()">
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Chart</label>
+        <label class="col-sm-2 col-form-label">Type:</label>
         <div class="col-sm-10">
           <ngx-select-dropdown [multiple]="false" [(value)]="chartSelected" [config]="config"
                                (change)="selectionChanged($event)"
@@ -33,21 +33,21 @@
       </div>
 
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Title</label>
+        <label class="col-sm-2 col-form-label">Title:</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" formControlName="chartTitle" placeholder="Chart Title"
+          <input type="text" class="form-control" formControlName="chartTitle" placeholder="Chart title"
                  [ngClass]="{ 'is-invalid': submitted && f.chartTitle.errors }">
 
           <div *ngIf="this.submitted && f.chartTitle.errors" class="invalid-feedback">
-            <div *ngIf="f.chartTitle.errors.required">The title of the chart is required</div>
-            <div *ngIf="f.chartTitle.errors.maxlength">The title must not be longer than 30 characters</div>
+            <div *ngIf="f.chartTitle.errors.required">The title of the chart is required.</div>
+            <div *ngIf="f.chartTitle.errors.maxlength">The title must not contain more than 30 characters.</div>
           </div>
 
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="submit" class="btn btn-success">Add</button>
+        <button type="submit" class="btn btn-success">Add chart</button>
         <button type="button" class="btn btn-danger" (click)="closeModal()">Cancel</button>
       </div>
 
@@ -56,17 +56,17 @@
 </ng-template>
 <ng-template #noChartsAvailable>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Error: no more charts available!</h4>
+    <h4 class="modal-title pull-left">No more charts</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    <p>You have already inserted all the availables data charts for this dashboard!</p>
+    <p>You have already added all the available charts for this dashboard.</p>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-danger" (click)="closeModal()">Close</button>
+      <button type="button" class="btn btn-danger" (click)="closeModal()">Ok</button>
     </div>
   </div>
 </ng-template>
