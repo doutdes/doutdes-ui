@@ -94,7 +94,7 @@ export class CardComponent implements OnInit {
     });
   }
 
-  get f() {
+  get form() {
     return this.updateChartForm.controls;
   }
 
@@ -128,25 +128,24 @@ export class CardComponent implements OnInit {
   }
 
   closeModal(): void {
+    this.submitted = false;
     this.modalRef.hide();
   }
 
   removeChart(dashboard_id, chart_id): void {
     this.dashboardService.removeChart(dashboard_id, chart_id)
       .subscribe(() => {
-
         this.eventManager.removeFromDashboard.next([chart_id, dashboard_id]);
         this.closeModal();
-
       }, error => {
+        console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
         console.log(error);
-        console.log('Cannot delete Chart from dashboard');
       });
   }
 
   updateChart(toUpdate): void {
     this.dashboardService.updateChart(toUpdate)
-      .subscribe(updated => {
+      .subscribe(() => {
         this.eventManager.updateChartInDashboard.next(toUpdate);
         this.closeModal();
       }, error => {

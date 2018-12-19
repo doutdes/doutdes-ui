@@ -78,11 +78,15 @@ export class EmptycardComponent implements OnInit {
     }
   }
 
-  get f() {
+  get form() {
     return this.insertChartForm.controls;
   }
 
   async openModal() {
+
+    this.modalService.onHide.subscribe(() => {
+      this.closeModal();
+    });
 
     const chartsAvailable = await this.updateDropdownOptions();
 
@@ -94,6 +98,9 @@ export class EmptycardComponent implements OnInit {
   }
 
   closeModal(): void {
+    this.chartSelected = false;
+    this.insertChartForm.controls['chartTitle'].reset();
+    this.submitted = false;
     this.modalRef.hide();
   }
 
@@ -135,7 +142,7 @@ export class EmptycardComponent implements OnInit {
         this.updateDropdownOptions()
           .then(() => {}) // No charts available
           .catch(() => {
-            console.error('ERROR in EMPTY-CARD. Cannotttt update dropdown options after adding a chart in the dashboard.');
+            console.error('ERROR in EMPTY-CARD. Cannot update dropdown options after adding a chart in the dashboard.');
           });
 
         this.closeModal();

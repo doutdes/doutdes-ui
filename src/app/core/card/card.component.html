@@ -106,10 +106,10 @@
         <label class="col-sm-3 col-form-label">New title:</label>
         <div class="col-sm-9">
           <input type="text" class="form-control" formControlName="chartTitle" placeholder="Chart title"
-                 [ngClass]="{ 'is-invalid': submitted && f.chartTitle.errors }">
-          <div *ngIf="this.submitted && f.chartTitle.errors" class="invalid-feedback">
-            <div *ngIf="f.chartTitle.errors.required">The title of the chart is required.</div>
-            <div *ngIf="f.chartTitle.errors.maxlength">The title must not be longer than 30 characters.</div>
+                 [ngClass]="{ 'is-invalid': submitted && form.chartTitle.errors }">
+          <div *ngIf="submitted && form['chartTitle'].errors" class="invalid-feedback">
+            <div *ngIf="form['chartTitle'].errors['required']">The title of the chart is required.</div>
+            <div *ngIf="form['chartTitle'].errors['maxlength']">The title must not be longer than 30 characters.</div>
           </div>
 
         </div>
