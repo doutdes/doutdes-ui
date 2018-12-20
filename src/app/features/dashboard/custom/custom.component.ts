@@ -154,12 +154,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
-    const innerChart: Chart = {
-      ID: dashChart.chart_id,
-      format: dashChart.format,
-      Type: dashChart.type,
-      Title: dashChart.title
-    };
 
     const intervalDate: IntervalDate = {
       dataStart: this.bsRangeValue[0],
@@ -167,22 +161,23 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     };
 
     this.CCService.retrieveChartData(dashChart.chart_id, intervalDate)
-      .subscribe(data => {
+      .subscribe(chartData => {
 
-        // TODO FIX ALL
+        if (!chartData['status']) { // Se la chiamata non rende errori
 
-        if (!data['status']) { // Se la chiamata non rende errori
-          //chartToPush.Chart = innerChart;
-          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, data);
+          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, chartData);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
+          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id);
+
+          console.log(chartToPush);
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
         }
 
+        console.log('ADD-CHART-TO-DASHBORD:');
         console.log(chartToPush);
-
         this.filterActions.addChart(chartToPush);
       }, error1 => {
         console.log('Error querying the Chart');
@@ -236,7 +231,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.addBreadcrumb();
-    this.loadDashboard();
+    let promise = this.loadDashboard();
 
     this.GEService.removeFromDashboard.subscribe(values => {
       if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
