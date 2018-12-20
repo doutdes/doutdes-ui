@@ -139,9 +139,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.GEService.loadingScreen.next(false);
         }
 
-      }, error1 => {
-        console.log('Error querying the charts');
-        console.log(error1);
+      }, err => {
+        console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
+        console.log(err);
       });
   }
 
@@ -231,7 +231,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       }
     });
     this.GEService.showChartInDashboard.subscribe(chart => {
-      console.log('EMITTER showChart');
       if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
         this.addChartToDashboard(chart);
       }
@@ -252,8 +251,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
 
     this.filter.subscribe(elements => {
-      console.log('FILTER-SUBSCRIBE elements -> dataFiltered:');
-      console.log(elements);
       if (elements['dataFiltered'] !== null) {
         this.chartArray$ = elements['dataFiltered'];
       }
