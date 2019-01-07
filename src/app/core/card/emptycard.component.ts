@@ -1,6 +1,6 @@
 /* Angular components */
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Component, ElementRef, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 
 /* External Libraries */
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -13,13 +13,14 @@ import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {Chart} from '../../shared/_models/Chart';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-emptycard',
   templateUrl: './emptycard.component.html',
 })
 
-export class EmptycardComponent implements OnInit {
+export class EmptycardComponent implements OnInit, OnDestroy {
 
   @Input() xlOrder: string;
   @Input() lgOrder: string;
@@ -48,7 +49,7 @@ export class EmptycardComponent implements OnInit {
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
-    private eventEmitter: GlobalEventsManagerService
+    private GEService: GlobalEventsManagerService,
   ) {}
 
   ngOnInit() {
@@ -64,15 +65,15 @@ export class EmptycardComponent implements OnInit {
     if (!dashData) {
       console.error('ERROR in EMPTY-CARD. Cannot get retrieve dashboard data.');
     } else {
-      this.eventEmitter.removeFromDashboard.subscribe(values => {
+      this.GEService.removeFromDashboard.subscribe(values => {
         if (values[0] !== 0 && values[1] !== 0) {
-          this.updateDropdownOptions().then(() => this.eventEmitter.removeFromDashboard.next([0, 0]));
+          this.updateDropdownOptions().then(() => this.GEService.removeFromDashboard.next([0, 0]));
         }
       });
 
-      this.eventEmitter.updateChartList.subscribe(value => {
+      this.GEService.updateChartList.subscribe(value => {
         if (value) {
-          this.updateDropdownOptions().then(() => this.eventEmitter.updateChartList.next(false));
+          this.updateDropdownOptions().then(() => this.GEService.updateChartList.next(false));
         }
       });
     }
@@ -133,7 +134,7 @@ export class EmptycardComponent implements OnInit {
       .subscribe(() => {
         dashChart.type = this.chartSelected[0].type;
 
-        this.eventEmitter.showChartInDashboard.next(dashChart);
+        this.GEService.showChartInDashboard.next(dashChart);
         this.insertChartForm.reset();
         this.chartSelected = null;
 
@@ -233,4 +234,6 @@ export class EmptycardComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+  }
 }

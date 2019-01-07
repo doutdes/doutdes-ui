@@ -55,14 +55,10 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
-
     let chartCopy = JSON.parse(JSON.stringify(chart));
-    console.log(chartCopy);
-    console.log('ADD-CHART CALLED');
-    console.log('Original-data size = ' + JSON.parse(JSON.stringify(this.originalData)).length);
-    console.log('Filtered-data size = ' + JSON.parse(JSON.stringify(this.filteredData)).length);
+
     this.originalData.push(chart);
-    this.filteredData.push(chart);
+    this.filteredData.push(chartCopy);
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
 

@@ -8,7 +8,7 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
-import {forkJoin, Observable} from 'rxjs';
+import {forkJoin, Observable, Subscription} from 'rxjs';
 import {IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
@@ -64,6 +64,32 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private filterActions: FilterActions,
     private ADService: AggregatedDataService,
   ) {
+
+    let dash_type = this.HARD_DASH_DATA.dashboard_type;
+
+    if (!this.GEService.isSubscriber(dash_type)) {
+      this.GEService.removeFromDashboard.subscribe(values => {
+        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+          this.filterActions.removeChart(values[0]);
+        }
+      });
+      this.GEService.showChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          this.addChartToDashboard(chart);
+        }
+      });
+      this.GEService.updateChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+          this.filterActions.updateChart(index, chart.title);
+        }
+      });
+      this.GEService.loadingScreen.subscribe(value => {
+        this.loading = value;
+      });
+
+      this.GEService.addSubscriber(dash_type);
+    }
   }
 
   async loadDashboard() {
@@ -225,26 +251,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   ngOnInit(): void {
 
-    this.GEService.removeFromDashboard.subscribe(values => {
-      if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
-        this.filterActions.removeChart(values[0]);
-      }
-    });
-    this.GEService.showChartInDashboard.subscribe(chart => {
-      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-        this.addChartToDashboard(chart);
-      }
-    });
-    this.GEService.updateChartInDashboard.subscribe(chart => {
-      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-        const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-        this.filterActions.updateChart(index, chart.title);
-      }
-    });
-    this.GEService.loadingScreen.subscribe(value => {
-      this.loading = value;
-    });
-
     this.firstDateRange = subDays(new Date(), 30); //this.minDate;
     this.lastDateRange = this.maxDate;
     //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -261,6 +267,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   ngOnDestroy() {
+
     this.removeBreadcrumb();
     this.filterActions.clear();
   }

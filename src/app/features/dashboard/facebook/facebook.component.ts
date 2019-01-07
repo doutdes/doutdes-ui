@@ -63,29 +63,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions
   ) {
-    this.GEService.removeFromDashboard.subscribe(values => {
-      if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
-        this.filterActions.removeChart(values[0]);
-        this.GEService.removeFromDashboard.next([0, 0]);
-      }
-    });
-    this.GEService.showChartInDashboard.subscribe(chart => {
-      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-        this.addChartToDashboard(chart);
-        this.GEService.showChartInDashboard.next(null);
-      }
-    });
-    this.GEService.updateChartInDashboard.subscribe(chart => {
-      if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-        const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-        this.filterActions.updateChart(index, chart.title);
-      }
-    });
-
-    this.GEService.loadingScreen.subscribe(value => {
-      this.loading = value;
-    });
-
     this.firstDateRange = this.minDate;
     this.lastDateRange = this.maxDate;
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -262,11 +239,40 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    let dash_type = this.HARD_DASH_DATA.dashboard_type;
+
+    if (!this.GEService.isSubscriber(dash_type)) {
+      this.GEService.removeFromDashboard.subscribe(values => {
+        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+          this.filterActions.removeChart(values[0]);
+          this.GEService.removeFromDashboard.next([0, 0]);
+        }
+      });
+      this.GEService.showChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          this.addChartToDashboard(chart);
+          this.GEService.showChartInDashboard.next(null);
+        }
+      });
+      this.GEService.updateChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+          this.filterActions.updateChart(index, chart.title);
+        }
+      });
+      this.GEService.loadingScreen.subscribe(value => {
+        this.loading = value;
+      });
+
+      this.GEService.addSubscriber(dash_type);
+    }
+
     this.loadDashboard();
     this.addBreadcrumb();
   }
 
   ngOnDestroy() {
+
     this.removeBreadcrumb();
     this.filterActions.clear();
   }

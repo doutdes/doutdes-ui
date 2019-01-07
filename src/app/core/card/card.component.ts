@@ -42,7 +42,7 @@ export class CardComponent implements OnInit {
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
-    private eventManager: GlobalEventsManagerService) {
+    private GEService: GlobalEventsManagerService) {
   }
 
   ngOnInit() {
@@ -135,7 +135,7 @@ export class CardComponent implements OnInit {
   removeChart(dashboard_id, chart_id): void {
     this.dashboardService.removeChart(dashboard_id, chart_id)
       .subscribe(() => {
-        this.eventManager.removeFromDashboard.next([chart_id, dashboard_id]);
+        this.GEService.removeFromDashboard.next([chart_id, dashboard_id]);
         this.closeModal();
       }, error => {
         console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
@@ -146,7 +146,7 @@ export class CardComponent implements OnInit {
   updateChart(toUpdate): void {
     this.dashboardService.updateChart(toUpdate)
       .subscribe(() => {
-        this.eventManager.updateChartInDashboard.next(toUpdate);
+        this.GEService.updateChartInDashboard.next(toUpdate);
         this.closeModal();
       }, error => {
         console.log('Error updating the Chart');
