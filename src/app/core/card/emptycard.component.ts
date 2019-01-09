@@ -65,17 +65,24 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     if (!dashData) {
       console.error('ERROR in EMPTY-CARD. Cannot get retrieve dashboard data.');
     } else {
-      this.GEService.removeFromDashboard.subscribe(values => {
-        if (values[0] !== 0 && values[1] !== 0) {
-          this.updateDropdownOptions().then(() => this.GEService.removeFromDashboard.next([0, 0]));
-        }
-      });
 
-      this.GEService.updateChartList.subscribe(value => {
-        if (value) {
-          this.updateDropdownOptions().then(() => this.GEService.updateChartList.next(false));
-        }
-      });
+      let dummy_dashType = -1; // A dummy dash_type for the emptycard, as event subscriber
+
+      if (!this.GEService.isSubscriber(dummy_dashType)) {
+        this.GEService.removeFromDashboard.subscribe(values => {
+          if (values[0] !== 0 || values[1] !== 0) {
+            this.updateDropdownOptions().then(() => this.GEService.removeFromDashboard.next([0, 0]));
+          }
+        });
+
+        this.GEService.updateChartList.subscribe(value => {
+          if (value) {
+            this.updateDropdownOptions().then(() => this.GEService.updateChartList.next(false));
+          }
+        });
+
+        this.GEService.addSubscriber(dummy_dashType);
+      }
     }
   }
 

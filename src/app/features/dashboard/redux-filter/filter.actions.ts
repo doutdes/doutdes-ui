@@ -55,10 +55,10 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
-    let chartCopy = JSON.parse(JSON.stringify(chart));
+    //let chartCopy = JSON.parse(JSON.stringify(chart));
 
     this.originalData.push(chart);
-    this.filteredData.push(chartCopy);
+    this.filteredData.push(chart);
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
 

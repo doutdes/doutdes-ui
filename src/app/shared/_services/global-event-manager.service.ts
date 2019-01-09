@@ -9,13 +9,9 @@ export class GlobalEventsManagerService {
 
   public isSubscriber(dash_type) {
 
-    console.log('SUBSCRIBERS: ');
-    console.log(this.subscribers);
-
     if (this.subscribers && this.subscribers.length > 0 && this.subscribers.find(el => el === dash_type)) {
       return true;
     }
-
     return false;
   }
 
@@ -23,10 +19,8 @@ export class GlobalEventsManagerService {
 
     if (this.subscribers && !this.subscribers.find(el => el === dash_type)) {
       this.subscribers.push(dash_type);
-
       return true;
     }
-
     return false;
   }
 
