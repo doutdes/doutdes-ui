@@ -3,6 +3,7 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 
+
 @Component({
   selector: 'app-feature-preferences-api-keys',
   templateUrl: './api-keys.component.html'
@@ -11,6 +12,7 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   apiKeysList$: any;
+
 
   constructor(private apiKeyService: ApiKeysService, private breadcrumbActions: BreadcrumbActions) {
   }
