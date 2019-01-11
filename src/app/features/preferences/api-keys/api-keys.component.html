@@ -7,7 +7,7 @@
   <div class="col-md-12">
     <div class="panel-body">
       <!--<div class="table-responsive">-->
-      <table class="table table-hover mt-4" *ngIf="apiKeysList$.left > 0; else no_content">
+      <table class="table table-hover mt-4" *ngIf="apiKeysList$ && apiKeysList$.length > 0; else no_content">
         <thead>
         <tr class="border" style="background: #ddd; border: 1px solid #999">
           <th scope="col" style="width: 15%">Service</th>

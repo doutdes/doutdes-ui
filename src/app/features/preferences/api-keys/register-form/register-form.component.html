@@ -15,8 +15,10 @@
               </div>
 
               <!-- TODO add different visual if the user is already logged -->
-
-              <button class="btn btn-lg fab fa-2x fa-facebook-square text-white mx-auto d-table mt-4" (click)="signInWithFB()" style="background-color: #3b5998;"> Login</button>
+              <div [ngSwitch]="selectedService" class="col-md-12 text-center mt-4">
+                <button *ngSwitchCase="0" class="btn btn-lg fab fa-2x fa-facebook-square text-white" (click)="signInWithFB()" style="background-color: #3b5998;"> Login with Facebook</button>
+                <button *ngSwitchCase="1" class="btn btn-lg fab fa-2x fa-google text-white" (click)="signInWithFB()" style="background-color: 	#d62d20;"> Login with Google</button>
+              </div>
             </div>
           </div>
         </div>

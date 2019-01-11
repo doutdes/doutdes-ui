@@ -13,7 +13,6 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   apiKeysList$: any;
 
-
   constructor(private apiKeyService: ApiKeysService, private breadcrumbActions: BreadcrumbActions) {
   }
 
