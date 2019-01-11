@@ -15,6 +15,7 @@ import {GlobalEventsManagerService} from '../../../shared/_services/global-event
 import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {NgxLoadingModule} from 'ngx-loading';
+import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import {NgxLoadingModule} from 'ngx-loading';
     NgxLoadingModule.forRoot({}),
   ],
   providers: [
+    ApiKeysService,
     FacebookService,
     DashboardService,
     ChartsCallsService,

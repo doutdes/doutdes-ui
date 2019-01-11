@@ -37,6 +37,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     // authentication service
     this.authService.authState.subscribe((user) => {
       this.user = user;
+      console.log(user);
     });
   }
 

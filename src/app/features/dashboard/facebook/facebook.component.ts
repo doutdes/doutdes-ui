@@ -13,7 +13,7 @@ import {IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
-import {Chart} from '../../../shared/_models/Chart';
+import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 const PrimaryWhite = '#ffffff';
 
@@ -37,6 +37,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   public chartArray$: Array<DashboardCharts> = [];
 
   public loading = false;
+  public isApiKeySet = true;
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
@@ -57,6 +58,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   constructor(
     private FBService: FacebookService,
+    private apiKeyService: ApiKeysService,
     private breadcrumbActions: BreadcrumbActions,
     private DService: DashboardService,
     private CCService: ChartsCallsService,
@@ -76,8 +78,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   async loadDashboard() {
 
+    const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
+
+    if(!existence) { // If the Api Key has not been set yet, then a message is print
+      this.isApiKeySet = false;
+      return;
+    }
 
     this.GEService.loadingScreen.next(true);
 
@@ -238,6 +246,19 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
+  async checkExistance() {
+    let response;
+
+    try {
+      response = await this.apiKeyService.checkIfKeyExists(0).toPromise();
+    } catch (e) {
+      console.error(e);
+      response = null;
+    }
+
+    return response;
+  }
+
   ngOnInit(): void {
     let dash_type = this.HARD_DASH_DATA.dashboard_type;
 
@@ -272,7 +293,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-
     this.removeBreadcrumb();
     this.filterActions.clear();
   }

@@ -3,7 +3,7 @@
     <img src="/assets/img/facebook-head.png" class="float-left"/>
     <h1 class="display-4 my-auto float-left ml-3" style="color:#888">Facebook stats</h1>
   </div>
-  <div class="col-xl-4 col-lg-6 col-md-4 my-auto">
+  <div *ngIf="isApiKeySet" class="col-xl-4 col-lg-6 col-md-4 my-auto">
     <div>
       <div class="btn-group float-right" dropdown>
         <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
@@ -30,7 +30,7 @@
   </div>
 </div>
 
-<div class="row" style="padding-bottom: 30px">
+<div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-xl-4 col-lg-6 pt-3 order-xl-1 order-lg-1">
       <app-card [dashChart]="chart"></app-card>
@@ -45,5 +45,10 @@
   <!--<ng-template #noContent>
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first Chart!</h5>
   </ng-template>-->
+</div>
 
+<div *ngIf="!isApiKeySet">
+  <h3 class="text-danger m-2">You can't add charts to the dashboard</h3>
+  <h4 class="m-3">First you need to login to Facebook via OAuth.</h4>
+  <button class="btn btn-success ml-3" [routerLink]="['/preferences/api-keys']">Configure Data Sources</button>
 </div>

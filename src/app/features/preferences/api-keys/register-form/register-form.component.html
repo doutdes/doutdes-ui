@@ -5,7 +5,7 @@
         <div class="card p-4">
           <div class="card-body">
             <h2 class="text-center display-4 mb-4">Service Login </h2>
-            <div class="form-group row mb-4">
+            <div class="form-group row">
               <label for="serviceType" class="col-form-label col-md-4">Type of service</label>
               <div class="col-md-8">
                 <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="serviceType">
@@ -13,26 +13,11 @@
                   <option value=1>Google Analytics</option>
                 </select>
               </div>
-            </div>
-            <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
-              <button class="btn btn-social-icon btn-facebook mx-1" (click)="signInWithFB()"><span class="fa fa-facebook"></span></button>
-              <div *ngIf ="selectedService == 1"  class="form-group row">
-                <label for="serviceType" class="col-form-label col-md-4">JSON-file token</label>
-                <div class="input-group col-md-8 mb-4">
-                  <div class="input-group-prepend">
-                    <input type="file" class="form-control rounded py-1" style="padding-left:4px; padding-right:16px" (change)="onFileChange($event)">
-                  </div>
-                </div>
-              </div>
 
-              <div *ngIf="submitted && error400" class="text-danger mb-4"><b>Error: </b>cannot add the service.</div>
-              <div class="form-group-row">
-                <button [disabled]="loading" class="btn btn-lg btn-success" style="width: 49%; margin-right: 2%" [ngClass]="{'is-invalid': submitted && error400}">
-                  Insert
-                </button>
-                <button type="button" class="btn btn-lg btn-danger" style="width: 49%" [routerLink]="['../']">Cancel</button>
-              </div>
-            </form>
+              <!-- TODO add different visual if the user is already logged -->
+
+              <button class="btn btn-lg fab fa-2x fa-facebook-square text-white mx-auto d-table mt-4" (click)="signInWithFB()" style="background-color: #3b5998;"> Login</button>
+            </div>
           </div>
         </div>
       </div>

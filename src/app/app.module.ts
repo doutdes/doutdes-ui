@@ -25,6 +25,32 @@ import {GlobalEventsManagerService} from './shared/_services/global-event-manage
 import {JwtInterceptor} from './shared/jwt.interceptor';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgxLoadingModule} from 'ngx-loading';
+import {AuthService, AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider, LoginOpt} from 'angularx-social-login';
+
+const googleLoginOptions: LoginOpt = {
+  scope: 'https://www.googleapis.com/auth/analytics.readonly https://www.googleapis.com/auth/yt-analytics-monetary.readonly'
+}; // https://developers.google.com/api-client-library/javascript/reference/referencedocs#gapiauth2clientconfig
+
+const fbLoginOptions: LoginOpt = {
+  scope: 'read_insights,ads_read,instagram_manage_insights,manage_pages',
+  return_scopes: true,
+  enable_profile_selector: true
+};
+
+let config = new AuthServiceConfig([
+  {
+    id: GoogleLoginProvider.PROVIDER_ID,
+    provider: new GoogleLoginProvider('677265943833-pk2h68akq4u3o6elhcupu8bt89qg4cjl.apps.googleusercontent.com', googleLoginOptions)
+  },
+  {
+    id: FacebookLoginProvider.PROVIDER_ID,
+    provider: new FacebookLoginProvider('2465723383501355', fbLoginOptions)
+  }
+]);
+
+export function provideConfig() {
+  return config;
+}
 
 @NgModule({
   imports: [
@@ -45,10 +71,12 @@ import {NgxLoadingModule} from 'ngx-loading';
     AppComponent,
   ],
   providers: [
+    AuthService,
     StoreService,
     GlobalEventsManagerService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: AuthServiceConfig, useFactory: provideConfig},
   ],
   bootstrap: [ AppComponent ]
 })
