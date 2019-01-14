@@ -5,7 +5,7 @@ import {ApiKeysService} from '../../../../shared/_services/apikeys.service';
 import {Router} from '@angular/router';
 import {BreadcrumbActions} from '../../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
-import {AuthService, SocialUser} from 'angularx-social-login';
+
 @Component({
   selector: 'app-feature-preferences-apikeys-register-form',
   templateUrl: './register-form.component.html'
@@ -18,14 +18,13 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   loading = false;
   submitted = false;
   error400 = false;
-  user: SocialUser;
 
   constructor(private formBuilder: FormBuilder,
               private store: StoreService,
               private apiKeysService: ApiKeysService,
               private router: Router,
               private breadcrumbActions: BreadcrumbActions,
-              private authService: AuthService) {
+  ){
   }
 
   ngOnInit(): void {
@@ -33,12 +32,6 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
       api_key: ['', Validators.compose([Validators.maxLength(200)])],
     });
     this.addBreadcrumb();
-
-    // authentication service
-    this.authService.authState.subscribe((user) => {
-      this.user = user;
-      console.log(user);
-    });
   }
 
   ngOnDestroy(): void {

@@ -19,6 +19,10 @@ import {FeaturePreferencesApiKeysRegisterFormComponent} from './api-keys/registe
         component: FeaturePreferencesApiKeysComponent
       },
       {
+        path: 'api-keys/:token',
+        component: FeaturePreferencesApiKeysComponent
+      },
+      {
         path: 'api-keys/insert',
         component: FeaturePreferencesApiKeysRegisterFormComponent
       }

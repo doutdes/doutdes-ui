@@ -61,7 +61,6 @@
     "simple-line-icons": "^2.4.1",
     "ts-helpers": "1.1.2",
     "zone.js": "0.8.26",
-    "angularx-social-login": "latest"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.6.3",
