@@ -29,18 +29,6 @@ export class ApiKeysService {
       {body: {service_id: service}});
   }
 
-  signInWithGoogle(): void {
-    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
-  }
-
-  signInWithFB(): void {
-    this.authService.signIn(FacebookLoginProvider.PROVIDER_ID);
-  }
-
-  signOut(): void {
-    this.authService.signOut();
-  }
-
   private formatUrl(call): string {
     return 'http://' + environment.host + ':' + environment.port + '/keys/' + call;
   }

@@ -288,7 +288,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       this.GEService.addSubscriber(dash_type);
     }
 
-    this.loadDashboard();
+    // this.loadDashboard();
     this.addBreadcrumb();
   }
 

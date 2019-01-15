@@ -6,18 +6,10 @@
           <div class="card-body">
             <h2 class="text-center display-4 mb-4">Service Login </h2>
             <div class="form-group row">
-              <label for="serviceType" class="col-form-label col-md-4">Type of service</label>
-              <div class="col-md-8">
-                <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="serviceType">
-                  <option value=0 selected>Facebook Insights</option>
-                  <option value=1>Google Analytics</option>
-                </select>
-              </div>
-
               <!-- TODO add different visual if the user is already logged -->
-              <div [ngSwitch]="selectedService" class="col-md-12 text-center mt-4">
-                <button *ngSwitchCase="0" class="btn btn-lg fab fa-2x fa-facebook-square text-white" (click)="callFBLoginService()" style="background-color: #3b5998;" [routerLink]="['/preferences/api-keys']"> Login with Facebook</button>
-                <button *ngSwitchCase="1" class="btn btn-lg fab fa-2x fa-google text-white" (click)="callFBLoginService()" style="background-color: #d62d20;"> Login with Google (still not implemented)</button>
+              <div>
+                <button *ngIf="!fbLogged" class="btn btn-lg text-white" (click)="signInWithFB()" style="background-color: #3b5998;"><i class="fab fa-facebook-square"></i></button>
+                <button *ngIf="!fbLogged" class="btn btn-lg text-white" (click)="signInWithFB()" style="background-color: #d62d20;"><i class="fab fa-google "></i></button>
               </div>
             </div>
           </div>
@@ -25,11 +17,5 @@
       </div>
     </div>
   </div>
-  <div *ngIf="user; else no_content" class="card text-center">
-    <h1>LOGGED</h1>
-  </div>
-  <ng-template #no_content>
-    <h1>not logged</h1>
-  </ng-template>
-  </div>
+</div>
 

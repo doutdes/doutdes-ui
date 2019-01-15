@@ -5,7 +5,7 @@ import {ApiKeysService} from '../../../../shared/_services/apikeys.service';
 import {Router} from '@angular/router';
 import {BreadcrumbActions} from '../../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
-import {AuthService, SocialUser} from 'angularx-social-login';
+
 @Component({
   selector: 'app-feature-preferences-apikeys-register-form',
   templateUrl: './register-form.component.html'
@@ -18,30 +18,36 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   loading = false;
   submitted = false;
   error400 = false;
-  user: SocialUser;
+  fbLogged = false;
+  gaLogged = false;
 
   constructor(private formBuilder: FormBuilder,
               private store: StoreService,
               private apiKeysService: ApiKeysService,
               private router: Router,
               private breadcrumbActions: BreadcrumbActions,
-              private authService: AuthService) {
+  ){
   }
 
-  async ngOnInit() {
-    await this.apiKeysService.signOut();
+  ngOnInit(): void {
     this.registrationForm = this.formBuilder.group({
       api_key: ['', Validators.compose([Validators.maxLength(200)])],
     });
-    this.addBreadcrumb();
 
-    // authentication service
-    this.authService.authState.subscribe((user) => {
-      this.user = user;
-      console.log(user);
-
+    // checking if the api key already exists in DB for the current user, and setting the boolean based on results
+    this.apiKeysService.checkIfKeyExists(0).subscribe(res => {
+      if (res['exists']) {
+        this.fbLogged = true;
+      }
+    })
+    this.apiKeysService.checkIfKeyExists(1).subscribe(res => {
+      if (res['exists']) {
+        this.fbLogged = true;
+      }
     });
   }
+
+
 
   ngOnDestroy(): void {
     this.removeBreadcrumb();
@@ -111,8 +117,9 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   removeBreadcrumb() {
     this.breadcrumbActions.deleteBreadcrumb();
   }
-  callFBLoginService() {
-    this.apiKeysService.signInWithFB();
+  signInWithFB() {
+    // waiting for passport implementation
+    this.fbLogged = true;
   }
 
 }

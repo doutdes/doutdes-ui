@@ -16,14 +16,14 @@ export class ChartsCallsService {
     return str.length > maxLength ? str.substr(0, 30) + '...' : str;
   }
 
-  public retrieveChartData(ID, intervalDate?: IntervalDate): Observable<any> {
+  public retrieveChartData(ID, pageID?, intervalDate?: IntervalDate): Observable<any> {
     switch (ID) {
       case 1:
-        return this.facebookService.fbfancount();
+        return this.facebookService.fbfancount(pageID);
       case 2:
-        return this.facebookService.fbfancountry();
+        return this.facebookService.fbfancountry(pageID);
       case 3:
-        return this.facebookService.fbpageimpressions();
+        return this.facebookService.fbpageimpressions(pageID);
       case 4:
         return this.googleAnalyticsService.gaPageViews(intervalDate);
       case 5:
@@ -33,7 +33,7 @@ export class ChartsCallsService {
       case 7:
         return this.googleAnalyticsService.gaMostViews(intervalDate);
       case 8:
-        return this.facebookService.fbfancountry();
+        return this.facebookService.fbfancountry(pageID);
       case 9:
         return this.googleAnalyticsService.gaSources(intervalDate);
       case 10:
@@ -43,9 +43,9 @@ export class ChartsCallsService {
       case 12:
         return this.googleAnalyticsService.gaBrowsers(intervalDate);
       case 13:
-        return this.facebookService.fbpageviewstotal();
+        return this.facebookService.fbpageviewstotal(pageID);
       case 14:
-        return this.facebookService.fbfancity();
+        return this.facebookService.fbfancity(pageID);
     }
   }
 
