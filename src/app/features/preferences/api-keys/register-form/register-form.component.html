@@ -8,8 +8,8 @@
             <div class="form-group row">
               <!-- TODO add different visual if the user is already logged -->
               <div>
-                <button *ngIf="!fbLogged" class="btn btn-lg text-white" (click)="signInWithFB()" style="background-color: #3b5998;"><i class="fab fa-facebook-square"></i></button>
-                <button *ngIf="!fbLogged" class="btn btn-lg text-white" (click)="signInWithFB()" style="background-color: #d62d20;"><i class="fab fa-google "></i></button>
+                <a *ngIf="!fbLogged" class="btn btn-lg text-white" href="http://localhost:443/fb/login?user_id=17" style="background-color: #3b5998;"><i class="fab fa-facebook-square "></i></a>
+                <button *ngIf="!gaLogged" class="btn btn-lg text-white" (click)="signInWithFB()" style="background-color: #d62d20;"><i class="fab fa-google "></i></button>
               </div>
             </div>
           </div>

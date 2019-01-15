@@ -5,7 +5,7 @@ import {FeaturePreferencesApiKeysComponent} from './api-keys.component';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FeaturePreferencesApiKeysRegisterFormComponent} from './register-form/register-form.component';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
-import {AuthServiceConfig, SocialLoginModule} from 'angularx-social-login';
+import {FacebookService} from '../../../shared/_services/facebook.service';
 
 @NgModule({
   declarations: [
@@ -15,10 +15,10 @@ import {AuthServiceConfig, SocialLoginModule} from 'angularx-social-login';
   imports: [
     SharedModule,
     CoreModule,
-    SocialLoginModule
   ],
   providers: [
     ApiKeysService,
+    FacebookService,
     BreadcrumbActions
   ],
   exports: [

@@ -5,6 +5,7 @@ import {ApiKeysService} from '../../../../shared/_services/apikeys.service';
 import {Router} from '@angular/router';
 import {BreadcrumbActions} from '../../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
+import {FacebookService} from '../../../../shared/_services/facebook.service';
 
 @Component({
   selector: 'app-feature-preferences-apikeys-register-form',
@@ -21,15 +22,19 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   fbLogged = false;
   gaLogged = false;
 
-  constructor(private formBuilder: FormBuilder,
-              private store: StoreService,
-              private apiKeysService: ApiKeysService,
-              private router: Router,
-              private breadcrumbActions: BreadcrumbActions,
-  ){
+  constructor(
+    private formBuilder: FormBuilder,
+    private store: StoreService,
+    private apiKeysService: ApiKeysService,
+    private fbService: FacebookService,
+    private router: Router,
+    private breadcrumbActions: BreadcrumbActions,
+  ) {
   }
 
   ngOnInit(): void {
+    this.addBreadcrumb();
+
     this.registrationForm = this.formBuilder.group({
       api_key: ['', Validators.compose([Validators.maxLength(200)])],
     });
@@ -39,14 +44,14 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
       if (res['exists']) {
         this.fbLogged = true;
       }
-    })
+    });
+
     this.apiKeysService.checkIfKeyExists(1).subscribe(res => {
       if (res['exists']) {
-        this.fbLogged = true;
+        this.gaLogged = true;
       }
     });
   }
-
 
 
   ngOnDestroy(): void {
@@ -117,9 +122,9 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   removeBreadcrumb() {
     this.breadcrumbActions.deleteBreadcrumb();
   }
-  signInWithFB() {
+
+  async signInWithFB() {
     // waiting for passport implementation
-    this.fbLogged = true;
   }
 
 }

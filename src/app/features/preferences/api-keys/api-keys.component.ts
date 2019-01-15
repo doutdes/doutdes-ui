@@ -55,7 +55,6 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.apiKeyService.getAllKeys()
       .pipe()
       .subscribe(data => {
-        console.log(data);
         if (data == null) {
           this.apiKeysList$ = null;
         } else {

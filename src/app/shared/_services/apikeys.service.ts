@@ -2,13 +2,12 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {ApiKey} from '../_models/ApiKeys';
 import {environment} from '../../../environments/environment';
-import {AuthService, FacebookLoginProvider, GoogleLoginProvider} from 'angularx-social-login';
 import {StoreService} from './store.service';
 
 @Injectable()
 export class ApiKeysService {
 
-  constructor(private http: HttpClient, private authService: AuthService, private storeService: StoreService) {
+  constructor(private http: HttpClient, private storeService: StoreService) {
   }
 
   registerKey(api: ApiKey) {
