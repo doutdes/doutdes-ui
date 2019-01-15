@@ -4,6 +4,7 @@ import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
+import {environment} from '../../../../environments/environment';
 
 
 @Component({
@@ -15,8 +16,9 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   apiKeysList$: any;
   tokenToSave: string;
+  fbLogin = 'http://' + environment.host + ':' + environment.port + '/fb/login/';
 
-  constructor(private apiKeyService: ApiKeysService, private breadcrumbActions: BreadcrumbActions, private route: ActivatedRoute, private router: Router) {
+    constructor(private apiKeyService: ApiKeysService, private breadcrumbActions: BreadcrumbActions, private route: ActivatedRoute, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -43,7 +45,6 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
         });
       }
     });
-
   }
 
   ngOnDestroy(): void {
