@@ -28,7 +28,8 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
               private authService: AuthService) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    await this.apiKeysService.signOut();
     this.registrationForm = this.formBuilder.group({
       api_key: ['', Validators.compose([Validators.maxLength(200)])],
     });
@@ -38,6 +39,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     this.authService.authState.subscribe((user) => {
       this.user = user;
       console.log(user);
+
     });
   }
 
@@ -109,7 +111,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   removeBreadcrumb() {
     this.breadcrumbActions.deleteBreadcrumb();
   }
-  signInWithFB() {
+  callFBLoginService() {
     this.apiKeysService.signInWithFB();
   }
 

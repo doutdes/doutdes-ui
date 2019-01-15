@@ -16,8 +16,8 @@
 
               <!-- TODO add different visual if the user is already logged -->
               <div [ngSwitch]="selectedService" class="col-md-12 text-center mt-4">
-                <button *ngSwitchCase="0" class="btn btn-lg fab fa-2x fa-facebook-square text-white" (click)="signInWithFB()" style="background-color: #3b5998;"> Login with Facebook</button>
-                <button *ngSwitchCase="1" class="btn btn-lg fab fa-2x fa-google text-white" (click)="signInWithFB()" style="background-color: #d62d20;"> Login with Google</button>
+                <button *ngSwitchCase="0" class="btn btn-lg fab fa-2x fa-facebook-square text-white" (click)="callFBLoginService()" style="background-color: #3b5998;" [routerLink]="['/preferences/api-keys']"> Login with Facebook</button>
+                <button *ngSwitchCase="1" class="btn btn-lg fab fa-2x fa-google text-white" (click)="callFBLoginService()" style="background-color: #d62d20;"> Login with Google (still not implemented)</button>
               </div>
             </div>
           </div>
@@ -25,5 +25,11 @@
       </div>
     </div>
   </div>
-</div>
+  <div *ngIf="user; else no_content" class="card text-center">
+    <h1>LOGGED</h1>
+  </div>
+  <ng-template #no_content>
+    <h1>not logged</h1>
+  </ng-template>
+  </div>
 
