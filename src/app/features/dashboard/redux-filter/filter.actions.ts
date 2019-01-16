@@ -34,8 +34,8 @@ export class FilterActions {
 
   initData(originalData, dateInterval: IntervalDate) {
 
-    let original = originalData;
-    let filtered = JSON.parse(JSON.stringify(originalData));
+    let original = originalData != null ? originalData : [];
+    let filtered = originalData != null ? JSON.parse(JSON.stringify(originalData)) : [];
 
     this.Redux.dispatch({type: FILTER_INIT, originalData: original, originalInterval: dateInterval, dataFiltered: filtered});
     //this.filterData(dateInterval);
@@ -55,7 +55,9 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
-    //let chartCopy = JSON.parse(JSON.stringify(chart));
+
+    console.log('OR DATA');
+    console.log(this.originalData);
 
     this.originalData.push(chart);
     this.filteredData.push(chart);
