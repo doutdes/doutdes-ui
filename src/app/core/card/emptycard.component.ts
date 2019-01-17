@@ -95,14 +95,14 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   async openModal() {
 
+    const chartsAvailable = await this.updateDropdownOptions();
+
     this.chartSelected = this.dropdownOptions[0];
     this.insertChartForm.controls['chartTitle'].setValue(this.chartSelected.title);
 
     this.modalService.onHide.subscribe(() => {
       this.closeModal();
     });
-
-    const chartsAvailable = await this.updateDropdownOptions();
 
     if (chartsAvailable) {
       this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
