@@ -55,8 +55,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    console.log("INITIALIZED");
-
     const dashData = this.dashboard_data;
 
     this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
@@ -212,11 +210,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
           });
       }
     });
-  }
-
-  getDropdownSize() {
-
-    console.warn(this.dropdownOptions);
   }
 
   selectionChanged(optionID) {

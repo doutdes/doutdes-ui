@@ -1,6 +1,6 @@
-export interface FbData {
-  str: string;
-  value: number;
+export interface FbPage {
+  name: string;
+  id: string;
 }
 
 export interface FacebookFanCount {

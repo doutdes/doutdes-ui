@@ -92,6 +92,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
 
+    // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
+    const pageID = (await this.FBService.getPages().toPromise())[0].id;
+
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
     }
@@ -106,7 +109,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
         if(charts && charts.length > 0) { // Checking if dashboard is not empty
 
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
+          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, pageID))); // Retrieves data for each chart
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -121,7 +124,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   chart.type = chart['Chart'].type;
                   chart.originalTitle = chart['Chart'].title;
                   delete chart['Chart'];
-                  
+
                   chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
                   chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
@@ -264,8 +267,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     if (!this.GEService.isSubscriber(dash_type)) {
       this.GEService.removeFromDashboard.subscribe(values => {
-        console.log('Fb removing: ');
-        console.log(values);
         if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
           this.filterActions.removeChart(values[0]);
         }
@@ -288,7 +289,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       this.GEService.addSubscriber(dash_type);
     }
 
-    // this.loadDashboard();
+    this.loadDashboard();
     this.addBreadcrumb();
   }
 

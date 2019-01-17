@@ -198,7 +198,7 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // google pie end
+        break; // Google pie end
       case 7:
         header = [['Website', 'Views']];
         paddingRows = data.length % 10 ? 10 - (data.length % 10) : 0; // if data.length % 10 != 0, add padding
@@ -407,7 +407,6 @@ export class ChartsCallsService {
           }
         };
         break; // Facebook Fan City
-
     }
 
     return formattedData;
