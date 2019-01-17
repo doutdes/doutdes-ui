@@ -5,7 +5,6 @@ import {GoogleAnalyticsService} from './googleAnalytics.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {DashboardCharts} from '../_models/DashboardCharts';
-import {subscribeOn} from 'rxjs/operators';
 
 @Injectable()
 export class ChartsCallsService {
@@ -135,16 +134,10 @@ export class ChartsCallsService {
         header = [['Date', 'Impressions']];
         // Push data pairs in the Chart array
 
-        let a = data[0][0] + '';
-        a = a.substring(0, 4) + '/' + a.substring(4,6) + '/' + a.substring(6,8);
-        let newDate = Date.parse(a);
-        console.log(newDate);
+        // console.log(data);
 
         for (let i = 0; i < data.length; i++) {
-          let a = data[i][0] + '';
-          a = a.substring(0, 4) + '/' + a.substring(4,6) + '/' + a.substring(6,8);
-          let newDate = Date.parse(a);
-          chartArray.push([newDate, parseInt(data[i][1], 10)]);
+          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
 
         formattedData = {
@@ -165,7 +158,7 @@ export class ChartsCallsService {
         header = [['Date', 'Sessions']];
         // Push data pairs in the Chart array
         for (let i = 0; i < data.length; i++) {
-          console.log(new Date(data[i][0]));chartArray.push([new Date(data[i][0]), parseInt(data[i][1], 10)]);
+          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
 
         formattedData = {
