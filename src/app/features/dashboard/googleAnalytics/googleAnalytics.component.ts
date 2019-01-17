@@ -70,6 +70,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     if (!this.GEService.isSubscriber(dash_type)) {
       this.GEService.removeFromDashboard.subscribe(values => {
         if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+          console.log('GA removing: ');
+          console.log(values);
           this.filterActions.removeChart(values[0]);
         }
       });
@@ -114,6 +116,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
       .subscribe(charts => {
 
+        const dateInterval: IntervalDate = {
+          dataStart: this.minDate,
+          dataEnd: this.maxDate
+        };
+
         if(charts && charts.length > 0) { // Checking if dashboard is not empty
 
           charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
@@ -145,23 +152,21 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                 }
 
                 chartsToShow.push(chart);
+
+                this.filterActions.initData(chartsToShow, dateInterval);
+                this.GEService.updateChartList.next(true);
+
+                // Shows last 30 days
+                this.datePickerEnabled = true;
+                //this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
               }
               this.GEService.loadingScreen.next(false);
 
-              const dateInterval: IntervalDate = {
-                dataStart: this.minDate,
-                dataEnd: this.maxDate
-              };
-
-              this.filterActions.initData(chartsToShow, dateInterval);
-              this.GEService.updateChartList.next(true);
-
-              // Shows last 30 days
-              this.datePickerEnabled = true;
-              //this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
             });
-
         } else {
+          this.filterActions.initData([], dateInterval);
+          this.GEService.updateChartList.next(true);
+
           this.GEService.loadingScreen.next(false);
         }
 
@@ -195,8 +200,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           console.log('Errore recuperando dati per ' + dashChart);
         }
 
-        console.log('ADD-CHART-TO-DASHBORD:');
-        console.log(chartToPush);
         this.filterActions.addChart(chartToPush);
       }, error1 => {
         console.log('Error querying the Chart');
@@ -263,7 +266,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     });
 
     this.addBreadcrumb();
-    let promise = this.loadDashboard();
+    this.loadDashboard();
   }
 
   ngOnDestroy() {

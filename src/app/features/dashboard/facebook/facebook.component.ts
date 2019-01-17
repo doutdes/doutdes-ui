@@ -264,15 +264,15 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     if (!this.GEService.isSubscriber(dash_type)) {
       this.GEService.removeFromDashboard.subscribe(values => {
+        console.log('Fb removing: ');
+        console.log(values);
         if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
           this.filterActions.removeChart(values[0]);
-          this.GEService.removeFromDashboard.next([0, 0]);
         }
       });
       this.GEService.showChartInDashboard.subscribe(chart => {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
           this.addChartToDashboard(chart);
-          this.GEService.showChartInDashboard.next(null);
         }
       });
       this.GEService.updateChartInDashboard.subscribe(chart => {

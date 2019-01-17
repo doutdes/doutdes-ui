@@ -35,7 +35,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   config = {
     displayKey: 'global', // if objects array passed which key to be displayed defaults to description,
-    search: true
+    search: false,
+    height: 300
   };
 
   dropdownOptions = [];
@@ -54,6 +55,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    console.log("INITIALIZED");
+
     const dashData = this.dashboard_data;
 
     this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
@@ -71,13 +74,13 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       if (!this.GEService.isSubscriber(dummy_dashType)) {
         this.GEService.removeFromDashboard.subscribe(values => {
           if (values[0] !== 0 || values[1] !== 0) {
-            this.updateDropdownOptions().then(() => this.GEService.removeFromDashboard.next([0, 0]));
+            this.updateDropdownOptions().then().catch(() => console.log('Error while resolving updateDropdownOptions in EMPTY-CARD.'));
           }
         });
 
         this.GEService.updateChartList.subscribe(value => {
           if (value) {
-            this.updateDropdownOptions().then(() => this.GEService.updateChartList.next(false));
+            this.updateDropdownOptions().then().catch(() => console.log('Error while resolving updateDropdownOptions in EMPTY-CARD.'));;
           }
         });
 
@@ -91,6 +94,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   }
 
   async openModal() {
+
+    this.chartSelected = this.dropdownOptions[0];
+    this.insertChartForm.controls['chartTitle'].setValue(this.chartSelected.title);
 
     this.modalService.onHide.subscribe(() => {
       this.closeModal();
@@ -129,9 +135,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     const dashChart: DashboardCharts = {
       dashboard_id: this.dashboard_data.dashboard_id,
-      chart_id: this.chartSelected[0].id,
+      chart_id: this.chartSelected.id,
       title: this.insertChartForm.value.chartTitle,
-      format: this.chartSelected[0].format
+      format: this.chartSelected.format
     };
 
     this.loading = true;
@@ -139,7 +145,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     this.dashboardService.addChartToDashboard(dashChart)
       .pipe(first())
       .subscribe(() => {
-        dashChart.type = this.chartSelected[0].type;
+        dashChart.type = this.chartSelected.type;
 
         this.GEService.showChartInDashboard.next(dashChart);
         this.insertChartForm.reset();
@@ -167,23 +173,20 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     if (!this.dashboard_data) {
 
       console.error('ERROR in EMPTY-CARD. Cannot retrieve dashboard data.');
-      return new Promise( (resolve, reject) => { resolve(false); });
+      return new Promise( (resolve, reject) => { reject(false); });
     }
-
-    this.dropdownOptions = [];
 
     return new Promise((resolve, reject) => {
       if (this.dashboard_data.dashboard_type !== 0) {
 
         this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
           .subscribe(chartRemaining => {
-
             if (chartRemaining && chartRemaining.length > 0) { // Checking for array size > 0
-              this.populateDropdown(chartRemaining);
-              resolve(true);
+              this.dropdownOptions = this.populateDropdown(chartRemaining);
+              return resolve(true);
             }
             else {
-              resolve(false);
+              return reject(false);
             }
           }, err => {
             console.error('ERROR in EMPTY-CARD. Cannot get the list of not added charts - getChartsNotAddedByDashboardType().');
@@ -195,31 +198,43 @@ export class EmptycardComponent implements OnInit, OnDestroy {
           .subscribe(chartRemaining => {
 
               if (chartRemaining && chartRemaining.length > 0) {
-                this.populateDropdown(chartRemaining,true);
-                resolve(true);
+                this.dropdownOptions = this.populateDropdown(chartRemaining,true);
+                console.log(this.dropdownOptions);
+                return resolve(true);
               }
               else {
-                resolve(false);
+                return reject(false);
               }
             }, err => {
               console.error('ERROR in EMPTY-CARD. Cannot get the list of not added charts - getChartsNotAdded().');
               console.log(err);
-              resolve(false);
+              return reject(false);
           });
       }
     });
   }
 
-  selectionChanged($event: any) {
-    this.insertChartForm.controls['chartTitle'].setValue($event.value[0].title);
+  getDropdownSize() {
+
+    console.warn(this.dropdownOptions);
+  }
+
+  selectionChanged(optionID) {
+    this.chartSelected = this.dropdownOptions.find(opt => opt.id == optionID);
+
+    console.log(this.chartSelected);
+    this.insertChartForm.controls['chartTitle'].setValue(this.chartSelected.title);
   }
 
   populateDropdown(charts : Chart[], writeType = false) {
 
+    let newDropdown = []
+
     if (charts) {
       charts.forEach(el => {
+
         let global = writeType ? this.getStringType(el.Type) + el.Title + ' (' + el.format + ')' : el.Title + ' (' + el.format + ')';
-        this.dropdownOptions.push({
+        newDropdown.push({
           id: el.ID,
           title: el.Title,
           format: el.format,
@@ -228,7 +243,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
         });
       });
 
-      this.dropdownOptions = _.orderBy(this.dropdownOptions, ['global', 'title', 'id']);
+      return _.orderBy(newDropdown, ['global', 'title', 'id']);
     }
   }
 

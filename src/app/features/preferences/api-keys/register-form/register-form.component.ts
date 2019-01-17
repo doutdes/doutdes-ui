@@ -6,6 +6,7 @@ import {Router} from '@angular/router';
 import {BreadcrumbActions} from '../../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
 import {FacebookService} from '../../../../shared/_services/facebook.service';
+import {environment} from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-feature-preferences-apikeys-register-form',
@@ -15,6 +16,7 @@ import {FacebookService} from '../../../../shared/_services/facebook.service';
 export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, OnDestroy {
 
   registrationForm: FormGroup;
+  fbLoginURL: string;
   selectedService = 0;
   loading = false;
   submitted = false;
@@ -30,6 +32,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     private router: Router,
     private breadcrumbActions: BreadcrumbActions,
   ) {
+
   }
 
   ngOnInit(): void {
@@ -51,6 +54,8 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
         this.gaLogged = true;
       }
     });
+
+    this.fbLoginURL = 'http://' + environment.host + ':' + environment.port + '/fb/login?user_id=' + this.store.getId();
   }
 
 
@@ -122,11 +127,6 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   removeBreadcrumb() {
     this.breadcrumbActions.deleteBreadcrumb();
   }
-
-  async signInWithFB() {
-    // waiting for passport implementation
-  }
-
 }
 
 
