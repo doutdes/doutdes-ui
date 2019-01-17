@@ -96,7 +96,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
 
     // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
-    this.pageID = (await this.FBService.getPages().toPromise())[1].id;
+    this.pageID = (await this.FBService.getPages().toPromise())[0].id;
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
