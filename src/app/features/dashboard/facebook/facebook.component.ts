@@ -28,6 +28,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     dashboard_type: 1,
     dashboard_id: null
   };
+
+  private pageID = null;
+
   public FILTER_DAYS = {
     seven: 7,
     thirty: 30,
@@ -93,7 +96,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
 
     // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
-    const pageID = (await this.FBService.getPages().toPromise())[0].id;
+    this.pageID = (await this.FBService.getPages().toPromise())[1].id;
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -109,7 +112,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
         if(charts && charts.length > 0) { // Checking if dashboard is not empty
 
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, pageID))); // Retrieves data for each chart
+          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -175,7 +178,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id)
+    this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori

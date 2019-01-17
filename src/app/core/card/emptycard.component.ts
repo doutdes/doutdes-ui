@@ -1,6 +1,6 @@
 /* Angular components */
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 /* External Libraries */
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -13,7 +13,6 @@ import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {Chart} from '../../shared/_models/Chart';
-import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-emptycard',
@@ -72,13 +71,13 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       if (!this.GEService.isSubscriber(dummy_dashType)) {
         this.GEService.removeFromDashboard.subscribe(values => {
           if (values[0] !== 0 || values[1] !== 0) {
-            this.updateDropdownOptions().then().catch(() => console.log('Error while resolving updateDropdownOptions in EMPTY-CARD.'));
+            this.updateDropdownOptions().then().catch(() => console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.'));
           }
         });
 
         this.GEService.updateChartList.subscribe(value => {
           if (value) {
-            this.updateDropdownOptions().then().catch(() => console.log('Error while resolving updateDropdownOptions in EMPTY-CARD.'));;
+            this.updateDropdownOptions().then().catch(() => console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.'));;
           }
         });
 
@@ -93,18 +92,18 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   async openModal() {
 
-    const chartsAvailable = await this.updateDropdownOptions();
+    try {
+      await this.updateDropdownOptions();
+      this.chartSelected = this.dropdownOptions[0];
+      this.insertChartForm.controls['chartTitle'].setValue(this.chartSelected.title);
 
-    this.chartSelected = this.dropdownOptions[0];
-    this.insertChartForm.controls['chartTitle'].setValue(this.chartSelected.title);
+      this.modalService.onHide.subscribe(() => {
+        this.closeModal();
+      });
 
-    this.modalService.onHide.subscribe(() => {
-      this.closeModal();
-    });
-
-    if (chartsAvailable) {
       this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
-    } else {
+
+    } catch (err) {
       this.modalRef = this.modalService.show(this.noChartsAvailable, {class: 'modal-md modal-dialog-centered'});
     }
   }

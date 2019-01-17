@@ -122,6 +122,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         };
 
         if(charts && charts.length > 0) { // Checking if dashboard is not empty
+          console.log(charts);
 
           charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
 

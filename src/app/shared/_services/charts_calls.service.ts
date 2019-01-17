@@ -5,6 +5,7 @@ import {GoogleAnalyticsService} from './googleAnalytics.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {DashboardCharts} from '../_models/DashboardCharts';
+import {subscribeOn} from 'rxjs/operators';
 
 @Injectable()
 export class ChartsCallsService {
@@ -110,19 +111,18 @@ export class ChartsCallsService {
       case 3:
         header = [['Date', 'Impressions']];
 
-        for (let i = 0; i < data.length; i++) {
 
-          // if (i % 2 === 0) {
+        for (let i = 0; i < data.length; i++) {
           impressChartArray.push([new Date(data[i].end_time), data[i].value]);
-          // }
         }
 
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(impressChartArray),
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 40, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            format: 'decimal',
             curveType: 'function',
             height: 310,
             explorer: {},
@@ -135,10 +135,16 @@ export class ChartsCallsService {
         header = [['Date', 'Impressions']];
         // Push data pairs in the Chart array
 
-        // console.log(data);
+        let a = data[0][0] + '';
+        a = a.substring(0, 4) + '/' + a.substring(4,6) + '/' + a.substring(6,8);
+        let newDate = Date.parse(a);
+        console.log(newDate);
 
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+          let a = data[i][0] + '';
+          a = a.substring(0, 4) + '/' + a.substring(4,6) + '/' + a.substring(6,8);
+          let newDate = Date.parse(a);
+          chartArray.push([newDate, parseInt(data[i][1], 10)]);
         }
 
         formattedData = {
@@ -159,7 +165,7 @@ export class ChartsCallsService {
         header = [['Date', 'Sessions']];
         // Push data pairs in the Chart array
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+          console.log(new Date(data[i][0]));chartArray.push([new Date(data[i][0]), parseInt(data[i][1], 10)]);
         }
 
         formattedData = {

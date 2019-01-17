@@ -38,7 +38,6 @@ export class FilterActions {
     let filtered = originalData != null ? JSON.parse(JSON.stringify(originalData)) : [];
 
     this.Redux.dispatch({type: FILTER_INIT, originalData: original, originalInterval: dateInterval, dataFiltered: filtered});
-    //this.filterData(dateInterval);
   }
 
   filterData(dateInterval: IntervalDate) {
@@ -56,16 +55,10 @@ export class FilterActions {
 
   addChart(chart: DashboardCharts) {
 
-    console.log('OR DATA');
-    console.log(this.originalData);
-
     this.originalData.push(chart);
     this.filteredData.push(chart);
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
-
-    console.log('Original-data size = ' + JSON.parse(JSON.stringify(this.originalData)).length);
-    console.log('Filtered-data size = ' + JSON.parse(JSON.stringify(this.filteredData)).length);
   }
 
   removeChart(id: number) {
@@ -124,15 +117,15 @@ export class FilterActions {
           filtered.push(chart);
 
         } else {
-          console.log('Error in FILTER_ACTIONS. A chart of unknown type (' + chart.type + ') was found, filter action skipped.');
-          console.log('MORE DETAILS (unfiltered data in input):');
-          console.log(chart);
+          console.error('Error in FILTER_ACTIONS. A chart of unknown type (' + chart.type + ') was found, filter action skipped.');
+          console.error('MORE DETAILS (unfiltered data in input):');
+          console.error(chart);
         }
       }
     }
     else {
-      console.log('Error in FILTER_ACTIONS. No unfiltered data found.');
-      console.log(unfiltered);
+      console.error('Error in FILTER_ACTIONS. No unfiltered data found.');
+      console.error(unfiltered);
     }
 
     return filtered;
