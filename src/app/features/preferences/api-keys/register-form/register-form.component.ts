@@ -16,7 +16,10 @@ import {environment} from '../../../../../environments/environment';
 export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, OnDestroy {
 
   registrationForm: FormGroup;
+
   fbLoginURL: string;
+  gaLoginURL: string;
+
   selectedService = 0;
   loading = false;
   submitted = false;
@@ -56,6 +59,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     });
 
     this.fbLoginURL = 'http://' + environment.host + ':' + environment.port + '/fb/login?user_id=' + this.store.getId();
+    this.gaLoginURL = 'http://' + environment.host + ':' + environment.port + '/ga/login?user_id=' + this.store.getId();
   }
 
 

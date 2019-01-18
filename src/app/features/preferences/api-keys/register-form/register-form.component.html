@@ -1,16 +1,42 @@
 <div class="container h-100">
   <div class="row h-100 align-items-center">
-    <div class="col-md-6 mx-auto">
+    <div class="col-md-8 mx-auto">
       <div class="card-group">
         <div class="card p-4">
           <div class="card-body">
-            <h2 class="text-center display-4 mb-4">Service Login </h2>
+            <h2 class="text-center display-4 mb-4">Service Login</h2>
+            <hr/>
             <div class="form-group row">
-              <!-- TODO add different visual if the user is already logged -->
-              <div>
-                <a *ngIf="!fbLogged" class="btn btn-lg text-white" [href]="fbLoginURL" style="background-color: #3b5998;"><i class="fab fa-facebook-square "></i></a>
-                <button *ngIf="!gaLogged" class="btn btn-lg text-white" (click)="signInWithFB()" style="background-color: #d62d20;"><i class="fab fa-google "></i></button>
+              <div class="col-md-12 text-center">
+                <p class="" style="font-size: 18px;">In order to use our service, you have to do the login with
+                different sources:</p>
               </div>
+
+              <div class="col-md-12 h-100"      *ngIf="!gaLogged">
+                <h4 class="w-50 d-inline-block align-middle">To use website dashboard</h4>
+                <a class="btn btn-lg bg-ga-color text-white d-inline-block" style="width: 35%;" [href]="gaLoginURL">
+                  <i class="fab fa-google mr-2"></i>Login with Google
+                </a>
+              </div> <!-- Google login -->
+              <div class="col-md-12 h-100 mt-3" *ngIf="!fbLogged">
+                <h4 class="w-50 d-inline-block align-middle">To use Facebook dashboard</h4>
+                <a class="btn btn-lg bg-fb-color text-white d-inline-block" style="width: 35%;" [href]="fbLoginURL">
+                  <i class="fab fa-facebook-square mr-2"></i>Login with Facebook
+                </a>
+              </div> <!-- Facebook login -->
+              <div class="col-md-12 h-100 mt-3" *ngIf="true">
+                <h4 class="w-50 d-inline-block align-middle">To use Instagram dashboard</h4>
+                <a class="btn btn-lg bg-ig-color text-white d-inline-block" style="width: 35%;" [href]="">
+                  <i class="fab fa-instagram mr-2"></i>Login with Instagram
+                </a>
+              </div>      <!-- Instagram login -->
+              <div class="col-md-12 h-100 mt-3" *ngIf="true">
+                <h4 class="w-50 d-inline-block align-middle">To use YouTube dashboard</h4>
+                <a class="btn btn-lg bg-yt-color text-white d-inline-block" style="width: 35%;" [href]="">
+                  <i class="fab fa-youtube mr-2"></i>Login with YouTube
+                </a>
+              </div>      <!-- YouTube login -->
+
             </div>
           </div>
         </div>
