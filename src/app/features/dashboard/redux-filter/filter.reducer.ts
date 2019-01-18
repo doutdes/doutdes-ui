@@ -4,14 +4,12 @@ import {FILTER_INIT, FILTER_BY_DATA, FILTER_RESET, FILTER_CLEAR, FILTER_UPDATE} 
 export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action): FilterState {
   switch (action.type) {
     case FILTER_INIT:
-      return Object.assign({}, state, // TODO Per la GeoMap basta inizializzare l'indice 0 come filtered e tutta la lista come original
+      return Object.assign({}, state,
         {
           originalData: action.originalData,
           originalInterval: action.originalInterval,
           dataFiltered: action.dataFiltered,
           filterInterval: action.originalInterval
-          // dataFiltered: Object.create(action.originalData),
-          // filterInterval: Object.create(action.originalInterval)
         });
 
     case FILTER_UPDATE:

@@ -76,6 +76,8 @@ export class FilterActions {
     const FACEBOOK_TYPE = 1;
     const GOOGLE_TYPE = 2;
 
+
+
     if (unfiltered) {
 
       for (let i=0; i < unfiltered.length; i++) {
@@ -94,6 +96,8 @@ export class FilterActions {
           tmpData = tmpData.filter(el => el[0] >= filterInterval.dataStart && el[0] <= filterInterval.dataEnd);
 
           chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
+
+          filtered.push(chart);
 
         } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
 
