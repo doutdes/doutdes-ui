@@ -65,33 +65,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private filterActions: FilterActions,
     private ADService: AggregatedDataService
   ) {
-    let dash_type = this.HARD_DASH_DATA.dashboard_type;
 
-    if (!this.GEService.isSubscriber(dash_type)) {
-      this.GEService.removeFromDashboard.subscribe(values => {
-        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
-          console.log('GA removing: ');
-          console.log(values);
-          this.filterActions.removeChart(values[0]);
-        }
-      });
-      this.GEService.showChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          this.addChartToDashboard(chart);
-        }
-      });
-      this.GEService.updateChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-          this.filterActions.updateChart(index, chart.title);
-        }
-      });
-      this.GEService.loadingScreen.subscribe(value => {
-        this.loading = value;
-      });
-
-      this.GEService.addSubscriber(dash_type);
-    }
   }
 
   async loadDashboard() {
@@ -181,7 +155,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id, intervalDate)
+    this.CCService.retrieveChartData(dashChart.chart_id)
       .subscribe(chartData => {
 
         if (!chartData['status']) { // Se la chiamata non rende errori
@@ -189,14 +163,14 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, chartData);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id);
-
-          console.log(chartToPush);
+          chartToPush.type = dashChart.type;
+          chartToPush.format = dashChart.format;
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
         }
         this.filterActions.addChart(chartToPush);
+        this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
       }, error1 => {
         console.log('Error querying the Chart');
         console.log(error1);
@@ -258,6 +232,32 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.chartArray$ = elements['dataFiltered'];
       }
     });
+
+    let dash_type = this.HARD_DASH_DATA.dashboard_type;
+
+    if (!this.GEService.isSubscriber(dash_type)) {
+      this.GEService.removeFromDashboard.subscribe(values => {
+        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+          this.filterActions.removeChart(values[0]);
+        }
+      });
+      this.GEService.showChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          this.addChartToDashboard(chart);
+        }
+      });
+      this.GEService.updateChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+          this.filterActions.updateChart(index, chart.title);
+        }
+      });
+      this.GEService.loadingScreen.subscribe(value => {
+        this.loading = value;
+      });
+
+      this.GEService.addSubscriber(dash_type);
+    }
 
     this.addBreadcrumb();
     this.loadDashboard();

@@ -24,11 +24,6 @@ export class GlobalEventsManagerService {
     return false;
   }
 
-  public getSubscribers() {
-    console.log('Subscribers:');
-    console.log(this.subscribers);
-  }
-
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public removeFromDashboard: BehaviorSubject<[number, number]> = new BehaviorSubject<[number, number]>([0, 0]);
   public updateChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);

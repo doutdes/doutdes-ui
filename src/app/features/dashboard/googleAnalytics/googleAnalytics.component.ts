@@ -64,34 +64,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private filterActions: FilterActions,
     private ADService: AggregatedDataService,
   ) {
-
-    let dash_type = this.HARD_DASH_DATA.dashboard_type;
-
-    if (!this.GEService.isSubscriber(dash_type)) {
-      this.GEService.removeFromDashboard.subscribe(values => {
-        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
-          console.log('GA removing: ');
-          console.log(values);
-          this.filterActions.removeChart(values[0]);
-        }
-      });
-      this.GEService.showChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          this.addChartToDashboard(chart);
-        }
-      });
-      this.GEService.updateChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-          this.filterActions.updateChart(index, chart.title);
-        }
-      });
-      this.GEService.loadingScreen.subscribe(value => {
-        this.loading = value;
-      });
-
-      this.GEService.addSubscriber(dash_type);
-    }
   }
 
   async loadDashboard() {
@@ -264,6 +236,32 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.chartArray$ = elements['dataFiltered'];
       }
     });
+
+    let dash_type = this.HARD_DASH_DATA.dashboard_type;
+
+    if (!this.GEService.isSubscriber(dash_type)) {
+      this.GEService.removeFromDashboard.subscribe(values => {
+        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+          this.filterActions.removeChart(values[0]);
+        }
+      });
+      this.GEService.showChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          this.addChartToDashboard(chart);
+        }
+      });
+      this.GEService.updateChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+          this.filterActions.updateChart(index, chart.title);
+        }
+      });
+      this.GEService.loadingScreen.subscribe(value => {
+        this.loading = value;
+      });
+
+      this.GEService.addSubscriber(dash_type);
+    }
 
     this.addBreadcrumb();
     this.loadDashboard();

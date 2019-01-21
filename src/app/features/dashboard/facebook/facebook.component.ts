@@ -63,15 +63,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions
   ) {
-    this.firstDateRange = this.minDate;
-    this.lastDateRange = this.maxDate;
-    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
-    this.filter.subscribe(elements => {
-      if (elements['dataFiltered'] !== null) {
-        this.chartArray$ = elements['dataFiltered'];
-      }
-    });
   }
 
   async loadDashboard() {
@@ -168,7 +160,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
-          //chartToPush.Chart = innerChart;
           chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, data);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
@@ -239,12 +230,20 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.firstDateRange = this.minDate;
+    this.lastDateRange = this.maxDate;
+    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+    this.filter.subscribe(elements => {
+      if (elements['dataFiltered'] !== null) {
+        this.chartArray$ = elements['dataFiltered'];
+      }
+    });
+
     let dash_type = this.HARD_DASH_DATA.dashboard_type;
 
     if (!this.GEService.isSubscriber(dash_type)) {
       this.GEService.removeFromDashboard.subscribe(values => {
-        console.log('Fb removing: ');
-        console.log(values);
         if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
           this.filterActions.removeChart(values[0]);
         }
