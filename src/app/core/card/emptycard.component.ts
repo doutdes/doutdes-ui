@@ -70,12 +70,16 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
       if (!this.GEService.isSubscriber(dummy_dashType)) {
         this.GEService.removeFromDashboard.subscribe(values => {
+          console.log("EMPTY-CARD remove from dashboard");
+          console.log(values);
           if (values[0] !== 0 || values[1] !== 0) {
             this.updateDropdownOptions().then().catch(() => console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.'));
           }
         });
 
         this.GEService.updateChartList.subscribe(value => {
+          console.log("EMPTY-CARD update list");
+          console.log(value);
           if (value) {
             this.updateDropdownOptions().then().catch(() => console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.'));;
           }
@@ -143,7 +147,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       .pipe(first())
       .subscribe(() => {
         dashChart.type = this.chartSelected.type;
-
+        console.log("EMPTY-CARD Add Chart");
         this.GEService.showChartInDashboard.next(dashChart);
         this.insertChartForm.reset();
         this.chartSelected = null;
@@ -183,12 +187,12 @@ export class EmptycardComponent implements OnInit, OnDestroy {
               return resolve(true);
             }
             else {
-              return reject(false);
+              return resolve(false); //no charts
             }
           }, err => {
             console.error('ERROR in EMPTY-CARD. Cannot get the list of not added charts - getChartsNotAddedByDashboardType().');
             console.log(err);
-            resolve(false);
+            reject(false);
           });
       } else {
         this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id)
@@ -196,7 +200,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
               if (chartRemaining && chartRemaining.length > 0) {
                 this.dropdownOptions = this.populateDropdown(chartRemaining,true);
-                console.log(this.dropdownOptions);
                 return resolve(true);
               }
               else {

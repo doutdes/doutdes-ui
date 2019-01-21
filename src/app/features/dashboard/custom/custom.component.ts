@@ -68,33 +68,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private filterActions: FilterActions,
     private ADService: AggregatedDataService
   ) {
-    let dash_type = this.HARD_DASH_DATA.dashboard_type;
 
-    if (!this.GEService.isSubscriber(dash_type)) {
-      this.GEService.removeFromDashboard.subscribe(values => {
-        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
-          console.log('GA removing: ');
-          console.log(values);
-          this.filterActions.removeChart(values[0]);
-        }
-      });
-      this.GEService.showChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          this.addChartToDashboard(chart);
-        }
-      });
-      this.GEService.updateChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-          this.filterActions.updateChart(index, chart.title);
-        }
-      });
-      this.GEService.loadingScreen.subscribe(value => {
-        this.loading = value;
-      });
-
-      this.GEService.addSubscriber(dash_type);
-    }
   }
 
   async loadDashboard() {
@@ -198,7 +172,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           chartToPush.error = false;
           chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id);
 
-          console.log(chartToPush);
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
@@ -265,6 +238,37 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.chartArray$ = elements['dataFiltered'];
       }
     });
+
+    let dash_type = this.HARD_DASH_DATA.dashboard_type;
+
+    if (!this.GEService.isSubscriber(dash_type)) {
+      this.GEService.removeFromDashboard.subscribe(values => {
+        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+          this.filterActions.removeChart(values[0]);
+        }
+      });
+      this.GEService.showChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          console.log("CUSTOM show chart (DENTRO IF)");
+          console.log(chart);
+          this.addChartToDashboard(chart);
+          //this.GEService.showChartInDashboard.next(null); //reset data
+          console.log(this.GEService.getSubscribers());
+        }
+      });
+      this.GEService.updateChartInDashboard.subscribe(chart => {
+        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+          this.filterActions.updateChart(index, chart.title);
+        }
+      });
+      this.GEService.loadingScreen.subscribe(value => {
+        this.loading = value;
+      });
+
+      this.GEService.addSubscriber(dash_type);
+      console.log(this.GEService.getSubscribers());
+    }
 
     this.addBreadcrumb();
     this.loadDashboard();

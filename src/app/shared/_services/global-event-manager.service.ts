@@ -8,8 +8,7 @@ export class GlobalEventsManagerService {
   private subscribers: Array<Number> = [];
 
   public isSubscriber(dash_type) {
-
-    if (this.subscribers && this.subscribers.length > 0 && this.subscribers.find(el => el === dash_type)) {
+    if (this.subscribers && this.subscribers.length > 0 && this.subscribers.find(el => el == dash_type) !== undefined) {
       return true;
     }
     return false;
@@ -17,11 +16,15 @@ export class GlobalEventsManagerService {
 
   public addSubscriber(dash_type) {
 
-    if (this.subscribers && !this.subscribers.find(el => el === dash_type)) {
+    if (this.subscribers && !this.subscribers.find(el => el == dash_type) !== undefined) {
       this.subscribers.push(dash_type);
       return true;
     }
     return false;
+  }
+
+  public getSubscribers(){
+    return this.subscribers;
   }
 
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);

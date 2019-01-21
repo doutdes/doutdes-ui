@@ -245,6 +245,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       });
       this.GEService.showChartInDashboard.subscribe(chart => {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+          console.log("GOOGLE COMP GGShowChart");
           this.addChartToDashboard(chart);
         }
       });

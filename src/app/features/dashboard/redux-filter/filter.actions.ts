@@ -66,6 +66,8 @@ export class FilterActions {
     let filtered = this.filteredData.filter((chart) => chart.chart_id !== id);
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: original, dataFiltered: filtered});
+
+
   }
 
   filterByDateInterval(unfilteredData, filterInterval: IntervalDate) {
