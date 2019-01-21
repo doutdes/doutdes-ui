@@ -94,7 +94,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         };
 
         if(charts && charts.length > 0) { // Checking if dashboard is not empty
-
           charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
 
           forkJoin(observables)
@@ -186,7 +185,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         dataStart: value[0],
         dataEnd: value[1].setHours(23, 59, 59, 999)
       };
-      this.GEService.loadingScreen.next(true);
       this.filterActions.filterData(dateInterval);
     }
   }

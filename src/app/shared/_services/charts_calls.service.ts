@@ -16,14 +16,14 @@ export class ChartsCallsService {
     return str.length > maxLength ? str.substr(0, 30) + '...' : str;
   }
 
-  public retrieveChartData(ID, intervalDate?: IntervalDate): Observable<any> {
+  public retrieveChartData(ID, pageID?, intervalDate?: IntervalDate): Observable<any> {
     switch (ID) {
       case 1:
-        return this.facebookService.fbfancount();
+        return this.facebookService.fbfancount(pageID);
       case 2:
-        return this.facebookService.fbfancountry();
+        return this.facebookService.fbfancountry(pageID);
       case 3:
-        return this.facebookService.fbpageimpressions();
+        return this.facebookService.fbpageimpressions(pageID);
       case 4:
         return this.googleAnalyticsService.gaPageViews(intervalDate);
       case 5:
@@ -33,7 +33,7 @@ export class ChartsCallsService {
       case 7:
         return this.googleAnalyticsService.gaMostViews(intervalDate);
       case 8:
-        return this.facebookService.fbfancountry();
+        return this.facebookService.fbfancountry(pageID);
       case 9:
         return this.googleAnalyticsService.gaSources(intervalDate);
       case 10:
@@ -43,9 +43,9 @@ export class ChartsCallsService {
       case 12:
         return this.googleAnalyticsService.gaBrowsers(intervalDate);
       case 13:
-        return this.facebookService.fbpageviewstotal();
+        return this.facebookService.fbpageviewstotal(pageID);
       case 14:
-        return this.facebookService.fbfancity();
+        return this.facebookService.fbfancity(pageID);
     }
   }
 
@@ -110,19 +110,18 @@ export class ChartsCallsService {
       case 3:
         header = [['Date', 'Impressions']];
 
-        for (let i = 0; i < data.length; i++) {
 
-          // if (i % 2 === 0) {
+        for (let i = 0; i < data.length; i++) {
           impressChartArray.push([new Date(data[i].end_time), data[i].value]);
-          // }
         }
 
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(impressChartArray),
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 40, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            format: 'decimal',
             curveType: 'function',
             height: 310,
             explorer: {},
@@ -198,7 +197,7 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // google pie end
+        break; // Google pie end
       case 7:
         header = [['Website', 'Views']];
         paddingRows = data.length % 10 ? 10 - (data.length % 10) : 0; // if data.length % 10 != 0, add padding
@@ -407,7 +406,6 @@ export class ChartsCallsService {
           }
         };
         break; // Facebook Fan City
-
     }
 
     return formattedData;

@@ -5,6 +5,8 @@ import {ApiKeysService} from '../../../../shared/_services/apikeys.service';
 import {Router} from '@angular/router';
 import {BreadcrumbActions} from '../../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
+import {FacebookService} from '../../../../shared/_services/facebook.service';
+import {environment} from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-feature-preferences-apikeys-register-form',
@@ -14,25 +16,52 @@ import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
 export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, OnDestroy {
 
   registrationForm: FormGroup;
+
+  fbLoginURL: string;
+  gaLoginURL: string;
+
   selectedService = 0;
   loading = false;
   submitted = false;
   error400 = false;
+  fbLogged = false;
+  gaLogged = false;
 
-  constructor(private formBuilder: FormBuilder,
-              private store: StoreService,
-              private apiKeysService: ApiKeysService,
-              private router: Router,
-              private breadcrumbActions: BreadcrumbActions) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private store: StoreService,
+    private apiKeysService: ApiKeysService,
+    private fbService: FacebookService,
+    private router: Router,
+    private breadcrumbActions: BreadcrumbActions,
+  ) {
+
   }
 
   ngOnInit(): void {
+    this.addBreadcrumb();
+
     this.registrationForm = this.formBuilder.group({
       api_key: ['', Validators.compose([Validators.maxLength(200)])],
     });
 
-    this.addBreadcrumb();
+    // checking if the api key already exists in DB for the current user, and setting the boolean based on results
+    this.apiKeysService.checkIfKeyExists(0).subscribe(res => {
+      if (res['exists']) {
+        this.fbLogged = true;
+      }
+    });
+
+    this.apiKeysService.checkIfKeyExists(1).subscribe(res => {
+      if (res['exists']) {
+        this.gaLogged = true;
+      }
+    });
+
+    this.fbLoginURL = 'http://' + environment.host + ':' + environment.port + '/fb/login?user_id=' + this.store.getId();
+    this.gaLoginURL = 'http://' + environment.host + ':' + environment.port + '/ga/login?user_id=' + this.store.getId();
   }
+
 
   ngOnDestroy(): void {
     this.removeBreadcrumb();

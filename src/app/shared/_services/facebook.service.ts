@@ -1,6 +1,13 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {FacebookFanCity, FacebookFanCount, FaceBookFanCountry, FacebookImpressions, FacebookPageViewsTotal} from '../_models/FacebookData';
+import {
+  FacebookFanCity,
+  FacebookFanCount,
+  FaceBookFanCountry,
+  FacebookImpressions,
+  FacebookPageViewsTotal,
+  FbPage
+} from '../_models/FacebookData';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
 
@@ -12,31 +19,47 @@ export class FacebookService {
   constructor(private http: HttpClient, private storeService: StoreService) {
   }
 
-  fbfancount() {
+  loginWithFacebook(){
+    const user = {user_id: this.storeService.getId()};
     const headers = this.getAuthorization();
-    return this.http.get<FacebookFanCount[]>('http://' + environment.host + ':' + environment.port + '/fb/fancount', {headers});
+
+    return this.http.post(this.formatURL('login'), user, {headers});
   }
 
-  fbpageimpressions() {
+  getPages() {
     const headers = this.getAuthorization();
-    return this.http.get<FacebookImpressions[]>('http://' + environment.host + ':' + environment.port + '/fb/pageimpressions', {headers});
+    return this.http.get<FbPage[]>(this.formatURL('pages'), {headers});
   }
 
-  fbfancountry() {
+  fbfancount(pageID) {
     const headers = this.getAuthorization();
-    return this.http.get<FaceBookFanCountry[]>('http://' + environment.host + ':' + environment.port + '/fb/fancountry', {headers});
+    return this.http.get<FacebookFanCount[]>(this.formatURL('fancount', pageID), {headers});
   }
 
-  fbpageviewstotal() {
+  fbpageimpressions(pageID) {
     const headers = this.getAuthorization();
-    return this.http.get<FacebookPageViewsTotal[]>('http://' + environment.host + ':' + environment.port + '/fb/pageviewstotal', {headers});
+    return this.http.get<FacebookImpressions[]>(this.formatURL('pageimpressions', pageID), {headers});
   }
 
-  fbfancity(){
+  fbfancountry(pageID) {
     const headers = this.getAuthorization();
-    return this.http.get<FacebookFanCity[]>('http://' + environment.host + ':' + environment.port + '/fb/fancity', {headers});
+    return this.http.get<FaceBookFanCountry[]>(this.formatURL('fancountry', pageID), {headers});
   }
 
+  fbpageviewstotal(pageID) {
+    const headers = this.getAuthorization();
+    return this.http.get<FacebookPageViewsTotal[]>(this.formatURL('pageviewstotal', pageID), {headers});
+  }
+
+  fbfancity(pageID){
+    const headers = this.getAuthorization();
+    return this.http.get<FacebookFanCity[]>(this.formatURL('fancity', pageID), {headers});
+  }
+
+  private formatURL(call, pageID=null) {
+    const aux = pageID ? (pageID + '/' + call) : call;
+    return 'http://' + environment.host + ':' + environment.port + '/fb/' + aux;
+  }
 
   private getAuthorization() {
     return new HttpHeaders()

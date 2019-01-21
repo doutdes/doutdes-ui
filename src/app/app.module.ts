@@ -24,7 +24,6 @@ import {StoreService} from './shared/_services/store.service';
 import {GlobalEventsManagerService} from './shared/_services/global-event-manager.service';
 import {JwtInterceptor} from './shared/jwt.interceptor';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NgxLoadingModule} from 'ngx-loading';
 
 @NgModule({
   imports: [
@@ -48,7 +47,7 @@ import {NgxLoadingModule} from 'ngx-loading';
     StoreService,
     GlobalEventsManagerService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],
   bootstrap: [ AppComponent ]
 })

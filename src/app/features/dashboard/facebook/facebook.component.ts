@@ -13,7 +13,7 @@ import {IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
-import {Chart} from '../../../shared/_models/Chart';
+import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 const PrimaryWhite = '#ffffff';
 
@@ -28,6 +28,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     dashboard_type: 1,
     dashboard_id: null
   };
+
+  private pageID = null;
+
   public FILTER_DAYS = {
     seven: 7,
     thirty: 30,
@@ -37,6 +40,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   public chartArray$: Array<DashboardCharts> = [];
 
   public loading = false;
+  public isApiKeySet = true;
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
@@ -57,6 +61,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   constructor(
     private FBService: FacebookService,
+    private apiKeyService: ApiKeysService,
     private breadcrumbActions: BreadcrumbActions,
     private DService: DashboardService,
     private CCService: ChartsCallsService,
@@ -68,13 +73,22 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   async loadDashboard() {
 
+    const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
+
+    if(!existence) { // If the Api Key has not been set yet, then a message is print
+      this.isApiKeySet = false;
+      return;
+    }
 
     this.GEService.loadingScreen.next(true);
 
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
+
+    // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
+    this.pageID = (await this.FBService.getPages().toPromise())[0].id;
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -90,7 +104,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
         if(charts && charts.length > 0) { // Checking if dashboard is not empty
 
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
+          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -105,7 +119,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   chart.type = chart['Chart'].type;
                   chart.originalTitle = chart['Chart'].title;
                   delete chart['Chart'];
-                  
+
                   chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
                   chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
@@ -156,7 +170,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id)
+    this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
@@ -229,6 +243,19 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
+  async checkExistance() {
+    let response;
+
+    try {
+      response = await this.apiKeyService.checkIfKeyExists(0).toPromise();
+    } catch (e) {
+      console.error(e);
+      response = null;
+    }
+
+    return response;
+  }
+
   ngOnInit(): void {
     this.firstDateRange = this.minDate;
     this.lastDateRange = this.maxDate;
@@ -271,7 +298,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-
     this.removeBreadcrumb();
     this.filterActions.clear();
   }

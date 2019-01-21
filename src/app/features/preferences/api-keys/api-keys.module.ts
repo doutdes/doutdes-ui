@@ -5,7 +5,7 @@ import {FeaturePreferencesApiKeysComponent} from './api-keys.component';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FeaturePreferencesApiKeysRegisterFormComponent} from './register-form/register-form.component';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
-
+import {FacebookService} from '../../../shared/_services/facebook.service';
 
 @NgModule({
   declarations: [
@@ -18,6 +18,7 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
   ],
   providers: [
     ApiKeysService,
+    FacebookService,
     BreadcrumbActions
   ],
   exports: [
