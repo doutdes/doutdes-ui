@@ -277,7 +277,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       });
       this.GEService.showChartInDashboard.subscribe(chart => {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          console.log("FACEBOOK COMP FbShowChart");
           this.addChartToDashboard(chart);
         }
       });

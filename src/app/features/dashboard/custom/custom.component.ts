@@ -249,8 +249,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       });
       this.GEService.showChartInDashboard.subscribe(chart => {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          console.log("CUSTOM show chart (DENTRO IF)");
-          console.log(chart);
           this.addChartToDashboard(chart);
           //this.GEService.showChartInDashboard.next(null); //reset data
           console.log(this.GEService.getSubscribers());
