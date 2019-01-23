@@ -88,6 +88,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
       .subscribe(charts => {
 
+        // Last 30 days as default view
         const dateInterval: IntervalDate = {
           dataStart: this.minDate,
           dataEnd: this.maxDate
@@ -129,7 +130,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
                 // Shows last 30 days
                 this.datePickerEnabled = true;
-                //this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+                this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
               }
               this.GEService.loadingScreen.next(false);
 
