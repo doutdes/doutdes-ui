@@ -80,7 +80,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
     }
     else {
-      console.error('Cannot retrieve a valid ID for the Facebook dashboard.');
+      console.error('Cannot retrieve a valid ID for the Website dashboard.');
       return;
     }
 
@@ -144,7 +144,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
       }, err => {
         console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
-        console.log(err);
+        console.error(err);
       });
   }
 
@@ -166,16 +166,15 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           chartToPush.error = false;
           chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id);
 
-          console.log(chartToPush);
         } else {
           chartToPush.error = true;
-          console.log('Errore recuperando dati per ' + dashChart);
+          console.error('Errore recuperando dati per ' + dashChart);
         }
 
         this.filterActions.addChart(chartToPush);
       }, error1 => {
-        console.log('Error querying the Chart');
-        console.log(error1);
+        console.error('Error querying the Chart');
+        console.error(error1);
       });
   }
 

@@ -42,8 +42,8 @@ export class FilterActions {
 
   filterData(dateInterval: IntervalDate) {
     const filteredData = this.filterByDateInterval(this.originalData, dateInterval);
-
     this.Redux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
+
   }
 
   updateChart(index: number, newTitle: string) {
@@ -70,35 +70,33 @@ export class FilterActions {
 
   }
 
-  filterByDateInterval(unfilteredData, filterInterval: IntervalDate) {
+  filterByDateInterval(unfiltered, filterInterval: IntervalDate) {
 
-    const unfiltered = JSON.parse(JSON.stringify(unfilteredData)); // Loses the reference to original data
+    const unfilteredData = JSON.parse(JSON.stringify(unfiltered)); // Loses the reference to original data
     const filtered = [];
 
     const FACEBOOK_TYPE = 1;
     const GOOGLE_TYPE = 2;
 
+    if (unfilteredData) {
 
+      for (let i = 0; i < unfilteredData.length; i++) {
 
-    if (unfiltered) {
-
-      for (let i=0; i < unfiltered.length; i++) {
-
-        const chart = unfiltered[i];
+        const chart = unfilteredData[i];
 
         if (chart.type == GOOGLE_TYPE) { // Google Analytics charts
 
           let tmpData = [];
-
-          // TODO fix this
-
           let datatable = chart.chartData.dataTable;
 
-          datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
-          tmpData = tmpData.filter(el => el[0] >= filterInterval.dataStart && el[0] <= filterInterval.dataEnd);
-
+          if (datatable[0][0].includes('Type') || datatable[0][0].includes('Browser')) {
+            tmpData = datatable;
+          }
+          else {
+            datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
+            tmpData = tmpData.filter(el => el[0] >= filterInterval.dataStart && el[0] <= filterInterval.dataEnd);
+          }
           chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
-
           filtered.push(chart);
 
         } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
@@ -119,7 +117,6 @@ export class FilterActions {
 
             chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
           }
-
           filtered.push(chart);
 
         } else {
@@ -131,7 +128,7 @@ export class FilterActions {
     }
     else {
       console.error('Error in FILTER_ACTIONS. No unfiltered data found.');
-      console.error(unfiltered);
+      console.error(unfilteredData);
     }
 
     return filtered;
