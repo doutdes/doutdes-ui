@@ -4,6 +4,8 @@ import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {GoogleChartInterface} from 'ng2-google-charts/google-charts-interfaces';
+import {GoogleChartComponent} from 'ng2-google-charts';
 
 const enum Type {
   Facebook = 1,
@@ -21,7 +23,7 @@ export class CardComponent implements OnInit {
   @Input() xlOrder: string;
   @Input() lgOrder: string;
   @HostBinding('class') elementClass = 'pt-3';
-  @ViewChild('mychart') mychart;
+  @ViewChild('mychart') mychart: GoogleChartComponent;
 
   aggregated: boolean;
   type: string;
@@ -120,7 +122,7 @@ export class CardComponent implements OnInit {
   }
 
   chartResizer(): void {
-    this.mychart.redraw();
+    this.mychart.draw();
   }
 
   openModal(template: TemplateRef<any>) {

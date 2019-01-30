@@ -19,13 +19,6 @@ export class FacebookService {
   constructor(private http: HttpClient, private storeService: StoreService) {
   }
 
-  loginWithFacebook(){
-    const user = {user_id: this.storeService.getId()};
-    const headers = this.getAuthorization();
-
-    return this.http.post(this.formatURL('login'), user, {headers});
-  }
-
   getPages() {
     const headers = this.getAuthorization();
     return this.http.get<FbPage[]>(this.formatURL('pages'), {headers});
