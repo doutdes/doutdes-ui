@@ -101,6 +101,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             .subscribe(dataArray => {
               for (let i = 0; i < dataArray.length; i++) {
 
+                console.log(dataArray);
+
                 let chart: DashboardCharts = charts[i];
 
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data

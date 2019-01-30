@@ -147,8 +147,8 @@ export class ChartsCallsService {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
             height: 210,
-            hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontName : 'Roboto'}, minTextSpacing: 15},
-            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}},
+            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
             colors: ['#FFA647'],
             areaOpacity: 0.4
           }
@@ -167,8 +167,8 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
-            hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontName : 'Roboto'}, minTextSpacing: 15},
-            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}, minValue: 0},
+            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, minValue: 0},
             height: 310,
             colors: ['#FFA647'],
             areaOpacity: 0.4
@@ -176,13 +176,12 @@ export class ChartsCallsService {
         };
         break; // Google Sessions
       case 6: // google pie begin
-        header = [['Type', 'Number']];
+        header = [['Type', 'Date', 'Number']];
 
-        // Push data pairs in the Chart array
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
-          // Ternary operator trivially replaces 'none' with 'unknown'
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0],parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
+
         formattedData = {
           chartType: 'PieChart',
           dataTable: header.concat(chartArray),
@@ -262,7 +261,7 @@ export class ChartsCallsService {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
             height: 310,
-            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
             colors: ['#FFC993'],
             areaOpacity: 0.4
           }
@@ -295,8 +294,18 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
-            hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontSize: 12, fontName : 'Roboto'}, minTextSpacing: 15},
-            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}, minValue: 0, format: 'percent'},
+            hAxis: {
+              gridlines: {color: '#eaeaea', count: -1},
+              textStyle: {color: '#666', fontSize: 12, fontName: 'Roboto'},
+              minTextSpacing: 15
+            },
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+              minValue: 0,
+              format: 'percent'
+            },
             height: 210,
             explorer: {},
             colors: ['#FFA647'],
@@ -324,8 +333,8 @@ export class ChartsCallsService {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
             curveType: 'function',
-            hAxis: { gridlines: { color: '#eaeaea', count: -1 }, textStyle: {color:'#666', fontName : 'Roboto'}, minTextSpacing: 15},
-            vAxis: { gridlines: { color: '#eaeaea', count: 5 }, textPosition : 'in', textStyle : {color:'#999'}, minValue: 0},
+            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, minValue: 0},
             height: 210,
             explorer: {},
             colors: ['#FFA647'],
