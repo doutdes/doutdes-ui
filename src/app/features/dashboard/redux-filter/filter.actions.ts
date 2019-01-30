@@ -7,6 +7,7 @@ import {IntervalDate} from './filter.model';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
+import {parseDate} from 'ngx-bootstrap';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -90,13 +91,35 @@ export class FilterActions {
           let datatable = chart.chartData.dataTable;
 
           if (datatable[0][0].includes('Type') || datatable[0][0].includes('Browser')) {
-            tmpData = datatable;
+
+            let partialData = [];
+            let labels = [];
+
+            datatable.forEach(el => partialData.push([el[0], new Date(el[1]), el[2]]));
+            partialData = partialData.filter(el => el[1] >= filterInterval.dataStart && el[1] <= filterInterval.dataEnd);
+
+            for (let i = 0; i < partialData.length; i++) {
+
+              let x = labels.findIndex(el => el[0] == partialData[i][0]); // if LABELS contains the current label, give me the index
+
+              if (x !== -1) {
+                labels[x][1] = labels[x][1] + parseInt(partialData[i][2], 10);
+              }
+              else {
+                labels.push([partialData[i][0], partialData[i][2]]);
+              }
+            }
+
+            tmpData.push([datatable[0][0], datatable[0][2]]);
+            tmpData = tmpData.concat(labels);
           }
           else {
             datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
             tmpData = tmpData.filter(el => el[0] >= filterInterval.dataStart && el[0] <= filterInterval.dataEnd);
+
+            tmpData = [datatable.shift()].concat(tmpData);
           }
-          chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
+          chart.chartData.dataTable = tmpData; // Concatening header
           filtered.push(chart);
 
         } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
