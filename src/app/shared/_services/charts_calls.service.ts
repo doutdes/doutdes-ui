@@ -46,6 +46,7 @@ export class ChartsCallsService {
         return this.facebookService.fbpageviewstotal(pageID);
       case 14:
         return this.facebookService.fbfancity(pageID);
+
     }
   }
 
@@ -109,7 +110,6 @@ export class ChartsCallsService {
         break; // Geo Map
       case 3:
         header = [['Date', 'Impressions']];
-
 
         for (let i = 0; i < data.length; i++) {
           impressChartArray.push([new Date(data[i].end_time), data[i].value]);

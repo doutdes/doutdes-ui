@@ -77,7 +77,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
 
-    if(!existence) { // If the Api Key has not been set yet, then a message is print
+    if(!existence['exists']) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
       return;
     }
@@ -244,13 +244,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async checkExistance() {
-    let response;
+    let response = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(0).toPromise();
     } catch (e) {
       console.error(e);
-      response = null;
     }
 
     return response;
