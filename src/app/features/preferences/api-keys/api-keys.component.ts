@@ -3,9 +3,10 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ApiKey} from '../../../shared/_models/ApiKeys';
-import {environment} from '../../../../environments/environment';
-
+import {ApiKey, Service} from '../../../shared/_models/ApiKeys';
+import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
+import {FacebookService} from '../../../shared/_services/facebook.service';
+import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
 
 @Component({
   selector: 'app-feature-preferences-api-keys',
@@ -14,23 +15,33 @@ import {environment} from '../../../../environments/environment';
 
 export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
-  apiKeysList$: any;
+  apiKeysList$: ApiKey[] = null;
   tokenToSave: string;
-  fbLogin = 'http://' + environment.host + ':' + environment.port + '/fb/login/';
+  services$: Service[] = [];
 
-    constructor(private apiKeyService: ApiKeysService, private breadcrumbActions: BreadcrumbActions, private route: ActivatedRoute, private router: Router) {
+  constructor(
+    private apiKeyService: ApiKeysService,
+    private fbService: FacebookService,
+    private gaService: GoogleAnalyticsService,
+    private breadcrumbActions: BreadcrumbActions,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.addBreadcrumb();
-    this.updateList();
+    // this.apiKeysList$ = await this.apiKeyService.getAllKeys().toPromise();
+    await this.formatServices();
 
-    this.route.paramMap.subscribe(params => {
+    // console.log(this.services);
+
+    this.route.paramMap.subscribe(params => { // TODO change for error messages on login with services
       this.tokenToSave = params.get('token');
 
       console.log(this.tokenToSave);
 
-      if(this.tokenToSave) {
+      if (this.tokenToSave) {
 
         let apiKey: ApiKey = {
           user_id: null,
@@ -51,7 +62,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.removeBreadcrumb();
   }
 
-  updateList(): void {
+  async updateList() {
     this.apiKeyService.getAllKeys()
       .pipe()
       .subscribe(data => {
@@ -63,6 +74,27 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
       }, error => {
         console.log(error);
       });
+  }
+
+  async formatServices(){
+    for(const SERVICE in D_TYPE) {
+      let scopes = [], name;
+
+      scopes = (await this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]).toPromise())['scopes'];
+      name = DS_TYPE[D_TYPE[SERVICE]] + '';
+
+      console.log(D_TYPE[SERVICE]);
+
+      if(scopes && SERVICE == 'YT' || SERVICE == 'GA') {
+        scopes = scopes.map(el => el.substr(el.lastIndexOf('/') + 1));
+      }
+
+      this.services$.push({
+        name: name,
+        type: D_TYPE[SERVICE],
+        permissions: scopes + ''
+      })
+    }
   }
 
   serviceName(id): string {
@@ -78,7 +110,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.apiKeyService.deleteKey(service)
       .pipe()
       .subscribe(data => {
-        this.updateList();
+        // this.updateList();
       }, error => {
         console.log(error);
       });

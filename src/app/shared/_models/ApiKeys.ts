@@ -3,3 +3,9 @@ export interface ApiKey {
   api_key: string;
   service_id?: number;
 }
+
+export interface Service {
+  name: string;
+  type: number;
+  permissions: string;
+}

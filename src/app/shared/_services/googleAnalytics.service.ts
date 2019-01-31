@@ -32,67 +32,72 @@ export class GoogleAnalyticsService {
   gaPageViews(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GooglePageViews>(this.getUrlFormatted(intervalDate, '/ga/pageviews/'), {headers})
+    return this.http.get<GooglePageViews>(this.formatURL(intervalDate, '/ga/pageviews/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
+  }
+
+  getScopes() {
+    const headers = this.getAuthorization();
+    return this.http.get('http://' + environment.host + ':' + environment.port + '/ga/getScopes/', {headers});
   }
 
   gaSessions(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleSessions>(this.getUrlFormatted(intervalDate, '/ga/sessions/'), {headers})
+    return this.http.get<GoogleSessions>(this.formatURL(intervalDate, '/ga/sessions/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaSources(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleSources>(this.getUrlFormatted(intervalDate, '/ga/sources/'), {headers})
+    return this.http.get<GoogleSources>(this.formatURL(intervalDate, '/ga/sources/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaMostViews(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleMostViews>(this.getUrlFormatted(intervalDate, '/ga/mostviews/'), {headers})
+    return this.http.get<GoogleMostViews>(this.formatURL(intervalDate, '/ga/mostviews/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaViewsByCountry(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleViewsByCountry>(this.getUrlFormatted(intervalDate, '/ga/viewsbycountry/'), {headers})
+    return this.http.get<GoogleViewsByCountry>(this.formatURL(intervalDate, '/ga/viewsbycountry/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaBrowsers(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleBrowsers>(this.getUrlFormatted(intervalDate, '/ga/browsers/'), {headers})
+    return this.http.get<GoogleBrowsers>(this.formatURL(intervalDate, '/ga/browsers/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaBounceRate(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleBounceRate>(this.getUrlFormatted(intervalDate, '/ga/bouncerate/'), {headers})
+    return this.http.get<GoogleBounceRate>(this.formatURL(intervalDate, '/ga/bouncerate/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaAvgSessionDuration(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleAvgSessionDuration>(this.getUrlFormatted(intervalDate, '/ga/avgsessionduration/'), {headers})
+    return this.http.get<GoogleAvgSessionDuration>(this.formatURL(intervalDate, '/ga/avgsessionduration/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaNewUsers(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleNewUsers>(this.getUrlFormatted(intervalDate, '/ga/newusers/'), {headers})
+    return this.http.get<GoogleNewUsers>(this.formatURL(intervalDate, '/ga/newusers/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
-  private getUrlFormatted(intervalDate: IntervalDate, urlCall: string) {
+  private formatURL(intervalDate: IntervalDate, urlCall: string) {
     const startDate = (intervalDate == undefined || intervalDate.dataStart == undefined || intervalDate.dataStart == null)
       ? '365daysAgo'
       : this.formatDate(intervalDate.dataStart);

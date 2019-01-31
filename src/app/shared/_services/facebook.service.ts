@@ -24,6 +24,11 @@ export class FacebookService {
     return this.http.get<FbPage[]>(this.formatURL('pages'), {headers});
   }
 
+  getScopes() {
+    const headers = this.getAuthorization();
+    return this.http.get(this.formatURL('getScopes'), {headers});
+  }
+
   fbfancount(pageID) {
     const headers = this.getAuthorization();
     return this.http.get<FacebookFanCount[]>(this.formatURL('fancount', pageID), {headers});

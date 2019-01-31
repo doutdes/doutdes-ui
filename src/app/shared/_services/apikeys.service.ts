@@ -14,6 +14,11 @@ export class ApiKeysService {
     return this.http.post(this.formatUrl('insert'), api);
   }
 
+  isPermissionGranted(idService: number) {
+    const headers = this.getAuthorization();
+    return this.http.get(this.formatUrl('isPermissionGranted/' + idService), {headers});
+  }
+
   getAllKeys() {
     return this.http.get<ApiKey[]>(this.formatUrl('getAll'));
   }

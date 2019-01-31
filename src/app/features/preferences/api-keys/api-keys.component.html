@@ -7,15 +7,16 @@
   <div class="col-md-12">
     <div class="panel-body">
       <!--<div class="table-responsive">-->
-      <table class="table table-hover mt-4" *ngIf="apiKeysList$; else no_content">
+      <table class="table table-hover mt-4" *ngIf="services$; else no_content">
         <thead>
         <tr class="border" style="background: #ddd; border: 1px solid #999">
           <th scope="col" style="width: 15%">Service</th>
-          <th scope="col" style="width: 60%">Token</th>
+          <th scope="col" style="width: 60%">Scopes</th>
           <th scope="col" style="width: 15%"></th>
         </tr>
         </thead>
-        <tr class="border" style="background:#eee" *ngIf="apiKeysList$['fb_token']">
+
+        <!--<tr class="border" style="background:#eee" *ngIf="apiKeysList$['fb_token']">
           <td>{{serviceName(0)}}</td>
           <td>{{apiKeysList$['fb_token'].substr(0,25) + "********"}}</td>
           <td>
@@ -30,10 +31,19 @@
             <button type="button" class="btn btn-primary mr-3">Update</button>
             <button type="button" class="btn btn-danger" (click)="deleteService(1)">Delete</button>
           </td>
+        </tr>-->
+
+        <tr class="border" style="background:#eee" *ngFor="let service of services$">
+          <td>{{service.name}}</td>
+          <td>{{service.permissions}}</td>
+          <td>
+            <button type="button" class="btn btn-primary mr-3">Update</button>
+            <button type="button" class="btn btn-danger" (click)="deleteService(0)">Delete</button>
+          </td>
         </tr>
 
+
       </table>
-      <!--</div>-->
     </div>
   </div>
 </div>
