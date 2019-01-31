@@ -89,8 +89,10 @@ export class FilterActions {
 
           let tmpData = [];
           let datatable = chart.chartData.dataTable;
+          let chartClass = chart.chartData.chartClass || -1;
 
-          if (datatable[0][0].includes('Type') || datatable[0][0].includes('Browser')) {
+
+          if (chartClass == 6) { //Google Pie Sources Chart
 
             let partialData = [];
             let labels = [];
