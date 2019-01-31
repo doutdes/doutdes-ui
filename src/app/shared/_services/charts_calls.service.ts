@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FacebookService} from './facebook.service';
+import {InstagramService} from './instagram.service';
 import {Observable} from 'rxjs';
 import {GoogleAnalyticsService} from './googleAnalytics.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
@@ -9,7 +10,7 @@ import {DashboardCharts} from '../_models/DashboardCharts';
 @Injectable()
 export class ChartsCallsService {
 
-  constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService) {
+  constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService, private InstagramService: InstagramService) {
   }
 
   public static cutString(str, maxLength) {
@@ -46,6 +47,23 @@ export class ChartsCallsService {
         return this.facebookService.fbpageviewstotal(pageID);
       case 14:
         return this.facebookService.fbfancity(pageID);
+      case 15:
+      case 16:
+      case 17:
+      case 18:
+      case 19:
+      case 24:
+      case 25:
+      case 26:
+      case 27:
+      case 28:
+        return this.InstagramService.getAnyData(pageID, ID);
+      case 20:
+      case 21:
+      case 22:
+      case 23:
+        return this.InstagramService.getNumericData(pageID, ID);
+
     }
   }
 
@@ -179,7 +197,7 @@ export class ChartsCallsService {
         header = [['Type', 'Date', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0],parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
 
         formattedData = {
@@ -281,9 +299,9 @@ export class ChartsCallsService {
 
         for (let i = 0; i < data.length; i++) {
           const value = parseInt(data[i][1], 10) / 100.;
-          //sum += value;
-          //highest = value > highest ? value : highest;
-          //lowest = value < lowest ? value : lowest;
+          // sum += value;
+          // highest = value > highest ? value : highest;
+          // lowest = value < lowest ? value : lowest;
 
           chartArray.push([parseDate(data[i][0]), value]);
         }
@@ -313,7 +331,7 @@ export class ChartsCallsService {
           }
         };
 
-        //average = sum / data.length;
+        // average = sum / data.length;
 
         break; // Google BounceRate
       case 11:
