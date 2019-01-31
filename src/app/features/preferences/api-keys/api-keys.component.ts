@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
@@ -7,6 +7,7 @@ import {ApiKey, Service} from '../../../shared/_models/ApiKeys';
 import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component({
   selector: 'app-feature-preferences-api-keys',
@@ -15,9 +16,10 @@ import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.
 
 export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
-  apiKeysList$: ApiKey[] = null;
   tokenToSave: string;
   services$: Service[] = [];
+  modalRef: BsModalRef;
+  serviceToDelete: Service;
 
   constructor(
     private apiKeyService: ApiKeysService,
@@ -25,21 +27,19 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     private gaService: GoogleAnalyticsService,
     private breadcrumbActions: BreadcrumbActions,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private modalService: BsModalService
   ) {
   }
 
   async ngOnInit() {
     this.addBreadcrumb();
-    // this.apiKeysList$ = await this.apiKeyService.getAllKeys().toPromise();
-    await this.formatServices();
-
-    // console.log(this.services);
+    await this.updateList();
 
     this.route.paramMap.subscribe(params => { // TODO change for error messages on login with services
       this.tokenToSave = params.get('token');
 
-      console.log(this.tokenToSave);
+      // console.log(this.tokenToSave);
 
       if (this.tokenToSave) {
 
@@ -51,69 +51,69 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
         this.apiKeyService.registerKey(apiKey).subscribe(data => {
           this.router.navigate(['/preferences/api-keys/'], {queryParams: {token: null}, queryParamsHandling: 'merge'});
-        }, error => {
-          console.error(error);
+        }, err => {
+          console.error(err);
         });
       }
     });
   }
 
-  ngOnDestroy(): void {
-    this.removeBreadcrumb();
-  }
+  async updateList(){ // TODO edit with forkJoin and loading button
+    this.services$ = [];
 
-  async updateList() {
-    this.apiKeyService.getAllKeys()
-      .pipe()
-      .subscribe(data => {
-        if (data == null) {
-          this.apiKeysList$ = null;
-        } else {
-          this.apiKeysList$ = data;
+    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
+      let scopes = (await this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]).toPromise()).scopes; // Check the permissions granted
+
+      if (scopes) {
+        if (SERVICE == 'YT' || SERVICE == 'GA') {
+          scopes = scopes.map(el => el.substr(el.lastIndexOf('/') + 1));//.replace(/\./g, ' '));
         }
-      }, error => {
-        console.log(error);
-      });
-  }
 
-  async formatServices(){
-    for(const SERVICE in D_TYPE) {
-      let scopes = [], name;
+        scopes = scopes.map(el => el.replace(/[^\w\s]|_/g, ' '));
 
-      scopes = (await this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]).toPromise())['scopes'];
-      name = DS_TYPE[D_TYPE[SERVICE]] + '';
-
-      console.log(D_TYPE[SERVICE]);
-
-      if(scopes && SERVICE == 'YT' || SERVICE == 'GA') {
-        scopes = scopes.map(el => el.substr(el.lastIndexOf('/') + 1));
+        this.services$.push({
+          name: DS_TYPE[D_TYPE[SERVICE]] + '',
+          type: D_TYPE[SERVICE],
+          scopes: scopes
+        });
       }
-
-      this.services$.push({
-        name: name,
-        type: D_TYPE[SERVICE],
-        permissions: scopes + ''
-      })
     }
   }
 
-  serviceName(id): string {
-    switch (id) {
-      case 0:
-        return 'Facebook Pages';
-      case 1:
-        return 'Google Analytics';
-    }
+  openModal(template: TemplateRef<any>, service: Service) {
+    this.serviceToDelete = service;
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 
-  deleteService(service): void {
+  async deleteService(service) {
     this.apiKeyService.deleteKey(service)
       .pipe()
-      .subscribe(data => {
-        // this.updateList();
-      }, error => {
-        console.log(error);
+      .subscribe(async () => {
+        await this.updateList();
+      }, err => {
+        console.error(err);
       });
+  }
+
+  getLogo(serviceID: number) {
+    let classes = 'mr-2 mt-1 fab ';
+
+    switch (serviceID) {
+      case D_TYPE.FB:
+        classes += 'fa-facebook-square fb-color';
+        break;
+      case D_TYPE.GA:
+        classes += 'fa-google ga-color';
+        break;
+      case D_TYPE.IG:
+        classes += 'fa-instagram ig-color';
+        break;
+      case D_TYPE.YT:
+        classes += 'fa-youtube yt-color';
+        break;
+    }
+
+    return classes;
   }
 
   addBreadcrumb() {
@@ -130,4 +130,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
+  ngOnDestroy(): void {
+    this.removeBreadcrumb();
+  }
 }

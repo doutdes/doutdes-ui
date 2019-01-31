@@ -1,36 +1,37 @@
-<div class="container h-100">
+<div class="container-fluid h-100">
   <div class="row h-100 align-items-center">
-    <div class="col-md-8 mx-auto">
+    <div class="col-md-8">
       <div class="card-group">
         <div class="card p-4">
           <div class="card-body">
             <h2 class="text-center display-4 mb-4">Service Login</h2>
+            <ngx-loading [show]="loading | async" [config]="config"></ngx-loading>
             <hr/>
-            <div class="form-group row">
-              <div class="col-md-12 text-center">
+            <div class="row mb-4" *ngIf="!allGranted">
+              <div class="col-md-12">
                 <p class="" style="font-size: 18px;">In order to use our service, you have to do the login with
                 different sources:</p>
               </div>
 
-              <div class="col-md-12 h-100"      *ngIf="!gaLogged">
+              <div class="col-md-12 h-100"      *ngIf="services$[D_TYPE.GA] && !services$[D_TYPE.GA]['granted']">
                 <h4 class="w-50 d-inline-block align-middle">To use website dashboard</h4>
                 <a class="btn btn-lg bg-ga-color text-white d-inline-block" style="width: 40%;" [href]="gaLoginURL">
                   <i class="fab fa-google mr-2"></i>Login with Google
                 </a>
               </div> <!-- Google login -->
-              <div class="col-md-12 h-100 mt-3" *ngIf="!fbLogged">
+              <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.FB] && !services$[D_TYPE.FB]['granted']">
                 <h4 class="w-50 d-inline-block align-middle">To use Facebook dashboard</h4>
                 <a class="btn btn-lg bg-fb-color text-white d-inline-block" style="width: 40%;" [href]="fbLoginURL">
                   <i class="fab fa-facebook-square mr-2"></i>Continue with Facebook
                 </a>
               </div> <!-- Facebook login -->
-              <div class="col-md-12 h-100 mt-3" *ngIf="true">
+              <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.IG] && !services$[D_TYPE.IG]['granted']">
                 <h4 class="w-50 d-inline-block align-middle">To use Instagram dashboard</h4>
                 <a class="btn btn-lg bg-ig-color text-white d-inline-block" style="width: 40%;" [href]="">
                   <i class="fab fa-instagram mr-2"></i>Login with Instagram
                 </a>
               </div>      <!-- Instagram login -->
-              <div class="col-md-12 h-100 mt-3" *ngIf="true">
+              <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.YT] && !services$[D_TYPE.YT]['granted']">
                 <h4 class="w-50 d-inline-block align-middle">To use YouTube dashboard</h4>
                 <a class="btn btn-lg bg-yt-color text-white d-inline-block" style="width: 40%;" [href]="">
                   <i class="fab fa-youtube mr-2"></i>Login with YouTube
@@ -38,6 +39,14 @@
               </div> <!-- YouTube login -->
 
             </div>
+            <div class="row mb-4" *ngIf="allGranted">
+              <div class="col-md-12">
+                <p style="font-size: 18px;">You have already configured all the available services!</p>
+              </div>
+            </div>
+            <button class="btn btn-lg btn-danger mt-4" [routerLink]="['/preferences/api-keys']">
+              <i class="fas fa-arrow-circle-left mr-2"></i>Go back to Api Keys
+            </button>
           </div>
         </div>
       </div>

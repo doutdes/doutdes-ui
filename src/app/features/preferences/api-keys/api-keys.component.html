@@ -6,43 +6,25 @@
 <div class="row">
   <div class="col-md-12">
     <div class="panel-body">
-      <!--<div class="table-responsive">-->
-      <table class="table table-hover mt-4" *ngIf="services$; else no_content">
+      <table class="table table-hover mt-4" *ngIf="services$.length > 0; else no_content">
         <thead>
-        <tr class="border" style="background: #ddd; border: 1px solid #999">
-          <th scope="col" style="width: 15%">Service</th>
-          <th scope="col" style="width: 60%">Scopes</th>
-          <th scope="col" style="width: 15%"></th>
-        </tr>
+          <tr class="border" style="background: #ddd; border: 1px solid #999">
+            <th scope="col" style="width: 20%; font-size: 18px;">Service</th>
+            <th scope="col" style="width: 60%; font-size: 18px;">Scopes</th>
+            <th scope="col" style="width: 20%;"></th>
+          </tr>
         </thead>
 
-        <!--<tr class="border" style="background:#eee" *ngIf="apiKeysList$['fb_token']">
-          <td>{{serviceName(0)}}</td>
-          <td>{{apiKeysList$['fb_token'].substr(0,25) + "********"}}</td>
-          <td>
-            <button type="button" class="btn btn-primary mr-3">Update</button>
-            <button type="button" class="btn btn-danger" (click)="deleteService(0)">Delete</button>
-          </td>
-        </tr>
-        <tr class="border" style="background:#eee" *ngIf="apiKeysList$['ga_token']">
-          <td>{{serviceName(1)}}</td>
-          <td>{{apiKeysList$['ga_token']}}</td>
-          <td>
-            <button type="button" class="btn btn-primary mr-3">Update</button>
-            <button type="button" class="btn btn-danger" (click)="deleteService(1)">Delete</button>
-          </td>
-        </tr>-->
-
-        <tr class="border" style="background:#eee" *ngFor="let service of services$">
-          <td>{{service.name}}</td>
-          <td>{{service.permissions}}</td>
-          <td>
-            <button type="button" class="btn btn-primary mr-3">Update</button>
-            <button type="button" class="btn btn-danger" (click)="deleteService(0)">Delete</button>
-          </td>
-        </tr>
-
-
+        <tbody>
+          <tr class="border" style="background:#eee" *ngFor="let service of services$">
+            <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(service.type)"></i> {{service.name}}</td>
+            <td><div *ngFor="let perm of service.scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
+            <td>
+              <button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, service)"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -53,4 +35,25 @@
     <h5 style="color: #666">No external data source added yet. To add a new one, you must provide its access token.</h5>
   </div>
 </ng-template>
-<button type="button" class="btn btn-success" [routerLink]="['insert']">Add new data source</button>
+
+<ng-template #deleteKey> <!-- Modal warning for deletion of service -->
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Removing '{{serviceToDelete.name}}' permissions</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <p>Do you really want to remove the selected permissions?</p>
+    <p>You will not be able to use the dashboard for this service anymore.</p>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" (click)="modalRef.hide()">No, keep it</button>
+    <button type="button" class="btn btn-danger" (click)="deleteService(serviceToDelete.type)">
+      Yes, remove it
+    </button>
+  </div>
+</ng-template>
+<button type="button" class="btn btn-lg btn-success" [routerLink]="['insert']"><i class="fas fa-plus-circle mr-2"></i>Add new data source</button>

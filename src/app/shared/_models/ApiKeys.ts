@@ -7,5 +7,6 @@ export interface ApiKey {
 export interface Service {
   name: string;
   type: number;
-  permissions: string;
+  granted?: boolean;
+  scopes: string[];
 }

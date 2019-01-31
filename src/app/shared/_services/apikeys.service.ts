@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ApiKey} from '../_models/ApiKeys';
+import {ApiKey, Service} from '../_models/ApiKeys';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
 
@@ -16,7 +16,7 @@ export class ApiKeysService {
 
   isPermissionGranted(idService: number) {
     const headers = this.getAuthorization();
-    return this.http.get(this.formatUrl('isPermissionGranted/' + idService), {headers});
+    return this.http.get<Service>(this.formatUrl('isPermissionGranted/' + idService), {headers});
   }
 
   getAllKeys() {
