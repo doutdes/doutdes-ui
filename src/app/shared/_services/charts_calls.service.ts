@@ -74,6 +74,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 1,
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
@@ -96,6 +97,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'GeoChart',
           dataTable: header.concat(arr),
+          chartClass: 2,
           options: {
             region: 'world',
             colors: ['#63c2de'],
@@ -117,6 +119,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(impressChartArray),
+          chartClass: 3,
           options: {
             chartArea: {left: 40, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
@@ -142,6 +145,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
@@ -163,6 +167,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 5,
           options: {
             chartArea: {left: 30, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
@@ -184,6 +189,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'PieChart',
           dataTable: header.concat(chartArray),
+          chartClass: 6,
           options: {
             chartArea: {left: 30, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
@@ -210,6 +216,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
+          chartClass: 7,
           options: {
             alternatingRowStyle: true,
             allowHtml: true,
@@ -231,6 +238,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'PieChart',
           dataTable: header.concat(arrPie),
+          chartClass: 8,
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
@@ -256,6 +264,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'ColumnChart',
           dataTable: header.concat(chartArray),
+          chartClass: 9,
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
@@ -290,6 +299,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 10,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
@@ -328,6 +338,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 11,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
@@ -356,6 +367,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
+          chartClass: 12,
           options: {
             alternatingRowStyle: true,
             sortAscending: false,
@@ -377,6 +389,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 13,
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
@@ -404,6 +417,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(arr),
+          chartClass: 14,
           options: {
             alternatingRowStyle: true,
             sortAscending: false,
