@@ -169,7 +169,7 @@ export class ChartsCallsService {
           dataTable: header.concat(chartArray),
           chartClass: 5,
           options: {
-            chartArea: {left: 30, right: 0, height: 290, top: 0},
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
             hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, minValue: 0},

@@ -38,10 +38,10 @@
     </div>
 
     <div *ngIf="this.type == 'ga_avgsessionduration'" style="font-size:18px; font-variant:small-caps; min-height: 100px; font-weight:400; font-family:Roboto;">
-      Average Session duration: <b>{{this.avg}} s</b><!-- (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb">*</span>-->
-      <div style="font-size:13px;">
-        Lowest: <b>{{this.low}} s</b><br /> <!-- <b style="color: #267F00"> COLORE  VERDE-->
-        Highest: <b>{{this.high}} s</b>
+      average: <b>{{this.avg}} s</b><!-- (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb">*</span>-->
+      <div style="font-size:14px;">
+        lowest: <b>{{this.low}} s</b><br /> <!-- <b style="color: #267F00"> COLORE  VERDE-->
+        highest: <b>{{this.high}} s</b>
       </div>
       <div style="font-size:11px; font-variant:none; color:#bbb">* previous interval</div>
     </div>
