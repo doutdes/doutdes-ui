@@ -1,33 +1,31 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
+import {InstagramService} from '../../../shared/_services/instagram.service';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
-import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
-import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
+
+import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
+import {IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
-import {IntervalDate} from '../redux-filter/filter.model';
-import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
-import {Chart} from '../../../shared/_models/Chart';
-import {FacebookService} from '../../../shared/_services/facebook.service';
-import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
-import {InstagramService} from '../../../shared/_services/instagram.service';
+import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 const PrimaryWhite = '#ffffff';
 
 @Component({
-  selector: 'app-feature-dashboard-custom',
-  templateUrl: './custom.component.html'
+  selector: 'app-feature-dashboard-facebook',
+  templateUrl: './instagram.component.html'
 })
 
-export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
+export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   public HARD_DASH_DATA = {
-    dashboard_type: 0,
+    dashboard_type: 3,
     dashboard_id: null
   };
 
@@ -42,6 +40,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   public chartArray$: Array<DashboardCharts> = [];
 
   public loading = false;
+  public isApiKeySet = true;
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
@@ -58,60 +57,61 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Preset';
+  datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
   constructor(
-    private GAService: GoogleAnalyticsService,
-    private FBService: FacebookService,
     private IGService: InstagramService,
+    private apiKeyService: ApiKeysService,
     private breadcrumbActions: BreadcrumbActions,
     private DService: DashboardService,
     private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
-    private filterActions: FilterActions,
-    private ADService: AggregatedDataService
+    private filterActions: FilterActions
   ) {
 
   }
 
   async loadDashboard() {
 
+    const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
+
+    if (!existence) { // If the Api Key has not been set yet, then a message is print
+      this.isApiKeySet = false;
+      return;
+    }
 
     this.GEService.loadingScreen.next(true);
 
     // Retrieving dashboard ID
-    const dash = await this.DService.getDashboardByType(0).toPromise(); // Custom dashboard type
+    const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
 
     // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
-    this.pageID = (await this.FBService.getPages().toPromise())[0].id;
-
+    this.pageID = (await this.IGService.getPages().toPromise())[0].id;
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
-    }
-    else {
+    } else {
       console.error('Cannot retrieve a valid ID for the Facebook dashboard.');
       return;
     }
 
+    // Retrieving dashboard charts
     this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
       .subscribe(charts => {
 
-        const dateInterval: IntervalDate = {
-          dataStart: this.minDate,
-          dataEnd: this.maxDate
-        };
-
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
+          charts.forEach(chart =>
+            observables.push
+            (this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
 
           forkJoin(observables)
             .subscribe(dataArray => {
               for (let i = 0; i < dataArray.length; i++) {
 
-                let chart: DashboardCharts = charts[i];
+                const chart: DashboardCharts = charts[i];
 
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
@@ -124,35 +124,42 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
                   chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
                   chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
-                  chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id);
-                } else {
 
+                  if (this.CCService.containsGeoData(chart)) { // Add field geoData for charts with geographical data
+                    chart.geoData = dataArray[i];
+                  }
+
+                } else {
                   chart.error = true;
 
-                  console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
+                  console.error('ERROR in INSTAGRAM COMPONENT. Cannot retrieve data from one of the charts. More info:');
                   console.error(dataArray[i]);
                 }
 
-                chartsToShow.push(chart);
-
-                this.filterActions.initData(chartsToShow, dateInterval);
-                this.GEService.updateChartList.next(true);
-
-                // Shows last 30 days
-                //this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+                chartsToShow.push(chart); // Original Data
               }
               this.GEService.loadingScreen.next(false);
+
+              const dateInterval: IntervalDate = {
+                dataStart: this.minDate,
+                dataEnd: this.maxDate
+              };
+
+              this.filterActions.initData(chartsToShow, dateInterval);
+              this.GEService.updateChartList.next(true);
+
+              // Shows last 30 days
+              this.datePickerEnabled = true;
+              this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
             });
 
         } else {
-          this.filterActions.initData([], dateInterval);
-          this.GEService.updateChartList.next(true);
-
           this.GEService.loadingScreen.next(false);
+          console.log('Dashboard is empty.');
         }
       }, err => {
-        console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
-        console.log(err);
+        console.error('ERROR in INSTAGRAM COMPONENT, when fetching charts.');
+        console.warn(err);
       });
   }
 
@@ -164,39 +171,42 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       dataEnd: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id, this.pageID, intervalDate)
-      .subscribe(chartData => {
+    this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
+      .subscribe(data => {
 
-        if (!chartData['status']) { // Se la chiamata non rende errori
-
-          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, chartData);
+        if (!data['status']) { // Se la chiamata non rende errori
+          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, data);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id);
-
+          chartToPush.type = dashChart.type;
+          chartToPush.format = dashChart.format;
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
         }
+
         this.filterActions.addChart(chartToPush);
+        this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
       }, error1 => {
-        console.log('Error querying the Chart');
+        console.log('Error querying the chart');
         console.log(error1);
       });
   }
 
   onValueChange(value): void {
-    if (value) {
+
+    if (value && this.datePickerEnabled) {
+
       const dateInterval: IntervalDate = {
         dataStart: value[0],
         dataEnd: value[1].setHours(23, 59, 59, 999)
       };
-      this.GEService.loadingScreen.next(true);
+
       this.filterActions.filterData(dateInterval);
     }
   }
 
-  changeData(days: number) {
+  changeDateFilter(days: number) {
     this.bsRangeValue = [subDays(new Date(), days), this.lastDateRange];
 
     switch (days) {
@@ -215,12 +225,17 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     }
   }
 
+  cloneChart(chart: DashboardCharts): DashboardCharts {
+
+    return JSON.parse(JSON.stringify(chart));
+  }
+
   addBreadcrumb() {
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
-    bread.push(new Breadcrumb('Website', '/dashboard/google/'));
+    bread.push(new Breadcrumb('Instagram', '/dashboard/instagram/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -229,11 +244,23 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
+  async checkExistance() {
+    let response;
+
+    try {
+      response = await this.apiKeyService.checkIfKeyExists(0).toPromise();
+    } catch (e) {
+      console.error(e);
+      response = null;
+    }
+
+    return response;
+  }
+
   ngOnInit(): void {
-    this.firstDateRange = subDays(new Date(), 30); //this.minDate;
+    this.firstDateRange = this.minDate;
     this.lastDateRange = this.maxDate;
-    //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-    this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
+    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
     this.filter.subscribe(elements => {
       if (elements['dataFiltered'] !== null) {
@@ -241,7 +268,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       }
     });
 
-    let dash_type = this.HARD_DASH_DATA.dashboard_type;
+    const dash_type = this.HARD_DASH_DATA.dashboard_type;
 
     if (!this.GEService.isSubscriber(dash_type)) {
       this.GEService.removeFromDashboard.subscribe(values => {
@@ -252,8 +279,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.GEService.showChartInDashboard.subscribe(chart => {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
           this.addChartToDashboard(chart);
-          //this.GEService.showChartInDashboard.next(null); //reset data
-          console.log(this.GEService.getSubscribers());
         }
       });
       this.GEService.updateChartInDashboard.subscribe(chart => {
@@ -267,11 +292,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       });
 
       this.GEService.addSubscriber(dash_type);
-      console.log(this.GEService.getSubscribers());
     }
 
-    this.addBreadcrumb();
     this.loadDashboard();
+    this.addBreadcrumb();
   }
 
   ngOnDestroy() {
