@@ -112,6 +112,14 @@ export class FilterActions {
               }
             }
 
+            if(chartClass == 12) {
+              let paddingRows = 0;
+              paddingRows = labels.length % 10 ? 10 - (labels.length % 10) : 0;
+              for (let i = 0; i < paddingRows; i++){
+                labels.push([null,null])
+              }
+            }
+
             tmpData.push([datatable[0][0], datatable[0][2]]);
             tmpData = tmpData.concat(labels);
           }
