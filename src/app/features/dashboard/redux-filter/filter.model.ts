@@ -1,6 +1,6 @@
 export interface IntervalDate {
-  dataStart: Date;
-  dataEnd: Date;
+  first: Date;
+  last: Date;
 }
 
 export interface FilterState {

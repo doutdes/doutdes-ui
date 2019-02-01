@@ -98,12 +98,12 @@ export class GoogleAnalyticsService {
   }
 
   private formatURL(intervalDate: IntervalDate, urlCall: string) {
-    const startDate = (intervalDate == undefined || intervalDate.dataStart == undefined || intervalDate.dataStart == null)
+    const startDate = (intervalDate == undefined || intervalDate.first == undefined || intervalDate.last == null)
       ? '365daysAgo'
-      : this.formatDate(intervalDate.dataStart);
-    const endDate = (intervalDate == undefined || intervalDate.dataEnd == undefined || intervalDate.dataEnd == null)
+      : this.formatDate(intervalDate.first);
+    const endDate = (intervalDate == undefined || intervalDate.last == undefined || intervalDate.last == null)
       ? 'today'
-      : this.formatDate(intervalDate.dataEnd);
+      : this.formatDate(intervalDate.last);
 
     return 'http://' + environment.host + ':' + environment.port + urlCall + startDate + '/' + endDate + '/';
   }

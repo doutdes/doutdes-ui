@@ -97,8 +97,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       .subscribe(charts => {
 
         const dateInterval: IntervalDate = {
-          dataStart: this.minDate,
-          dataEnd: this.maxDate
+          first: this.minDate,
+          last: this.maxDate
         };
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
@@ -158,8 +158,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     const chartToPush: DashboardCharts = dashChart;
 
     const intervalDate: IntervalDate = {
-      dataStart: this.bsRangeValue[0],
-      dataEnd: this.bsRangeValue[1]
+      first: this.bsRangeValue[0],
+      last: this.bsRangeValue[1]
     };
 
     this.CCService.retrieveChartData(dashChart.chart_id, this.pageID, intervalDate)
@@ -186,8 +186,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   onValueChange(value): void {
     if (value) {
       const dateInterval: IntervalDate = {
-        dataStart: value[0],
-        dataEnd: value[1].setHours(23, 59, 59, 999)
+        first: value[0],
+        last: value[1].setHours(23, 59, 59, 999)
       };
       this.GEService.loadingScreen.next(true);
       this.filterActions.filterData(dateInterval);

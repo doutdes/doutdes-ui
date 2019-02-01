@@ -8,6 +8,7 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {parseDate} from 'ngx-bootstrap';
+import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -25,7 +26,8 @@ export class FilterActions {
 
   constructor(
     private Redux: NgRedux<IAppState>,
-    private CCService: ChartsCallsService
+    private CCService: ChartsCallsService,
+    private ADService: AggregatedDataService
   ) {
     this.filter.subscribe(elements => {
       this.originalData = elements['originalData'];
@@ -42,6 +44,10 @@ export class FilterActions {
   }
 
   filterData(dateInterval: IntervalDate) {
+
+    console.log('ORIGINAL:');
+    console.log(this.originalData);
+
     const filteredData = this.filterByDateInterval(this.originalData, dateInterval);
     this.Redux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
 
@@ -98,7 +104,7 @@ export class FilterActions {
             let labels = [];
 
             datatable.forEach(el => partialData.push([el[0], new Date(el[1]), el[2]]));
-            partialData = partialData.filter(el => el[1] >= filterInterval.dataStart && el[1] <= filterInterval.dataEnd);
+            partialData = partialData.filter(el => el[1] >= filterInterval.first && el[1] <= filterInterval.last);
 
             for (let i = 0; i < partialData.length; i++) {
 
@@ -117,11 +123,16 @@ export class FilterActions {
           }
           else {
             datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
-            tmpData = tmpData.filter(el => el[0] >= filterInterval.dataStart && el[0] <= filterInterval.dataEnd);
+            tmpData = tmpData.filter(el => el[0] >= filterInterval.first && el[0] <= filterInterval.last);
 
             tmpData = [datatable.shift()].concat(tmpData);
           }
           chart.chartData.dataTable = tmpData; // Concatening header
+
+          if (chartClass == 11) {
+            this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
+          }
+
           filtered.push(chart);
 
         } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
@@ -131,17 +142,19 @@ export class FilterActions {
           // If the chart is a geomap or a pie, it just take data of the last day of the interval
           if (this.CCService.containsGeoData(chart)) {
 
-            tmpData = chart.geoData.filter(el => (new Date(el.end_time)) <= (new Date(filterInterval.dataEnd)));
+            tmpData = chart.geoData.filter(el => (new Date(el.end_time)) <= (new Date(filterInterval.last)));
             chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
           } else {
 
             let datatable = chart.chartData.dataTable;
 
             datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
-            tmpData = tmpData.filter(el => el[0] >= filterInterval.dataStart && el[0] <= filterInterval.dataEnd);
+            tmpData = tmpData.filter(el => el[0] >= filterInterval.first && el[0] <= filterInterval.last);
 
             chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
           }
+
+          //this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
           filtered.push(chart);
 
         } else {
