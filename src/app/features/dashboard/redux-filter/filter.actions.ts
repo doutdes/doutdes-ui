@@ -92,7 +92,7 @@ export class FilterActions {
           let chartClass = chart.chartData.chartClass || -1;
 
 
-          if (chartClass == 6) { //Google Pie Sources Chart
+          if (chartClass == 6 || chartClass == 9) { //Google Pie Sources Chart OR Google Columns Sources Chart
 
             let partialData = [];
             let labels = [];
