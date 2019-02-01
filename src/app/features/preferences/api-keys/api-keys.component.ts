@@ -8,6 +8,11 @@ import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {forkJoin, Observable} from 'rxjs';
+import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {ngxLoadingAnimationTypes} from 'ngx-loading';
+
+const PrimaryWhite = '#ffffff';
 
 @Component({
   selector: 'app-feature-preferences-api-keys',
@@ -16,10 +21,22 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
+  D_TYPE = D_TYPE;
+
   tokenToSave: string;
-  services$: Service[] = [];
+  loading: Observable<boolean>;
+  services$: {};
   modalRef: BsModalRef;
   serviceToDelete: Service;
+  somethingGranted: boolean = false;
+
+  public config = {
+    animationType: ngxLoadingAnimationTypes.threeBounce,
+    backdropBackgroundColour: 'rgba(0,0,0,0.1)',
+    backdropBorderRadius: '4px',
+    primaryColour: PrimaryWhite,
+    secondaryColour: PrimaryWhite
+  };
 
   constructor(
     private apiKeyService: ApiKeysService,
@@ -28,12 +45,15 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     private breadcrumbActions: BreadcrumbActions,
     private route: ActivatedRoute,
     private router: Router,
-    private modalService: BsModalService
+    private modalService: BsModalService,
+    private geManager: GlobalEventsManagerService
   ) {
+    this.loading = this.geManager.loadingScreen.asObservable();
   }
 
   async ngOnInit() {
     this.addBreadcrumb();
+    this.geManager.loadingScreen.next(true);
     await this.updateList();
 
     this.route.paramMap.subscribe(params => { // TODO change for error messages on login with services
@@ -58,26 +78,29 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     });
   }
 
-  async updateList(){ // TODO edit with forkJoin and loading button
-    this.services$ = [];
+  async updateList(){
+    this.services$ = {};
+    let observables = [];
 
     for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
-      let scopes = (await this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]).toPromise()).scopes; // Check the permissions granted
+      observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
+    }
 
-      if (scopes) {
-        if (SERVICE == 'YT' || SERVICE == 'GA') {
-          scopes = scopes.map(el => el.substr(el.lastIndexOf('/') + 1));//.replace(/\./g, ' '));
+    forkJoin(observables).subscribe((services: Service[]) => {
+      for (const i in services) {
+        if (services[i].scopes) {
+          if (services[i].type === D_TYPE.YT || services[i].type === D_TYPE.GA) {
+            services[i].scopes = services[i].scopes.map(el => el.substr(el.lastIndexOf('/') + 1));
+          }
+
+          services[i].scopes = services[i].scopes.map(el => el.replace(/[^\w\s]|_/g, ' '));
+          this.services$[services[i].type] = services[i];
         }
 
-        scopes = scopes.map(el => el.replace(/[^\w\s]|_/g, ' '));
-
-        this.services$.push({
-          name: DS_TYPE[D_TYPE[SERVICE]] + '',
-          type: D_TYPE[SERVICE],
-          scopes: scopes
-        });
+        this.geManager.loadingScreen.next(false);
+        this.somethingGranted = this.somethingGranted || services[i].granted;
       }
-    }
+    });
   }
 
   openModal(template: TemplateRef<any>, service: Service) {
@@ -89,6 +112,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.apiKeyService.deleteKey(service)
       .pipe()
       .subscribe(async () => {
+        this.geManager.loadingScreen.next(true);
         await this.updateList();
       }, err => {
         console.error(err);

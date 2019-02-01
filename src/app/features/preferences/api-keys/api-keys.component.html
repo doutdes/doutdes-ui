@@ -2,11 +2,11 @@
   <img src="/assets/img/api-head.png" style="height:80px; margin-top:-7px"/>
   <h1 class="display-4 my-auto float-left ml-3" style="color:#888">Data sources</h1>
 </div>
-
+<ngx-loading [show]="loading | async" [config]="config"></ngx-loading>
 <div class="row">
   <div class="col-md-12">
     <div class="panel-body">
-      <table class="table table-hover mt-4" *ngIf="services$.length > 0; else no_content">
+      <table class="table table-hover mt-4" *ngIf="somethingGranted; else no_content">
         <thead>
           <tr class="border" style="background: #ddd; border: 1px solid #999">
             <th scope="col" style="width: 20%; font-size: 18px;">Service</th>
@@ -16,14 +16,38 @@
         </thead>
 
         <tbody>
-          <tr class="border" style="background:#eee" *ngFor="let service of services$">
-            <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(service.type)"></i> {{service.name}}</td>
-            <td><div *ngFor="let perm of service.scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
+          <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.GA] && services$[D_TYPE.GA]['granted']">
+            <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(D_TYPE.GA)"></i> {{services$[D_TYPE.GA].name}}</td>
+            <td><div *ngFor="let perm of services$[D_TYPE.GA].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, service)"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.GA])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
             </td>
-          </tr>
+          </tr> <!-- Google -->
+          <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.FB] && services$[D_TYPE.FB]['granted']">
+            <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(D_TYPE.FB)"></i> {{services$[D_TYPE.FB].name}}</td>
+            <td><div *ngFor="let perm of services$[D_TYPE.FB].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
+            <td>
+              <button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.FB])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+            </td>
+          </tr> <!-- Facebook -->
+          <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted']">
+            <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(D_TYPE.IG)"></i> {{services$[D_TYPE.IG].name}}</td>
+            <td><div *ngFor="let perm of services$[D_TYPE.IG].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
+            <td>
+              <button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.IG])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+            </td>
+          </tr> <!-- Instagram -->
+          <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.YT] && services$[D_TYPE.YT]['granted']">
+            <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(D_TYPE.YT)"></i> {{services$[D_TYPE.YT].name}}</td>
+            <td><div *ngFor="let perm of services$[D_TYPE.YT].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
+            <td>
+              <button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.YT])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+            </td>
+          </tr> <!-- YouTube -->
         </tbody>
       </table>
     </div>

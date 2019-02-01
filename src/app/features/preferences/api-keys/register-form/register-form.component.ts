@@ -7,7 +7,7 @@ import {BreadcrumbActions} from '../../../../core/breadcrumb/breadcrumb.actions'
 import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
 import {FacebookService} from '../../../../shared/_services/facebook.service';
 import {environment} from '../../../../../environments/environment';
-import {D_TYPE} from '../../../../shared/_models/Dashboard';
+import {D_TYPE, DS_TYPE} from '../../../../shared/_models/Dashboard';
 import {Service} from '../../../../shared/_models/ApiKeys';
 import {GlobalEventsManagerService} from '../../../../shared/_services/global-event-manager.service';
 import {forkJoin} from 'rxjs';
@@ -26,6 +26,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   D_TYPE = D_TYPE;
 
   fbLoginURL: string;
+  igLoginURL: string;
   gaLoginURL: string;
 
   loading;
@@ -57,6 +58,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     await this.updateList();
 
     this.fbLoginURL = 'http://' + environment.host + ':' + environment.port + '/fb/login?user_id=' + this.store.getId();
+    this.igLoginURL = 'http://' + environment.host + ':' + environment.port + '/ig/login?user_id=' + this.store.getId();
     this.gaLoginURL = 'http://' + environment.host + ':' + environment.port + '/ga/login?user_id=' + this.store.getId();
   }
 
