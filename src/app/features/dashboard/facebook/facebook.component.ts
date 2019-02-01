@@ -140,8 +140,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
               this.GEService.loadingScreen.next(false);
 
               const dateInterval: IntervalDate = {
-                dataStart: this.minDate,
-                dataEnd: this.maxDate
+                first: this.minDate,
+                last: this.maxDate
               };
 
               this.filterActions.initData(chartsToShow, dateInterval);
@@ -166,8 +166,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const chartToPush: DashboardCharts = dashChart;
 
     const intervalDate: IntervalDate = {
-      dataStart: this.bsRangeValue[0],
-      dataEnd: this.bsRangeValue[1]
+      first: this.bsRangeValue[0],
+      last: this.bsRangeValue[1]
     };
 
     this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
@@ -197,8 +197,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        dataStart: value[0],
-        dataEnd: value[1].setHours(23, 59, 59, 999)
+        first: value[0],
+        last: value[1].setHours(23, 59, 59, 999)
       };
 
       this.filterActions.filterData(dateInterval);
