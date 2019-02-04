@@ -108,12 +108,27 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 
-  async deleteService(service) {
-    this.apiKeyService.deleteKey(service)
+  async deleteService(serviceType: number) {
+    this.apiKeyService.revokePermissions(serviceType).subscribe(response => {
+      // If the service is one between GA and YT and there are no service authorized left, the key is been deleted from the database
+      if (((serviceType === D_TYPE.GA || serviceType === D_TYPE.YT) && !(this.services$[D_TYPE.GA].granted && this.services$[D_TYPE.YT].granted)) ||
+        ((serviceType === D_TYPE.FB || serviceType === D_TYPE.IG) && !(this.services$[D_TYPE.FB].granted && this.services$[D_TYPE.IG].granted))
+      ) {
+        this.deleteKey(serviceType);
+      }
+    }, err => {
+      console.error(err);
+    });
+
+    await this.updateList();
+    this.modalRef.hide();
+  }
+
+  async deleteKey(serviceType: number){
+    this.apiKeyService.deleteKey(serviceType)
       .pipe()
       .subscribe(async () => {
         this.geManager.loadingScreen.next(true);
-        await this.updateList();
       }, err => {
         console.error(err);
       });

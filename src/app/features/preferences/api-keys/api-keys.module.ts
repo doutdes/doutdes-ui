@@ -25,7 +25,7 @@ import {NgxLoadingModule} from 'ngx-loading';
     FacebookService,
     GoogleAnalyticsService,
     BsModalService,
-    BreadcrumbActions
+    BreadcrumbActions,
   ],
   exports: [
     FeaturePreferencesApiKeysComponent,

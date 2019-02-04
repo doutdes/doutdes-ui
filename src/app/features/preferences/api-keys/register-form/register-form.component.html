@@ -33,7 +33,7 @@
               </div>      <!-- Instagram login -->
               <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.YT] && !services$[D_TYPE.YT]['granted']">
                 <h4 class="w-50 d-inline-block align-middle">To use YouTube dashboard</h4>
-                <a class="btn btn-lg bg-yt-color text-white d-inline-block" style="width: 40%;" [href]="">
+                <a class="btn btn-lg bg-yt-color text-white d-inline-block" style="width: 40%;" [href]="ytLoginURL">
                   <i class="fab fa-youtube mr-2"></i>Login with YouTube
                 </a>
               </div> <!-- YouTube login -->
