@@ -101,9 +101,8 @@ export class FilterActions {
           let datatable = chart.chartData.dataTable;
           let chartClass = chart.chartData.chartClass || -1;
 
-
           if (chartClass == 6 || chartClass == 7 || chartClass == 9 || chartClass == 12) { //Google Pie Sources Chart OR Google Columns Sources Chart
-                                                                        // OR Google Browser Chart
+                                                                        // OR Google Browser Chart OR Google Most Visited
             let partialData = [];
             let labels = [];
 
@@ -122,7 +121,7 @@ export class FilterActions {
               }
             }
 
-            if(chartClass == 7 ||chartClass == 12) {
+            if(chartClass == 7 || chartClass == 12) { // add blank cells to browser chart
               let paddingRows = 0;
               paddingRows = labels.length % 10 ? 10 - (labels.length % 10) : 0;
               for (let i = 0; i < paddingRows; i++){
