@@ -124,7 +124,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
                   chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
                   chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
-                  chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id);
+                  chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO check
                 } else {
 
                   chart.error = true;
@@ -159,12 +159,12 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
 
-    const intervalDate: IntervalDate = {
+    const dateInterval: IntervalDate = {
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id, this.pageID, intervalDate)
+    this.CCService.retrieveChartData(dashChart.chart_id, this.pageID, dateInterval)
       .subscribe(chartData => {
 
         if (!chartData['status']) { // Se la chiamata non rende errori
@@ -172,7 +172,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, chartData);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id);
+          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval); // TODO check
 
         } else {
           chartToPush.error = true;

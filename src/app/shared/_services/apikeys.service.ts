@@ -1,8 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ApiKey} from '../_models/ApiKeys';
+import {ApiKey, Service} from '../_models/ApiKeys';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
+import {catchError, map} from 'rxjs/operators';
+import {of} from 'rxjs';
 
 @Injectable()
 export class ApiKeysService {
@@ -12,6 +14,12 @@ export class ApiKeysService {
 
   registerKey(api: ApiKey) {
     return this.http.post(this.formatUrl('insert'), api);
+  }
+
+  isPermissionGranted(idService: number) {
+    const headers = this.getAuthorization();
+    return this.http.get<Service>(this.formatUrl('isPermissionGranted/' + idService), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   getAllKeys() {
