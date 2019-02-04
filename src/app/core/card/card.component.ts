@@ -30,6 +30,7 @@ export class CardComponent implements OnInit {
   avg: string;
   high: string;
   low: string;
+  interval: string;
 
   icon: string;
   background = '#000';
@@ -71,24 +72,22 @@ export class CardComponent implements OnInit {
     if (this.aggregated) {
       this.type = this.dashChart.aggregated.type;
 
+      let unit = '';
+
       // Formatting extra data, if exists
       if (this.type == 'ga_bounce') {
-        this.avg = this.dashChart.aggregated.average ? (this.dashChart.aggregated.average).toFixed(2) : -1;      // Average
-        this.low = this.dashChart.aggregated.lowest ? (this.dashChart.aggregated.lowest).toFixed(2) : -1;        // Lowest value
-        this.high = this.dashChart.aggregated.highest ? (this.dashChart.aggregated.highest).toFixed(2) : -1;     // Highest value
+        unit = ' %';
+      }
+      else if (this.type == 'ga_avgsessionduration') {
+
+        unit = ' s';
       }
 
-      if (this.type == 'ga_impressions'){
-        this.avg = this.dashChart.aggregated.average ? (this.dashChart.aggregated.average).toFixed(2) : -1;      // Average
-        this.low = this.dashChart.aggregated.lowest ? this.dashChart.aggregated.lowest : -1;                                 // Lowest value
-        this.high = this.dashChart.aggregated.highest ? this.dashChart.aggregated.highest : -1;                              // Highest value
-      }
-
-      if (this.type == 'ga_avgsessionduration') {
-        this.avg = this.dashChart.aggregated.average ? (this.dashChart.aggregated.average).toFixed(2) : -1;      // Average
-        this.low = this.dashChart.aggregated.lowest ? (this.dashChart.aggregated.lowest).toFixed(2) : -1;        // Lowest value
-        this.high = this.dashChart.aggregated.highest ? (this.dashChart.aggregated.highest).toFixed(2) : -1;     // Highest value
-      }
+      this.avg = this.dashChart.aggregated.average ? (this.dashChart.aggregated.average).toFixed(2) + unit : '';      // Average
+      this.low = this.dashChart.aggregated.lowest ? (this.dashChart.aggregated.lowest).toFixed(2) + unit : '';        // Lowest value
+      this.high = this.dashChart.aggregated.highest ? (this.dashChart.aggregated.highest).toFixed(2) + unit : '';     // Highest value
+      this.interval = 'BASE INTERVAL: ' + new Date(this.dashChart.aggregated.interval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.interval.last).toLocaleString() +
+      ' | PREVIOUS: ' + new Date(this.dashChart.aggregated.previousInterval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.previousInterval.last).toLocaleString();
     }
 
     this.updateChartForm = this.formBuilder.group({

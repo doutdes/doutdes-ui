@@ -90,8 +90,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
         // Last 30 days as default view
         const dateInterval: IntervalDate = {
-          dataStart: this.minDate,
-          dataEnd: this.maxDate
+          first: this.minDate,
+          last: this.maxDate
         };
 
         if(charts && charts.length > 0) { // Checking if dashboard is not empty
@@ -116,7 +116,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                   chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
                   chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
-                  chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id);
+                  chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
                 } else {
 
                   chart.error = true;
@@ -153,12 +153,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
 
-    const intervalDate: IntervalDate = {
-      dataStart: this.bsRangeValue[0],
-      dataEnd: this.bsRangeValue[1]
+    const dateInterval: IntervalDate = {
+      first: this.bsRangeValue[0],
+      last: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id, intervalDate)
+    this.CCService.retrieveChartData(dashChart.chart_id, dateInterval)
       .subscribe(chartData => {
         console.log('GA COMPONENT ChartData');
         console.log(chartData);
@@ -168,7 +168,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, chartData);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id);
+          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval);
 
         } else {
           chartToPush.error = true;
@@ -176,6 +176,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         }
 
         this.filterActions.addChart(chartToPush);
+        this.filterActions.filterData(dateInterval); // TODO in theory, filterData should wait addChart before being executed
       }, error1 => {
         console.error('Error querying the Chart');
         console.error(error1);
@@ -186,8 +187,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     if (value && this.datePickerEnabled) {
       const dateInterval: IntervalDate = {
-        dataStart: value[0],
-        dataEnd: value[1].setHours(23, 59, 59, 999)
+        first: value[0],
+        last: value[1] // TODO checkme (sebastian removed setHours)
       };
       this.filterActions.filterData(dateInterval);
     }
