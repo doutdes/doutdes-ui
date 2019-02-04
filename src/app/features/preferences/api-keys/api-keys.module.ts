@@ -6,6 +6,9 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FeaturePreferencesApiKeysRegisterFormComponent} from './register-form/register-form.component';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {FacebookService} from '../../../shared/_services/facebook.service';
+import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
+import {BsModalService} from 'ngx-bootstrap';
+import {NgxLoadingModule} from 'ngx-loading';
 
 @NgModule({
   declarations: [
@@ -15,10 +18,13 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
   imports: [
     SharedModule,
     CoreModule,
+    NgxLoadingModule.forRoot({})
   ],
   providers: [
     ApiKeysService,
     FacebookService,
+    GoogleAnalyticsService,
+    BsModalService,
     BreadcrumbActions
   ],
   exports: [

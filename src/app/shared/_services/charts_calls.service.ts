@@ -46,7 +46,6 @@ export class ChartsCallsService {
         return this.facebookService.fbpageviewstotal(pageID);
       case 14:
         return this.facebookService.fbfancity(pageID);
-
     }
   }
 
