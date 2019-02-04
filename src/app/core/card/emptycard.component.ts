@@ -70,16 +70,12 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
       if (!this.GEService.isSubscriber(dummy_dashType)) {
         this.GEService.removeFromDashboard.subscribe(values => {
-          console.log("EMPTY-CARD remove from dashboard");
-          console.log(values);
           if (values[0] !== 0 || values[1] !== 0) {
             this.updateDropdownOptions().then().catch(() => console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.'));
           }
         });
 
         this.GEService.updateChartList.subscribe(value => {
-          console.log("EMPTY-CARD update list");
-          console.log(value);
           if (value) {
             this.updateDropdownOptions().then().catch(() => console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.'));;
           }

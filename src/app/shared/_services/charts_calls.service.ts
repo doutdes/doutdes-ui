@@ -64,6 +64,7 @@ export class ChartsCallsService {
       case 23:
         return this.InstagramService.getNumericData(pageID, ID);
 
+
     }
   }
 
@@ -92,6 +93,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 1,
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
@@ -114,6 +116,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'GeoChart',
           dataTable: header.concat(arr),
+          chartClass: 2,
           options: {
             region: 'world',
             colors: ['#63c2de'],
@@ -128,7 +131,6 @@ export class ChartsCallsService {
       case 3:
         header = [['Date', 'Impressions']];
 
-
         for (let i = 0; i < data.length; i++) {
           impressChartArray.push([new Date(data[i].end_time), data[i].value]);
         }
@@ -136,6 +138,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(impressChartArray),
+          chartClass: 3,
           options: {
             chartArea: {left: 40, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
@@ -161,6 +164,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
@@ -182,8 +186,9 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 5,
           options: {
-            chartArea: {left: 30, right: 0, height: 290, top: 0},
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
             hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, minValue: 0},
@@ -197,12 +202,13 @@ export class ChartsCallsService {
         header = [['Type', 'Date', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0],parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
 
         formattedData = {
           chartType: 'PieChart',
           dataTable: header.concat(chartArray),
+          chartClass: 6,
           options: {
             chartArea: {left: 30, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
@@ -229,6 +235,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
+          chartClass: 7,
           options: {
             alternatingRowStyle: true,
             allowHtml: true,
@@ -250,6 +257,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'PieChart',
           dataTable: header.concat(arrPie),
+          chartClass: 8,
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
@@ -266,15 +274,15 @@ export class ChartsCallsService {
         };
         break; // Fan Country Pie
       case 9:
-        header = [['Type', 'Number']];
-        // Push data pairs in the Chart array
+        header = [['Type', 'Date', 'Number']];
+
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
-          // Ternary operator trivially replaces 'none' with 'unknown'
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0],parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
         formattedData = {
           chartType: 'ColumnChart',
           dataTable: header.concat(chartArray),
+          chartClass: 9,
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
@@ -299,9 +307,9 @@ export class ChartsCallsService {
 
         for (let i = 0; i < data.length; i++) {
           const value = parseInt(data[i][1], 10) / 100.;
-          // sum += value;
-          // highest = value > highest ? value : highest;
-          // lowest = value < lowest ? value : lowest;
+          //sum += value;
+          //highest = value > highest ? value : highest;
+          //lowest = value < lowest ? value : lowest;
 
           chartArray.push([parseDate(data[i][0]), value]);
         }
@@ -309,6 +317,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 10,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
@@ -331,7 +340,7 @@ export class ChartsCallsService {
           }
         };
 
-        // average = sum / data.length;
+        //average = sum / data.length;
 
         break; // Google BounceRate
       case 11:
@@ -347,6 +356,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 11,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
@@ -361,20 +371,21 @@ export class ChartsCallsService {
         };
         break; // Google Average Session Duration
       case 12:
-        header = [['Browser', 'Sessions']];
+        header = [['Browser','Date', 'Sessions']];
 
         paddingRows = data.length % 10 ? 10 - (data.length % 10) : 0;
 
         for (let i = 0; i < data.length + paddingRows; i++) {
           if (i >= data.length) {
-            chartArray.push(['', null]);
+            chartArray.push(['', null, null]);
           } else {
-            chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
+            chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
           }
         }
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
+          chartClass: 12,
           options: {
             alternatingRowStyle: true,
             sortAscending: false,
@@ -396,6 +407,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
+          chartClass: 13,
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
@@ -423,6 +435,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(arr),
+          chartClass: 14,
           options: {
             alternatingRowStyle: true,
             sortAscending: false,

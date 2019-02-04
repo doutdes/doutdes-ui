@@ -77,7 +77,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
 
-    if(!existence) { // If the Api Key has not been set yet, then a message is print
+    if(!existence['exists']) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
       return;
     }
@@ -140,8 +140,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
               this.GEService.loadingScreen.next(false);
 
               const dateInterval: IntervalDate = {
-                dataStart: this.minDate,
-                dataEnd: this.maxDate
+                first: this.minDate,
+                last: this.maxDate
               };
 
               this.filterActions.initData(chartsToShow, dateInterval);
@@ -166,8 +166,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const chartToPush: DashboardCharts = dashChart;
 
     const intervalDate: IntervalDate = {
-      dataStart: this.bsRangeValue[0],
-      dataEnd: this.bsRangeValue[1]
+      first: this.bsRangeValue[0],
+      last: this.bsRangeValue[1]
     };
 
     this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
@@ -197,8 +197,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        dataStart: value[0],
-        dataEnd: value[1].setHours(23, 59, 59, 999)
+        first: value[0],
+        last: value[1].setHours(23, 59, 59, 999)
       };
 
       this.filterActions.filterData(dateInterval);
@@ -244,13 +244,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async checkExistance() {
-    let response;
+    let response = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(0).toPromise();
     } catch (e) {
       console.error(e);
-      response = null;
     }
 
     return response;

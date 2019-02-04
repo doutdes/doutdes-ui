@@ -19,31 +19,13 @@
   </div>
   <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
 
-    <div *ngIf="this.type == 'ga_bounce'" style="font-size:18px; font-variant:small-caps; min-height: 100px; font-weight:400; font-family:Roboto;">
-      Average bounce rate: <b>{{this.avg}}%</b><!-- (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb">*</span>-->
-      <div style="font-size:13px;">
-        Lowest: <b>{{this.low}}%</b><br /> <!-- <b style="color: #267F00"> COLORE  VERDE-->
-        Highest: <b>{{this.high}}%</b>
+    <div *ngIf="this.type == 'ga_bounce' || this.type == 'ga_impressions' || this.type == 'ga_avgsessionduration'" style="font-size:18px; font-variant:small-caps; min-height: 100px; font-weight:400; font-family:Roboto;">
+      average: <b>{{this.avg}}</b><!-- (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb">*</span>-->
+      <div style="font-size:14px;">
+        lowest: <b>{{this.low}}</b><br /> <!-- <b style="color: #267F00"> COLORE  VERDE-->
+        highest: <b>{{this.high}}</b>
       </div>
-      <div style="font-size:11px; font-variant:none; color:#bbb">* previous interval</div>
-    </div>
-
-    <div *ngIf="this.type == 'ga_impressions'" style="font-size:18px; font-variant:small-caps; min-height: 100px; font-weight:400; font-family:Roboto;">
-      Average impressions: <b>{{this.avg}}</b><!-- (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb">*</span>-->
-      <div style="font-size:13px;">
-        Lowest: <b>{{this.low}}</b><br /> <!-- <b style="color: #267F00"> COLORE  VERDE-->
-        Highest: <b>{{this.high}}</b>
-      </div>
-      <div style="font-size:11px; font-variant:none; color:#bbb">* previous interval</div>
-    </div>
-
-    <div *ngIf="this.type == 'ga_avgsessionduration'" style="font-size:18px; font-variant:small-caps; min-height: 100px; font-weight:400; font-family:Roboto;">
-      Average Session duration: <b>{{this.avg}} s</b><!-- (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb">*</span>-->
-      <div style="font-size:13px;">
-        Lowest: <b>{{this.low}} s</b><br /> <!-- <b style="color: #267F00"> COLORE  VERDE-->
-        Highest: <b>{{this.high}} s</b>
-      </div>
-      <div style="font-size:11px; font-variant:none; color:#bbb">* previous interval</div>
+      <!--<div style="font-size:11px; font-variant:none; color:#bbb">{{this.interval}}</div>-->
     </div>
 
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
