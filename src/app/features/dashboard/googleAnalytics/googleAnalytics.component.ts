@@ -160,6 +160,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     this.CCService.retrieveChartData(dashChart.chart_id, intervalDate)
       .subscribe(chartData => {
+        console.log('GA COMPONENT ChartData');
+        console.log(chartData);
 
         if (!chartData['status']) { // Se la chiamata non rende errori
 

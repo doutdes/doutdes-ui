@@ -60,6 +60,13 @@ export class FilterActions {
     this.filteredData.push(chart);
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+
+    console.log('FILTER ACTION original data');
+    console.log(this.originalData);
+
+
+    console.log('FILTER ACTION filtered data');
+    console.log(this.filteredData);
   }
 
   removeChart(id: number) {
@@ -92,7 +99,7 @@ export class FilterActions {
           let chartClass = chart.chartData.chartClass || -1;
 
 
-          if (chartClass == 6 || chartClass == 9 || chartClass == 12) { //Google Pie Sources Chart OR Google Columns Sources Chart
+          if (chartClass == 6 || chartClass == 7 || chartClass == 9 || chartClass == 12) { //Google Pie Sources Chart OR Google Columns Sources Chart
                                                                         // OR Google Browser Chart
             let partialData = [];
             let labels = [];
@@ -112,11 +119,13 @@ export class FilterActions {
               }
             }
 
-            if(chartClass == 12) {
+            if(chartClass == 7 ||chartClass == 12) {
               let paddingRows = 0;
               paddingRows = labels.length % 10 ? 10 - (labels.length % 10) : 0;
               for (let i = 0; i < paddingRows; i++){
-                labels.push([null,null])
+                labels.push([null,null]);
+                console.log('FILTER ACTION PADDING :' + chartClass);
+                console.log('labels');
               }
             }
 

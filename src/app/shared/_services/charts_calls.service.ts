@@ -184,7 +184,7 @@ export class ChartsCallsService {
         header = [['Type', 'Date', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0],parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
 
         formattedData = {
@@ -204,16 +204,12 @@ export class ChartsCallsService {
         };
         break; // Google pie end
       case 7:
-        header = [['Website', 'Views']];
-        paddingRows = data.length % 10 ? 10 - (data.length % 10) : 0; // if data.length % 10 != 0, add padding
+        header = [['Website', 'Date', 'Views']];
 
-        for (let i = 0; i < data.length + paddingRows; i++) {
-          if (i >= data.length) {
-            chartArray.push(['', null]);
-          } else {
-            chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
-          }
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
+
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
@@ -259,7 +255,7 @@ export class ChartsCallsService {
         header = [['Type', 'Date', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0],parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
         formattedData = {
           chartType: 'ColumnChart',
@@ -353,17 +349,12 @@ export class ChartsCallsService {
         };
         break; // Google Average Session Duration
       case 12:
-        header = [['Browser','Date', 'Sessions']];
+        header = [['Browser', 'Date', 'Sessions']];
 
-        paddingRows = data.length % 10 ? 10 - (data.length % 10) : 0;
-
-        for (let i = 0; i < data.length + paddingRows; i++) {
-          if (i >= data.length) {
-            chartArray.push(['', null, null]);
-          } else {
-            chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
-          }
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
+
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
