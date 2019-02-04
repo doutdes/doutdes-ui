@@ -174,6 +174,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         }
 
         this.filterActions.addChart(chartToPush);
+        this.filterActions.filterData(dateInterval); // TODO in theory, filterData should wait addChart before being executed
       }, error1 => {
         console.error('Error querying the Chart');
         console.error(error1);

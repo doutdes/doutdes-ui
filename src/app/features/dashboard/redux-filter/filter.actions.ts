@@ -45,9 +45,6 @@ export class FilterActions {
 
   filterData(dateInterval: IntervalDate) {
 
-    console.log('ORIGINAL:');
-    console.log(this.originalData);
-
     const filteredData = this.filterByDateInterval(this.originalData, dateInterval);
     this.Redux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
 
@@ -63,7 +60,7 @@ export class FilterActions {
   addChart(chart: DashboardCharts) {
 
     this.originalData.push(chart);
-    this.filteredData.push(chart);
+    this.filteredData.push(JSON.parse(JSON.stringify(chart)));
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
   }
