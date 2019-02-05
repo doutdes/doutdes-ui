@@ -45,9 +45,6 @@ export class FilterActions {
 
   filterData(dateInterval: IntervalDate) {
 
-    console.log('ORIGINAL:');
-    console.log(this.originalData);
-
     const filteredData = this.filterByDateInterval(this.originalData, dateInterval);
     this.Redux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
 
@@ -63,9 +60,16 @@ export class FilterActions {
   addChart(chart: DashboardCharts) {
 
     this.originalData.push(chart);
-    this.filteredData.push(chart);
+    this.filteredData.push(JSON.parse(JSON.stringify(chart)));
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+
+    console.log('FILTER ACTION original data');
+    console.log(this.originalData);
+
+
+    console.log('FILTER ACTION filtered data');
+    console.log(this.filteredData);
   }
 
   removeChart(id: number) {
@@ -97,9 +101,8 @@ export class FilterActions {
           let datatable = chart.chartData.dataTable;
           let chartClass = chart.chartData.chartClass || -1;
 
-
-          if (chartClass == 6 || chartClass == 9 || chartClass == 12) { //Google Pie Sources Chart OR Google Columns Sources Chart
-                                                                        // OR Google Browser Chart
+          if (chartClass == 6 || chartClass == 7 || chartClass == 9 || chartClass == 12) { //Google Pie Sources Chart OR Google Columns Sources Chart
+                                                                        // OR Google Browser Chart OR Google Most Visited
             let partialData = [];
             let labels = [];
 
@@ -118,6 +121,16 @@ export class FilterActions {
               }
             }
 
+            if(chartClass == 7 || chartClass == 12) { // add blank cells to browser chart
+              let paddingRows = 0;
+              paddingRows = labels.length % 10 ? 10 - (labels.length % 10) : 0;
+              for (let i = 0; i < paddingRows; i++){
+                labels.push([null,null]);
+                console.log('FILTER ACTION PADDING :' + chartClass);
+                console.log('labels');
+              }
+            }
+
             tmpData.push([datatable[0][0], datatable[0][2]]);
             tmpData = tmpData.concat(labels);
           }
@@ -129,10 +142,12 @@ export class FilterActions {
           }
           chart.chartData.dataTable = tmpData; // Concatening header
 
-          if (chartClass == 11) {
-            this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
-          }
+          //if (chartClass == 11) {
+          //  this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
+          //}
 
+          chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
+          chart.aggregated = this.ADService.getAggregatedData(tmpData, chart.chart_id, filterInterval);
           filtered.push(chart);
 
         } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
@@ -150,6 +165,8 @@ export class FilterActions {
 
             datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
             tmpData = tmpData.filter(el => el[0] >= filterInterval.first && el[0] <= filterInterval.last);
+
+            // TODO handle aggregated data here
 
             chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
           }

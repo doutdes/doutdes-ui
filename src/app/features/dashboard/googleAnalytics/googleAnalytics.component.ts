@@ -160,6 +160,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     this.CCService.retrieveChartData(dashChart.chart_id, dateInterval)
       .subscribe(chartData => {
+        console.log('GA COMPONENT ChartData');
+        console.log(chartData);
 
         if (!chartData['status']) { // Se la chiamata non rende errori
 
@@ -174,6 +176,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         }
 
         this.filterActions.addChart(chartToPush);
+        this.filterActions.filterData(dateInterval); // TODO in theory, filterData should wait addChart before being executed
       }, error1 => {
         console.error('Error querying the Chart');
         console.error(error1);
@@ -183,11 +186,20 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   onValueChange(value): void {
 
     if (value && this.datePickerEnabled) {
+
       const dateInterval: IntervalDate = {
         first: value[0],
         last: value[1] // TODO checkme (sebastian removed setHours)
       };
+
       this.filterActions.filterData(dateInterval);
+
+      let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
+      let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+
+      if (diffDays != 7 && diffDays != 30 && diffDays != 90) {
+        this.dateChoice = 'Custom';
+      }
     }
   }
 

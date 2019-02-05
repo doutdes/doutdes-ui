@@ -189,8 +189,14 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         first: value[0],
         last: value[1].setHours(23, 59, 59, 999)
       };
-      this.GEService.loadingScreen.next(true);
       this.filterActions.filterData(dateInterval);
+
+      let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
+      let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+
+      if (diffDays != 7 && diffDays != 30 && diffDays != 90) {
+        this.dateChoice = 'Custom';
+      }
     }
   }
 
