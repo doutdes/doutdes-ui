@@ -186,15 +186,15 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   onValueChange(value): void {
     if (value) {
       const dateInterval: IntervalDate = {
-        first: value[0],
-        last: value[1].setHours(23, 59, 59, 999)
+        first: new Date(value[0].setHours(0, 0, 0)),
+        last: new Date(value[1].setHours(23, 59, 59))
       };
       this.filterActions.filterData(dateInterval);
 
       let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
 
-      if (diffDays != 7 && diffDays != 30 && diffDays != 90) {
+      if (diffDays != 8 && diffDays != 31 && diffDays != 91) {
         this.dateChoice = 'Custom';
       }
     }

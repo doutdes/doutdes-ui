@@ -186,7 +186,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   onValueChange(value): void {
 
     if (value && this.datePickerEnabled) {
-      console.log(new Date(value[0].setHours(0, 0, 0)));
 
       const dateInterval: IntervalDate = {
         first: new Date(value[0].setHours(0, 0, 0)),
@@ -198,7 +197,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
 
-      if (diffDays != 7 && diffDays != 30 && diffDays != 90) {
+      if (diffDays != 8 && diffDays != 31 && diffDays != 91) {
         this.dateChoice = 'Custom';
       }
     }

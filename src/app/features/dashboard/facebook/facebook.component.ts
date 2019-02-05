@@ -206,7 +206,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
 
-      if (diffDays != 7 && diffDays != 30 && diffDays != 90) {
+      if (diffDays != 8 && diffDays != 31 && diffDays != 91) {
         this.dateChoice = 'Custom';
       }
     }

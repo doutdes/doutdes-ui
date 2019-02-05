@@ -28,7 +28,7 @@ export class AggregatedDataService {
           lowest = value < lowest ? value : lowest;
         }
 
-        resultData = {average: sum / data.length, highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
+        resultData = {average: sum / (data.length - 1), highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
         break;
       case 10: // GA bounce rate
         type = 'ga_bounce';
