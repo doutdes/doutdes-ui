@@ -186,10 +186,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   onValueChange(value): void {
 
     if (value && this.datePickerEnabled) {
+      console.log(new Date(value[0].setHours(0, 0, 0)));
 
       const dateInterval: IntervalDate = {
-        first: value[0],
-        last: value[1] // TODO checkme (sebastian removed setHours)
+        first: new Date(value[0].setHours(0, 0, 0)),
+        last: new Date(value[1].setHours(23, 59, 59))
       };
 
       this.filterActions.filterData(dateInterval);

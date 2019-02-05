@@ -148,6 +148,9 @@ export class FilterActions {
 
           chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
           chart.aggregated = this.ADService.getAggregatedData(tmpData, chart.chart_id, filterInterval);
+
+          console.log(chart.aggregated.interval);
+
           filtered.push(chart);
 
         } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
@@ -172,6 +175,7 @@ export class FilterActions {
           }
 
           //this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
+
           filtered.push(chart);
 
         } else {
