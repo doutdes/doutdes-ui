@@ -142,10 +142,12 @@ export class FilterActions {
           }
           chart.chartData.dataTable = tmpData; // Concatening header
 
-          if (chartClass == 11) {
-            this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
-          }
+          //if (chartClass == 11) {
+          //  this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
+          //}
 
+          chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
+          chart.aggregated = this.ADService.getAggregatedData(tmpData, chart.chart_id, filterInterval);
           filtered.push(chart);
 
         } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
@@ -163,6 +165,8 @@ export class FilterActions {
 
             datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
             tmpData = tmpData.filter(el => el[0] >= filterInterval.first && el[0] <= filterInterval.last);
+
+            // TODO handle aggregated data here
 
             chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
           }
