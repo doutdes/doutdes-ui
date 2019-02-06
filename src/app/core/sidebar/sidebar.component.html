@@ -1,7 +1,7 @@
 <div id="sidebar-container" class="sidebar-expanded d-none d-lg-block col-1-5" *ngIf="isUserLoggedIn">
   <ul class="list-group sticky-top sticky-offset" style="margin-top:13px">
     <!-- Separator with title -->
-    <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
+    <li class="list-group-item sidebar-separator-title d-flex align-items-center menu-collapsed">
       <small>CONTENTS</small>
     </li>
     <!-- /END Separator -->
@@ -16,13 +16,13 @@
     </a>
     <!-- Submenu content -->
     <div id="submenu1" class="collapse sidebar-submenu">
-      <a [routerLink]="['/dashboard/google']" class="list-group-item list-group-item-action text-white">
+      <a [routerLink]="['/dashboard/google']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Website</span>
       </a>
-      <a [routerLink]="['/dashboard/facebook']" class="list-group-item list-group-item-action text-white">
+      <a [routerLink]="['/dashboard/facebook']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Facebook</span>
       </a>
-      <a [routerLink]="['/dashboard/custom']"  class="list-group-item list-group-item-action text-white">
+      <a [routerLink]="['/dashboard/custom']"  class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Custom</span>
       </a>
       <a class="list-group-item list-group-item-action text-white">

@@ -1,8 +1,8 @@
-<div class="row bg-white rounded p-4 title-header h-100">
-  <div class="col-xl-8 col-lg-6 col-md-8">
+<div class="row rounded p-4 title-header h-100" style="background: #eee">
+  <div class="col-xl-6 col-lg-6 col-md-8">
     <h1 class="my-auto float-left" style="color:#555">Google Analytics</h1>
   </div>
-  <div class="col-xl-4 col-lg-6 col-md-4 my-auto">
+  <div class="col-xl-6 col-lg-6 col-md-4 my-auto">
     <div>
       <div class="btn-group float-right" dropdown>
         <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
@@ -30,7 +30,7 @@
 
 <div class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
-    <div *ngFor="let chart of chartArray$" class="col-xl-4 col-lg-6 pt-3 order-xl-1 order-lg-1">
+    <div *ngFor="let chart of chartArray$" class="col-xl-6 col-lg-6 pt-3 order-xl-1 order-lg-1">
       <app-card [dashChart]="chart"></app-card>
     </div>
   </ng-container>
@@ -39,7 +39,7 @@
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
   </ng-template>
 
-  <app-emptycard *ngIf="!loading" class="col-lg-6 col-xl-4 " [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
+  <app-emptycard *ngIf="!loading" class="col-lg-6 col-xl-6" [xlOrder]="2" [lgOrder]="2" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
 
   <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>

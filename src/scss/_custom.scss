@@ -1,6 +1,7 @@
 html, body {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
+  background-color: #FCFCFC !important;
 }
 
 .modal-xl {max-width: 1000px;}
@@ -41,13 +42,9 @@ body {
 }
 
 #body-row {
-  margin-left: 0;
-  margin-right: 0;
 }
 
 #sidebar-container {
-  min-height: calc(100vh - 69px);
-  background-color: #2f353a;
   padding: 0;
 }
 
@@ -67,7 +64,6 @@ body {
 /* Menu item*/
 #sidebar-container .list-group a {
   height: 50px;
-  color: white;
 }
 
 /* Submenu item*/
@@ -82,12 +78,12 @@ body {
 
 /* Separators */
 .sidebar-separator-title {
-  background-color: #2f353a;
   height: 35px;
+  background-color: #ddd;
+  color: #2f353a !important;
 }
 
 .sidebar-separator {
-  background-color: #2f353a;
   height: 25px;
 }
 
@@ -132,6 +128,7 @@ body {
 
 app-core-header .navbar {
   height: 56px;
+  background: #24526A !important;
 }
 
 app-core-sidebar {
@@ -164,7 +161,7 @@ ul {
 }
 
 .add-card {
-  font-size: 100px;
+  font-size: 50px;
   color: #BEBEBE;
 }
 
@@ -182,7 +179,6 @@ ul {
 
   margin-right:0px;
   margin-left:0px;
-  margin-top: 10px;
   border:1px solid #c8ced3;
 }
 

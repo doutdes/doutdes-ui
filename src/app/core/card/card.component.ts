@@ -61,7 +61,8 @@ export class CardComponent implements OnInit {
       }
       case Type.Google: {
         this.icon = 'fab fa-google';
-        this.background = '#DB5D43';
+        this.background = '#FBEEEB';
+        this.color = '#DB5D43';
         break;
       }
       default: {

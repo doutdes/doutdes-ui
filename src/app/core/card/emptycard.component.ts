@@ -24,7 +24,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   @Input() xlOrder: string;
   @Input() lgOrder: string;
   @Input() dashboard_data: any;
-  @HostBinding('class') elementClass = 'col-lg-6 col-xl-4 pt-3';
+  @HostBinding('class') elementClass = 'col-lg-6 col-xl-6 pt-3';
 
   @ViewChild('addChart') addChart: ElementRef;
   @ViewChild('noChartsAvailable') noChartsAvailable: ElementRef;
