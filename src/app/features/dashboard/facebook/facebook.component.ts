@@ -12,10 +12,7 @@ import {FilterActions} from '../redux-filter/filter.actions';
 import {IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
-import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
-
-const PrimaryWhite = '#ffffff';
 
 @Component({
   selector: 'app-feature-dashboard-facebook',
@@ -41,12 +38,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   public loading = false;
   public isApiKeySet = true;
-  public config = {
-    animationType: ngxLoadingAnimationTypes.threeBounce,
-    backdropBackgroundColour: 'rgba(0,0,0,0.1)',
-    backdropBorderRadius: '4px',
-    primaryColour: PrimaryWhite,
-    secondaryColour: PrimaryWhite
+  public emptyCardStyle = {
+    'padding-left': '0px',
+    'paddin-right': '0px'
   };
 
   @select() filter: Observable<any>;
@@ -197,8 +191,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        first: value[0],
-        last: value[1].setHours(23, 59, 59, 999)
+        first: new Date(value[0].setHours(0, 0, 0)),
+        last: new Date(value[1].setHours(23, 59, 59))
       };
 
       this.filterActions.filterData(dateInterval);
@@ -306,5 +300,19 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.removeBreadcrumb();
     this.filterActions.clear();
+  }
+
+  nChartEven(){
+    return this.chartArray$.length % 2 === 0;
+  }
+
+  setEmptyCardStyle() {
+    if (this.chartArray$.length % 2 === 0) {
+      this.emptyCardStyle['padding-left'] = '15px';
+      this.emptyCardStyle['padding-right'] = '0.5rem';
+    } else {
+      this.emptyCardStyle['padding-left'] = '0.5rem';
+      this.emptyCardStyle['padding-right'] = '0';
+    }
   }
 }

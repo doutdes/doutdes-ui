@@ -1,8 +1,8 @@
-<div class="row bg-white rounded p-4 title-header h-100">
-  <div class="col-xl-8 col-lg-6 col-md-8">
-    <h1 class="my-auto float-left" style="color:#555">Facebook</h1>
+<div class="row rounded p-4 title-header h-100">
+  <div class="col-xl-4 col-lg-6 col-md-8">
+    <h1 class="my-auto float-left">Facebook</h1>
   </div>
-  <div *ngIf="isApiKeySet" class="col-xl-4 col-lg-6 col-md-4 my-auto">
+  <div *ngIf="isApiKeySet" class="col-xl-8 col-lg-6 col-md-4 my-auto">
     <div>
       <div class="btn-group float-right" dropdown>
         <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
@@ -31,14 +31,11 @@
 
 <div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
-    <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 order-xl-1 order-lg-1">
+    <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
       <app-card [dashChart]="chart"></app-card>
     </div>
   </ng-container>
-
-  <app-emptycard class="col-lg-6" [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
-
-  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
+  <app-emptycard class="col-lg-6" [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}" [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
 
   <!--<ng-template #noContent>
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first Chart!</h5>

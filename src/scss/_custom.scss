@@ -28,6 +28,13 @@ app-core-header button.navbar-toggler {
   margin-right: 15px;
 }
 
+app-core-sidebar {
+  position:absolute;
+  left: -230px;
+  background: #eee !important;
+  border: 1px solid #c8ced3;
+}
+
 @media (min-width: 992px) and (max-width: 1240px) {
   #body-row, app-core-header nav > .container {
     width: 100%;
@@ -83,13 +90,23 @@ app-core-header button.navbar-toggler {
   right: 10px;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 61px;
-  line-height: 60px;
+app-core-footer {
   background-color: #f5f5f5;
+  width: 100%;
+  height: auto;
+  line-height: 60px;
+  display: -webkit-box;
+  display: -moz-box;
+  flex-shrink: 0;
+}
+
+#main-container {
+  flex: 1 0 auto;
+}
+
+#main-content {
+  display: flex;
+  flex-direction: column;
 }
 
 .nav-item .nav-link > .img-avatar, .nav-item .avatar.nav-link > img {
@@ -151,7 +168,7 @@ body {
 /* Separators */
 .sidebar-separator-title {
   height: 35px;
-  background-color: #ddd;
+  background-color: transparent;
   color: #2f353a !important;
 }
 
@@ -203,10 +220,6 @@ app-core-header .navbar {
   background: #24526A !important;
 }
 
-app-core-sidebar {
-  background-color: #2f353a;
-}
-
 .col-1-5 {
   -ms-flex: 0 0 12.5%;
   flex: 0 0 12.5%;
@@ -214,7 +227,7 @@ app-core-sidebar {
 }
 
 app-core-breadcrumb nav {
-  height: 50px;
+  height: 46px;
 }
 
 app-feature-authentication-login .container {
@@ -244,14 +257,20 @@ ul {
 
 .title-header {
 
+  margin-right: 0px;
+  margin-left: 0px;
+  border: 1px solid #c8ced3;
+  background-color: #eee;
+
   img {
     height: 80px;
     margin-top: -7px
   }
 
-  margin-right: 0px;
-  margin-left: 0px;
-  border: 1px solid #c8ced3;
+  h1 {
+    color: #555;
+  }
+
 }
 
 .filterDatePicker {
@@ -366,4 +385,12 @@ ul {
   text-transform: uppercase;
   font-size: 12px;
   display: inline-flex;
+}
+
+.card-container:nth-child(odd) {
+  padding-right: 0.5rem;
+}
+
+.card-container:nth-child(even) {
+  padding-left: 0.5rem;
 }

@@ -1,21 +1,18 @@
-<app-core-header></app-core-header>             <!-- HEADER -->
-
+<app-core-header></app-core-header>                            <!-- HEADER -->
 
 <div class="container" id="body-row">
 
   <div class="col" id="main-content">
+    <app-core-sidebar class="rounded mt-3"></app-core-sidebar> <!-- SIDEBAR -->
+    <app-core-breadcrumb class="my-3"></app-core-breadcrumb>   <!-- BREADCRUMB -->
 
-    <app-core-sidebar class="rounded" style="position:absolute; left: -230px; top: 21px; background: #ddd"></app-core-sidebar>         <!-- SIDEBAR -->
-
-  <app-core-breadcrumb class="container"></app-core-breadcrumb>   <!-- BREADCRUMB -->
-
-    <div class="">               <!-- CONTAINER -->
+    <div id="main-container">                                  <!-- CONTAINER -->
       <router-outlet></router-outlet>
     </div>
-
-    <app-core-footer></app-core-footer>         <!-- FOOTER -->
-
+    <app-core-footer class="mb-3"></app-core-footer>           <!-- FOOTER -->
   </div>
+
+  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>
 
 
