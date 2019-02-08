@@ -8,11 +8,16 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
-import {forkJoin, Observable, Subscription} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
+
+import * as jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import {UserService} from '../../../shared/_services/user.service';
+import {User} from '../../../shared/_models/User';
 
 const PrimaryWhite = '#ffffff';
 
@@ -62,6 +67,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions,
+    private userService: UserService,
     private ADService: AggregatedDataService,
   ) {
   }
@@ -94,7 +100,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           last: this.maxDate
         };
 
-        if(charts && charts.length > 0) { // Checking if dashboard is not empty
+        if (charts && charts.length > 0) { // Checking if dashboard is not empty
           charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
 
           forkJoin(observables)
@@ -280,8 +286,74 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   ngOnDestroy() {
-
     this.removeBreadcrumb();
     this.filterActions.clear();
+  }
+
+  async htmltoPDF() {
+    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
+    const cards = document.querySelectorAll('app-card');
+
+    const firstCard = await html2canvas(cards[0]);
+    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
+    let graphsRow = 2;
+    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
+    let x = 20, y = 40;
+
+    pdf.setFontSize(12);
+    pdf.text('Doutdes for ' + await this.getUserCompany(), 340, 10);
+
+    console.warn('Rapporto dimensioni: ' + dimRatio);
+    console.warn('Grafici per riga: ' + graphsRow);
+
+    pdf.setFontSize(30);
+    pdf.text('Google Analytics', x, y);
+    y += 20;
+
+    pdf.setFontSize(20);
+    pdf.text('Date interval: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y);
+    y += 20;
+
+    // Numero grafici per riga dipendente da dimensioni grafico
+    // width > 400: 2 per riga, dimensione / 3
+    // 200 <= width <= 400: 3 per riga, dimensione / 2
+
+    for (let i = 0; i < cards.length; i++) {
+      const canvas = await html2canvas(cards[i]);
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      console.warn('Width: ' + canvas.width + ', height: ' + canvas.height);
+
+      if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
+        console.warn('Ci sono già ' + (i / graphsRow) + ' grafici in una riga');
+        y += canvas.height / dimRatio + 20;
+        x = 20;
+      }
+
+      if(i !== 0 && i % graphsPage === 0) {
+        pdf.addPage();
+        x = 20;
+        y = 20;
+      }
+
+      pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
+      x += canvas.width / dimRatio + 10;
+
+      console.warn('x -> ' + x);
+      console.warn('y -> ' + y);
+
+    }
+
+    pdf.save('website_report.pdf');
+  }
+
+  formatStringDate(date: Date) {
+    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+  }
+
+  async getUserCompany() {
+    let company = null;
+    const user: User  = await this.userService.get().toPromise();
+
+    return user.company_name;
   }
 }
