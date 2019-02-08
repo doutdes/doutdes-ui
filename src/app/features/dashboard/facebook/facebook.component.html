@@ -1,7 +1,6 @@
 <div class="row bg-white rounded p-4 title-header h-100">
   <div class="col-xl-8 col-lg-6 col-md-8">
-    <img src="/assets/img/facebook-head.png" class="float-left"/>
-    <h1 class="display-4 my-auto float-left ml-3" style="color:#888">Facebook stats</h1>
+    <h1 class="my-auto float-left" style="color:#555">Facebook</h1>
   </div>
   <div *ngIf="isApiKeySet" class="col-xl-4 col-lg-6 col-md-4 my-auto">
     <div>
@@ -32,12 +31,12 @@
 
 <div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
-    <div *ngFor="let chart of chartArray$" class="col-xl-4 col-lg-6 pt-3 order-xl-1 order-lg-1">
+    <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 order-xl-1 order-lg-1">
       <app-card [dashChart]="chart"></app-card>
     </div>
   </ng-container>
 
-  <app-emptycard class="col-lg-6 col-xl-4 " [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
+  <app-emptycard class="col-lg-6" [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
 
   <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 

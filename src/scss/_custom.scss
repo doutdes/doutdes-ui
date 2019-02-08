@@ -4,7 +4,66 @@ html, body {
   background-color: #FCFCFC !important;
 }
 
-.modal-xl {max-width: 1000px;}
+.modal-xl {
+  max-width: 1000px;
+}
+
+@media (min-width: 1400px) and (max-width: 1600px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1240px) and (max-width: 1400px) {
+  .container {
+    max-width: 800px;
+  }
+
+}
+
+@media (min-width: 992px) and (max-width: 1240px) {
+  #body-row, app-core-header nav > .container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 230px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 100%;
+  }
+
+  #navbarNavDropdown li > a {
+    padding-right: 0;
+
+    img {
+      margin-right: 0;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  #body-row, app-core-header nav > .container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 100%;
+  }
+
+  #navbarNavDropdown li > a {
+    padding-right: 0;
+
+    img {
+      margin-right: 0;
+    }
+  }
+}
+
+@media (max-width: 1240px) {
+  #logo-div {
+    margin-left: 0!important;
+  }
+}
 
 .alert-registration {
   position: fixed;
@@ -26,6 +85,10 @@ html, body {
   margin: 0 10px;
 }
 
+#logo-div {
+  margin-left: 15px;
+}
+
 body {
   padding-top: 56px;
 }
@@ -39,9 +102,6 @@ body {
   min-height: calc(100% - 56px - 54px - 10px);
   //padding-top: 10px;
   //padding-bottom: 20px;
-}
-
-#body-row {
 }
 
 #sidebar-container {
@@ -88,8 +148,8 @@ body {
 }
 
 .logo-separator {
-/*  background-color: #333;
-  height: 60px;*/
+  /*  background-color: #333;
+    height: 60px;*/
 }
 
 /* Closed submenu icon */
@@ -173,84 +233,84 @@ ul {
 .title-header {
 
   img {
-    height:80px;
-    margin-top:-7px
+    height: 80px;
+    margin-top: -7px
   }
 
-  margin-right:0px;
-  margin-left:0px;
-  border:1px solid #c8ced3;
+  margin-right: 0px;
+  margin-left: 0px;
+  border: 1px solid #c8ced3;
 }
 
 .filterDatePicker {
-  width: 60%!important;
+  width: 60% !important;
 }
 
 /* FILTER */
-@media only screen and (min-width: 1100px) and (max-width: 1200px){
+@media only screen and (min-width: 1100px) and (max-width: 1200px) {
   .title-header {
     h1 {
       font-size: 2.5rem !important;
     }
     img {
-      height: 69px!important;
+      height: 69px !important;
     }
   }
 
   .filterDatePicker {
-    width: 50%!important;
+    width: 50% !important;
   }
 
 }
 
-@media only screen and (min-width: 992px) and (max-width: 1099px){
+@media only screen and (min-width: 992px) and (max-width: 1099px) {
   .title-header {
     h1 {
       font-size: 2rem !important;
     }
     img {
-      height: 69px!important;
+      height: 69px !important;
     }
   }
 
   .filterDatePicker {
-    width: 50%!important;
+    width: 50% !important;
   }
 }
 
-@media only screen and (min-width: 768px) and (max-width: 991px){
+@media only screen and (min-width: 768px) and (max-width: 991px) {
   .title-header {
     h1 {
       font-size: 2.5rem !important;
     }
     img {
-      height: 69px!important;
+      height: 69px !important;
     }
   }
 
   .filterDatePicker {
-    width: 55%!important;
+    width: 55% !important;
   }
 }
 
-@media only screen and (max-width: 600px){
+@media only screen and (max-width: 600px) {
   .title-header {
     h1 {
       font-size: 2rem !important;
     }
     img {
-      height: 69px!important;
+      height: 69px !important;
     }
   }
 }
 
-@media only screen and (max-width: 415px){
+@media only screen and (max-width: 415px) {
   .title-header {
     h1 {
       font-size: 1.5rem !important;
     }
     img {
-      height: 60px!important;
+      height: 60px !important;
     }
   }
 }
