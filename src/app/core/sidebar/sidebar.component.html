@@ -2,7 +2,7 @@
   <ul class="list-group sticky-top sticky-offset" style="margin-top:13px">
     <!-- Separator with title -->
     <li class="list-group-item sidebar-separator-title d-flex align-items-center menu-collapsed">
-      <small>CONTENTS</small>
+      <small class="font-weight-bold text-uppercase">Contents</small>
     </li>
     <!-- /END Separator -->
     <!-- Menu with submenu -->
@@ -39,10 +39,10 @@
     </a>
     <!-- Submenu content -->
     <div id="submenu2" class="collapse sidebar-submenu">
-      <a class="list-group-item list-group-item-action text-white">
-        <span style="color: #777" class="menu-collapsed">Account settings</span>
+      <a class="list-group-item list-group-item-action">
+        <span class="menu-collapsed">Account settings</span>
       </a>
-      <a [routerLink]="['/preferences/api-keys']" class="list-group-item list-group-item-action text-white">
+      <a [routerLink]="['/preferences/api-keys']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Configure data sources</span>
       </a>
     </div>
@@ -54,7 +54,7 @@
     </a>
     <!-- Separator with title -->
     <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
-      <small>TOOLS</small>
+      <small class="font-weight-bold text-uppercase">Tools</small>
     </li>
     <!-- /END Separator -->
     <a class="list-group-item list-group-item-action" [routerLink]="['/calendar']">
@@ -87,14 +87,6 @@
         <span class="menu-collapsed">Tutorial Facebook</span>
       </a>
     </div>
-
-    <a data-toggle="sidebar-collapse"
-       class="list-group-item list-group-item-action d-flex align-items-center">
-      <div class="d-flex w-100 justify-content-start align-items-center">
-        <span id="collapse-icon" class="fas fa-arrow-circle-left mr-3"></span>
-        <span style="color: #777" id="collapse-text" class="menu-collapsed">Collapse</span>
-      </div>
-    </a>
   </ul>
   <!-- List Group END-->
   <!--</div>-->

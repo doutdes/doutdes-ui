@@ -18,7 +18,14 @@ html, body {
   .container {
     max-width: 800px;
   }
+}
 
+#sidebar-container .list-group a.list-group-item:hover {
+  background-color: #abc9d4 !important;
+}
+
+app-core-header button.navbar-toggler {
+  margin-right: 15px;
 }
 
 @media (min-width: 992px) and (max-width: 1240px) {
@@ -59,10 +66,15 @@ html, body {
   }
 }
 
-@media (max-width: 1240px) {
+@media (min-width: 768px) and (max-width: 1240px) {
   #logo-div {
     margin-left: 0!important;
   }
+}
+
+.list-group-item-action {
+  color: black;
+
 }
 
 .alert-registration {
