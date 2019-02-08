@@ -44,10 +44,8 @@ export class FilterActions {
   }
 
   filterData(dateInterval: IntervalDate) {
-
     const filteredData = this.filterByDateInterval(this.originalData, dateInterval);
     this.Redux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
-
   }
 
   updateChart(index: number, newTitle: string) {
@@ -77,8 +75,6 @@ export class FilterActions {
     let filtered = this.filteredData.filter((chart) => chart.chart_id !== id);
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: original, dataFiltered: filtered});
-
-
   }
 
   filterByDateInterval(unfiltered, filterInterval: IntervalDate) {
@@ -148,8 +144,6 @@ export class FilterActions {
 
           chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
           chart.aggregated = this.ADService.getAggregatedData(tmpData, chart.chart_id, filterInterval);
-
-          console.log(chart.aggregated.interval);
 
           filtered.push(chart);
 

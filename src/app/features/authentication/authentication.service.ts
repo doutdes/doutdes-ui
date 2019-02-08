@@ -1,13 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Credentials, LoginState} from './login/login.model';
-import {NgRedux, select} from '@angular-redux/store';
+import {Credentials} from './login/login.model';
+import {NgRedux} from '@angular-redux/store';
 import {IAppState} from '../../shared/store/model';
-import {LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LoginActions} from './login/login.actions';
-import {Router} from '@angular/router';
+import {LoginActions} from './login/login.actions';
 import {map} from 'rxjs/internal/operators';
-import {BehaviorSubject, Observable, of} from 'rxjs';
-import {StoreService} from '../../shared/_services/store.service';
 import {environment} from '../../../environments/environment';
 
 @Injectable()
