@@ -356,4 +356,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     return user.company_name;
   }
+
+  nChartEven(){
+    return this.chartArray$.length % 2 === 0;
+  }
 }

@@ -305,14 +305,4 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   nChartEven(){
     return this.chartArray$.length % 2 === 0;
   }
-
-  setEmptyCardStyle() {
-    if (this.chartArray$.length % 2 === 0) {
-      this.emptyCardStyle['padding-left'] = '15px';
-      this.emptyCardStyle['padding-right'] = '0.5rem';
-    } else {
-      this.emptyCardStyle['padding-left'] = '0.5rem';
-      this.emptyCardStyle['padding-right'] = '0';
-    }
-  }
 }
