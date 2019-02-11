@@ -1,34 +1,49 @@
 <div class="row rounded p-4 title-header h-100">
-  <div class="col-xl-6 col-lg-6 col-md-8">
-    <h1 class="my-auto float-left">Google Analytics</h1>
-    <h4 (click)="htmltoPDF()">Download</h4>
+  <div class="col-xl-4 col-lg-6 col-md-8">
+    <h2 class="my-auto float-left">Google Analytics</h2>
   </div>
-  <div class="col-xl-6 col-lg-6 col-md-4 my-auto">
-    <div>
-      <div class="btn-group float-right" dropdown>
-        <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
-                aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
-        </button>
+  <div class="col-xl-8 col-lg-6 col-md-4 my-auto">
+    <!--<div>-->
 
-        <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
-            aria-labelledby="button-date-filter">
-          <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Last 7 days</li>
-          <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Last 30 days</li>
-          <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
-        </ul>
-      </div> <!-- TODO Create a component custom like card -->
-      <input type="text" class="form-control float-right mr-3 filterDatePicker"
-             [(ngModel)]="bsRangeValue"
-             [minDate]="minDate"
-             [maxDate]="maxDate"
-             [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY' }"
-             (bsValueChange)="onValueChange($event)"
-             bsDaterangepicker>
-      <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
+    <div class="btn-group float-right ml-2" dropdown>
+      <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="button-export"><span class="caret"><i class="fas fa-download"></i></span>
+      </button>
+
+      <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-export">
+        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF</li>
+      </ul>
     </div>
-  </div>
-</div>
 
+    <div class="btn-group float-right" dropdown>
+      <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
+      </button>
+
+      <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-date-filter">
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Last 7 days</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Last 30 days</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
+      </ul>
+    </div> <!-- TODO Create a component custom like card -->
+    <input type="text" class="form-control float-right mr-3 filterDatePicker"
+           [(ngModel)]="bsRangeValue"
+           [minDate]="minDate"
+           [maxDate]="maxDate"
+           [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY' }"
+           (bsValueChange)="onValueChange($event)"
+           bsDaterangepicker>
+    <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
+    <!--</div>-->
+
+
+  </div>
+  <!--<div class="">-->
+
+  <!--</div>-->
+</div> <!-- Header -->
 <div class="row px-3 pt-3">
   <div class="col-lg-3 pl-0 pr-1">
     <div class="card mb-0">
@@ -43,7 +58,7 @@
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
                aria-valuemax="100"></div>
         </div>
       </div>
@@ -62,7 +77,7 @@
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25"
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25"
                aria-valuemin="0"
                aria-valuemax="100"></div>
         </div>
@@ -82,7 +97,7 @@
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
                aria-valuemax="100"></div>
         </div>
       </div>
@@ -108,7 +123,6 @@
     </div>
   </div>
 </div> <!-- Info cards -->
-
 <div class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
@@ -120,7 +134,10 @@
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
   </ng-template>
 
-  <app-emptycard *ngIf="!loading" [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}" class="col-lg-6 col-xl-6" [xlOrder]="2" [lgOrder]="2" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
+  <app-emptycard *ngIf="!loading"
+                 [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}"
+                 class="col-lg-6 col-xl-6" [xlOrder]="2" [lgOrder]="2"
+                 [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
 
   <!--<ngx-loading [show]="loading" [config]="config"></ngx-loading>-->
-</div>
+</div> <!-- Chart cards -->
