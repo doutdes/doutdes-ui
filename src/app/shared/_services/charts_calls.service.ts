@@ -13,7 +13,12 @@ export class ChartsCallsService {
   }
 
   public static cutString(str, maxLength) {
-    return str.length > maxLength ? str.substr(0, 30) + '...' : str;
+    if (str) {
+      return str.length > maxLength ? str.substr(0, 30) + '...' : str;
+    }
+    else {
+      return '...';
+    }
   }
 
   public retrieveChartData(ID, pageID?, intervalDate?: IntervalDate): Observable<any> {
@@ -159,7 +164,7 @@ export class ChartsCallsService {
             areaOpacity: 0.1
           }
         };
-        break; // Google PageViews
+        break; // Google PageViews (impressions by day)
       case 5:
         header = [['Date', 'Sessions']];
         // Push data pairs in the Chart array
@@ -227,7 +232,7 @@ export class ChartsCallsService {
             width: '100%'
           }
         };
-        break; // Google List Refferal
+        break; // Google List Referral
       case 8:
         header = [['Country', 'Popularity']];
         // Push data pairs in the Chart array
@@ -301,22 +306,14 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
-            hAxis: {
-              gridlines: {color: '#eaeaea', count: -1},
-              textStyle: {color: '#666', fontSize: 12, fontName: 'Roboto'},
-              minTextSpacing: 15
-            },
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-              minValue: 0,
-              format: 'percent'
-            },
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
             height: 210,
-            explorer: {},
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'}, minValue: 0, textPosition: 'in', textStyle: {color: '#999'}},
             colors: ['#FFA647'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
 

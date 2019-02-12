@@ -27,7 +27,10 @@
           <li class="nav-item dropdown">
             <a class="nav-link nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                aria-expanded="false">
-              <i class="mr-1 text-white">Hi, <b>{{username}}</b>!</i>
+              <div class="mr-1" style="float:left; margin-top:-4px">
+                <span class="text-white" style="float:right; font-size:10pt">Signed in as <b style="font-size:13pt">{{username}}</b></span><br>
+                <span style="font-size:7pt; color: #ccc; float:right">Today is {{today}}</span>
+              </div>
               <!--<i class="fa fa-2x fa-user-tie"></i>-->
               <img class="img-avatar" src="assets/img/avatars/4.jpg" alt="admin@bootstrapmaster.com">
             </a>

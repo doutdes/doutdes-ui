@@ -32,6 +32,9 @@ export class FilterActions {
     this.filter.subscribe(elements => {
       this.originalData = elements['originalData'];
       this.filteredData = elements['dataFiltered'];
+
+      console.log("FILTERED:");
+      console.log(this.filteredData);
     });
   }
 
@@ -79,7 +82,8 @@ export class FilterActions {
 
   filterByDateInterval(unfiltered, filterInterval: IntervalDate) {
 
-    const unfilteredData = JSON.parse(JSON.stringify(unfiltered)); // Loses the reference to original data
+
+    const unfilteredData = JSON.parse(JSON.stringify(unfiltered)); // Looses the reference to original data
     const filtered = [];
 
     const FACEBOOK_TYPE = 1;
@@ -122,8 +126,6 @@ export class FilterActions {
               paddingRows = labels.length % 10 ? 10 - (labels.length % 10) : 0;
               for (let i = 0; i < paddingRows; i++){
                 labels.push([null,null]);
-                console.log('FILTER ACTION PADDING :' + chartClass);
-                console.log('labels');
               }
             }
 
@@ -144,6 +146,8 @@ export class FilterActions {
 
           chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
           chart.aggregated = this.ADService.getAggregatedData(tmpData, chart.chart_id, filterInterval);
+
+          console.log(tmpData);
 
           filtered.push(chart);
 

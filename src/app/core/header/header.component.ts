@@ -19,6 +19,7 @@ export class HeaderComponent {
 
   isUserLoggedIn = false;
   username: string;
+  today: string;
 
   constructor(
     private actions: LoginActions,
@@ -26,6 +27,10 @@ export class HeaderComponent {
     private authService: AuthenticationService,
     private globalEventService: GlobalEventsManagerService
   ) {
+
+    this.today = new Date().toLocaleString();
+    this.today = this.today.substr(0, this.today.length - 10); // I know this is evil, but i'm lazy
+
     this.globalEventService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value;
       this.username = this.localStore.getUserNames();
