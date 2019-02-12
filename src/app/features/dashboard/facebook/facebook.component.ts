@@ -66,7 +66,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async loadDashboard() {
-
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
@@ -96,16 +95,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
       .subscribe(charts => {
 
-        if(charts && charts.length > 0) { // Checking if dashboard is not empty
+        if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
           charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
-
           forkJoin(observables)
             .subscribe(dataArray => {
               for (let i = 0; i < dataArray.length; i++) {
 
                 let chart: DashboardCharts = charts[i];
-
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                   // Cleaning data // TODO this should be fixed at mount

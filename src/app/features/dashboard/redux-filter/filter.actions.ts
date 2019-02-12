@@ -88,6 +88,7 @@ export class FilterActions {
 
     const FACEBOOK_TYPE = 1;
     const GOOGLE_TYPE = 2;
+    const INSTAGRAM_TYPE = 3;
 
     if (unfilteredData) {
 
@@ -151,7 +152,7 @@ export class FilterActions {
 
           filtered.push(chart);
 
-        } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
+        } else if (chart.type == FACEBOOK_TYPE || chart.type == INSTAGRAM_TYPE) { // Facebook Insights charts
 
           let tmpData = [];
 

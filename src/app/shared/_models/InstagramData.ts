@@ -1,15 +1,16 @@
-export interface FbPage {
+export interface IgPage {
   name: string;
   id: string;
 }
 
-export interface FbAnyData {
+export interface IgAnyData {
   value: Array<any>;
   end_time: Date;
 }
 
-
-export interface FbNumberData {
+export interface IgNumberData {
   value: number;
   end_time: Date;
 }
+
+

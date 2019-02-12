@@ -9,7 +9,8 @@ import {GoogleChartComponent} from 'ng2-google-charts';
 
 const enum Type {
   Facebook = 1,
-  Google = 2
+  Google = 2,
+  Instagram = 3
 };
 
 @Component({
@@ -63,6 +64,11 @@ export class CardComponent implements OnInit {
         this.icon = 'fab fa-google';
         this.background = '#FBEEEB';
         this.color = '#DB5D43';
+        break;
+      }
+      case Type.Instagram: {
+        this.icon = 'fa-instagram';
+        this.background = '#e7008a';
         break;
       }
       default: {
