@@ -34,24 +34,11 @@ export class InstagramService {
         return this.http.get<IgAnyData[]>(this.formatURL('audlocale', pageID), {headers});
       case 19:
         return this.http.get<IgAnyData[]>(this.formatURL('onlinefollowers', pageID), {headers});
-      case 24:
-        return this.http.get<IgNumberData[]>(this.formatURL('phonecallclicks', pageID), {headers});
-      case 25:
-        return this.http.get<IgNumberData[]>(this.formatURL('profileviews', pageID), {headers});
-      case 26:
-        return this.http.get<IgNumberData[]>(this.formatURL('reach', pageID), {headers});
-      case 27:
-        return this.http.get<IgNumberData[]>(this.formatURL('textmessagclicks', pageID), {headers});
-      case 28:
-        return this.http.get<IgNumberData[]>(this.formatURL('websiteclicks', pageID), {headers});
-
     }
   }
-  getNumericData(pageID, ID)
-  {
+  getNumericData(pageID, ID) {
     const headers = this.getAuthorization();
-    switch(ID)
-    {
+    switch (ID) {
       case 20:
         return this.http.get<IgNumberData[]>(this.formatURL('emailcontacts', pageID), {headers});
       case 21:
@@ -60,11 +47,21 @@ export class InstagramService {
         return this.http.get<IgNumberData[]>(this.formatURL('getdirclicks', pageID), {headers});
       case 23:
         return this.http.get<IgNumberData[]>(this.formatURL('impressions', pageID), {headers});
+      case 24:
+        return this.http.get<IgNumberData[]>(this.formatURL('phonecallclicks', pageID), {headers});
+      case 25:
+        return this.http.get<IgNumberData[]>(this.formatURL('profileviews', pageID), {headers});
+      case 26:
+        return this.http.get<IgNumberData[]>(this.formatURL('reach', pageID), {headers});
+      case 27:
+        return this.http.get<IgNumberData[]>(this.formatURL('textmessageclicks', pageID), {headers});
+      case 28:
+        return this.http.get<IgNumberData[]>(this.formatURL('websiteclicks', pageID), {headers});
 
     }
   }
 
-  private formatURL(call, pageID=null) {
+  private formatURL (call, pageID = null) {
     const aux = pageID ? (pageID + '/' + call) : call;
     return 'http://' + environment.host + ':' + environment.port + '/ig/' + aux;
   }

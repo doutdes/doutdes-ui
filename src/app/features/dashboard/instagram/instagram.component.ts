@@ -18,7 +18,7 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 const PrimaryWhite = '#ffffff';
 
 @Component({
-  selector: 'app-feature-dashboard-facebook',
+  selector: 'app-feature-dashboard-instagram',
   templateUrl: './instagram.component.html'
 })
 
@@ -85,7 +85,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.GEService.loadingScreen.next(true);
 
     // Retrieving dashboard ID
-    const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
+    const dash = await this.DService.getDashboardByType(3 ).toPromise(); // Instagram type
 
     // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
     this.pageID = (await this.IGService.getPages().toPromise())[0].id;
@@ -93,7 +93,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
     } else {
-      console.error('Cannot retrieve a valid ID for the Facebook dashboard.');
+      console.error('Cannot retrieve a valid ID for the Instagram dashboard.');
       return;
     }
 
@@ -141,8 +141,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
               this.GEService.loadingScreen.next(false);
 
               const dateInterval: IntervalDate = {
-                dataStart: this.minDate,
-                dataEnd: this.maxDate
+                first: this.minDate,
+                last: this.maxDate
               };
 
               this.filterActions.initData(chartsToShow, dateInterval);
@@ -165,10 +165,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
-
+    console.log(chartToPush);
     const intervalDate: IntervalDate = {
-      dataStart: this.bsRangeValue[0],
-      dataEnd: this.bsRangeValue[1]
+      first: this.bsRangeValue[0],
+      last: this.bsRangeValue[1]
     };
 
     this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
@@ -198,8 +198,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        dataStart: value[0],
-        dataEnd: value[1].setHours(23, 59, 59, 999)
+        first: value[0],
+        last: value[1].setHours(23, 59, 59, 999)
       };
 
       this.filterActions.filterData(dateInterval);

@@ -6,6 +6,7 @@ import {GoogleAnalyticsService} from './googleAnalytics.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {DashboardCharts} from '../_models/DashboardCharts';
+import {k} from '@angular/core/src/render3';
 
 @Injectable()
 export class ChartsCallsService {
@@ -52,12 +53,12 @@ export class ChartsCallsService {
       case 17:
       case 18:
       case 19:
+        return this.InstagramService.getAnyData(pageID, ID);
       case 24:
       case 25:
       case 26:
       case 27:
       case 28:
-        return this.InstagramService.getAnyData(pageID, ID);
       case 20:
       case 21:
       case 22:
@@ -72,7 +73,7 @@ export class ChartsCallsService {
     let formattedData;
     let header;
     let type;
-    const chartArray = [];
+    let chartArray = [];
     const impressChartArray = [];
     let paddingRows = 0;
     let arr = [];
@@ -135,6 +136,9 @@ export class ChartsCallsService {
           impressChartArray.push([new Date(data[i].end_time), data[i].value]);
         }
 
+        console.log(JSON.parse(JSON.stringify(impressChartArray)));
+
+
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(impressChartArray),
@@ -160,6 +164,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
+
 
         formattedData = {
           chartType: 'AreaChart',
@@ -202,7 +207,7 @@ export class ChartsCallsService {
         header = [['Type', 'Date', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0],parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
 
         formattedData = {
@@ -277,7 +282,7 @@ export class ChartsCallsService {
         header = [['Type', 'Date', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0],parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
         formattedData = {
           chartType: 'ColumnChart',
@@ -371,7 +376,7 @@ export class ChartsCallsService {
         };
         break; // Google Average Session Duration
       case 12:
-        header = [['Browser','Date', 'Sessions']];
+        header = [['Browser', 'Date', 'Sessions']];
 
         paddingRows = data.length % 10 ? 10 - (data.length % 10) : 0;
 
@@ -446,6 +451,183 @@ export class ChartsCallsService {
           }
         };
         break; // Facebook Fan City
+      case 15:
+        header = [['City', 'Fans']];
+
+        arr = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+        });
+
+        paddingRows = arr.length % 10 ? 10 - (arr.length % 10) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          arr.push(['', null]);
+        }
+
+        formattedData = {
+          chartType: 'Table',
+          dataTable: header.concat(arr),
+          chartClass: 14,
+          options: {
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sortColumn: 1,
+            pageSize: 10,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; //IG Audience City
+      case 16:
+        header = [['Country', 'Popularity']];
+        arr = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
+        });
+
+        formattedData = {
+          chartType: 'GeoChart',
+          dataTable: header.concat(arr),
+          chartClass: 2,
+          options: {
+            region: 'world',
+            colors: ['#ff00a7'],
+            colorAxis: {colors: ['#ff96db', '#ff00a7']},
+            backgroundColor: '#fff',
+            datalessRegionColor: '#eee',
+            defaultColor: '#333',
+            height: '300',
+          }
+        };
+        break; //IG Audience Country
+      case 17:
+        header = [['Country', 'Male', 'Female']]; /// TODO: fix containsGeoData to use header != 'Country'
+        let keys = Object.keys(data[0]['value']); // getting all the gender/age data
+
+        // putting a unique entry in chartArray for every existent age range
+        for (let i = 0; i < keys.length; i++) {
+          let index = 0;
+          if (!(chartArray.find(e => e[0] === (keys[i].substr(2, keys.length))))) {
+            chartArray.push([keys[i].substr(2, keys.length), 0, 0]);
+            index = (chartArray.length - 1);
+          } else {
+            index = chartArray.findIndex(e => e[0] === (keys[i].substr(2, keys.length)));
+          }
+          // and collecting data
+          (keys[i].substr(0, 1) === 'M') ? chartArray[index][2] = parseInt(data[0]['value'][keys[i]], 10) : chartArray[index][1] = parseInt(data[0]['value'][keys[i]], 10);
+        }
+
+
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: header.concat(chartArray),
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#388aff','#ff96db'],
+            areaOpacity: 0.4,
+          }
+        };
+        break; //IG Audience Gender/Age
+      case 18:
+        header = [['Country', 'Number']]; /// TODO: fix containsGeoData to use header != 'Country'
+        keys = Object.keys(data[0]['value']); // getting all the gender/age data
+
+        // putting a unique entry in chartArray for every existent age range
+        for (let i = 0; i < keys.length; i++) {
+            chartArray.push([keys[i], parseInt(data[0]['value'][keys[i]], 10) ]);
+          }
+        chartArray.sort(function(obj1, obj2) {
+          // Ascending: first age less than the previous
+          return -(obj1[1] - obj2[1]);
+        });
+
+        let other = [['Other', 0]];
+        chartArray.slice(4, chartArray.length).forEach(el => {
+            other[0][1] += el[1];
+        });
+        chartArray = chartArray.slice(0, 4);
+
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: header.concat(chartArray.concat(other)),
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#ff96db'],
+            areaOpacity: 0.4,
+          }
+        };
+        break; //IG Audience Locale
+      case 19:
+        break;
+      case 23:
+        header = [['Date', 'Impressions']];
+        // Push data pairs in the Chart array
+
+        // console.log(data);
+
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([new Date(data[i].end_time), data[i].value]);
+        }
+
+        console.log(JSON.parse(JSON.stringify(chartArray)));
+
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(chartArray),
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            legend: {position: 'none'},
+            height: 210,
+            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#ff96db'],
+            areaOpacity: 0.4
+          }
+        };
+      case 24:
+        break;
+      case 25:
+        break;
+      case 26:
+        header = [['Date', 'Reach']];
+        // Push data pairs in the Chart array
+
+        // console.log(data);
+
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([new Date(data[i].end_time), data[i].value]);
+        }
+
+        console.log(JSON.parse(JSON.stringify(chartArray)));
+
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: header.concat(chartArray),
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#ff96db'],
+            areaOpacity: 0.4,
+          }
+        };
+        break; //IG Reach
+      case 27:
+        break;
+      case 28:
+        break;
+
     }
 
     return formattedData;

@@ -45,8 +45,6 @@ export class FilterActions {
 
   filterData(dateInterval: IntervalDate) {
 
-    console.log('ORIGINAL:');
-    console.log(this.originalData);
 
     const filteredData = this.filterByDateInterval(this.originalData, dateInterval);
     this.Redux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
@@ -61,7 +59,6 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
-
     this.originalData.push(chart);
     this.filteredData.push(chart);
 
@@ -84,6 +81,7 @@ export class FilterActions {
 
     const FACEBOOK_TYPE = 1;
     const GOOGLE_TYPE = 2;
+    const INSTAGRAM_TYPE = 3;
 
     if (unfilteredData) {
 
@@ -135,19 +133,17 @@ export class FilterActions {
 
           filtered.push(chart);
 
-        } else if (chart.type == FACEBOOK_TYPE) { // Facebook Insights charts
+        } else if (chart.type == FACEBOOK_TYPE || chart.type == INSTAGRAM_TYPE) { // Facebook Insights charts
 
           let tmpData = [];
 
           // If the chart is a geomap or a pie, it just take data of the last day of the interval
           if (this.CCService.containsGeoData(chart)) {
-
             tmpData = chart.geoData.filter(el => (new Date(el.end_time)) <= (new Date(filterInterval.last)));
             chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
           } else {
 
             let datatable = chart.chartData.dataTable;
-
             datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
             tmpData = tmpData.filter(el => el[0] >= filterInterval.first && el[0] <= filterInterval.last);
 
