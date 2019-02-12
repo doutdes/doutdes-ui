@@ -12,18 +12,18 @@
   </div>
 
   <!-- CARD WITH CHART -->
-  <div class="rounded-top" *ngIf="!dashChart.error" [ngStyle]="{'backgroundColor': background}"
-       style="padding:10px; color: #fff">
+  <div class="rounded-top" *ngIf="!dashChart.error" [ngStyle]="{'backgroundColor': background, 'color': color, 'border-bottom' : '2px solid ' + color}"
+       style="padding:10px;">
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
     <span style="font-size:14pt">{{dashChart.title}}</span><span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart.format}})</span>
   </div>
-  <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px" class="rounded-bottom border">
+  <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px; border-top: 0px !important;" class="rounded-bottom border">
 
-    <div *ngIf="this.type == 'ga_bounce' || this.type == 'ga_impressions' || this.type == 'ga_avgsessionduration'" style="font-size:18px; font-variant:small-caps; min-height: 100px; font-weight:400; font-family:Roboto;">
-      average: <b>{{this.avg}}</b><!-- (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb">*</span>-->
-      <div style="font-size:14px;">
-        lowest: <b>{{this.low}}</b><br /> <!-- <b style="color: #267F00"> COLORE  VERDE-->
-        highest: <b>{{this.high}}</b>
+    <div *ngIf="this.type == 'ga_bounce' || this.type == 'ga_impressions' || this.type == 'ga_avgsessionduration'" style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;">
+      <i class="fas fa-chart-line mr-1" style="color:rgba(249,193,0,0.88)"></i> AVERAGE: <b>{{this.avg}}</b> (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb"></span>
+      <div style="font-size:12px;">
+        <i class="fas fa-arrow-down mr-2" style="color:#168aad"></i> MIN: <b>{{this.low}}</b> <!--(<b style="color:#267F00">+0.67%</b> <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#bbb"></span>--><br />
+        <i class="fas fa-arrow-up mr-2" style="color:#9f2548"></i> MAX: <b>{{this.high}}</b>
       </div>
       <!--<div style="font-size:11px; font-variant:none; color:#bbb">{{this.interval}}</div>-->
     </div>
@@ -33,8 +33,8 @@
   </div>
 
   <!-- CARD WITH ERROR -->
-  <div class="rounded-top" *ngIf="dashChart.error" [ngStyle]="{'backgroundColor': background}"
-       style="padding:10px; color: #fff">
+  <div class="rounded-top" *ngIf="dashChart.error" [ngStyle]="{'backgroundColor': background, 'color': color}"
+       style="padding:10px">
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
     <span style="font-size:14pt">{{dashChart.title}}</span>
   </div>

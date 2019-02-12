@@ -1,7 +1,7 @@
 <nav aria-label="breadcrumb" class="" *ngIf="isUserLoggedIn">
-  <ol class="breadcrumb border border-info border-left-0 border-right-0">
+  <ol class="breadcrumb border rounded" style="color:#666 !important;">
     <li *ngFor="let item of breadList" class="breadcrumb-item">
-      <a [routerLink]="[item.url]">{{item.label}}</a>
+      <a [routerLink]="[item.url]" style="color:#666 !important;">{{item.label}}</a>
     </li>
   </ol>
 </nav>

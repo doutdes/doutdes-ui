@@ -1,38 +1,131 @@
-<div class="row bg-white rounded p-4 title-header h-100">
-  <div class="col-xl-8 col-lg-6 col-md-8">
-    <img src="/assets/img/website-head.png" class="float-left"/>
-    <h1 class="display-4 my-auto float-left ml-3" style="color:#888">Website stats</h1>
+<div class="row rounded p-4 title-header h-100">
+  <div class="col-xl-4 col-lg-6 col-md-8">
+    <h2 class="my-auto float-left">Google Analytics</h2>
   </div>
-  <div class="col-xl-4 col-lg-6 col-md-4 my-auto">
-    <div>
-      <div class="btn-group float-right" dropdown>
-        <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
-                aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
-        </button>
+  <div class="col-xl-8 col-lg-6 col-md-4 my-auto">
+    <!--<div>-->
 
-        <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
-            aria-labelledby="button-date-filter">
-          <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Last 7 days</li>
-          <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Last 30 days</li>
-          <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
-          <li class="dropdown-item">Custom</li>
-        </ul>
-      </div> <!-- TODO Create a component custom like card -->
-      <input type="text" class="form-control float-right mr-3 filterDatePicker"
-             [(ngModel)]="bsRangeValue"
-             [minDate]="minDate"
-             [maxDate]="maxDate"
-             [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY' }"
-             (bsValueChange)="onValueChange($event)"
-             bsDaterangepicker>
-      <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
+    <div class="btn-group float-right ml-2" dropdown>
+      <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="button-export"><span class="caret"><i class="fas fa-download"></i></span>
+      </button>
+
+      <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-export">
+        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF</li>
+      </ul>
+    </div>
+
+    <div class="btn-group float-right" dropdown>
+      <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
+      </button>
+
+      <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-date-filter">
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Last 7 days</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Last 30 days</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
+      </ul>
+    </div> <!-- TODO Create a component custom like card -->
+    <input type="text" class="form-control float-right mr-3 filterDatePicker"
+           [(ngModel)]="bsRangeValue"
+           [minDate]="minDate"
+           [maxDate]="maxDate"
+           [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY' }"
+           (bsValueChange)="onValueChange($event)"
+           bsDaterangepicker>
+    <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
+    <!--</div>-->
+
+
+  </div>
+  <!--<div class="">-->
+
+  <!--</div>-->
+</div> <!-- Header -->
+<div class="row px-3 pt-3">
+  <div class="col-lg-3 pl-0 pr-1">
+    <div class="card mb-0">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="text-value">87.500</div>
+            <small class="text-muted text-uppercase font-weight-bold">Visitors</small>
+          </div>
+          <div class="h1 text-muted my-2 col-md-4">
+            <i class="icon-people"></i>
+          </div>
+        </div>
+        <div class="progress progress-xs mt-3 mb-0">
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
+  <div class="col-lg-3 px-1">
+    <div class="card mb-0">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="text-value">385</div>
+            <small class="text-muted text-uppercase font-weight-bold">New Clients</small>
+          </div>
+          <div class="h1 text-muted my-2 col-md-4">
+            <i class="icon-user-follow"></i>
+          </div>
+        </div>
+        <div class="progress progress-xs mt-3 mb-0">
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25"
+               aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3 px-1">
+    <div class="card mb-0">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="text-value">28%</div>
+            <small class="text-muted text-uppercase font-weight-bold">Ret. Visitors</small>
+          </div>
+          <div class="h1 text-muted my-2 col-md-4">
+            <i class="icon-pie-chart"></i>
+          </div>
+        </div>
+        <div class="progress progress-xs mt-3 mb-0">
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-3 pl-1 pr-0">
+    <div class="card mb-0">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="text-value">5:34:11</div>
+            <small class="text-muted text-uppercase font-weight-bold">Avg. Time</small>
+          </div>
+          <div class="h1 text-muted my-2 col-md-4">
+            <i class="icon-speedometer"></i>
+          </div>
+        </div>
+        <div class="progress progress-xs mt-3 mb-0">
+          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> <!-- Info cards -->
 <div class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
-    <div *ngFor="let chart of chartArray$" class="col-xl-4 col-lg-6 pt-3 order-xl-1 order-lg-1">
+    <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
       <app-card [dashChart]="chart"></app-card>
     </div>
   </ng-container>
@@ -41,7 +134,10 @@
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
   </ng-template>
 
-  <app-emptycard *ngIf="!loading" class="col-lg-6 col-xl-4 " [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
+  <app-emptycard *ngIf="!loading"
+                 [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}"
+                 class="col-lg-6 col-xl-6" [xlOrder]="2" [lgOrder]="2"
+                 [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
 
-  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
-</div>
+  <!--<ngx-loading [show]="loading" [config]="config"></ngx-loading>-->
+</div> <!-- Chart cards -->

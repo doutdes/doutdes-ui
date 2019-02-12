@@ -22,6 +22,11 @@ export class ApiKeysService {
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
+  revokePermissions(idService: number) {
+    const headers = this.getAuthorization();
+    return this.http.request('delete', this.formatUrl('revokePermissions/' + idService), {headers});
+  }
+
   getAllKeys() {
     return this.http.get<ApiKey[]>(this.formatUrl('getAll'));
   }

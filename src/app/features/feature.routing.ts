@@ -20,6 +20,13 @@ import {P404Component} from '../errors/404.component';
             pathMatch: 'full'
           },
           {
+            path: 'report',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './report/report.module#FeatureReportModule'
+          },
+          {
             path: 'dashboard',
             canActivate: [
               IsAuthenticatedGuard
@@ -27,15 +34,15 @@ import {P404Component} from '../errors/404.component';
             loadChildren: './dashboard/dashboard.module#FeatureDashboardModule',
           },
           {
+            path: 'authentication',
+            loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
+          },
+          {
             path: 'preferences',
             canActivate: [
               IsAuthenticatedGuard
             ],
             loadChildren: './preferences/preferences.module#FeaturePreferencesModule',
-          },
-          {
-            path: 'authentication',
-            loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
           },
           {
             path: 'calendar',

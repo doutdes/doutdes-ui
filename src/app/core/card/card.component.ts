@@ -62,7 +62,8 @@ export class CardComponent implements OnInit {
       }
       case Type.Google: {
         this.icon = 'fab fa-google';
-        this.background = '#DB5D43';
+        this.background = '#FBEEEB';
+        this.color = '#DB5D43';
         break;
       }
       case Type.Instagram: {
@@ -76,24 +77,7 @@ export class CardComponent implements OnInit {
     }
 
     if (this.aggregated) {
-      this.type = this.dashChart.aggregated.type;
-
-      let unit = '';
-
-      // Formatting extra data, if exists
-      if (this.type == 'ga_bounce') {
-        unit = ' %';
-      }
-      else if (this.type == 'ga_avgsessionduration') {
-
-        unit = ' s';
-      }
-
-      this.avg = this.dashChart.aggregated.average ? (this.dashChart.aggregated.average).toFixed(2) + unit : '';      // Average
-      this.low = this.dashChart.aggregated.lowest ? (this.dashChart.aggregated.lowest).toFixed(2) + unit : '';        // Lowest value
-      this.high = this.dashChart.aggregated.highest ? (this.dashChart.aggregated.highest).toFixed(2) + unit : '';     // Highest value
-      this.interval = 'BASE INTERVAL: ' + new Date(this.dashChart.aggregated.interval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.interval.last).toLocaleString() +
-      ' | PREVIOUS: ' + new Date(this.dashChart.aggregated.previousInterval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.previousInterval.last).toLocaleString();
+      this.handleAggregated();
     }
 
     this.updateChartForm = this.formBuilder.group({
@@ -128,6 +112,35 @@ export class CardComponent implements OnInit {
 
   chartResizer(): void {
     this.mychart.draw();
+  }
+
+  handleAggregated(): void {
+    this.type = this.dashChart.aggregated.type;
+    this.avg = '';
+    this.low = '';
+    this.high = '';
+
+    let unit = '';
+
+    switch (this.type) {
+      case 'ga_bounce'             :  unit = ' %'; break;
+      case 'ga_avgsessionduration' :  unit = ' s'; break;
+    }
+
+    if (this.dashChart.aggregated.average) {
+      this.avg = this.dashChart.aggregated.average.toFixed(2) + unit;
+    }
+
+    if (this.dashChart.aggregated.lowest) {
+      this.low = this.type == 'ga_impressions' ? this.dashChart.aggregated.lowest.toFixed(0) + unit : this.dashChart.aggregated.lowest.toFixed(2) + unit;
+    }
+
+    if (this.dashChart.aggregated.highest) {
+      this.high = this.type == 'ga_impressions' ? this.dashChart.aggregated.highest.toFixed(0) + unit : this.dashChart.aggregated.highest.toFixed(2) + unit;
+    }
+
+    //this.interval = 'BASE INTERVAL: ' + new Date(this.dashChart.aggregated.interval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.interval.last).toLocaleString() +
+    //' | PREVIOUS: ' + new Date(this.dashChart.aggregated.previousInterval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.previousInterval.last).toLocaleString();
   }
 
   openModal(template: TemplateRef<any>) {

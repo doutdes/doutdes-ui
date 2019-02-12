@@ -25,9 +25,12 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   services$ = {};
   D_TYPE = D_TYPE;
 
+  private envURL = 'http://' + environment.host + ':' + environment.port;
+
   fbLoginURL: string;
   igLoginURL: string;
   gaLoginURL: string;
+  ytLoginURL: string;
 
   loading;
   allGranted = true;
@@ -56,10 +59,6 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     this.addBreadcrumb();
     this.geManager.loadingScreen.next(true);
     await this.updateList();
-
-    this.fbLoginURL = 'http://' + environment.host + ':' + environment.port + '/fb/login?user_id=' + this.store.getId();
-    this.igLoginURL = 'http://' + environment.host + ':' + environment.port + '/ig/login?user_id=' + this.store.getId();
-    this.gaLoginURL = 'http://' + environment.host + ':' + environment.port + '/ga/login?user_id=' + this.store.getId();
   }
 
   async updateList(){
@@ -75,9 +74,17 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
         this.services$[services[i].type] = services[i];
         this.allGranted = this.allGranted && services[i].granted;
       }
-
       this.geManager.loadingScreen.next(false);
     });
+
+    this.setURL();
+  }
+
+  setURL() {
+    this.fbLoginURL = this.envURL + '/fb/login?user_id=' + this.store.getId();
+    this.igLoginURL = this.envURL + '/ig/login?user_id=' + this.store.getId();
+    this.gaLoginURL = this.envURL + (this.services$[D_TYPE.YT].granted ? '/ga/yt' : '/ga') + '/login?user_id=' + this.store.getId();
+    this.ytLoginURL = this.envURL + (this.services$[D_TYPE.GA].granted ? '/ga/yt' : '/yt') + '/login?user_id=' + this.store.getId();
   }
 
   ngOnDestroy(): void {

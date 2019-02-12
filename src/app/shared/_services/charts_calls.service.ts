@@ -136,9 +136,6 @@ export class ChartsCallsService {
           impressChartArray.push([new Date(data[i].end_time), data[i].value]);
         }
 
-        console.log(JSON.parse(JSON.stringify(impressChartArray)));
-
-
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(impressChartArray),
@@ -165,7 +162,6 @@ export class ChartsCallsService {
           chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
 
-
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
@@ -173,11 +169,14 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
             height: 210,
-            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'}, minValue: 0, textPosition: 'in', textStyle: {color: '#999'}},
             colors: ['#FFA647'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
         break; // Google PageViews
@@ -227,16 +226,12 @@ export class ChartsCallsService {
         };
         break; // Google pie end
       case 7:
-        header = [['Website', 'Views']];
-        paddingRows = data.length % 10 ? 10 - (data.length % 10) : 0; // if data.length % 10 != 0, add padding
+        header = [['Website', 'Date', 'Views']];
 
-        for (let i = 0; i < data.length + paddingRows; i++) {
-          if (i >= data.length) {
-            chartArray.push(['', null]);
-          } else {
-            chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
-          }
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
+
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),
@@ -378,15 +373,10 @@ export class ChartsCallsService {
       case 12:
         header = [['Browser', 'Date', 'Sessions']];
 
-        paddingRows = data.length % 10 ? 10 - (data.length % 10) : 0;
-
-        for (let i = 0; i < data.length + paddingRows; i++) {
-          if (i >= data.length) {
-            chartArray.push(['', null, null]);
-          } else {
-            chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
-          }
+        for (let i = 0; i < data.length; i++) {
+          chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
+
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(chartArray),

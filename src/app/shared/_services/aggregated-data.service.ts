@@ -21,13 +21,14 @@ export class AggregatedDataService {
 
       case 4: //GA impressions
         type = 'ga_impressions';
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 1; i < data.length; i++) { // i=0 is the header
           const value = parseInt(data[i][1]);
           sum += value;
           highest = value > highest ? value : highest;
           lowest = value < lowest ? value : lowest;
         }
-        resultData = {average: sum / data.length, highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
+
+        resultData = {average: sum / (data.length - 1), highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
         break;
       case 10: // GA bounce rate
         type = 'ga_bounce';

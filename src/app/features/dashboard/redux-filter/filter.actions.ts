@@ -44,11 +44,8 @@ export class FilterActions {
   }
 
   filterData(dateInterval: IntervalDate) {
-
-
     const filteredData = this.filterByDateInterval(this.originalData, dateInterval);
     this.Redux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
-
   }
 
   updateChart(index: number, newTitle: string) {
@@ -59,10 +56,18 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
+
     this.originalData.push(chart);
-    this.filteredData.push(chart);
+    this.filteredData.push(JSON.parse(JSON.stringify(chart)));
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+
+    console.log('FILTER ACTION original data');
+    console.log(this.originalData);
+
+
+    console.log('FILTER ACTION filtered data');
+    console.log(this.filteredData);
   }
 
   removeChart(id: number) {
@@ -70,8 +75,6 @@ export class FilterActions {
     let filtered = this.filteredData.filter((chart) => chart.chart_id !== id);
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: original, dataFiltered: filtered});
-
-
   }
 
   filterByDateInterval(unfiltered, filterInterval: IntervalDate) {
@@ -95,9 +98,8 @@ export class FilterActions {
           let datatable = chart.chartData.dataTable;
           let chartClass = chart.chartData.chartClass || -1;
 
-
-          if (chartClass == 6 || chartClass == 9 || chartClass == 12) { //Google Pie Sources Chart OR Google Columns Sources Chart
-                                                                        // OR Google Browser Chart
+          if (chartClass == 6 || chartClass == 7 || chartClass == 9 || chartClass == 12) { //Google Pie Sources Chart OR Google Columns Sources Chart
+                                                                        // OR Google Browser Chart OR Google Most Visited
             let partialData = [];
             let labels = [];
 
@@ -116,6 +118,16 @@ export class FilterActions {
               }
             }
 
+            if(chartClass == 7 || chartClass == 12) { // add blank cells to browser chart
+              let paddingRows = 0;
+              paddingRows = labels.length % 10 ? 10 - (labels.length % 10) : 0;
+              for (let i = 0; i < paddingRows; i++){
+                labels.push([null,null]);
+                console.log('FILTER ACTION PADDING :' + chartClass);
+                console.log('labels');
+              }
+            }
+
             tmpData.push([datatable[0][0], datatable[0][2]]);
             tmpData = tmpData.concat(labels);
           }
@@ -127,9 +139,12 @@ export class FilterActions {
           }
           chart.chartData.dataTable = tmpData; // Concatening header
 
-          if (chartClass == 11) {
-            this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
-          }
+          //if (chartClass == 11) {
+          //  this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
+          //}
+
+          chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
+          chart.aggregated = this.ADService.getAggregatedData(tmpData, chart.chart_id, filterInterval);
 
           filtered.push(chart);
 
@@ -139,18 +154,23 @@ export class FilterActions {
 
           // If the chart is a geomap or a pie, it just take data of the last day of the interval
           if (this.CCService.containsGeoData(chart)) {
+
             tmpData = chart.geoData.filter(el => (new Date(el.end_time)) <= (new Date(filterInterval.last)));
             chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
           } else {
 
             let datatable = chart.chartData.dataTable;
+
             datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
             tmpData = tmpData.filter(el => el[0] >= filterInterval.first && el[0] <= filterInterval.last);
+
+            // TODO handle aggregated data here
 
             chart.chartData.dataTable = [datatable.shift()].concat(tmpData); // Concatening header
           }
 
           //this.ADService.updateAggregatedIntervals(filterInterval, chart.aggregated); // Updating aggregated data
+
           filtered.push(chart);
 
         } else {

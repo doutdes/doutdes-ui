@@ -7,6 +7,8 @@ import {IsAuthenticatedGuard} from '../shared/_guards/is-authenticated.guard';
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {P404Component} from '../errors/404.component';
 import {P500Component} from '../errors/500.component';
+import {NgxLoadingModule} from 'ngx-loading';
+import {GlobalEventsManagerService} from '../shared/_services/global-event-manager.service';
 
 @NgModule({
   declarations: [
@@ -19,9 +21,11 @@ import {P500Component} from '../errors/500.component';
     SharedModule,
     CoreModule,
     PerfectScrollbarModule,
+    NgxLoadingModule.forRoot({}),
   ],
   providers: [
-    IsAuthenticatedGuard
+    IsAuthenticatedGuard,
+    GlobalEventsManagerService
   ],
   exports: [
 
