@@ -15,6 +15,7 @@ import {GlobalEventsManagerService} from '../../../shared/_services/global-event
 import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
+import {UserService} from '../../../shared/_services/user.service';
 
 
 @NgModule({
@@ -39,6 +40,7 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
     ChartsCallsService,
     BreadcrumbActions,
     FilterActions,
+    UserService,
     GlobalEventsManagerService
   ],
   exports: [

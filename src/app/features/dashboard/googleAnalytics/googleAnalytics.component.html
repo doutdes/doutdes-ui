@@ -1,11 +1,10 @@
-<div class="row rounded p-4 title-header h-100">
-  <div class="col-xl-4 col-lg-6 col-md-8">
+<div class="row rounded p-sm-4 p-2 title-header h-100">
+  <div class="col-xl-5 col-md-4 col-12 d-sm-block d-none">
     <h2 class="my-auto float-left">Google Analytics</h2>
-  </div>
-  <div class="col-xl-8 col-lg-6 col-md-4 my-auto">
-    <!--<div>-->
-
-    <div class="btn-group float-right ml-2" dropdown>
+  </div> <!-- Title -->
+  <div class="col-xl-7 col-md-8 col-12 mt-sm-3 my-md-auto">
+    <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
+    <div class="btn-group float-right ml-lg-1 ml-sm-2 d-sm-block d-none" dropdown>
       <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
               aria-controls="button-export"><span class="caret"><i class="fas fa-download"></i></span>
       </button>
@@ -14,9 +13,8 @@
           aria-labelledby="button-export">
         <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF</li>
       </ul>
-    </div>
-
-    <div class="btn-group float-right" dropdown>
+    </div> <!-- PDF export -->
+    <div class="btn-group float-right d-sm-block d-none" dropdown>
       <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
               aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
       </button>
@@ -28,24 +26,17 @@
         <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
       </ul>
     </div> <!-- TODO Create a component custom like card -->
-    <input type="text" class="form-control float-right mr-3 filterDatePicker"
+    <input type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker"
            [(ngModel)]="bsRangeValue"
            [minDate]="minDate"
            [maxDate]="maxDate"
-           [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY' }"
+           [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-red' }"
            (bsValueChange)="onValueChange($event)"
-           bsDaterangepicker>
-    <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
-    <!--</div>-->
-
-
+           bsDaterangepicker> <!-- Date picker -->
   </div>
-  <!--<div class="">-->
-
-  <!--</div>-->
 </div> <!-- Header -->
 <div class="row px-3 pt-3">
-  <div class="col-lg-3 pl-0 pr-1">
+  <div class="col-md-3 col-sm-3 col-6 pl-0 pr-2">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -54,7 +45,7 @@
             <small class="text-muted text-uppercase font-weight-bold">Visitors</small>
           </div>
           <div class="h1 text-muted my-2 col-md-4">
-            <i class="icon-people"></i>
+            <i class="icon-people d-sm-block d-none"></i>
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
@@ -64,7 +55,7 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-3 px-1">
+  <div class="col-md-3 col-sm-3 col-6 pl-2 pr-sm-2 pr-0">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -73,7 +64,7 @@
             <small class="text-muted text-uppercase font-weight-bold">New Clients</small>
           </div>
           <div class="h1 text-muted my-2 col-md-4">
-            <i class="icon-user-follow"></i>
+            <i class="icon-user-follow d-sm-block d-none"></i>
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
@@ -84,7 +75,7 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-3 px-1">
+  <div class="col-md-3 col-sm-3 col-6 pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -93,7 +84,7 @@
             <small class="text-muted text-uppercase font-weight-bold">Ret. Visitors</small>
           </div>
           <div class="h1 text-muted my-2 col-md-4">
-            <i class="icon-pie-chart"></i>
+            <i class="icon-pie-chart d-sm-block d-none"></i>
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
@@ -103,7 +94,7 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-3 pl-1 pr-0">
+  <div class="col-md-3 col-sm-3 col-6 pl-2 pr-0 pt-sm-0 pt-3">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -112,7 +103,7 @@
             <small class="text-muted text-uppercase font-weight-bold">Avg. Time</small>
           </div>
           <div class="h1 text-muted my-2 col-md-4">
-            <i class="icon-speedometer"></i>
+            <i class="icon-speedometer d-sm-block d-none"></i>
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
@@ -134,10 +125,10 @@
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
   </ng-template>
 
-  <app-emptycard *ngIf="!loading"
-                 [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}"
-                 class="col-lg-6 col-xl-6" [xlOrder]="2" [lgOrder]="2"
-                 [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
+  <app-emptycard
+    *ngIf="!loading" class="col-lg-6 col-xl-6" [dashboard_data]="HARD_DASH_DATA"
+    [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}"
+  ></app-emptycard>
 
   <!--<ngx-loading [show]="loading" [config]="config"></ngx-loading>-->
 </div> <!-- Chart cards -->

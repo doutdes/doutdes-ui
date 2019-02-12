@@ -1,36 +1,43 @@
 <div class="row rounded p-4 title-header h-100">
-  <div class="col-xl-4 col-lg-6 col-md-8">
-    <h1 class="my-auto float-left">Facebook</h1>
+  <div class="col-xl-5 col-lg-5 col-md-4">
+    <h2 class="my-auto float-left">Facebook</h2>
   </div>
-  <div *ngIf="isApiKeySet" class="col-xl-8 col-lg-6 col-md-4 my-auto">
-    <div>
-      <div class="btn-group float-right" dropdown>
-        <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
-                aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
-        </button>
+  <div *ngIf="isApiKeySet" class="col-xl-7 col-lg-7 col-md-8 my-auto">
+    <div class="btn-group float-right ml-2" dropdown>
+      <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="button-export"><span class="caret"><i class="fas fa-download"></i></span>
+      </button>
 
-        <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
-            aria-labelledby="button-date-filter">
-          <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.seven)">Last 7 days</li>
-          <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.thirty)">Last 30 days</li>
-          <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.ninety)">Last 90 days</li>
-          <li class="dropdown-item">Custom</li>
-        </ul>
-      </div> <!-- TODO Create a component custom like card -->
-      <input type="text" class="form-control float-right mr-3 filterDatePicker" #drp="bsDaterangepicker"
-             [(ngModel)]="bsRangeValue"
-             [minDate]="minDate"
-             [maxDate]="maxDate"
-             [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY' }"
-             (bsValueChange)="onValueChange($event)"
-             bsDaterangepicker>
-      <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
-    </div>
+      <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-export">
+        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF</li>
+      </ul>
+    </div> <!-- PDF export -->
+    <div class="btn-group float-right" dropdown>
+      <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
+      </button>
+
+      <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-date-filter">
+        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.seven)">Last 7 days</li>
+        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.thirty)">Last 30 days</li>
+        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.ninety)">Last 90 days</li>
+        <li class="dropdown-item">Custom</li>
+      </ul>
+    </div> <!-- TODO Create a component custom like card -->
+    <input type="text" class="form-control float-right mr-3 filterDatePicker" #drp="bsDaterangepicker"
+           [(ngModel)]="bsRangeValue"
+           [minDate]="minDate"
+           [maxDate]="maxDate"
+           [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
+           (bsValueChange)="onValueChange($event)"
+           bsDaterangepicker>
+    <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
   </div>
 </div>
-
-<div class="row px-3 pt-3">
-  <div class="col-lg-3 pl-0 pr-1">
+<div *ngIf="isApiKeySet" class="row px-3 pt-3">
+  <div class="col-lg-3 pl-0 pr-2">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -43,13 +50,13 @@
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar bg-info" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
+          <div class="progress-bar bg-facebook" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
                aria-valuemax="100"></div>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 px-1">
+  <div class="col-lg-3 px-2">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -62,14 +69,14 @@
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25"
+          <div class="progress-bar bg-facebook" role="progressbar" style="width: 25%" aria-valuenow="25"
                aria-valuemin="0"
                aria-valuemax="100"></div>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 px-1">
+  <div class="col-lg-3 px-2">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -82,13 +89,13 @@
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
+          <div class="progress-bar bg-facebook" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
                aria-valuemax="100"></div>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 pl-1 pr-0">
+  <div class="col-lg-3 pl-2 pr-0">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -101,14 +108,13 @@
           </div>
         </div>
         <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
+          <div class="progress-bar bg-facebook" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
                aria-valuemax="100"></div>
         </div>
       </div>
     </div>
   </div>
 </div> <!-- Info cards -->
-
 <div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
 
   <ng-container *ngIf="chartArray$.length > 0">
@@ -124,7 +130,6 @@
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first Chart!</h5>
   </ng-template>-->
 </div>
-
 <div *ngIf="!isApiKeySet">
   <h3 class="text-danger m-2">You can't add charts to the dashboard</h3>
   <h4 class="m-3">First you need to login to Facebook via OAuth.</h4>

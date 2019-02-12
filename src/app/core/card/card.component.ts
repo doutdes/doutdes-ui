@@ -56,7 +56,8 @@ export class CardComponent implements OnInit {
     switch (this.dashChart.type) {
       case Type.Facebook: {
         this.icon = 'fa-facebook-f';
-        this.background = '#407CA5';
+        this.color = '#407CA5';
+        this.background = '#e6f6f8';
         break;
       }
       case Type.Google: {

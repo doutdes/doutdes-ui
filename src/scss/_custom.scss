@@ -31,14 +31,15 @@ app-core-header button.navbar-toggler {
 app-core-sidebar {
   position:absolute;
   left: -230px;
+  margin-left: 1rem;
   background: #eee !important;
   border: 1px solid #c8ced3;
 }
 
-@media (min-width: 992px) and (max-width: 1240px) {
+@media (min-width: 992px) and (max-width: 1300px) {
   #body-row, app-core-header nav > .container {
     width: 100%;
-    padding-right: 15px;
+    padding-right: 0px;
     padding-left: 230px;
     margin-right: auto;
     margin-left: auto;
@@ -54,7 +55,7 @@ app-core-sidebar {
   }
 }
 
-@media (max-width: 992px) {
+@media only screen and (max-width: 991px) {
   #body-row, app-core-header nav > .container {
     width: 100%;
     padding-right: 15px;
@@ -71,11 +72,16 @@ app-core-sidebar {
       margin-right: 0;
     }
   }
+
+  app-emptycard {
+    padding-right: 15px!important;
+    padding-left:  15px!important;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1240px) {
   #logo-div {
-    margin-left: 0!important;
+    margin-left: 1rem!important;
   }
 }
 
@@ -109,13 +115,19 @@ app-core-footer {
   flex-direction: column;
 }
 
+@media only screen and (min-width: 992px) {
+  #main-content {
+    padding-left: 2rem;
+  }
+}
+
 .nav-item .nav-link > .img-avatar, .nav-item .avatar.nav-link > img {
   height: 35px;
   margin: 0 10px;
 }
 
 #logo-div {
-  margin-left: 15px;
+  margin-left: 2rem;
 }
 
 body {
@@ -267,77 +279,26 @@ ul {
     margin-top: -7px
   }
 
-  h1 {
-    color: #555;
+  h2 {
+    color: black;
   }
 
 }
 
 .filterDatePicker {
-  width: 60% !important;
+  max-width: 187px;
 }
 
 /* FILTER */
-@media only screen and (min-width: 1100px) and (max-width: 1200px) {
-  .title-header {
-    h1 {
-      font-size: 2.5rem !important;
-    }
-    img {
-      height: 69px !important;
-    }
-  }
-
-  .filterDatePicker {
-    width: 50% !important;
-  }
-
-}
-
-@media only screen and (min-width: 992px) and (max-width: 1099px) {
-  .title-header {
-    h1 {
-      font-size: 2rem !important;
-    }
-    img {
-      height: 69px !important;
-    }
-  }
-
-  .filterDatePicker {
-    width: 50% !important;
-  }
-}
-
 @media only screen and (min-width: 768px) and (max-width: 991px) {
-  .title-header {
-    h1 {
-      font-size: 2.5rem !important;
-    }
-    img {
-      height: 69px !important;
-    }
-  }
-
-  .filterDatePicker {
-    width: 55% !important;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  .title-header {
-    h1 {
-      font-size: 2rem !important;
-    }
-    img {
-      height: 69px !important;
-    }
+  .title-header h2 {
+    font-size: 25px;
   }
 }
 
 @media only screen and (max-width: 415px) {
   .title-header {
-    h1 {
+    h2 {
       font-size: 1.5rem !important;
     }
     img {
@@ -387,14 +348,20 @@ ul {
   display: inline-flex;
 }
 
-.card-container:nth-child(odd) {
-  padding-right: 0.5rem;
-}
+@media only screen and (min-width: 992px){
+  .card-container:nth-child(odd) {
+    padding-right: 0.5rem;
+  }
 
-.card-container:nth-child(even) {
-  padding-left: 0.5rem;
+  .card-container:nth-child(even) {
+    padding-left: 0.5rem;
+  }
 }
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+#menu a {
+  color: black;
 }
