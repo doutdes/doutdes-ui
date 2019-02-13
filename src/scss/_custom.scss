@@ -365,3 +365,7 @@ ul {
 #menu a {
   color: black;
 }
+
+.btn:focus, .btn.focus {
+  box-shadow: none;
+}

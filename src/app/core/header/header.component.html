@@ -2,7 +2,6 @@
 
 <nav class="navbar navbar-expand-md navbar-light fixed-top">
   <div class="container">
-
     <button class="navbar-toggler bg-white d-inline-block d-lg-none" *ngIf="isUserLoggedIn" type="button"
             id="sidebarCollapse" aria-expanded="false" aria-label="Toggle navigation" data-target="#menu"
             data-toggle="collapse">
@@ -20,16 +19,16 @@
                data-toggle="collapse" aria-expanded="false">
               <strong class="text-capitalize"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</strong></a>
             <div class="pl-4">
-              <a class="list-group-item list-group-item-action py-1">
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/google']">
                 <span class="menu-collapsed">Website</span>
               </a>
-              <a class="list-group-item list-group-item-action py-1">
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/facebook']">
                 <span class="menu-collapsed">Facebook</span>
               </a>
-              <a class="list-group-item list-group-item-action py-1">
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/custom']">
                 <span class="menu-collapsed">Custom</span>
               </a>
-              <a class="list-group-item list-group-item-action py-1">
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/instagram']">
                 <span class="menu-collapsed">Instagram</span>
               </a>
             </div>
@@ -40,14 +39,17 @@
               <a class="list-group-item list-group-item-action py-1">
                 <span class="menu-collapsed">Account settings</span>
               </a>
-              <a class="list-group-item list-group-item-action py-1">
+              <a class="list-group-item list-group-item-action py-1"
+                 [routerLink]="['/preferences/api-keys']" >
                 <span class="menu-collapsed">Data sources</span>
               </a>
             </div>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
+               [routerLink]="['/report']"
                data-toggle="collapse" aria-expanded="false">
               <strong class="text-capitalize"><i class="fa fa-tasks fa-fw mr-2"></i>Report</strong></a>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
+               [routerLink]="['/calendar']"
                data-toggle="collapse" aria-expanded="false">
               <strong class="text-capitalize"><i class="fa fa-calendar-alt fa-fw mr-2"></i>Calendar</strong></a>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"

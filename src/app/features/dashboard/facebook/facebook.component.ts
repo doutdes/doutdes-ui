@@ -43,10 +43,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   public loading = false;
   public isApiKeySet = true;
-  public emptyCardStyle = {
-    'padding-left': '0px',
-    'paddin-right': '0px'
-  };
 
   @select() filter: Observable<any>;
 
@@ -360,7 +356,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async getUserCompany() {
-    let company = null;
     const user: User  = await this.userService.get().toPromise();
 
     return user.company_name;
