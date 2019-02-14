@@ -47,7 +47,6 @@
     "lodash": "^4.17.11",
     "moment": "2.22.1",
     "mutationobserver-shim": "^0.3.2",
-    "ng-click-outside": "^4.0.0",
     "ng2-charts": "1.6.0",
     "ng2-google-charts": "^4.0.0",
     "ng6-breadcrumbs": "^1.0.6",

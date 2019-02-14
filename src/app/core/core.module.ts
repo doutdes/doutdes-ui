@@ -30,8 +30,7 @@ import {ClickOutsideModule} from 'ng-click-outside';
     Ng2GoogleChartsModule,
     BsDropdownModule,
     ModalModule.forRoot(),
-    SelectDropDownModule,
-    ClickOutsideModule
+    SelectDropDownModule
   ],
   providers: [
     GlobalEventsManagerService,
