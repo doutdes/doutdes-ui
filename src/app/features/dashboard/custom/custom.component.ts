@@ -15,6 +15,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {Chart} from '../../../shared/_models/Chart';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
+import {InstagramService} from '../../../shared/_services/instagram.service';
 
 const PrimaryWhite = '#ffffff';
 
@@ -61,6 +62,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   constructor(
     private GAService: GoogleAnalyticsService,
     private FBService: FacebookService,
+    private IGService: InstagramService,
     private breadcrumbActions: BreadcrumbActions,
     private DService: DashboardService,
     private CCService: ChartsCallsService,

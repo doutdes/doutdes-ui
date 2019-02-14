@@ -8,6 +8,7 @@ import {FeatureDashboardFacebookModule} from './facebook/facebook.module';
 import {FeatureDashboardGoogleAnalyticsModule} from './googleAnalytics/googleAnalytics.module';
 import {FeatureDashboardCustomModule} from './custom/custom.module';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
+import {FeatureDashboardInstagramModule} from './instagram/instagram.module';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import {AggregatedDataService} from '../../shared/_services/aggregated-data.serv
     CoreModule,
     AppFooterModule,
     FeatureDashboardFacebookModule,
+    FeatureDashboardInstagramModule,
     FeatureDashboardGoogleAnalyticsModule,
     FeatureDashboardCustomModule,
     FeatureDashboardRoutingModule

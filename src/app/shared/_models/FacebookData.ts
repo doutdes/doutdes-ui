@@ -3,28 +3,13 @@ export interface FbPage {
   id: string;
 }
 
-export interface FacebookFanCount {
-  value: number;
-  end_time: Date;
-}
-
-export interface FacebookImpressions {
-  value: number;
-  end_time: Date;
-}
-
-export interface FaceBookFanCountry {
+export interface FbAnyData {
   value: Array<any>;
   end_time: Date;
 }
 
-export interface FacebookPageViewsTotal {
+
+export interface FbNumberData {
   value: number;
   end_time: Date;
 }
-
-export interface FacebookFanCity {
-  pippo: Array<any>;
-  end_time: Date;
-}
-

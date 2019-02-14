@@ -10,7 +10,7 @@ import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {IntervalDate} from '../redux-filter/filter.model';
-import {subDays} from 'date-fns';
+import {addDays, subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
@@ -194,8 +194,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        first: new Date(value[0].setHours(0, 0, 0)),
-        last: new Date(value[1].setHours(23, 59, 59))
+        first: new Date(addDays(value[0], 1).setHours(0, 0, 0)),
+        last: new Date(addDays(value[1], 1).setHours(0, 0, 0))
       };
 
       this.filterActions.filterData(dateInterval);
