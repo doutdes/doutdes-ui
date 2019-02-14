@@ -13,7 +13,6 @@ import {BsDropdownModule, BsModalService, ModalModule} from 'ngx-bootstrap';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import {DashboardService} from '../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../shared/_services/global-event-manager.service';
-import {ClickOutsideModule} from 'ng-click-outside';
 
 @NgModule({
   declarations: [
