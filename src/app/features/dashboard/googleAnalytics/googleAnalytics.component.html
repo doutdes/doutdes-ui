@@ -1,10 +1,10 @@
 <div class="row rounded p-sm-4 p-2 title-header h-100">
-  <div class="col-xl-5 col-md-4 col-12 d-sm-block d-none">
+  <div class="col-xl-4 col-md-4 col-sm-6 col-12 d-sm-block d-none">
     <h2 class="my-auto float-left">Google Analytics</h2>
   </div> <!-- Title -->
-  <div class="col-xl-7 col-md-8 col-12 mt-sm-3 my-md-auto">
+  <div class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
-    <div class="btn-group float-right ml-lg-1 ml-sm-2 d-sm-block d-none" dropdown>
+    <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
       <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
               aria-controls="button-export"><span class="caret"><i class="fas fa-download"></i></span>
       </button>
@@ -14,7 +14,7 @@
         <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF</li>
       </ul>
     </div> <!-- PDF export -->
-    <div class="btn-group float-right d-sm-block d-none" dropdown>
+    <div class="btn-group float-right d-md-block d-none" dropdown>
       <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
               aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
       </button>
@@ -127,8 +127,8 @@
 
   <app-emptycard
     *ngIf="!loading" class="col-lg-6 col-xl-6" [dashboard_data]="HARD_DASH_DATA"
-    [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}"
-  ></app-emptycard>
+    [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}">
+  </app-emptycard>
 
   <!--<ngx-loading [show]="loading" [config]="config"></ngx-loading>-->
 </div> <!-- Chart cards -->

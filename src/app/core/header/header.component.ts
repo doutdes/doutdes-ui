@@ -1,5 +1,5 @@
 ///<reference path="../../../../node_modules/rxjs/internal/operators/first.d.ts"/>
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {select} from '@angular-redux/store';
 import {Observable} from 'rxjs';
 import {LoginState} from '../../features/authentication/login/login.model';
@@ -18,6 +18,7 @@ import {GlobalEventsManagerService} from '../../shared/_services/global-event-ma
 export class HeaderComponent {
 
   isUserLoggedIn = false;
+  showSidebar: boolean = false;
   username: string;
 
   constructor(
@@ -35,6 +36,10 @@ export class HeaderComponent {
   logout() {
     this.actions.logoutUser();
     this.authService.logout();
+  }
+
+  showMenu(show: boolean) {
+    this.showSidebar = show;
   }
 
 }

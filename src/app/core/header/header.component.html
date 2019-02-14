@@ -2,33 +2,37 @@
 
 <nav class="navbar navbar-expand-md navbar-light fixed-top">
   <div class="container">
-    <button class="navbar-toggler bg-white d-inline-block d-lg-none" *ngIf="isUserLoggedIn" type="button"
+    <button class="navbar-toggler bg-white d-inline-block d-lg-none ml-3 mr-0" *ngIf="isUserLoggedIn" type="button"
             id="sidebarCollapse" aria-expanded="false" aria-label="Toggle navigation" data-target="#menu"
-            data-toggle="collapse">
+            data-toggle="collapse" (click)="showMenu(true)">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div id="menu" class="border-menu dropdown-menu">
+    <div *ngIf="showSidebar" id="menu" class="border-menu dropdown-menu">
       <ul class="nav navbar-nav scrollable-menu">
         <li class="nav-item dropdown">
           <div class="border" style="background-color: white">
             <div class="dropdown-header">
-              <span class="fa fa-arrow-left fa-fw mr-3"></span>
+              <span class="fa fa-arrow-left fa-fw mr-3" (click)="showMenu(false)"></span>
               <strong class="text-capitalize">Menu</strong>
             </div>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
                data-toggle="collapse" aria-expanded="false">
               <strong class="text-capitalize"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</strong></a>
             <div class="pl-4">
-              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/google']">
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/google']"
+                 (click)="showMenu(false)">
                 <span class="menu-collapsed">Website</span>
               </a>
-              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/facebook']">
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/facebook']"
+                 (click)="showMenu(false)">
                 <span class="menu-collapsed">Facebook</span>
               </a>
-              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/custom']">
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/custom']"
+                 (click)="showMenu(false)">
                 <span class="menu-collapsed">Custom</span>
               </a>
-              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/instagram']">
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/instagram']"
+                 (click)="showMenu(false)">
                 <span class="menu-collapsed">Instagram</span>
               </a>
             </div>
@@ -40,16 +44,16 @@
                 <span class="menu-collapsed">Account settings</span>
               </a>
               <a class="list-group-item list-group-item-action py-1"
-                 [routerLink]="['/preferences/api-keys']" >
+                 [routerLink]="['/preferences/api-keys']" (click)="showMenu(false)">
                 <span class="menu-collapsed">Data sources</span>
               </a>
             </div>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
-               [routerLink]="['/report']"
+               [routerLink]="['/report']" (click)="showMenu(false)"
                data-toggle="collapse" aria-expanded="false">
               <strong class="text-capitalize"><i class="fa fa-tasks fa-fw mr-2"></i>Report</strong></a>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
-               [routerLink]="['/calendar']"
+               [routerLink]="['/calendar']" (click)="showMenu(false)"
                data-toggle="collapse" aria-expanded="false">
               <strong class="text-capitalize"><i class="fa fa-calendar-alt fa-fw mr-2"></i>Calendar</strong></a>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
@@ -63,12 +67,26 @@
     <div id="logo-div" class="bg-white rounded mx-auto py-1 px-2">
       <img src="assets/img/brand/doutdes-logo-alpha-SMALL.png" width="90"/>
     </div>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
 
+    <div class="cursor-pointer d-block d-md-none">
+      <a class="nav-link btn-group pl-0" aria-haspopup="true" aria-expanded="false" role="button" data-target="#menu_small" data-toggle="collapse">
+        <img class="img-avatar" src="assets/img/avatars/8.jpg" alt="{{username}}" style="max-height: 42px;">
+      </a>
+    </div>
+
+    <div id="menu_small" class="dropdown-menu position-menu-small dropdown-menu-right float-right col-2">
+      <div class="dropdown-header text-center">
+        <strong class="text-capitalize ">Impostazioni</strong>
+      </div>
+      <a class="dropdown-item">
+        <i class="fa fa-user"></i> Il mio profilo</a>
+      <a class="dropdown-item menu-collapsed text-secondary ">
+        <i class="fa fa-wrench"></i> Impostazioni</a>
+      <a class="dropdown-item">
+        <i class="fa fa-lock"></i> Esci</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <div *ngIf="!isUserLoggedIn">
         <ul class="navbar-nav">
           <li class="nav-item">
@@ -76,30 +94,6 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/authentication/register']">Sign Up</a>
-          </li>
-        </ul>
-      </div>
-
-      <div *ngIf="isUserLoggedIn" class="ml-auto">
-        <ul class="nav navbar-nav">
-          <li class="nav-item dropdown">
-            <a class="nav-link nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
-               aria-expanded="false">
-              <i class="mr-1 text-white">Hi, <b>{{username}}</b>!</i>
-              <!--<i class="fa fa-2x fa-user-tie"></i>-->
-              <img class="img-avatar" src="assets/img/avatars/4.jpg" alt="admin@bootstrapmaster.com">
-            </a>
-            <div class="dropdown-menu dropdown-menu-right">
-              <div class="dropdown-header text-center">
-                <strong class="text-capitalize">{{username}} Settings</strong>
-              </div>
-              <a class="dropdown-item" href="#">
-                <i class="fa fa-user"></i> Profile</a>
-              <a class="dropdown-item" href="#">
-                <i class="fa fa-wrench"></i> Settings</a>
-              <a class="dropdown-item" (click)="logout()">
-                <i class="fa fa-lock"></i> Logout</a>
-            </div>
           </li>
         </ul>
       </div>

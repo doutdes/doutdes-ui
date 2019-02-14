@@ -1,9 +1,10 @@
 <div class="row rounded p-4 title-header h-100">
-  <div class="col-xl-5 col-lg-5 col-md-4">
+  <div class="col-xl-5 col-md-4 col-12 d-sm-block d-none">
     <h2 class="my-auto float-left">Facebook</h2>
   </div>
-  <div *ngIf="isApiKeySet" class="col-xl-7 col-lg-7 col-md-8 my-auto">
-    <div class="btn-group float-right ml-2" dropdown>
+  <div *ngIf="isApiKeySet" class="col-xl-7 col-md-8 col-12 mt-sm-3 my-md-auto">
+    <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
+    <div class="btn-group float-right ml-lg-1 ml-sm-2 d-sm-block d-none" dropdown>
       <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
               aria-controls="button-export"><span class="caret"><i class="fas fa-download"></i></span>
       </button>
@@ -13,7 +14,7 @@
         <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF</li>
       </ul>
     </div> <!-- PDF export -->
-    <div class="btn-group float-right" dropdown>
+    <div class="btn-group float-right d-md-block d-none" dropdown>
       <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
               aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
       </button>
@@ -26,18 +27,17 @@
         <li class="dropdown-item">Custom</li>
       </ul>
     </div> <!-- TODO Create a component custom like card -->
-    <input type="text" class="form-control float-right mr-3 filterDatePicker" #drp="bsDaterangepicker"
+    <input type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
            [(ngModel)]="bsRangeValue"
            [minDate]="minDate"
            [maxDate]="maxDate"
            [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
            (bsValueChange)="onValueChange($event)"
            bsDaterangepicker>
-    <!-- style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"-->
   </div>
 </div>
 <div *ngIf="isApiKeySet" class="row px-3 pt-3">
-  <div class="col-lg-3 pl-0 pr-2">
+  <div class="col-md-3 col-sm-3 col-6 pl-0 pr-2">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -56,7 +56,7 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-3 px-2">
+  <div class="col-md-3 col-sm-3 col-6 pl-2 pr-sm-2 pr-0">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -76,7 +76,7 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-3 px-2">
+  <div class="col-md-3 col-sm-3 col-6 pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
@@ -95,7 +95,7 @@
       </div>
     </div>
   </div>
-  <div class="col-lg-3 pl-2 pr-0">
+  <div class="col-md-3 col-sm-3 col-6 pl-2 pr-0 pt-sm-0 pt-3">
     <div class="card mb-0">
       <div class="card-body">
         <div class="row">
