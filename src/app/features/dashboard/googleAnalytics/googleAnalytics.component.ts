@@ -171,7 +171,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
         if (!chartData['status']) { // Se la chiamata non rende errori
 
-          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, chartData);
+          chartToPush.chartData = this.CCService.initFormatting(dashChart.chart_id, chartData);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
           chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval);

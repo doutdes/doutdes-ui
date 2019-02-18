@@ -33,13 +33,11 @@ export class FilterActions {
       this.originalData = elements['originalData'];
       this.filteredData = elements['dataFiltered'];
 
-      console.log("FILTERED:");
-      console.log(this.filteredData);
     });
   }
 
   initData(originalData, dateInterval: IntervalDate) {
-
+    originalData.chartData = this.CCService.initFormatting(originalData.chart_id, originalData.chartData);
     let original = originalData != null ? originalData : [];
     let filtered = originalData != null ? JSON.parse(JSON.stringify(originalData)) : [];
 
@@ -60,17 +58,12 @@ export class FilterActions {
 
   addChart(chart: DashboardCharts) {
 
+    chart.chartData = this.CCService.initFormatting(chart.chart_id, chart.chartData);
     this.originalData.push(chart);
     this.filteredData.push(JSON.parse(JSON.stringify(chart)));
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
 
-    console.log('FILTER ACTION original data');
-    console.log(this.originalData);
-
-
-    console.log('FILTER ACTION filtered data');
-    console.log(this.filteredData);
   }
 
   removeChart(id: number) {
@@ -85,6 +78,8 @@ export class FilterActions {
 
     const unfilteredData = JSON.parse(JSON.stringify(unfiltered)); // Looses the reference to original data
     const filtered = [];
+
+
 
     const FACEBOOK_TYPE = 1;
     const GOOGLE_TYPE = 2;
@@ -134,10 +129,14 @@ export class FilterActions {
             tmpData = tmpData.concat(labels);
           }
           else {
+            console.log("FILTER ACTION datatable");
+            console.log(datatable);
             datatable.forEach(el => tmpData.push([new Date(el[0]), el[1]]));
             tmpData = tmpData.filter(el => el[0] >= filterInterval.first && el[0] <= filterInterval.last);
 
             tmpData = [datatable.shift()].concat(tmpData);
+            console.log("FILTER ACTION tmpData");
+            console.log(tmpData);
           }
           chart.chartData.dataTable = tmpData; // Concatening header
 
@@ -148,9 +147,10 @@ export class FilterActions {
           chart.chartData = this.CCService.formatChart(chart.chart_id, tmpData);
           chart.aggregated = this.ADService.getAggregatedData(tmpData, chart.chart_id, filterInterval);
 
-          console.log(tmpData);
-
           filtered.push(chart);
+
+          console.log("FILTER ACTION chart");
+          console.log(chart);
 
         } else if (chart.type == FACEBOOK_TYPE || chart.type == INSTAGRAM_TYPE) { // Facebook Insights charts
 

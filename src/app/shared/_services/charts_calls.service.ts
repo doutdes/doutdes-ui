@@ -74,31 +74,131 @@ export class ChartsCallsService {
     }
   }
 
+  public initFormatting(ID, data) {
+    let header;
+    let chartData = [];
+    let paddingRows = 0;
+
+    switch (ID) {
+      case 1:
+        header = [['Date', 'Number of fans']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break;
+      case 2:
+        header = [['Country', 'Popularity']];
+
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
+        });
+        break;
+      case 3:
+        header = [['Date', 'Impressions']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break;
+      case 4:
+        header = [['Date', 'Impressions']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+        break;
+      case 5:
+        header = [['Date', 'Sessions']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+        break;
+      case 6:
+        header = [['Type', 'Date', 'Number']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+        }
+        break;
+      case 7:
+        header = [['Website', 'Date', 'Views']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+        }
+        break;
+      case 8:
+        header = [['Country', 'Popularity']]; // TODO check this
+        // Push data pairs in the Chart array
+        const arrPie = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
+        });
+        break;
+      case 9:
+        header = [['Type', 'Date', 'Number']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+        }
+        break;
+      case 10:
+        header = [['Date', 'Bounce rate']];
+
+        for (let i = 0; i < data.length; i++) {
+          const value = parseInt(data[i][1], 10) / 100.;
+          chartData.push([parseDate(data[i][0]), value]);
+        }
+        break;
+      case 11:
+        header = [['Date', 'Time (s)']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+        break;
+      case 12:
+        header = [['Browser', 'Date', 'Sessions']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+        }
+        break;
+      case 13:
+        header = [['Date', 'Views']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break;
+      case 14:
+        header = [['City', 'Fans']];
+
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+        });
+        break;
+    }
+  console.log("CHART CALLS SERVICE chartData");
+    console.log(chartData);
+    return header.concat(chartData);
+  }
+
   public formatChart(ID, data) {
     let formattedData;
     let header;
     let type;
+    let chartData = [];
     let chartArray = [];
-    const impressChartArray = [];
-    let paddingRows = 0;
     let arr = [];
+    let paddingRows = 0;
 
     switch (ID) {
       case 1:
-
-        header = [['Date', 'Number of fans']];
-
-        // Push data pairs in the Chart array
-        for (let i = 0; i < data.length; i++) {
-
-          // if (i % 10 === 0) { // Data are greedy sampled by 10 units
-          chartArray.push([new Date(data[i].end_time), data[i].value]); // [data[i].end_time, data[i].value]);
-          // }
-        }
-
         formattedData = {
           chartType: 'AreaChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 1,
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
@@ -113,15 +213,10 @@ export class ChartsCallsService {
 
         break; // Fb Fan Count
       case 2:
-        header = [['Country', 'Popularity']];
-
-        arr = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [k, data[data.length - 1].value[k]];
-        });
 
         formattedData = {
           chartType: 'GeoChart',
-          dataTable: header.concat(arr),
+          dataTable: data,
           chartClass: 2,
           options: {
             region: 'world',
@@ -135,15 +230,10 @@ export class ChartsCallsService {
         };
         break; // Geo Map
       case 3:
-        header = [['Date', 'Impressions']];
-
-        for (let i = 0; i < data.length; i++) {
-          impressChartArray.push([new Date(data[i].end_time), data[i].value]);
-        }
 
         formattedData = {
           chartType: 'AreaChart',
-          dataTable: header.concat(impressChartArray),
+          dataTable: data,
           chartClass: 3,
           options: {
             chartArea: {left: 40, right: 0, height: 280, top: 0},
@@ -158,18 +248,10 @@ export class ChartsCallsService {
         };
         break; // Page Impressions
       case 4:
-        header = [['Date', 'Impressions']];
-        // Push data pairs in the Chart array
-
-        // console.log(data);
-
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
-        }
 
         formattedData = {
           chartType: 'AreaChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
@@ -179,22 +261,23 @@ export class ChartsCallsService {
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'}, minValue: 0, textPosition: 'in', textStyle: {color: '#999'}},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#FFA647'],
             areaOpacity: 0.1
           }
         };
         break; // Google PageViews (impressions by day)
       case 5:
-        header = [['Date', 'Sessions']];
-        // Push data pairs in the Chart array
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
-        }
 
         formattedData = {
           chartType: 'AreaChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
@@ -208,15 +291,10 @@ export class ChartsCallsService {
         };
         break; // Google Sessions
       case 6: // google pie begin
-        header = [['Type', 'Date', 'Number']];
-
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
-        }
 
         formattedData = {
           chartType: 'PieChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 6,
           options: {
             chartArea: {left: 30, right: 0, height: 290, top: 0},
@@ -231,15 +309,10 @@ export class ChartsCallsService {
         };
         break; // Google pie end
       case 7:
-        header = [['Website', 'Date', 'Views']];
-
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
-        }
 
         formattedData = {
           chartType: 'Table',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 7,
           options: {
             alternatingRowStyle: true,
@@ -254,14 +327,10 @@ export class ChartsCallsService {
         };
         break; // Google List Referral
       case 8:
-        header = [['Country', 'Popularity']];
-        // Push data pairs in the Chart array
-        const arrPie = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [k, data[data.length - 1].value[k]];
-        });
+
         formattedData = {
           chartType: 'PieChart',
-          dataTable: header.concat(arrPie),
+          dataTable: data,
           chartClass: 8,
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
@@ -279,14 +348,10 @@ export class ChartsCallsService {
         };
         break; // Fan Country Pie
       case 9:
-        header = [['Type', 'Date', 'Number']];
 
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
-        }
         formattedData = {
           chartType: 'ColumnChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 9,
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
@@ -300,28 +365,10 @@ export class ChartsCallsService {
         break; // Google Sources Column Chart
       case 10:
         type = 'ga_bounce';
-        header = [['Date', 'Bounce rate']];
-        // Push data pairs in the Chart array
-
-        /*
-        let sum = 0.;
-        highest = 0;
-        lowest = 1;
-        // console.log(data);
-        **/
-
-        for (let i = 0; i < data.length; i++) {
-          const value = parseInt(data[i][1], 10) / 100.;
-          //sum += value;
-          //highest = value > highest ? value : highest;
-          //lowest = value < lowest ? value : lowest;
-
-          chartArray.push([parseDate(data[i][0]), value]);
-        }
 
         formattedData = {
           chartType: 'AreaChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 10,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
@@ -331,7 +378,13 @@ export class ChartsCallsService {
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'}, minValue: 0, textPosition: 'in', textStyle: {color: '#999'}},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#FFA647'],
             areaOpacity: 0.1
           }
@@ -341,18 +394,10 @@ export class ChartsCallsService {
 
         break; // Google BounceRate
       case 11:
-        header = [['Date', 'Time (s)']];
-        // Push data pairs in the Chart array
-
-        // console.log(data);
-
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
-        }
 
         formattedData = {
           chartType: 'AreaChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 11,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
@@ -368,15 +413,10 @@ export class ChartsCallsService {
         };
         break; // Google Average Session Duration
       case 12:
-        header = [['Browser', 'Date', 'Sessions']];
-
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
-        }
 
         formattedData = {
           chartType: 'Table',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 12,
           options: {
             alternatingRowStyle: true,
@@ -390,15 +430,9 @@ export class ChartsCallsService {
         break; // Google list sessions per browser
       case 13:
 
-        header = [['Date', 'Views']];
-        // Push data pairs in the Chart array
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([new Date(data[i].end_time), data[i].value]);
-        }
-
         formattedData = {
           chartType: 'AreaChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 13,
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
@@ -412,21 +446,10 @@ export class ChartsCallsService {
         };
         break; // Facebook Page Views
       case 14:
-        header = [['City', 'Fans']];
-
-        arr = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
-        });
-
-        paddingRows = arr.length % 10 ? 10 - (arr.length % 10) : 0;
-
-        for (let i = 0; i < paddingRows; i++) {
-          arr.push(['', null]);
-        }
 
         formattedData = {
           chartType: 'Table',
-          dataTable: header.concat(arr),
+          dataTable: data,
           chartClass: 14,
           options: {
             alternatingRowStyle: true,
@@ -441,16 +464,17 @@ export class ChartsCallsService {
       case 15:
         header = [['City', 'Fans']];
 
-        arr = Object.keys(data[data.length - 1].value).map(function (k) {
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
           return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
         });
 
-        paddingRows = arr.length % 10 ? 10 - (arr.length % 10) : 0;
+        paddingRows = chartData.length % 10 ? 10 - (chartData.length % 10) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
-          arr.push(['', null]);
+          chartData.push(['', null]);
         }
-
+        break;
+      case 16:
         formattedData = {
           chartType: 'Table',
           dataTable: header.concat(arr),
@@ -470,7 +494,6 @@ export class ChartsCallsService {
         arr = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
-
         formattedData = {
           chartType: 'GeoChart',
           dataTable: header.concat(arr),
@@ -513,7 +536,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#388aff','#ff96db'],
+            colors: ['#388aff', '#ff96db'],
             areaOpacity: 0.4,
           }
         };
@@ -524,16 +547,16 @@ export class ChartsCallsService {
 
         // putting a unique entry in chartArray for every existent age range
         for (let i = 0; i < keys.length; i++) {
-            chartArray.push([keys[i], parseInt(data[0]['value'][keys[i]], 10) ]);
-          }
-        chartArray.sort(function(obj1, obj2) {
+          chartArray.push([keys[i], parseInt(data[0]['value'][keys[i]], 10)]);
+        }
+        chartArray.sort(function (obj1, obj2) {
           // Ascending: first age less than the previous
           return -(obj1[1] - obj2[1]);
         });
 
         let other = [['Other', 0]];
         chartArray.slice(4, chartArray.length).forEach(el => {
-            other[0][1] += el[1];
+          other[0][1] += el[1];
         });
         chartArray = chartArray.slice(0, 4);
 
