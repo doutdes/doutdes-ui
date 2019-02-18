@@ -244,8 +244,10 @@ app-core-breadcrumb nav {
   height: 46px;
 }
 
-app-feature-authentication-login .container {
-  //margin-top: calc(25% - 28px - 25px );
+@media only screen and (min-width: 1301px) {
+  #logo-div {
+    margin-left: 2rem !important;
+  }
 }
 
 ul {
