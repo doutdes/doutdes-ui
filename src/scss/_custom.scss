@@ -91,12 +91,6 @@ app-core-sidebar {
   }
 }
 
-@media (min-width: 768px) and (max-width: 1240px) {
-  #logo-div {
-    margin-left: 1rem!important;
-  }
-}
-
 .list-group-item-action {
   color: black;
 
@@ -136,10 +130,6 @@ app-core-footer {
 .nav-item .nav-link > .img-avatar, .nav-item .avatar.nav-link > img {
   height: 35px;
   margin: 0 10px;
-}
-
-#logo-div {
-  margin-left: 2rem;
 }
 
 body {
