@@ -140,7 +140,14 @@ export class ChartsCallsService {
         header = [['Website', 'Views']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
+          indexFound = keys.findIndex(el => el === data[i][0]);
+
+          if(indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][0]);
+            chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][2], 10)]);
+          }
         }
         break;  // Google List Referral
       case 8:
