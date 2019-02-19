@@ -77,6 +77,9 @@ export class ChartsCallsService {
   public initFormatting(ID, data) {
     let header;
     let chartData = [];
+    let chartArray = [];
+    let keys = [];
+    let other;
     let paddingRows = 0;
 
     switch (ID) {
@@ -86,63 +89,63 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
-        break;
+        break;  // FB Fan Count
       case 2:
         header = [['Country', 'Popularity']];
 
         chartData = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
-        break;
+        break;  // Geo Map
       case 3:
         header = [['Date', 'Impressions']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
-        break;
+        break;  // Page Impressions
       case 4:
         header = [['Date', 'Impressions']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
-        break;
+        break;  // Google PageViews (impressions by day)
       case 5:
         header = [['Date', 'Sessions']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
-        break;
+        break;  // Google Sessions
       case 6:
         header = [['Type', 'Date', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
-        break;
+        break;  // Google Sources Pie
       case 7:
         header = [['Website', 'Date', 'Views']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
-        break;
+        break;  // Google List Referral
       case 8:
         header = [['Country', 'Popularity']]; // TODO check this
         // Push data pairs in the Chart array
         const arrPie = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
-        break;
+        break;  // Fan Country Pie
       case 9:
         header = [['Type', 'Date', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
-        break;
+        break;  // Google Sources Column Chart
       case 10:
         header = [['Date', 'Bounce rate']];
 
@@ -150,49 +153,130 @@ export class ChartsCallsService {
           const value = parseInt(data[i][1], 10) / 100.;
           chartData.push([parseDate(data[i][0]), value]);
         }
-        break;
+        break; // Google Bounce Rate
       case 11:
         header = [['Date', 'Time (s)']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
-        break;
+        break; // Google Average Session Duration
       case 12:
         header = [['Browser', 'Date', 'Sessions']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
         }
-        break;
+        break; // Google list Session per Browser
       case 13:
         header = [['Date', 'Views']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
-        break;
+        break; // Facebook Page Views
       case 14:
         header = [['City', 'Fans']];
 
         chartData = Object.keys(data[data.length - 1].value).map(function (k) {
           return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
         });
-        break;
+        break; // Facebook Fan City
+      case 15:
+        header = [['City', 'Fans']];
+
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+        });
+
+        paddingRows = chartData.length % 10 ? 10 - (chartData.length % 10) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
+        }
+        break; // IG Audience City
+      case 16:
+        header = [['Country', 'Popularity']];
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
+        });
+        break; // IG Audience Country
+      case 17:
+        header = [['Country', 'Male', 'Female']]; /// TODO: fix containsGeoData to use header != 'Country'
+        let keys = Object.keys(data[0]['value']); // getting all the gender/age data
+
+        // putting a unique entry in chartArray for every existent age range
+        for (let i = 0; i < keys.length; i++) {
+          let index = 0;
+          if (!(chartData.find(e => e[0] === (keys[i].substr(2, keys.length))))) {
+            chartData.push([keys[i].substr(2, keys.length), 0, 0]);
+            index = (chartData.length - 1);
+          } else {
+            index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys.length)));
+          }
+          // and collecting data
+          (keys[i].substr(0, 1) === 'M') ? chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10) : chartArray[index][1] = parseInt(data[0]['value'][keys[i]], 10);
+        }
+        break; // IG Audience Gender/Age
+      case 18:
+        header = [['Country', 'Number']]; /// TODO: fix containsGeoData to use header != 'Country'
+        keys = Object.keys(data[0]['value']); // getting all the gender/age data
+
+        // putting a unique entry in chartArray for every existent age range
+        for (let i = 0; i < keys.length; i++) {
+          chartData.push([keys[i], parseInt(data[0]['value'][keys[i]], 10)]);
+        }
+        chartData.sort(function (obj1, obj2) {
+          // Ascending: first age less than the previous
+          return -(obj1[1] - obj2[1]);
+        });
+
+        let other = [['Other', 0]];
+        chartData.slice(4, chartData.length).forEach(el => {
+          other[0][1] += el[1];
+        });
+        chartData = chartData.slice(0, 4).concat(other);
+
+        break; // IG Audience Locale
+      case 19:
+        break; // IG Online followers
+      case 20:
+        break; // IG Email contacts
+      case 21:
+        break; // IG Follower count
+      case 22:
+        break; // IG Get directions clicks
+      case 23:
+        header = [['Date', 'Impressions']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // IG Impressions by day
+      case 24:
+        break; // IG Phone Calls clicks
+      case 25:
+        break; // IG Profile views
+      case 26:
+        header = [['Date', 'Reach']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+
+        break; // IG Reach
+      case 27:
+        break; // IG Text Message Clicks
+      case 28:
+        break; // IG Website Clicks
     }
-  console.log("CHART CALLS SERVICE chartData");
-    console.log(chartData);
+
     return header.concat(chartData);
   }
 
   public formatChart(ID, data) {
     let formattedData;
-    let header;
     let type;
-    let chartData = [];
-    let chartArray = [];
-    let arr = [];
-    let paddingRows = 0;
 
     switch (ID) {
       case 1:
@@ -211,7 +295,7 @@ export class ChartsCallsService {
           }
         };
 
-        break; // Fb Fan Count
+        break;  // Fb Fan Count
       case 2:
 
         formattedData = {
@@ -228,7 +312,7 @@ export class ChartsCallsService {
             height: '300'
           }
         };
-        break; // Geo Map
+        break;  // Geo Map
       case 3:
 
         formattedData = {
@@ -246,7 +330,7 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Page Impressions
+        break;  // Page Impressions
       case 4:
 
         formattedData = {
@@ -272,7 +356,7 @@ export class ChartsCallsService {
             areaOpacity: 0.1
           }
         };
-        break; // Google PageViews (impressions by day)
+        break;  // Google PageViews (impressions by day)
       case 5:
 
         formattedData = {
@@ -289,8 +373,8 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Google Sessions
-      case 6: // google pie begin
+        break;  // Google Sessions
+      case 6:
 
         formattedData = {
           chartType: 'PieChart',
@@ -307,9 +391,8 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Google pie end
+        break;  // Google Sources Pie
       case 7:
-
         formattedData = {
           chartType: 'Table',
           dataTable: data,
@@ -325,7 +408,7 @@ export class ChartsCallsService {
             width: '100%'
           }
         };
-        break; // Google List Referral
+        break;  // Google List Referral
       case 8:
 
         formattedData = {
@@ -346,7 +429,7 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Fan Country Pie
+        break;  // Fan Country Pie
       case 9:
 
         formattedData = {
@@ -362,7 +445,7 @@ export class ChartsCallsService {
             areaOpacity: 0.4
           }
         };
-        break; // Google Sources Column Chart
+        break;  // Google Sources Column Chart
       case 10:
         type = 'ga_bounce';
 
@@ -446,7 +529,6 @@ export class ChartsCallsService {
         };
         break; // Facebook Page Views
       case 14:
-
         formattedData = {
           chartType: 'Table',
           dataTable: data,
@@ -462,23 +544,10 @@ export class ChartsCallsService {
         };
         break; // Facebook Fan City
       case 15:
-        header = [['City', 'Fans']];
-
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
-        });
-
-        paddingRows = chartData.length % 10 ? 10 - (chartData.length % 10) : 0;
-
-        for (let i = 0; i < paddingRows; i++) {
-          chartData.push(['', null]);
-        }
-        break;
-      case 16:
         formattedData = {
           chartType: 'Table',
-          dataTable: header.concat(arr),
-          chartClass: 14,
+          dataTable: data,
+          chartClass: 15,
           options: {
             alternatingRowStyle: true,
             sortAscending: false,
@@ -488,15 +557,12 @@ export class ChartsCallsService {
             width: '100%'
           }
         };
-        break; //IG Audience City
+
+        break; // IG Audience City
       case 16:
-        header = [['Country', 'Popularity']];
-        arr = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [k, data[data.length - 1].value[k]];
-        });
         formattedData = {
           chartType: 'GeoChart',
-          dataTable: header.concat(arr),
+          dataTable: data,
           chartClass: 2,
           options: {
             region: 'world',
@@ -508,28 +574,11 @@ export class ChartsCallsService {
             height: '300',
           }
         };
-        break; //IG Audience Country
+        break; // IG Audience Country
       case 17:
-        header = [['Country', 'Male', 'Female']]; /// TODO: fix containsGeoData to use header != 'Country'
-        let keys = Object.keys(data[0]['value']); // getting all the gender/age data
-
-        // putting a unique entry in chartArray for every existent age range
-        for (let i = 0; i < keys.length; i++) {
-          let index = 0;
-          if (!(chartArray.find(e => e[0] === (keys[i].substr(2, keys.length))))) {
-            chartArray.push([keys[i].substr(2, keys.length), 0, 0]);
-            index = (chartArray.length - 1);
-          } else {
-            index = chartArray.findIndex(e => e[0] === (keys[i].substr(2, keys.length)));
-          }
-          // and collecting data
-          (keys[i].substr(0, 1) === 'M') ? chartArray[index][2] = parseInt(data[0]['value'][keys[i]], 10) : chartArray[index][1] = parseInt(data[0]['value'][keys[i]], 10);
-        }
-
-
         formattedData = {
           chartType: 'ColumnChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 9,
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
@@ -540,29 +589,11 @@ export class ChartsCallsService {
             areaOpacity: 0.4,
           }
         };
-        break; //IG Audience Gender/Age
+        break; // IG Audience Gender/Age
       case 18:
-        header = [['Country', 'Number']]; /// TODO: fix containsGeoData to use header != 'Country'
-        keys = Object.keys(data[0]['value']); // getting all the gender/age data
-
-        // putting a unique entry in chartArray for every existent age range
-        for (let i = 0; i < keys.length; i++) {
-          chartArray.push([keys[i], parseInt(data[0]['value'][keys[i]], 10)]);
-        }
-        chartArray.sort(function (obj1, obj2) {
-          // Ascending: first age less than the previous
-          return -(obj1[1] - obj2[1]);
-        });
-
-        let other = [['Other', 0]];
-        chartArray.slice(4, chartArray.length).forEach(el => {
-          other[0][1] += el[1];
-        });
-        chartArray = chartArray.slice(0, 4);
-
         formattedData = {
           chartType: 'ColumnChart',
-          dataTable: header.concat(chartArray.concat(other)),
+          dataTable: data,
           chartClass: 9,
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
@@ -573,24 +604,19 @@ export class ChartsCallsService {
             areaOpacity: 0.4,
           }
         };
-        break; //IG Audience Locale
+        break; // IG Audience Locale
       case 19:
-        break;
+        break; // IG Online followers
+      case 20:
+        break; // IG Email contacts
+      case 21:
+        break; // IG Follower count
+      case 22:
+        break; // IG Get directions clicks
       case 23:
-        header = [['Date', 'Impressions']];
-        // Push data pairs in the Chart array
-
-        // console.log(data);
-
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([new Date(data[i].end_time), data[i].value]);
-        }
-
-        console.log(JSON.parse(JSON.stringify(chartArray)));
-
         formattedData = {
           chartType: 'AreaChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
@@ -601,26 +627,15 @@ export class ChartsCallsService {
             colors: ['#ff96db'],
             areaOpacity: 0.4
           }
-        };
+        }; // IG Impressions by day
       case 24:
-        break;
+        break; // IG Phone Calls clicks
       case 25:
-        break;
+        break; // IG Profile views
       case 26:
-        header = [['Date', 'Reach']];
-        // Push data pairs in the Chart array
-
-        // console.log(data);
-
-        for (let i = 0; i < data.length; i++) {
-          chartArray.push([new Date(data[i].end_time), data[i].value]);
-        }
-
-        console.log(JSON.parse(JSON.stringify(chartArray)));
-
         formattedData = {
           chartType: 'AreaChart',
-          dataTable: header.concat(chartArray),
+          dataTable: data,
           chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
@@ -632,12 +647,11 @@ export class ChartsCallsService {
             areaOpacity: 0.4,
           }
         };
-        break; //IG Reach
+        break; // IG Reach
       case 27:
-        break;
+        break; // IG Text Message Clicks
       case 28:
-        break;
-
+        break; // IG Website Clicks
     }
 
     return formattedData;

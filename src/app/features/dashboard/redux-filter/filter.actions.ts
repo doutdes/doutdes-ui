@@ -37,7 +37,10 @@ export class FilterActions {
   }
 
   initData(originalData, dateInterval: IntervalDate) {
-    originalData.chartData = this.CCService.initFormatting(originalData.chart_id, originalData.chartData);
+    for(let i in originalData) {
+      originalData[i].chartData = this.CCService.initFormatting(originalData[i].chart_id, originalData[i].chartData);
+    }
+
     let original = originalData != null ? originalData : [];
     let filtered = originalData != null ? JSON.parse(JSON.stringify(originalData)) : [];
 

@@ -101,6 +101,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         };
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
+          console.warn('Chart is not empty');
           charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
 
           forkJoin(observables)
@@ -133,12 +134,14 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
                 chartsToShow.push(chart);
 
+                console.log(JSON.parse(JSON.stringify(chartsToShow)));
+
                 this.filterActions.initData(chartsToShow, dateInterval);
                 this.GEService.updateChartList.next(true);
 
                 // Shows last 30 days
                 this.datePickerEnabled = true;
-                this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+                // this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
               }
               this.GEService.loadingScreen.next(false);
 
@@ -170,7 +173,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         console.log(chartData);
 
         if (!chartData['status']) { // Se la chiamata non rende errori
-
           chartToPush.chartData = this.CCService.initFormatting(dashChart.chart_id, chartData);
           chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;

@@ -20,7 +20,7 @@ export class FeatureComponent implements OnInit {
   constructor(private GEservice: GlobalEventsManagerService) {}
 
   ngOnInit(): void {
-    this.GEservice.loadingScreen.subscribe(value => {console.log(value); this.loading = value});
+    this.GEservice.loadingScreen.subscribe(value => this.loading = value);
   }
 
 }
