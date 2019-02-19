@@ -653,7 +653,8 @@ export class ChartsCallsService {
             colors: ['#ff96db'],
             areaOpacity: 0.4
           }
-        }; // IG Impressions by day
+        };
+        break; // IG Impressions by day
       case 24:
         break; // IG Phone Calls clicks
       case 25:
