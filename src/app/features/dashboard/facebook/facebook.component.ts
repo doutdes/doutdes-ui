@@ -107,14 +107,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 let chart: DashboardCharts = charts[i];
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
-                  // Cleaning data // TODO this should be fixed at mount
-                  chart.format = chart['Chart'].format;
-                  chart.type = chart['Chart'].type;
-                  chart.originalTitle = chart['Chart'].title;
-                  delete chart['Chart'];
-
-                  chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
-                  chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
+                  chart.chartData = dataArray[i];
+                  // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
                   chart.error = false;
 
                   if (this.CCService.containsGeoData(chart)) { // Add field geoData for charts with geographical data
@@ -142,7 +136,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
               // Shows last 30 days
               this.datePickerEnabled = true;
-              this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+              // this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
             });
 
         } else {

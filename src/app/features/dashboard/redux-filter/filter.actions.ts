@@ -36,13 +36,28 @@ export class FilterActions {
     });
   }
 
+  /**
+   * It receives the original data and it stores them as they are
+   * After this, it requires for the right format of the data and it stores this in the formatted data
+  **/
   initData(originalData, dateInterval: IntervalDate) {
-    for(let i in originalData) {
-      originalData[i].chartData = this.CCService.initFormatting(originalData[i].chart_id, originalData[i].chartData);
-    }
+    let original = originalData || [];
+    let filtered = originalData ? JSON.parse(JSON.stringify(originalData)) : [];
+    let initialised: null;
+    let chart_id;
 
-    let original = originalData != null ? originalData : [];
-    let filtered = originalData != null ? JSON.parse(JSON.stringify(originalData)) : [];
+    console.warn('FILTER ACTIONS -> date received: ', originalData);
+
+    // Given the original data, it retrieves the right format for the data
+    if(filtered) {
+      for (let i in filtered) {
+        chart_id = filtered[i].chart_id;
+        initialised = this.CCService.initFormatting(chart_id, filtered[i].chartData);
+        filtered[i].chartData = this.CCService.formatChart(chart_id, initialised);
+
+        console.log('Dati attualmente formattati: ', filtered[i].chartData);
+      }
+    }
 
     this.Redux.dispatch({type: FILTER_INIT, originalData: original, originalInterval: dateInterval, dataFiltered: filtered});
   }
@@ -77,12 +92,8 @@ export class FilterActions {
   }
 
   filterByDateInterval(unfiltered, filterInterval: IntervalDate) {
-
-
     const unfilteredData = JSON.parse(JSON.stringify(unfiltered)); // Looses the reference to original data
     const filtered = [];
-
-
 
     const FACEBOOK_TYPE = 1;
     const GOOGLE_TYPE = 2;

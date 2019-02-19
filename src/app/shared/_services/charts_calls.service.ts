@@ -79,8 +79,12 @@ export class ChartsCallsService {
     let chartData = [];
     let chartArray = [];
     let keys = [];
+    let indexFound;
     let other;
     let paddingRows = 0;
+
+    console.warn('ID: ', ID);
+    console.warn('data: ', data);
 
     switch (ID) {
       case 1:
@@ -119,31 +123,47 @@ export class ChartsCallsService {
         }
         break;  // Google Sessions
       case 6:
-        header = [['Type', 'Date', 'Number']];
+        header = [['Type', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          indexFound = keys.findIndex(el => el === data[i][0]);
+
+          if(indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][0]);
+            chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
+          }
         }
         break;  // Google Sources Pie
       case 7:
-        header = [['Website', 'Date', 'Views']];
+        header = [['Website', 'Views']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][1], 10)]);
         }
         break;  // Google List Referral
       case 8:
-        header = [['Country', 'Popularity']]; // TODO check this
+        header = [['Country', 'Popularity']];
+
         // Push data pairs in the Chart array
-        const arrPie = Object.keys(data[data.length - 1].value).map(function (k) {
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
+
         break;  // Fan Country Pie
       case 9:
-        header = [['Type', 'Date', 'Number']];
+        header = [['Type', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          indexFound = keys.findIndex(el => el === data[i][0]);
+
+          if(indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][0]);
+            chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][2], 10)]);
+          }
         }
         break;  // Google Sources Column Chart
       case 10:
@@ -162,10 +182,17 @@ export class ChartsCallsService {
         }
         break; // Google Average Session Duration
       case 12:
-        header = [['Browser', 'Date', 'Sessions']];
+        header = [['Browser', 'Sessions']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseDate(data[i][1]), parseInt(data[i][2], 10)]);
+          indexFound = keys.findIndex(el => el === data[i][0]);
+
+          if(indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][0]);
+            chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][2], 10)]);
+          }
         }
         break; // Google list Session per Browser
       case 13:
@@ -203,7 +230,7 @@ export class ChartsCallsService {
         break; // IG Audience Country
       case 17:
         header = [['Country', 'Male', 'Female']]; /// TODO: fix containsGeoData to use header != 'Country'
-        let keys = Object.keys(data[0]['value']); // getting all the gender/age data
+        keys = Object.keys(data[0]['value']); // getting all the gender/age data
 
         // putting a unique entry in chartArray for every existent age range
         for (let i = 0; i < keys.length; i++) {
@@ -231,7 +258,7 @@ export class ChartsCallsService {
           return -(obj1[1] - obj2[1]);
         });
 
-        let other = [['Other', 0]];
+        other = [['Other', 0]];
         chartData.slice(4, chartData.length).forEach(el => {
           other[0][1] += el[1];
         });
@@ -375,7 +402,6 @@ export class ChartsCallsService {
         };
         break;  // Google Sessions
       case 6:
-
         formattedData = {
           chartType: 'PieChart',
           dataTable: data,

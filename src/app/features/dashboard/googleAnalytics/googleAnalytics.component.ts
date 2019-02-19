@@ -114,14 +114,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
-                  // Cleaning data // TODO this should be fixed at mount
-                  chart.format = chart['Chart'].format;
-                  chart.type = chart['Chart'].type;
-                  chart.originalTitle = chart['Chart'].title;
-                  delete chart['Chart'];
-
-                  chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
-                  chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
+                  chart.chartData = dataArray[i];
+                  // chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
+                  // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO to check
                   chart.error = false;
                   chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
                 } else {
