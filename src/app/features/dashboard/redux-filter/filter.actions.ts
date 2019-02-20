@@ -102,20 +102,14 @@ export class FilterActions {
 
         // If the type of the chart is known
         if (DS_TYPE.hasOwnProperty(chart.type)) {
-
-          console.warn('dati preordinamento', JSON.parse(JSON.stringify(chart)));
-
           chart.chartData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
             ? chart.chartData.filter(el => parseDate(el[0]) >= filterInterval.first && parseDate(el[0]) <= filterInterval.last)
             : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
-
-          console.warn('dati post', JSON.parse(JSON.stringify(chart)));
 
           chart.chartData = this.CCService.formatChart(chart.chart_id, this.CCService.initFormatting(chart.chart_id, chart.chartData));
           chart.aggregated = this.ADService.getAggregatedData(chart.chartData, chart.chart_id, filterInterval);
 
           filtered.push(chart);
-
         } else {
           console.error('Error in FILTER_ACTIONS. A chart of unknown type (' + chart.type + ') was found, filter action skipped.');
           console.error('MORE DETAILS (unfiltered data in input):');
