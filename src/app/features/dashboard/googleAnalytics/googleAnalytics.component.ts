@@ -132,7 +132,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
                 // Shows last 30 days
                 this.datePickerEnabled = true;
-                // this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+                this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
               }
               this.GEService.loadingScreen.next(false);
 
