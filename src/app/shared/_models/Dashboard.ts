@@ -5,10 +5,10 @@ export interface Dashboard {
 }
 
 export const D_TYPE = {
-  FB: 0,
-  GA: 1,
-  IG: 2,
-  YT: 3
+  FB: 1,
+  GA: 2,
+  IG: 3,
+  YT: 4
 };
 
 export const DS_TYPE = {

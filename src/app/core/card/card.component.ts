@@ -69,7 +69,8 @@ export class CardComponent implements OnInit {
       }
       case Type.Instagram: {
         this.icon = 'fa-instagram';
-        this.background = '#e7008a';
+        this.background = '#f7e6f1';
+        this.color = '#e7008a';
         break;
       }
       default: {

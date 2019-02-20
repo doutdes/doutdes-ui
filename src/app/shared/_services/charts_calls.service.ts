@@ -7,6 +7,7 @@ import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {DashboardCharts} from '../_models/DashboardCharts';
 import {k} from '@angular/core/src/render3';
+import {subDays} from 'date-fns';
 
 @Injectable()
 export class ChartsCallsService {
@@ -77,14 +78,10 @@ export class ChartsCallsService {
   public initFormatting(ID, data) {
     let header;
     let chartData = [];
-    let chartArray = [];
     let keys = [];
     let indexFound;
     let other;
     let paddingRows = 0;
-
-    console.warn('ID: ', ID);
-    console.warn('data: ', data);
 
     switch (ID) {
       case 1:
@@ -123,31 +120,47 @@ export class ChartsCallsService {
         }
         break;  // Google Sessions
       case 6:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 - page
+         * 2 - value
+         **/
         header = [['Type', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          indexFound = keys.findIndex(el => el === data[i][0]);
+          indexFound = keys.findIndex(el => el === data[i][1]);
 
           if(indexFound >= 0) {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
-            keys.push(data[i][0]);
-            chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][1], 10)]);
+            keys.push(data[i][1]);
+            chartData.push([data[i][1] === '(none)' ? 'unknown' : data[i][1], parseInt(data[i][2], 10)]);
           }
         }
         break;  // Google Sources Pie
       case 7:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 - page
+         * 2 - value
+         **/
         header = [['Website', 'Views']];
 
         for (let i = 0; i < data.length; i++) {
-          indexFound = keys.findIndex(el => el === data[i][0]);
+          indexFound = keys.findIndex(el => el === data[i][1]);
 
           if(indexFound >= 0) {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
-            keys.push(data[i][0]);
-            chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][2], 10)]);
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
+        }
+
+        paddingRows = chartData.length % 10 ? 10 - (chartData.length % 10) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
         }
         break;  // Google List Referral
       case 8:
@@ -160,16 +173,22 @@ export class ChartsCallsService {
 
         break;  // Fan Country Pie
       case 9:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 - page
+         * 2 - value
+         **/
+
         header = [['Type', 'Number']];
 
         for (let i = 0; i < data.length; i++) {
-          indexFound = keys.findIndex(el => el === data[i][0]);
+          indexFound = keys.findIndex(el => el === data[i][1]);
 
           if(indexFound >= 0) {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
-            keys.push(data[i][0]);
-            chartData.push([data[i][0] === '(none)' ? 'unknown' : data[i][0], parseInt(data[i][2], 10)]);
+            keys.push(data[i][1]);
+            chartData.push([data[i][1] === '(none)' ? 'unknown' : data[i][1], parseInt(data[i][2], 10)]);
           }
         }
         break;  // Google Sources Column Chart
@@ -189,16 +208,22 @@ export class ChartsCallsService {
         }
         break; // Google Average Session Duration
       case 12:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 - browser
+         * 2 - value
+         **/
+
         header = [['Browser', 'Sessions']];
 
         for (let i = 0; i < data.length; i++) {
-          indexFound = keys.findIndex(el => el === data[i][0]);
+          indexFound = keys.findIndex(el => el === data[i][1]);
 
           if(indexFound >= 0) {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
-            keys.push(data[i][0]);
-            chartData.push([ChartsCallsService.cutString(data[i][0], 30), parseInt(data[i][2], 10)]);
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
         }
         break; // Google list Session per Browser
@@ -249,7 +274,7 @@ export class ChartsCallsService {
             index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys.length)));
           }
           // and collecting data
-          (keys[i].substr(0, 1) === 'M') ? chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10) : chartArray[index][1] = parseInt(data[0]['value'][keys[i]], 10);
+          (keys[i].substr(0, 1) === 'M') ? chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10);
         }
         break; // IG Audience Gender/Age
       case 18:
@@ -321,6 +346,16 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
+            lineWidth: 2,
+            pointSize: 0,
+            pointShape: 'circle',
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             curveType: 'function',
             height: 310,
             explorer: {},

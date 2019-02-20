@@ -108,8 +108,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             .subscribe(dataArray => {
               for (let i = 0; i < dataArray.length; i++) {
 
-                console.log(dataArray);
-
                 let chart: DashboardCharts = charts[i];
 
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
@@ -128,8 +126,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                 }
 
                 chartsToShow.push(chart);
-
-                console.log(JSON.parse(JSON.stringify(chartsToShow)));
 
                 this.filterActions.initData(chartsToShow, dateInterval);
                 this.GEService.updateChartList.next(true);

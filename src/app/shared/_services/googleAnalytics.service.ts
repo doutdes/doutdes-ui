@@ -99,7 +99,7 @@ export class GoogleAnalyticsService {
 
   private formatURL(intervalDate: IntervalDate, urlCall: string) {
     const startDate = (intervalDate == undefined || intervalDate.first == undefined || intervalDate.last == null)
-      ? '365daysAgo'
+      ? '90daysAgo'
       : this.formatDate(intervalDate.first);
     const endDate = (intervalDate == undefined || intervalDate.last == undefined || intervalDate.last == null)
       ? 'today'
