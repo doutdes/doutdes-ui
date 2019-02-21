@@ -18,6 +18,9 @@ import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
+import {ngxLoadingAnimationTypes} from 'ngx-loading';
+
+const PrimaryWhite = '#ffffff';
 
 @Component({
   selector: 'app-feature-dashboard-facebook',
@@ -37,6 +40,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     seven: 7,
     thirty: 30,
     ninety: 90
+  };
+
+  public config = {
+    animationType: ngxLoadingAnimationTypes.threeBounce,
+    backdropBackgroundColour: 'rgba(0,0,0,0.1)',
+    backdropBorderRadius: '4px',
+    primaryColour: PrimaryWhite,
+    secondaryColour: PrimaryWhite
   };
 
   public chartArray$: Array<DashboardCharts> = [];
@@ -110,7 +121,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   chart.chartData = dataArray[i];
                   // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
                   chart.error = false;
-
                 } else {
                   chart.error = true;
 
@@ -209,11 +219,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         this.dateChoice = 'Custom';
         break;
     }
-  }
-
-  cloneChart(chart: DashboardCharts): DashboardCharts {
-
-    return JSON.parse(JSON.stringify(chart));
   }
 
   addBreadcrumb() {

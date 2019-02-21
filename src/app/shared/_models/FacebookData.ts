@@ -8,7 +8,6 @@ export interface FbAnyData {
   end_time: Date;
 }
 
-
 export interface FbNumberData {
   value: number;
   end_time: Date;

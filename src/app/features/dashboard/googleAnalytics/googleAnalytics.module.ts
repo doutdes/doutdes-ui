@@ -28,7 +28,7 @@ import {UserService} from '../../../shared/_services/user.service';
     HttpClientModule,
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
-    // NgxLoadingModule.forRoot({}),
+    NgxLoadingModule.forRoot({}),
   ],
   providers: [
     GoogleAnalyticsService,

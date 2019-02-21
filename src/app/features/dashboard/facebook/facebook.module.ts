@@ -16,6 +16,7 @@ import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {UserService} from '../../../shared/_services/user.service';
+import {NgxLoadingModule} from 'ngx-loading';
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import {UserService} from '../../../shared/_services/user.service';
     HttpClientModule,
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
+    NgxLoadingModule.forRoot({}),
   ],
   providers: [
     ApiKeysService,

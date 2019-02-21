@@ -45,15 +45,13 @@ export class FilterActions {
   initData(originalData, dateInterval: IntervalDate) {
     let original = originalData || [];
     let filtered = originalData ? JSON.parse(JSON.stringify(originalData)) : [];
-    let initialised: null;
     let chart_id;
 
     // Given the original data, it retrieves the right format for the data
     if (filtered) {
       for (let i in filtered) {
         chart_id = filtered[i].chart_id;
-        initialised = this.CCService.initFormatting(chart_id, filtered[i].chartData);
-        filtered[i].chartData = this.CCService.formatChart(chart_id, initialised);
+        filtered[i].chartData = this.CCService.formatChart(chart_id, filtered[i].chartData);
       }
     }
 
@@ -74,12 +72,7 @@ export class FilterActions {
 
   addChart(chart: DashboardCharts) {
     let filteredChart = JSON.parse(JSON.stringify(chart));
-
-    console.warn('Chart to add received: ', JSON.parse(JSON.stringify(chart)));
-
-    filteredChart.chartData = this.CCService.formatChart(filteredChart.chart_id, this.CCService.initFormatting(filteredChart.chart_id, filteredChart.chartData));
-
-    console.warn('Chart to add filtered: ', JSON.parse(JSON.stringify(filteredChart)));
+    filteredChart.chartData = this.CCService.formatChart(filteredChart.chart_id, filteredChart.chartData);
 
     this.originalData.push(chart);
     this.filteredData.push(filteredChart);
@@ -110,7 +103,7 @@ export class FilterActions {
             ? chart.chartData.filter(el => parseDate(el[0]) >= filterInterval.first && parseDate(el[0]) <= filterInterval.last)
             : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
 
-          chart.chartData = this.CCService.formatChart(chart.chart_id, this.CCService.initFormatting(chart.chart_id, chart.chartData));
+          chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
           chart.aggregated = this.ADService.getAggregatedData(chart.chartData, chart.chart_id, filterInterval);
 
           filtered.push(chart);

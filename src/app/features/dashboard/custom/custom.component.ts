@@ -114,15 +114,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
                 let chart: DashboardCharts = charts[i];
 
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-
-                  // Cleaning data // TODO this should be fixed at mount
-                  chart.format = chart['Chart'].format;
-                  chart.type = chart['Chart'].type;
-                  chart.originalTitle = chart['Chart'].title;
-                  delete chart['Chart'];
-
-                  chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
-                  chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
+                  chart.chartData = dataArray[i];
+                  // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
                   chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO check
                 } else {
@@ -169,8 +162,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
         if (!chartData['status']) { // Se la chiamata non rende errori
 
-          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, chartData);
-          chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
+          chartToPush.chartData = chartData;
+          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
           chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval); // TODO check
 

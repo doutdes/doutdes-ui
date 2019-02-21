@@ -337,6 +337,8 @@ export class ChartsCallsService {
     let formattedData;
     let type;
 
+    data = this.initFormatting(ID, data);
+
     switch (ID) {
       case 1:
         formattedData = {
