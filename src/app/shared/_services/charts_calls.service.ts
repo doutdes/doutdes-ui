@@ -74,6 +74,7 @@ export class ChartsCallsService {
     let header;
     let type;
     let chartArray = [];
+    let keys = [];
     const impressChartArray = [];
     let paddingRows = 0;
     let arr = [];
@@ -555,12 +556,68 @@ export class ChartsCallsService {
         };
         break; //IG Audience Locale
       case 19:
-        break;
+        let interval = 3;
+        header = [['Country', 'Min', 'Average', 'Max']]; /// TODO: fix containsGeoData to use header != 'Country'
+        //keys = data[0]['value']; // getting all the gender/age data
+        keys = [];
+        chartArray = [];
+        for(let i = 0; i < data.length; i++)
+          keys.push(data[i]['value']);
+        for (let i = 0 ; i < 24; i += interval) {
+          // MIN | AVG | MAX
+          chartArray.push([i + ':00-' + (i + interval) + ':00', Number.MAX_SAFE_INTEGER, 0, Number.MIN_SAFE_INTEGER]);
+        }
+
+        //console.log(JSON.parse(JSON.stringify(chartArray[7])));
+        //console.log(Object.keys(keys[0]).length);
+        // putting a unique entry in chartArray for every existent age range
+        for (let day = 0; day < keys.length; day++) {
+          //console.log('DAY: ' + day);
+          for (let h_interval = 0; h_interval < Object.keys(keys[day]).length; h_interval += interval) {
+            //console.log('HOUR: ' + h_interval + ' - ' + (h_interval+interval));
+            let temp = 0;
+            let index = 0;
+            for (let hour = h_interval; hour < (h_interval + interval); hour++) {
+              temp += parseInt(keys[day][hour], 10);
+              //console.log('seeing keys[' + day + '][' + hour + ']: ' + keys[day][hour]);
+              index = (hour + 1) / interval;
+            }
+            chartArray[index - 1][2] += temp;
+
+            //console.log('INDEX: ' + (index - 1));
+            if (temp < chartArray[index - 1][1]) {
+              chartArray[index - 1][1] = temp;
+            }
+
+            if (temp > chartArray[index - 1][3]) {
+              chartArray[index - 1][3] = temp;
+            }
+          }
+        }
+        for (let i = 0; i < JSON.parse(JSON.stringify(chartArray)).length; i++) {
+          chartArray[i][2] /= 30;
+        }
+
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: header.concat(chartArray),
+          chartClass: 9,
+          options : {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#FFCDEE', '#FF88E1', '#F33DFF'],
+            areaOpacity: 0.4,
+            legend: { position: 'top', maxLines: 3 },
+            bar: { groupWidth: '75%' },
+            isStacked: true,
+          }
+        };
+
+        break; //IG online followers
+      case 21:
       case 23:
         header = [['Date', 'Impressions']];
-        // Push data pairs in the Chart array
-
-        // console.log(data);
 
         for (let i = 0; i < data.length; i++) {
           chartArray.push([new Date(data[i].end_time), data[i].value]);
@@ -571,17 +628,19 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: header.concat(chartArray),
-          chartClass: 5,
+          chartClass: 3,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            chartArea: {left: 40, right: 0, height: 280, top: 0},
             legend: {position: 'none'},
-            height: 210,
+            height: 310,
             hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
             colors: ['#ff96db'],
             areaOpacity: 0.4
           }
         };
+
+        break; //IG impressions by day
       case 24:
         break;
       case 25:
