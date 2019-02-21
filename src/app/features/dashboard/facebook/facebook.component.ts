@@ -98,8 +98,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
-    }
-    else {
+    } else {
       console.error('Cannot retrieve a valid ID for the Facebook dashboard.');
       return;
     }

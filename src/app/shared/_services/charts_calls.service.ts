@@ -82,6 +82,8 @@ export class ChartsCallsService {
     let indexFound;
     let other;
     let paddingRows = 0;
+    let interval;
+    let temp, index;
 
     switch (ID) {
       case 1:
@@ -298,6 +300,43 @@ export class ChartsCallsService {
 
         break; // IG Audience Locale
       case 19:
+
+        interval = 3; // Interval of hours to show
+        header = [['OnlineFollowers', 'Min', 'Average', 'Max']];
+
+        for(let i = 0; i < data.length; i++)
+          keys.push(data[i]['value']);
+
+        for (let i = 0 ; i < 24; i += interval) {
+          // MIN | AVG | MAX
+          chartData.push([i + ':00-' + (i + interval) + ':00', Number.MAX_SAFE_INTEGER, 0, Number.MIN_SAFE_INTEGER]);
+        }
+
+        // putting a unique entry in chartData for every existent age range
+        for (let day = 0; day < keys.length; day++) {
+          for (let h_interval = 0; h_interval < Object.keys(keys[day]).length; h_interval += interval) {
+            temp = 0;
+            index = 0;
+            for (let hour = h_interval; hour < (h_interval + interval); hour++) {
+              temp += parseInt(keys[day][hour], 10);
+              index = (hour + 1) / interval;
+            }
+
+            chartData[index - 1][2] += temp;
+
+            if (temp < chartData[index - 1][1]) {
+              chartData[index - 1][1] = temp;
+            }
+
+            if (temp > chartData[index - 1][3]) {
+              chartData[index - 1][3] = temp;
+            }
+          }
+        }
+        for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
+          chartData[i][2] /= 30;
+        }
+
         break; // IG Online followers
       case 20:
         break; // IG Email contacts
@@ -676,6 +715,21 @@ export class ChartsCallsService {
         };
         break; // IG Audience Locale
       case 19:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options : {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#FFCDEE', '#FF88E1', '#F33DFF'],
+            areaOpacity: 0.4,
+            legend: { position: 'top', maxLines: 3 },
+            bar: { groupWidth: '75%' },
+            isStacked: true,
+          }
+        };
         break; // IG Online followers
       case 20:
         break; // IG Email contacts
@@ -709,7 +763,7 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            chartArea: {left: 0, right: 0, height: 190, top: 0, bottom: 0},
             legend: {position: 'none'},
             height: 310,
             hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
