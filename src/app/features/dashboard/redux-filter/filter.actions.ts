@@ -73,10 +73,16 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
+    let filteredChart = JSON.parse(JSON.stringify(chart));
 
-    chart.chartData = this.CCService.initFormatting(chart.chart_id, chart.chartData);
+    console.warn('Chart to add received: ', JSON.parse(JSON.stringify(chart)));
+
+    filteredChart.chartData = this.CCService.formatChart(filteredChart.chart_id, this.CCService.initFormatting(filteredChart.chart_id, filteredChart.chartData));
+
+    console.warn('Chart to add filtered: ', JSON.parse(JSON.stringify(filteredChart)));
+
     this.originalData.push(chart);
-    this.filteredData.push(JSON.parse(JSON.stringify(chart)));
+    this.filteredData.push(filteredChart);
 
     this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
 
@@ -93,8 +99,6 @@ export class FilterActions {
     const unfilteredData = JSON.parse(JSON.stringify(this.originalData)); // Looses the reference to original data
     const filtered = [];
     let chart;
-
-    console.log('arrivo');
 
     if (unfilteredData) {
       for (let i = 0; i < unfilteredData.length; i++) {

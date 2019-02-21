@@ -111,10 +111,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
                   chart.error = false;
 
-                  if (this.CCService.containsGeoData(chart)) { // Add field geoData for charts with geographical data
-                    chart.geoData = dataArray[i];
-                  }
-
                 } else {
                   chart.error = true;
 
@@ -151,7 +147,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
-
     const intervalDate: IntervalDate = {
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
@@ -161,11 +156,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
-          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, data);
-          chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
+          chartToPush.chartData = data;
+          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.type = dashChart.type;
-          chartToPush.format = dashChart.format;
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);

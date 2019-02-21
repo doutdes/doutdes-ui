@@ -726,16 +726,4 @@ export class ChartsCallsService {
     return formattedData;
   }
 
-  containsGeoData(chart: DashboardCharts) {
-
-    const dataTable = chart.chartData.dataTable;
-
-    if (dataTable) {
-      const metric = dataTable[0][0];
-
-      return metric.includes('Country') || metric.includes('City');
-    }
-
-    return false;
-  }
 }

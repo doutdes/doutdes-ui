@@ -98,14 +98,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     }
 
     // Retrieving dashboard charts
-    this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
-      .subscribe(charts => {
+    this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
-
-          charts.forEach(chart =>
-            observables.push
-            (this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
+          // Retrieves data for each chart
+          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID)));
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -118,11 +115,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                   chart.chartData = dataArray[i];
                   // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
-
-                  if (this.CCService.containsGeoData(chart)) { // Add field geoData for charts with geographical data
-                    chart.geoData = dataArray[i];
-                  }
-
                 } else {
                   chart.error = true;
 
@@ -159,7 +151,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
-    console.log(chartToPush);
     const intervalDate: IntervalDate = {
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
@@ -169,11 +160,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       .subscribe(data => {
 
         if (!data['status']) { // Se la chiamata non rende errori
-          chartToPush.chartData = this.CCService.formatChart(dashChart.chart_id, data);
-          chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
+          chartToPush.chartData = data;
+          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.type = dashChart.type;
-          chartToPush.format = dashChart.format;
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
@@ -217,11 +206,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         this.dateChoice = 'Custom';
         break;
     }
-  }
-
-  cloneChart(chart: DashboardCharts): DashboardCharts {
-
-    return JSON.parse(JSON.stringify(chart));
   }
 
   addBreadcrumb() {
