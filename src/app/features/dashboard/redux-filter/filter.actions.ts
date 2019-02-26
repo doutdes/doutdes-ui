@@ -1,30 +1,31 @@
-/* Filter Actions */
-
 import {Injectable} from '@angular/core';
 import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../shared/store/model';
-import {IntervalDate} from './filter.model';
+import {DashboardData, IntervalDate} from './filter.model';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {parseDate} from 'ngx-bootstrap';
+import {Chart} from '../../../shared/_models/Chart';
 
-
-export const FILTER_INIT = 'FILTER_INIT';
-export const FILTER_UPDATE = 'FILTER_UPDATE';
+export const FILTER_INIT    = 'FILTER_INIT';
+export const FILTER_UPDATE  = 'FILTER_UPDATE';
 export const FILTER_BY_DATA = 'FILTER_BY_DATA';
-export const FILTER_RESET = 'FILTER_RESET';
-export const FILTER_CLEAR = 'FILTER_CLEAR';
+export const FILTER_RESET   = 'FILTER_RESET';
+export const FILTER_CLEAR   = 'FILTER_CLEAR';
+export const FILTER_REMOVE_CURRENT = 'FILTER_REMOVE_CURRENT';
 
 
 @Injectable()
 export class FilterActions {
 
   @select() filter: Observable<any>;
-  originalData: any;
-  filteredData: any;
+
+  currentDashboard: DashboardData;
+  filteredDashboard: DashboardData;
+  storedDashboards: DashboardData[];
 
   constructor(
     private Redux: NgRedux<IAppState>,
@@ -32,9 +33,9 @@ export class FilterActions {
     private ADService: AggregatedDataService
   ) {
     this.filter.subscribe(elements => {
-      this.originalData = elements['originalData'];
-      this.filteredData = elements['dataFiltered'];
-
+      this.currentDashboard = elements['currentDashboard'];
+      this.filteredDashboard = elements['filteredDashboard'];
+      this.storedDashboards = elements['storedDashboards'];
     });
   }
 
@@ -42,60 +43,94 @@ export class FilterActions {
    * It receives the original data and it stores them as they are
    * After this, it requires for the right format of the data and it stores this in the formatted data
    **/
-  initData(originalData, dateInterval: IntervalDate) {
-    let original = originalData || [];
-    let filtered = originalData ? JSON.parse(JSON.stringify(originalData)) : [];
-    let chart_id;
+  initData(initialData: DashboardData) {
+    let currentDashboard  = initialData || null;
+    let filteredDashboard = initialData ? JSON.parse(JSON.stringify(initialData)) : null;
+    let chart_id, index;
 
     // Given the original data, it retrieves the right format for the data
-    if (filtered) {
-      for (let i in filtered) {
-        chart_id = filtered[i].chart_id;
-        filtered[i].chartData = this.CCService.formatChart(chart_id, filtered[i].chartData);
+    if (filteredDashboard) {
+      for (let i in filteredDashboard.data) {
+        chart_id = filteredDashboard.data[i].chart_id;
+        filteredDashboard.data[i].chartData = this.CCService.formatChart(chart_id, filteredDashboard.data[i].chartData);
       }
     }
 
-    this.Redux.dispatch({type: FILTER_INIT, originalData: original, originalInterval: dateInterval, dataFiltered: filtered});
+    // Searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
+    index = this.storedDashboards.findIndex((el: DashboardData) => el.type === currentDashboard.type);
+
+    if(index < 0) {
+      this.storedDashboards.push(JSON.parse(JSON.stringify(initialData)));
+    }
+
+    this.Redux.dispatch({type: FILTER_INIT, currentDashboard: currentDashboard, filteredDashboard: filteredDashboard, storedDashboards: this.storedDashboards});
   }
 
   filterData(dateInterval: IntervalDate) {
-    const filteredData = this.filterByDateInterval(dateInterval);
-    this.Redux.dispatch({type: FILTER_BY_DATA, dataFiltered: filteredData, filterInterval: dateInterval});
+    const filteredDashboard = this.filterByDateInterval(dateInterval);
+    this.Redux.dispatch({type: FILTER_BY_DATA, filteredDashboard: filteredDashboard});
   }
 
-  updateChart(index: number, newTitle: string) {
-    this.originalData[index].title = newTitle;
-    this.filteredData[index].title = newTitle;
+  updateChart(chart: DashboardCharts) {
+    const index       = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+    const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
 
-    this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
+    this.currentDashboard.data[index].title = chart.title;
+    this.filteredDashboard.data[index].title = chart.title;
+    this.storedDashboards[storedIndex].data[index].title = chart.title;
+
+    this.Redux.dispatch({type: FILTER_UPDATE,
+      currentDashboard: this.currentDashboard,
+      filteredDashboard: this.filteredDashboard,
+      storedDashboards: this.storedDashboards
+    });
   }
 
   addChart(chart: DashboardCharts) {
+    const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === chart.type);
     let filteredChart = JSON.parse(JSON.stringify(chart));
     filteredChart.chartData = this.CCService.formatChart(filteredChart.chart_id, filteredChart.chartData);
 
-    this.originalData.push(chart);
-    this.filteredData.push(filteredChart);
+    this.currentDashboard.data.push(chart);
+    this.filteredDashboard.data.push(filteredChart);
+    this.storedDashboards[index] = JSON.parse(JSON.stringify(this.currentDashboard));
 
-    this.Redux.dispatch({type: FILTER_UPDATE, originalData: this.originalData, dataFiltered: this.filteredData});
-
+    this.Redux.dispatch({
+      type: FILTER_UPDATE,
+      currentDashboard: this.currentDashboard,
+      filteredDashboard: this.filteredDashboard,
+      storedDashboards: this.storedDashboards
+    });
   }
 
   removeChart(id: number) {
-    let original = this.originalData.filter((chart) => chart.chart_id !== id);
-    let filtered = this.filteredData.filter((chart) => chart.chart_id !== id);
+    const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
 
-    this.Redux.dispatch({type: FILTER_UPDATE, originalData: original, dataFiltered: filtered});
+    this.currentDashboard.data  = this.currentDashboard.data.filter((chart) => chart.chart_id !== id);
+    this.filteredDashboard.data = this.filteredDashboard.data.filter((chart) => chart.chart_id !== id);
+
+    this.storedDashboards[index] = JSON.parse(JSON.stringify(this.currentDashboard));
+
+    this.Redux.dispatch({
+      type: FILTER_UPDATE,
+      currentDashboard: this.currentDashboard,
+      filteredDashboard: this.filteredDashboard,
+      storedDashboards: this.storedDashboards
+    });
+  }
+
+  removeCurrent(){
+    this.Redux.dispatch({type: FILTER_REMOVE_CURRENT});
   }
 
   filterByDateInterval(filterInterval: IntervalDate) {
-    const unfilteredData = JSON.parse(JSON.stringify(this.originalData)); // Looses the reference to original data
+    const dashToFilter: DashboardData = JSON.parse(JSON.stringify(this.currentDashboard)); // Looses the reference to original data
     const filtered = [];
     let chart;
 
-    if (unfilteredData) {
-      for (let i = 0; i < unfilteredData.length; i++) {
-        chart = unfilteredData[i];
+    if (dashToFilter) {
+      for (let i = 0; i < dashToFilter.data.length; i++) {
+        chart = dashToFilter.data[i];
 
         // If the type of the chart is known
         if (DS_TYPE.hasOwnProperty(chart.type)) {
@@ -115,13 +150,26 @@ export class FilterActions {
       }
     } else {
       console.error('Error in FILTER_ACTIONS. No unfiltered data found.');
-      console.error(unfilteredData);
+      console.error(dashToFilter);
     }
 
-    return filtered;
+    dashToFilter.data = filtered;
+
+    return dashToFilter;
   }
 
   clear() {
     this.Redux.dispatch({type: FILTER_CLEAR});
+  }
+
+  // This method is been called if and only if a dashboard was already stored on the variable model called storedDashboards
+  loadStoredDashboard(dashboard_id: number){
+    const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === dashboard_id);
+
+    if(index >= 0){
+      this.initData(this.storedDashboards[index]);
+    } else {
+      console.error('ERROR: no dashboards stored found with id ' + dashboard_id);
+    }
   }
 }

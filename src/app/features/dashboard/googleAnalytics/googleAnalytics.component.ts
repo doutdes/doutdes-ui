@@ -9,7 +9,7 @@ import {GlobalEventsManagerService} from '../../../shared/_services/global-event
 import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
-import {IntervalDate} from '../redux-filter/filter.model';
+import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {addDays, subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
@@ -18,6 +18,7 @@ import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
+import {D_TYPE} from '../../../shared/_models/Dashboard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -40,6 +41,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  private dashStored: DashboardData;
 
   public loading = false;
   public config = {
@@ -72,10 +74,15 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   ) {
   }
 
-  async loadDashboard() {
+  async loadDashboard() { // TODO check api key existance
 
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
+    let currentData: DashboardData;
+    const dateInterval: IntervalDate = {
+      first: this.minDate,
+      last: this.maxDate
+    };
 
     this.GEService.loadingScreen.next(true);
 
@@ -84,70 +91,73 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
-    }
-    else {
+    } else {
       console.error('Cannot retrieve a valid ID for the Website dashboard.');
       return;
     }
 
-    // Retrieving dashboard charts
-    this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
-      .subscribe(charts => {
+    if (this.dashStored) {
+      console.warn('Ci sono già dati salvati');
+      this.filterActions.loadStoredDashboard(D_TYPE.GA);
+    } else {
+      // Retrieving dashboard charts
+      this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
+        .subscribe(charts => {
 
-        // Last 30 days as default view
-        const dateInterval: IntervalDate = {
-          first: this.minDate,
-          last: this.maxDate
-        };
+          if (charts && charts.length > 0) { // Checking if dashboard is not empty
+            console.warn('Chart is not empty');
+            charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
 
-        if (charts && charts.length > 0) { // Checking if dashboard is not empty
-          console.warn('Chart is not empty');
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
+            forkJoin(observables)
+              .subscribe(dataArray => {
+                for (let i = 0; i < dataArray.length; i++) {
 
-          forkJoin(observables)
-            .subscribe(dataArray => {
-              for (let i = 0; i < dataArray.length; i++) {
+                  let chart: DashboardCharts = charts[i];
 
-                let chart: DashboardCharts = charts[i];
+                  if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
-                if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+                    chart.chartData = dataArray[i];
+                    // chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
+                    // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO to check
+                    chart.error = false;
+                    chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
+                  } else {
 
-                  chart.chartData = dataArray[i];
-                  // chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
-                  // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO to check
-                  chart.error = false;
-                  chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
-                } else {
+                    chart.error = true;
 
-                  chart.error = true;
+                    console.error('ERROR in GANALYTICS COMPONENT. Cannot retrieve data from one of the charts. More info:');
+                    console.error(dataArray[i]);
+                  }
 
-                  console.error('ERROR in GANALYTICS COMPONENT. Cannot retrieve data from one of the charts. More info:');
-                  console.error(dataArray[i]);
+                  chartsToShow.push(chart);
                 }
 
-                chartsToShow.push(chart);
+                currentData = {
+                  data: chartsToShow,
+                  interval: dateInterval,
+                  type: D_TYPE.GA,
+                };
 
-                this.filterActions.initData(chartsToShow, dateInterval);
+                this.filterActions.initData(currentData);
                 this.GEService.updateChartList.next(true);
 
                 // Shows last 30 days
                 this.datePickerEnabled = true;
                 this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
-              }
-              this.GEService.loadingScreen.next(false);
 
-            });
-        } else {
-          this.filterActions.initData([], dateInterval);
-          this.GEService.updateChartList.next(true);
+                this.GEService.loadingScreen.next(false);
 
-          this.GEService.loadingScreen.next(false);
-        }
+              });
+          } else {
+            this.GEService.loadingScreen.next(false);
+            console.log('Dashboard is empty.');
+          }
 
-      }, err => {
-        console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
-        console.error(err);
-      });
+        }, err => {
+          console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
+          console.error(err);
+        });
+    }
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
@@ -242,9 +252,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
 
     this.filter.subscribe(elements => {
-      if (elements['dataFiltered'] !== null) {
-        this.chartArray$ = elements['dataFiltered'];
-      }
+      this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
+      const index = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.GA);
+      this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
     let dash_type = this.HARD_DASH_DATA.dashboard_type;
@@ -262,8 +272,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       });
       this.GEService.updateChartInDashboard.subscribe(chart => {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-          this.filterActions.updateChart(index, chart.title);
+          this.filterActions.updateChart(chart);
         }
       });
       this.GEService.loadingScreen.subscribe(value => {
@@ -279,7 +288,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   ngOnDestroy() {
     this.removeBreadcrumb();
-    this.filterActions.clear();
+    this.filterActions.removeCurrent();
   }
 
   async htmltoPDF() {
@@ -321,7 +330,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         x = 20;
       }
 
-      if(i !== 0 && i % graphsPage === 0) {
+      if (i !== 0 && i % graphsPage === 0) {
         pdf.addPage();
         x = 20;
         y = 20;
@@ -344,12 +353,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   async getUserCompany() {
     let company = null;
-    const user: User  = await this.userService.get().toPromise();
+    const user: User = await this.userService.get().toPromise();
 
     return user.company_name;
   }
 
-  nChartEven(){
+  nChartEven() {
     return this.chartArray$.length % 2 === 0;
   }
 }

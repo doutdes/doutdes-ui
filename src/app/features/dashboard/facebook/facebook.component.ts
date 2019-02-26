@@ -9,7 +9,7 @@ import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
 import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {IntervalDate} from '../redux-filter/filter.model';
+import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
@@ -19,6 +19,7 @@ import html2canvas from 'html2canvas';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import {D_TYPE} from '../../../shared/_models/Dashboard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -30,7 +31,7 @@ const PrimaryWhite = '#ffffff';
 export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   public HARD_DASH_DATA = {
-    dashboard_type: 1,
+    dashboard_type: D_TYPE.FB,
     dashboard_id: null
   };
 
@@ -51,6 +52,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  private dashStored: Array<DashboardCharts> = [];
 
   public loading = false;
   public isApiKeySet = true;
@@ -82,6 +84,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
+    const dateInterval: IntervalDate = {
+      first: this.minDate,
+      last: this.maxDate
+    };
+    let currentData: DashboardData;
 
     if(!existence['exists']) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
@@ -103,55 +110,63 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Retrieving dashboard charts
-    this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
-      .subscribe(charts => {
+    if(this.dashStored) {
+      // Ci sono già dati salvati
+      this.filterActions.loadStoredDashboard(D_TYPE.FB);
+    } else {
+      // Retrieving dashboard charts
+      this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
+        .subscribe(charts => {
 
-        if (charts && charts.length > 0) { // Checking if dashboard is not empty
+          if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
-          forkJoin(observables)
-            .subscribe(dataArray => {
-              for (let i = 0; i < dataArray.length; i++) {
+            charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
+            forkJoin(observables)
+              .subscribe(dataArray => {
+                for (let i = 0; i < dataArray.length; i++) {
 
-                let chart: DashboardCharts = charts[i];
-                if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+                  let chart: DashboardCharts = charts[i];
+                  if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
-                  chart.chartData = dataArray[i];
-                  // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
-                  chart.error = false;
-                } else {
-                  chart.error = true;
+                    chart.chartData = dataArray[i];
+                    // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
+                    chart.error = false;
+                  } else {
+                    chart.error = true;
 
-                  console.error('ERROR in FACEBOOK COMPONENT. Cannot retrieve data from one of the charts. More info:');
-                  console.error(dataArray[i]);
+                    console.error('ERROR in FACEBOOK COMPONENT. Cannot retrieve data from one of the charts. More info:');
+                    console.error(dataArray[i]);
+                  }
+
+                  chartsToShow.push(chart); // Original Data
                 }
 
-                chartsToShow.push(chart); // Original Data
-              }
-              this.GEService.loadingScreen.next(false);
+                currentData = {
+                  data: chartsToShow,
+                  interval: dateInterval,
+                  type: D_TYPE.FB,
+                };
 
-              const dateInterval: IntervalDate = {
-                first: this.minDate,
-                last: this.maxDate
-              };
+                this.filterActions.initData(currentData);
+                this.GEService.updateChartList.next(true);
 
-              this.filterActions.initData(chartsToShow, dateInterval);
-              this.GEService.updateChartList.next(true);
+                // Shows last 30 days
+                this.datePickerEnabled = true;
+                this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
 
-              // Shows last 30 days
-              this.datePickerEnabled = true;
-              this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
-            });
+                this.GEService.loadingScreen.next(false);
+              });
 
-        } else {
-          this.GEService.loadingScreen.next(false);
-          console.log('Dashboard is empty.');
-        }
-      }, err => {
-        console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
-        console.warn(err);
-      });
+          } else {
+            this.GEService.loadingScreen.next(false);
+            console.log('Dashboard is empty.');
+          }
+        }, err => {
+          console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
+          console.warn(err);
+        });
+
+    }
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
@@ -252,9 +267,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
     this.filter.subscribe(elements => {
-      if (elements['dataFiltered'] !== null) {
-        this.chartArray$ = elements['dataFiltered'];
-      }
+      this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
+      const index      = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB);
+      this.dashStored  = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
     let dash_type = this.HARD_DASH_DATA.dashboard_type;
@@ -272,8 +287,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       });
       this.GEService.updateChartInDashboard.subscribe(chart => {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-          this.filterActions.updateChart(index, chart.title);
+          this.filterActions.updateChart(chart);
         }
       });
       this.GEService.loadingScreen.subscribe(value => {
@@ -289,7 +303,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
-    this.filterActions.clear();
+    this.filterActions.removeCurrent();
   }
 
   async htmltoPDF() {

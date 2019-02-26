@@ -9,11 +9,12 @@ import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
 import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {IntervalDate} from '../redux-filter/filter.model';
+import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
+import {D_TYPE} from '../../../shared/_models/Dashboard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -25,7 +26,7 @@ const PrimaryWhite = '#ffffff';
 export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   public HARD_DASH_DATA = {
-    dashboard_type: 3,
+    dashboard_type: D_TYPE.IG,
     dashboard_id: null
   };
 
@@ -38,6 +39,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  private dashStored: Array<DashboardCharts> = [];
 
   public loading = false;
   public isApiKeySet = true;
@@ -72,10 +74,14 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async loadDashboard() {
-
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
+    const dateInterval: IntervalDate = {
+      first: this.minDate,
+      last: this.maxDate
+    };
+    let currentData: DashboardData;
 
     if (!existence) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
@@ -85,7 +91,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.GEService.loadingScreen.next(true);
 
     // Retrieving dashboard ID
-    const dash = await this.DService.getDashboardByType(3 ).toPromise(); // Instagram type
+    const dash = await this.DService.getDashboardByType(3).toPromise(); // Instagram type
 
     // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
     this.pageID = (await this.IGService.getPages().toPromise())[0].id;
@@ -97,8 +103,12 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Retrieving dashboard charts
-    this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
+    if (this.dashStored) {
+      // Ci sono già dati salvati
+      this.filterActions.loadStoredDashboard(D_TYPE.FB);
+    } else {
+      // Retrieving dashboard charts
+      this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
           // Retrieves data for each chart
@@ -124,19 +134,21 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
                 chartsToShow.push(chart); // Original Data
               }
-              this.GEService.loadingScreen.next(false);
 
-              const dateInterval: IntervalDate = {
-                first: this.minDate,
-                last: this.maxDate
+              currentData = {
+                data: chartsToShow,
+                interval: dateInterval,
+                type: D_TYPE.FB,
               };
 
-              this.filterActions.initData(chartsToShow, dateInterval);
+              this.filterActions.initData(currentData);
               this.GEService.updateChartList.next(true);
 
               // Shows last 30 days
               this.datePickerEnabled = true;
               this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+
+              this.GEService.loadingScreen.next(false);
             });
 
         } else {
@@ -147,6 +159,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         console.error('ERROR in INSTAGRAM COMPONENT, when fetching charts.');
         console.warn(err);
       });
+    }
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
@@ -241,9 +254,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
     this.filter.subscribe(elements => {
-      if (elements['dataFiltered'] !== null) {
-        this.chartArray$ = elements['dataFiltered'];
-      }
+      this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
+      const index = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG);
+      this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
     const dash_type = this.HARD_DASH_DATA.dashboard_type;
@@ -261,8 +274,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       });
       this.GEService.updateChartInDashboard.subscribe(chart => {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-          this.filterActions.updateChart(index, chart.title);
+          this.filterActions.updateChart(chart);
         }
       });
       this.GEService.loadingScreen.subscribe(value => {

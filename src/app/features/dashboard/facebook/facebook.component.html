@@ -35,6 +35,8 @@
            (bsValueChange)="onValueChange($event)"
            bsDaterangepicker>
   </div>
+
+  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>
 <div *ngIf="isApiKeySet" class="row px-3 pt-3">
   <div class="col-md-3 col-sm-3 col-6 pl-0 pr-2">
@@ -116,7 +118,6 @@
   </div>
 </div> <!-- Info cards -->
 <div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
-
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
       <app-card [dashChart]="chart"></app-card>
@@ -125,14 +126,10 @@
   <app-emptycard class="col-lg-6"
                  [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}"
                  [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
-
-  <!--<ng-template #noContent>
-    <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first Chart!</h5>
-  </ng-template>-->
 </div>
 <div *ngIf="!isApiKeySet">
   <h3 class="text-danger m-2">You can't add charts to the dashboard</h3>
   <h4 class="m-3">First you need to login to Facebook via OAuth.</h4>
   <button class="btn btn-success ml-3" [routerLink]="['/preferences/api-keys']">Configure Data Sources</button>
 </div>
-<ngx-loading [show]="loading" [config]="config"></ngx-loading>
+
