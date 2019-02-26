@@ -145,7 +145,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
                 this.GEService.updateChartList.next(true);
 
                 // Shows last 30 days
-                // this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+                this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
 
                 this.GEService.loadingScreen.next(false);
               });
@@ -286,5 +286,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
+  }
+
+  nChartEven() {
+    return this.chartArray$.length % 2 === 0;
   }
 }

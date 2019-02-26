@@ -147,12 +147,12 @@ export class FilterActions {
           console.error(chart);
         }
       }
+
+      dashToFilter.data = filtered;
     } else {
       console.error('Error in FILTER_ACTIONS. No unfiltered data found.');
       console.error(dashToFilter);
     }
-
-    dashToFilter.data = filtered;
 
     return dashToFilter;
   }
