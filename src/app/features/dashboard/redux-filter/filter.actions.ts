@@ -68,6 +68,7 @@ export class FilterActions {
 
   filterData(dateInterval: IntervalDate) {
     const filteredDashboard = this.filterByDateInterval(dateInterval);
+    console.warn('data received:', filteredDashboard);
     this.Redux.dispatch({type: FILTER_BY_DATA, filteredDashboard: filteredDashboard});
   }
 
