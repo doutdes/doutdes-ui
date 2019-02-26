@@ -9,13 +9,13 @@ import {GlobalEventsManagerService} from '../../../shared/_services/global-event
 import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
-import {IntervalDate} from '../redux-filter/filter.model';
+import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
-import {Chart} from '../../../shared/_models/Chart';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
+import {D_TYPE} from '../../../shared/_models/Dashboard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -27,7 +27,7 @@ const PrimaryWhite = '#ffffff';
 export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   public HARD_DASH_DATA = {
-    dashboard_type: 0,
+    dashboard_type: D_TYPE.CUSTOM,
     dashboard_id: null
   };
 
@@ -40,6 +40,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  private dashStored: Array<DashboardCharts> = [];
 
   public loading = false;
   public config = {
@@ -77,6 +78,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
+    const dateInterval: IntervalDate = {
+      first: this.minDate,
+      last: this.maxDate
+    };
+    let currentData: DashboardData;
 
     this.GEService.loadingScreen.next(true);
 
@@ -95,58 +101,63 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
-      .subscribe(charts => {
+    if (this.dashStored) {
+      // Ci sono già dati salvati
+      this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
+    } else {
 
-        const dateInterval: IntervalDate = {
-          first: this.minDate,
-          last: this.maxDate
-        };
+      this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
+        .subscribe(charts => {
 
-        if (charts && charts.length > 0) { // Checking if dashboard is not empty
+          if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
+            charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
 
-          forkJoin(observables)
-            .subscribe(dataArray => {
-              for (let i = 0; i < dataArray.length; i++) {
+            forkJoin(observables)
+              .subscribe(dataArray => {
+                for (let i = 0; i < dataArray.length; i++) {
 
-                let chart: DashboardCharts = charts[i];
+                  let chart: DashboardCharts = charts[i];
 
-                if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-                  chart.chartData = dataArray[i];
-                  // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
-                  chart.error = false;
-                  chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO check
-                } else {
+                  if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+                    chart.chartData = dataArray[i];
+                    // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
+                    chart.error = false;
+                    chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO check
+                  } else {
 
-                  chart.error = true;
+                    chart.error = true;
 
-                  console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
-                  console.error(dataArray[i]);
+                    console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
+                    console.error(dataArray[i]);
+                  }
+
+                  chartsToShow.push(chart);
                 }
 
-                chartsToShow.push(chart);
+                currentData = {
+                  data: chartsToShow,
+                  interval: dateInterval,
+                  type: D_TYPE.CUSTOM,
+                };
 
-                this.filterActions.initData(chartsToShow, dateInterval);
+                this.filterActions.initData(currentData);
                 this.GEService.updateChartList.next(true);
 
                 // Shows last 30 days
-                //this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
-              }
-              this.GEService.loadingScreen.next(false);
-            });
+                // this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
 
-        } else {
-          this.filterActions.initData([], dateInterval);
-          this.GEService.updateChartList.next(true);
+                this.GEService.loadingScreen.next(false);
+              });
 
-          this.GEService.loadingScreen.next(false);
-        }
-      }, err => {
-        console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
-        console.log(err);
-      });
+          } else {
+            this.GEService.loadingScreen.next(false);
+          }
+        }, err => {
+          console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
+          console.log(err);
+        });
+    }
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
@@ -235,9 +246,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
 
     this.filter.subscribe(elements => {
-      if (elements['dataFiltered'] !== null) {
-        this.chartArray$ = elements['dataFiltered'];
-      }
+      this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
+      const index = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG);
+      this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
     let dash_type = this.HARD_DASH_DATA.dashboard_type;
@@ -257,8 +268,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       });
       this.GEService.updateChartInDashboard.subscribe(chart => {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          const index = this.chartArray$.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
-          this.filterActions.updateChart(index, chart.title);
+          this.filterActions.updateChart(chart);
         }
       });
       this.GEService.loadingScreen.subscribe(value => {

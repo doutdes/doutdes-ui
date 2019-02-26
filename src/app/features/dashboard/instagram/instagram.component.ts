@@ -70,7 +70,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions
   ) {
-
   }
 
   async loadDashboard() {
@@ -105,7 +104,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     if (this.dashStored) {
       // Ci sono già dati salvati
-      this.filterActions.loadStoredDashboard(D_TYPE.FB);
+      this.filterActions.loadStoredDashboard(D_TYPE.IG);
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
@@ -138,7 +137,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
               currentData = {
                 data: chartsToShow,
                 interval: dateInterval,
-                type: D_TYPE.FB,
+                type: D_TYPE.IG,
               };
 
               this.filterActions.initData(currentData);
