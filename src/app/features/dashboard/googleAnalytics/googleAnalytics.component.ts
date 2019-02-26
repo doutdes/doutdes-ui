@@ -97,8 +97,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     }
 
     if (this.dashStored) {
-      console.warn('Ci sono già dati salvati');
+      // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.GA);
+      this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
@@ -253,7 +254,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-      const index = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.GA);
+      const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.GA) : -1;
       this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 

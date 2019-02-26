@@ -247,7 +247,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-      const index = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG);
+      const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.CUSTOM) : -1;
       this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
@@ -285,6 +285,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
-    this.filterActions.clear();
+    this.filterActions.removeCurrent();
   }
 }

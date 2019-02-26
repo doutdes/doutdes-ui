@@ -105,6 +105,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     if (this.dashStored) {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.IG);
+      this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
@@ -254,7 +255,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-      const index = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG);
+      const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG) : -1;
       this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
@@ -289,6 +290,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
-    this.filterActions.clear();
+    this.filterActions.removeCurrent();
   }
 }
