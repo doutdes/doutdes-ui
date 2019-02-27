@@ -20,8 +20,6 @@ import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 
-const PrimaryWhite = '#ffffff';
-
 @Component({
   selector: 'app-feature-dashboard-google',
   templateUrl: './googleAnalytics.component.html'
@@ -44,16 +42,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   private dashStored: DashboardData;
 
   public loading = false;
-  public config = {
-    animationType: ngxLoadingAnimationTypes.threeBounce,
-    backdropBackgroundColour: 'rgba(0,0,0,0.1)',
-    backdropBorderRadius: '4px',
-    primaryColour: PrimaryWhite,
-    secondaryColour: PrimaryWhite
-  };
 
   @select() filter: Observable<any>;
 
+  // Date variables
   firstDateRange: Date;
   lastDateRange: Date;
   minDate: Date = new Date('2018-01-01');
@@ -61,6 +53,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   bsRangeValue: Date[];
   dateChoice: String = 'Last 30 days';
   datePickerEnabled = false;
+
+  // Mini card paddings
+  paddings = ['pl-0 pr-2', 'pl-2 pr-sm-2 pr-0', 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3', 'pl-2 pr-0 pt-sm-0 pt-3'];
 
   constructor(
     private GAService: GoogleAnalyticsService,

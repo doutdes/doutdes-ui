@@ -13,6 +13,7 @@ import {BsDropdownModule, BsModalService, ModalModule} from 'ngx-bootstrap';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import {DashboardService} from '../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../shared/_services/global-event-manager.service';
+import {MiniCardComponent} from './card/minicard.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {GlobalEventsManagerService} from '../shared/_services/global-event-manag
     SidebarComponent,
     BreadcrumbComponent,
     CardComponent,
-    EmptycardComponent
+    EmptycardComponent,
+    MiniCardComponent
   ],
   imports: [
     RouterModule,
@@ -44,6 +46,7 @@ import {GlobalEventsManagerService} from '../shared/_services/global-event-manag
     BreadcrumbComponent,
     CardComponent,
     EmptycardComponent,
+    MiniCardComponent
   ]
 })
 

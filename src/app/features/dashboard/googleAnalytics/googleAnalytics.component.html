@@ -11,7 +11,8 @@
 
       <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-export">
-        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF</li>
+        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF
+        </li>
       </ul>
     </div> <!-- PDF export -->
     <div class="btn-group float-right d-md-block d-none" dropdown>
@@ -36,84 +37,8 @@
   </div>
 </div> <!-- Header -->
 <div class="row px-3 pt-3">
-  <div class="col-md-3 col-sm-3 col-6 pl-0 pr-2">
-    <div class="card mb-0">
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-8">
-            <div class="text-value">87.500</div>
-            <small class="text-muted text-uppercase font-weight-bold">Visitors</small>
-          </div>
-          <div class="h1 text-muted my-2 col-md-4">
-            <i class="icon-people d-sm-block d-none"></i>
-          </div>
-        </div>
-        <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
-               aria-valuemax="100"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3 col-sm-3 col-6 pl-2 pr-sm-2 pr-0">
-    <div class="card mb-0">
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-8">
-            <div class="text-value">385</div>
-            <small class="text-muted text-uppercase font-weight-bold">New Clients</small>
-          </div>
-          <div class="h1 text-muted my-2 col-md-4">
-            <i class="icon-user-follow d-sm-block d-none"></i>
-          </div>
-        </div>
-        <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25"
-               aria-valuemin="0"
-               aria-valuemax="100"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3 col-sm-3 col-6 pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3">
-    <div class="card mb-0">
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-8">
-            <div class="text-value">28%</div>
-            <small class="text-muted text-uppercase font-weight-bold">Ret. Visitors</small>
-          </div>
-          <div class="h1 text-muted my-2 col-md-4">
-            <i class="icon-pie-chart d-sm-block d-none"></i>
-          </div>
-        </div>
-        <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
-               aria-valuemax="100"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3 col-sm-3 col-6 pl-2 pr-0 pt-sm-0 pt-3">
-    <div class="card mb-0">
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-8">
-            <div class="text-value">5:34:11</div>
-            <small class="text-muted text-uppercase font-weight-bold">Avg. Time</small>
-          </div>
-          <div class="h1 text-muted my-2 col-md-4">
-            <i class="icon-speedometer d-sm-block d-none"></i>
-          </div>
-        </div>
-        <div class="progress progress-xs mt-3 mb-0">
-          <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0"
-               aria-valuemax="100"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> <!-- Info cards -->
+  <app-minicard *ngFor="let padd of paddings" [padding]="padd"></app-minicard>
+</div> <!-- Mini cards -->
 <div class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
@@ -130,5 +55,5 @@
     [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}">
   </app-emptycard>
 
-  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
+  <ngx-loading [show]="loading"></ngx-loading>
 </div> <!-- Chart cards -->
