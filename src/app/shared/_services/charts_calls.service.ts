@@ -442,7 +442,6 @@ export class ChartsCallsService {
         };
         break;  // Page Impressions
       case 4:
-
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -586,21 +585,27 @@ export class ChartsCallsService {
 
         break; // Google BounceRate
       case 11:
-
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
-          chartClass: 11,
+          chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
-            curveType: 'function',
-            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, minValue: 0},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
             height: 210,
-            explorer: {},
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#FFA647'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
         break; // Google Average Session Duration
