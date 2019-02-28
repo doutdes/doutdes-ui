@@ -90,6 +90,13 @@ export class GoogleAnalyticsService {
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
+  gaUsers(intervalDate: IntervalDate): Observable<any> {
+    const headers = this.getAuthorization();
+
+    return this.http.get<GoogleNewUsers>(this.formatURL(intervalDate, '/ga/users/'), {headers})
+      .pipe(map((res) => res), catchError(e => of(e)));
+  }
+
   gaNewUsers(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 

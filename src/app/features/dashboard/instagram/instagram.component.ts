@@ -15,6 +15,7 @@ import {forkJoin, Observable} from 'rxjs';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
+import {GaMiniCards, IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -39,6 +40,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  public miniCards: MiniCard[] = IgMiniCards;
   private dashStored: Array<DashboardCharts> = [];
 
   public loading = false;
@@ -291,5 +293,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
+  }
+
+  nChartEven() {
+    return this.chartArray$.length % 2 === 0;
   }
 }

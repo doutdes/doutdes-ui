@@ -9,16 +9,13 @@ import {MiniCard} from '../../shared/_models/MiniCard';
 export class MiniCardComponent implements OnInit {
 
   // Dimensions of the card
-  @HostBinding('class') elementClass = 'col-md-3 col-sm-3 col-6';
+  @HostBinding('class') elementClass = 'col-md-3 col-sm-3 col-6 ';
 
   // Input of the card
-  @Input() padding: string;
   @Input() minicard: MiniCard;
 
-
   ngOnInit(): void {
-    this.elementClass += ' ' + this.padding;
-
+    this.elementClass += this.minicard.padding;
   }
 
 }

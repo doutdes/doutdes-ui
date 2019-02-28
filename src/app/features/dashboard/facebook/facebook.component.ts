@@ -20,6 +20,7 @@ import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
+import {FbMiniCards, GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -52,6 +53,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  public miniCards: MiniCard[] = FbMiniCards;
   private dashStored: Array<DashboardCharts> = [];
 
   public loading = false;
@@ -90,7 +92,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     };
     let currentData: DashboardData;
 
-    if(!existence['exists']) { // If the Api Key has not been set yet, then a message is print
+    if (!existence['exists']) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
       return;
     }
@@ -110,7 +112,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if(this.dashStored) {
+    if (this.dashStored) {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.FB);
       this.datePickerEnabled = true;
@@ -269,8 +271,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-      const index      = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB) : -1;
-      this.dashStored  = index >= 0 ? elements['storedDashboards'][index] : null;
+      const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB) : -1;
+      this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
     let dash_type = this.HARD_DASH_DATA.dashboard_type;
@@ -341,7 +343,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         x = 20;
       }
 
-      if(i !== 0 && i % graphsPage === 0) {
+      if (i !== 0 && i % graphsPage === 0) {
         pdf.addPage();
         x = 20;
         y = 20;
@@ -359,12 +361,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async getUserCompany() {
-    const user: User  = await this.userService.get().toPromise();
+    const user: User = await this.userService.get().toPromise();
 
     return user.company_name;
   }
 
-  nChartEven(){
+  nChartEven() {
     return this.chartArray$.length % 2 === 0;
   }
 }

@@ -11,7 +11,6 @@ import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {addDays, subDays} from 'date-fns';
-import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
 import * as jsPDF from 'jspdf';
@@ -19,6 +18,8 @@ import html2canvas from 'html2canvas';
 import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
+import {GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+
 
 @Component({
   selector: 'app-feature-dashboard-google',
@@ -28,7 +29,7 @@ import {D_TYPE} from '../../../shared/_models/Dashboard';
 export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestroy {
 
   public HARD_DASH_DATA = {
-    dashboard_type: 2,
+    dashboard_type: D_TYPE.GA,
     dashboard_id: null
   };
 
@@ -39,6 +40,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  public miniCards: MiniCard[] = GaMiniCards;
   private dashStored: DashboardData;
 
   public loading = false;
@@ -54,8 +56,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   dateChoice: String = 'Last 30 days';
   datePickerEnabled = false;
 
-  // Mini card paddings
-  paddings = ['pl-0 pr-2', 'pl-2 pr-sm-2 pr-0', 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3', 'pl-2 pr-0 pt-sm-0 pt-3'];
 
   constructor(
     private GAService: GoogleAnalyticsService,
@@ -70,6 +70,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   async loadDashboard() { // TODO check api key existance
+
+    await this.loadMiniCards();
 
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
@@ -154,6 +156,28 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           console.error(err);
         });
     }
+  }
+
+  async loadMiniCards() {
+    // 1. Init intervalData (retrieve data of previous month)
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(y, m, 0)
+    };
+
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.GA, null, intervalDate);
+
+    forkJoin(observables).subscribe(miniDatas => {
+      for(const i in miniDatas) {
+        this.miniCards[i].value = this.CCService.formatMiniChartData(miniDatas[i], this.miniCards[i].name);
+        this.miniCards[i].progress = this.miniCards[i].value + '%';
+      }
+    });
+
+    console.log(this.miniCards);
+
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {

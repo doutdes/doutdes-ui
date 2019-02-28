@@ -8,6 +8,7 @@ import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {DashboardCharts} from '../_models/DashboardCharts';
 import {k} from '@angular/core/src/render3';
 import {subDays} from 'date-fns';
+import {D_TYPE} from '../_models/Dashboard';
 
 @Injectable()
 export class ChartsCallsService {
@@ -19,9 +20,7 @@ export class ChartsCallsService {
     if (str) {
       return str.length > maxLength ? str.substr(0, 30) + '...' : str;
     }
-    else {
-      return '...';
-    }
+    return '...';
   }
 
   public retrieveChartData(ID, pageID?, intervalDate?: IntervalDate): Observable<any> {
@@ -132,7 +131,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
 
-          if(indexFound >= 0) {
+          if (indexFound >= 0) {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
             keys.push(data[i][1]);
@@ -151,7 +150,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
 
-          if(indexFound >= 0) {
+          if (indexFound >= 0) {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
             keys.push(data[i][1]);
@@ -186,7 +185,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
 
-          if(indexFound >= 0) {
+          if (indexFound >= 0) {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
             keys.push(data[i][1]);
@@ -221,7 +220,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
 
-          if(indexFound >= 0) {
+          if (indexFound >= 0) {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
             keys.push(data[i][1]);
@@ -304,10 +303,10 @@ export class ChartsCallsService {
         interval = 3; // Interval of hours to show
         header = [['OnlineFollowers', 'Min', 'Average', 'Max']];
 
-        for(let i = 0; i < data.length; i++)
+        for (let i = 0; i < data.length; i++)
           keys.push(data[i]['value']);
 
-        for (let i = 0 ; i < 24; i += interval) {
+        for (let i = 0; i < 24; i += interval) {
           // MIN | AVG | MAX
           chartData.push([i + ':00-' + (i + interval) + ':00', Number.MAX_SAFE_INTEGER, 0, Number.MIN_SAFE_INTEGER]);
         }
@@ -723,14 +722,14 @@ export class ChartsCallsService {
           chartType: 'ColumnChart',
           dataTable: data,
           chartClass: 9,
-          options : {
+          options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
             colors: ['#FFCDEE', '#FF88E1', '#F33DFF'],
             areaOpacity: 0.4,
-            legend: { position: 'top', maxLines: 3 },
-            bar: { groupWidth: '75%' },
+            legend: {position: 'top', maxLines: 3},
+            bar: {groupWidth: '75%'},
             isStacked: true,
           }
         };
@@ -785,5 +784,47 @@ export class ChartsCallsService {
 
     return formattedData;
   }
+
+  public retrieveMiniChartData(serviceID: number, pageID?, intervalDate?: IntervalDate) {
+    let observables: Observable<any>[] = [];
+
+    console.log('INTERVAL: ', intervalDate);
+
+    switch (serviceID) {
+      case D_TYPE.FB:
+        observables.push(this.facebookService.fbfancount(pageID));
+        break;
+      case D_TYPE.GA:
+        observables.push(this.googleAnalyticsService.gaUsers(intervalDate));
+        observables.push(this.googleAnalyticsService.gaSessions(intervalDate));
+        observables.push(this.googleAnalyticsService.gaBounceRate(intervalDate));
+        observables.push(this.googleAnalyticsService.gaAvgSessionDuration(intervalDate));
+        break;
+      case D_TYPE.IG:
+        break;
+      case D_TYPE.YT:
+        break;
+      default:
+        throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
+    }
+
+    return observables;
+  }
+
+  public formatMiniChartData(data: Array<any>, name: string) {
+    let sum = 0, result;
+
+    for(const i in data) {
+      sum += parseInt(data[i][1]);
+    }
+
+    result = (sum / data.length).toFixed(2);
+
+    // if(name === 'Bounce rate') result += ' %';
+
+    return result;
+  }
+
+
 
 }
