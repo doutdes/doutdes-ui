@@ -57,8 +57,10 @@ export class FilterActions {
       // Searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
       index = this.storedDashboards ? this.storedDashboards.findIndex((el: DashboardData) => el.type === currentDashboard.type) : -1;
 
-      if(index < 0) {
+      if(index < 0) { // The dashboard was never been stored
         this.storedDashboards.push(JSON.parse(JSON.stringify(initialData)));
+      } else {
+        this.storedDashboards[index] = JSON.parse(JSON.stringify(initialData));
       }
     }
 

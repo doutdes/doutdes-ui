@@ -407,7 +407,6 @@ export class ChartsCallsService {
 
         break;  // Fb Fan Count
       case 2:
-
         formattedData = {
           chartType: 'GeoChart',
           dataTable: data,

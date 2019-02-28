@@ -80,7 +80,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   }
 
-  async loadDashboard() {
+  async loadDashboard() { // TODO get pageID
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
@@ -100,7 +100,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
 
-    // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
+    // Retrieving the page ID // TODO to move into onInit and its init on a dropdown
     this.pageID = (await this.FBService.getPages().toPromise())[4].id;
 
     if (dash.id) {
