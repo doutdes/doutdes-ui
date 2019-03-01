@@ -846,7 +846,6 @@ export class ChartsCallsService {
         break;
       case D_TYPE.FB:
 
-        for()
 
         break;
     }
