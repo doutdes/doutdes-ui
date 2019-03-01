@@ -793,6 +793,9 @@ export class ChartsCallsService {
     switch (serviceID) {
       case D_TYPE.FB:
         observables.push(this.facebookService.fbfancount(pageID));
+        observables.push(this.facebookService.fbfancount(pageID));
+        observables.push(this.facebookService.fbpagereactions(pageID));
+        observables.push(this.facebookService.fbpageimpressions(pageID));
         break;
       case D_TYPE.GA:
         observables.push(this.googleAnalyticsService.gaUsers(intervalDate));
@@ -811,20 +814,43 @@ export class ChartsCallsService {
     return observables;
   }
 
-  public formatMiniChartData(data: Array<any>, name: string) {
-    let sum = 0, result;
+  public formatMiniChartData(data: Array<any>, d_type: number, measure: string) {
+    let sum = 0, avg, perc, value;
+    let date = new Date(null);
 
-    for(const i in data) {
-      sum += parseInt(data[i][1]);
+    switch (d_type) {
+      case D_TYPE.GA:
+
+        for(const i in data) {
+          sum += parseInt(data[i][1]);
+        }
+
+        avg = (sum / data.length).toFixed(2);
+        perc = avg / Math.max.apply(Math, data.map((obj) => { return obj[1]; })) * 100;
+
+        switch (measure) {
+          case '%':
+            value = avg;
+            break;
+
+          case 'time':
+            date.setSeconds(parseInt(avg)); // specify value for SECONDS here
+            value = date.toISOString().substr(11, 8);
+            break;
+
+          default:
+            value = sum;
+            break;
+        }
+
+        break;
+      case D_TYPE.FB:
+
+        for()
+
+        break;
     }
 
-    result = (sum / data.length).toFixed(2);
-
-    // if(name === 'Bounce rate') result += ' %';
-
-    return result;
+    return {value: value, perc: perc};
   }
-
-
-
 }

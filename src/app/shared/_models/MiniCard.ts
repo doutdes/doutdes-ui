@@ -9,13 +9,13 @@ export interface MiniCard {
 
 export let GaMiniCards: MiniCard[] = [
   {
-    name: 'Users',
+    name: 'Tot users',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     measure: '',
     value: '-'
   }, {
-    name: 'Sessions',
+    name: 'Tot sessions',
     icon: 'icon-screen-desktop',
     padding: 'pl-2 pr-sm-2 pr-0',
     measure: '',
@@ -27,10 +27,10 @@ export let GaMiniCards: MiniCard[] = [
     measure: '%',
     value: '-'
   }, {
-    name: 'Session time',
+    name: 'Avg session time',
     icon: 'icon-hourglass',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
-    measure: '',
+    measure: 'time',
     value: '-'
   },
 ];

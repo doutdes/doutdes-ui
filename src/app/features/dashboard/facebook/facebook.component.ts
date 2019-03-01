@@ -82,6 +82,31 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   }
 
+  async loadMiniCards(pageID) {
+    // 1. Init intervalData (retrieve data of previous month)
+    let results;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(y, m, 0)
+    };
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageID);
+
+
+
+    forkJoin(observables).subscribe(miniDatas => {
+      for(const i in miniDatas) {
+        results = miniDatas[i].filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+
+        results = this.CCService.formatMiniChartData(results, D_TYPE.FB, this.miniCards[i].measure);
+        this.miniCards[i].value = results['value'];
+        this.miniCards[i].progress = results['perc'] + '%';
+
+        console.log(results);
+      }
+    });
+  }
+
   async loadDashboard() { // TODO get pageID
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
@@ -104,6 +129,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     // Retrieving the page ID // TODO to move into onInit and its init on a dropdown
     this.pageID = (await this.FBService.getPages().toPromise())[4].id;
+
+    await this.loadMiniCards(this.pageID);
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id

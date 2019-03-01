@@ -2,7 +2,8 @@
   <div class="card-body">
     <div class="row">
       <div class="col-md-8">
-        <div class="text-value">{{minicard.value + ' ' + minicard.measure}}</div>
+        <small class="text-secondary text-uppercase font-weight-bold">{{month}}</small>
+        <div class="text-value">{{minicard.value + (minicard.measure !== 'time' ? minicard.measure : '')}}</div>
         <small class="text-muted text-uppercase font-weight-bold">{{minicard.name}}</small>
       </div>
       <div class="h1 text-muted my-2 col-md-4">

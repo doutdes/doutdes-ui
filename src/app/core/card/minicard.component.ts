@@ -13,9 +13,11 @@ export class MiniCardComponent implements OnInit {
 
   // Input of the card
   @Input() minicard: MiniCard;
+  month: string;
 
   ngOnInit(): void {
     this.elementClass += this.minicard.padding;
+    this.month = new Date(0, new Date().getMonth(), 0).toLocaleString('en-us', { month: 'long' });
   }
 
 }

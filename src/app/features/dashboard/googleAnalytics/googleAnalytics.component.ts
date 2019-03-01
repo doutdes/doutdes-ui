@@ -160,6 +160,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   async loadMiniCards() {
     // 1. Init intervalData (retrieve data of previous month)
+    let results;
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
@@ -171,13 +172,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     forkJoin(observables).subscribe(miniDatas => {
       for(const i in miniDatas) {
-        this.miniCards[i].value = this.CCService.formatMiniChartData(miniDatas[i], this.miniCards[i].name);
-        this.miniCards[i].progress = this.miniCards[i].value + '%';
+
+
+        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
+        this.miniCards[i].value = results['value'];
+        this.miniCards[i].progress = results['perc'] + '%';
       }
     });
-
-    console.log(this.miniCards);
-
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
