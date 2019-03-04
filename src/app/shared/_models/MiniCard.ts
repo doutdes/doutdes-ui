@@ -4,7 +4,8 @@ export interface MiniCard {
   padding: string;
   measure?: string;
   value?: string,
-  progress?: string
+  progress?: string,
+  step?: number
 }
 
 export let GaMiniCards: MiniCard[] = [
@@ -24,10 +25,10 @@ export let GaMiniCards: MiniCard[] = [
     name: 'Bounce rate',
     icon: 'icon-action-undo',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
-    measure: '%',
+    measure: 'bounce-rate',
     value: '-'
   }, {
-    name: 'Avg session time',
+    name: 'Avg sess. time',
     icon: 'icon-hourglass',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     measure: 'time',
@@ -36,23 +37,23 @@ export let GaMiniCards: MiniCard[] = [
 ];
 export let FbMiniCards: MiniCard[] = [
   {
-    name: 'Fan',
+    name: 'Fans',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     value: '-',
-    measure: ''
+    measure: 'count'
   }, {
-    name: 'Post',
+    name: 'Posts',
     icon: 'icon-speech',
     padding: 'pl-2 pr-sm-2 pr-0',
     value: '-',
-    measure: ''
+    measure: 'post-sum'
   }, {
     name: 'Reactions',
     icon: 'icon-heart',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
-    measure: ''
+    measure: 'reactions'
   }, {
     name: 'Impressions',
     icon: 'icon-screen-desktop',

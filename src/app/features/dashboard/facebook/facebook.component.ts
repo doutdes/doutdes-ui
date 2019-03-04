@@ -20,7 +20,7 @@ import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
-import {FbMiniCards, GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -31,6 +31,7 @@ const PrimaryWhite = '#ffffff';
 
 export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
+  public D_TYPE = D_TYPE;
   public HARD_DASH_DATA = {
     dashboard_type: D_TYPE.FB,
     dashboard_id: null
@@ -92,15 +93,13 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     };
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageID);
 
-
-
     forkJoin(observables).subscribe(miniDatas => {
       for(const i in miniDatas) {
-        results = miniDatas[i].filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
-
-        results = this.CCService.formatMiniChartData(results, D_TYPE.FB, this.miniCards[i].measure);
+        // results = miniDatas[i].filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].step = results['step'];
 
         console.log(results);
       }
@@ -128,7 +127,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
 
     // Retrieving the page ID // TODO to move into onInit and its init on a dropdown
-    this.pageID = (await this.FBService.getPages().toPromise())[4].id;
+    this.pageID = (await this.FBService.getPages().toPromise())[0].id;
 
     await this.loadMiniCards(this.pageID);
 

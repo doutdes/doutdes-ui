@@ -28,6 +28,7 @@ import {GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestroy {
 
+  public D_TYPE = D_TYPE;
   public HARD_DASH_DATA = {
     dashboard_type: D_TYPE.GA,
     dashboard_id: null
@@ -172,11 +173,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     forkJoin(observables).subscribe(miniDatas => {
       for(const i in miniDatas) {
-
-
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].step = results['step'];
       }
     });
   }

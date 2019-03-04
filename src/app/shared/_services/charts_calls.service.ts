@@ -7,7 +7,7 @@ import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {DashboardCharts} from '../_models/DashboardCharts';
 import {k} from '@angular/core/src/render3';
-import {subDays} from 'date-fns';
+import {addMinutes, subDays} from 'date-fns';
 import {D_TYPE} from '../_models/Dashboard';
 
 @Injectable()
@@ -788,12 +788,10 @@ export class ChartsCallsService {
   public retrieveMiniChartData(serviceID: number, pageID?, intervalDate?: IntervalDate) {
     let observables: Observable<any>[] = [];
 
-    console.log('INTERVAL: ', intervalDate);
-
     switch (serviceID) {
       case D_TYPE.FB:
         observables.push(this.facebookService.fbfancount(pageID));
-        observables.push(this.facebookService.fbfancount(pageID));
+        observables.push(this.facebookService.fbposts(pageID));
         observables.push(this.facebookService.fbpagereactions(pageID));
         observables.push(this.facebookService.fbpageimpressions(pageID));
         break;
@@ -814,42 +812,142 @@ export class ChartsCallsService {
     return observables;
   }
 
-  public formatMiniChartData(data: Array<any>, d_type: number, measure: string) {
-    let sum = 0, avg, perc, value;
-    let date = new Date(null);
+  public formatMiniChartData(data: Array<any>, d_type: number, measure: string, intervalDate?: IntervalDate) {
+    let result;
 
     switch (d_type) {
       case D_TYPE.GA:
-
-        for(const i in data) {
-          sum += parseInt(data[i][1]);
-        }
-
-        avg = (sum / data.length).toFixed(2);
-        perc = avg / Math.max.apply(Math, data.map((obj) => { return obj[1]; })) * 100;
-
-        switch (measure) {
-          case '%':
-            value = avg;
-            break;
-
-          case 'time':
-            date.setSeconds(parseInt(avg)); // specify value for SECONDS here
-            value = date.toISOString().substr(11, 8);
-            break;
-
-          default:
-            value = sum;
-            break;
-        }
-
+        result = this.getGoogleMiniValue(measure, data);
         break;
       case D_TYPE.FB:
-
-
+        result = this.getFacebookMiniValue(measure, data, intervalDate);
         break;
     }
 
-    return {value: value, perc: perc};
+    return result;
+  }
+
+  private getGoogleMiniValue(measure, data) {
+    let date = new Date(null);
+    let value, sum = 0, avg, perc, step;
+
+    for (const i in data) {
+      sum += parseInt(data[i][1]);
+    }
+
+    avg = (sum / data.length).toFixed(2);
+
+    switch (measure) {
+      case 'bounce-rate':
+        value = avg;
+        step = this.searchStep(value, measure);
+        perc = value;
+        break;
+
+      case 'time':
+        date.setSeconds(parseInt(avg)); // specify value for SECONDS here
+        value = date.toISOString().substr(11, 8);
+        step = this.searchStep(avg, measure);
+
+        perc = parseInt(avg) / step * 100;
+
+        date.setSeconds(step);
+        step = date.toISOString().substr(11, 8);
+        break;
+
+      default:
+        value = sum;
+        step = this.searchStep(value);
+        perc = value / step * 100;
+        break;
+    }
+
+    return {value, perc, step};
+  }
+
+  private getFacebookMiniValue(measure, data, intervalDate) {
+    let value, perc, sum = 0, avg, max, aux, step;
+
+    switch (measure) {
+      case 'post-sum':
+        data['data'] = data['data'].filter(el => (new Date(el['created_time'])) >= intervalDate.first && (new Date(el['created_time'])) <= intervalDate.last);
+        value = data['data'].length;
+
+        break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
+      case 'count':
+        max = Math.max.apply(Math, data.map((o) => {
+          return o.value;
+        }));
+        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        value = data[data.length - 1].value;
+
+        break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
+      case 'reactions':
+        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        max = [];
+
+        for (const i in data) {
+          aux = 0;
+          aux += data[i]['value']['like'] || 0;
+          aux += data[i]['value']['love'] || 0;
+          aux += data[i]['value']['haha'] || 0;
+          aux += data[i]['value']['wow'] || 0;
+          aux += data[i]['value']['sorry'] || 0;
+          aux += data[i]['value']['anger'] || 0;
+
+          sum += aux;
+          max.push(aux);
+        }
+
+        avg = sum / data.length;
+        value = sum;
+
+        break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
+      default:
+        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        value = data[data.length - 1].value;
+
+        break; // default take the last value as the good one, the perc is calculated dividing the avg for the max value
+    }
+
+    step = this.searchStep(value);
+    perc = value / step * 100;
+
+    return {value, perc, step};
+  }
+
+  private searchStep(value, measure?) {
+    const nextStep = [10, 25, 50, 250, 1000, 5000, 10000, 50000, 100000];
+    let step = nextStep[nextStep.length - 1], aux;
+    let done = false;
+    let date = new Date(null);
+    let i = 0;
+
+    if(measure === 'bounce-rate') {
+      step = (value - (value % 10)).toFixed(2)+  '%';
+      done = true;
+    }
+
+    if(measure === 'time') {
+      step = (value - (value % 60)) + 60;
+      done = true;
+    }
+
+    if (!done && value < nextStep[0]) {
+      step = nextStep[0];
+      done = true;
+    }
+
+    if (!done && value > nextStep[nextStep.length - 1]) {
+      step = nextStep[nextStep.length - 1];
+      done = true;
+    }
+
+    while (!done && value > nextStep[i]) {
+      step = nextStep[i+1];
+      i++;
+    }
+
+    return step;
   }
 }

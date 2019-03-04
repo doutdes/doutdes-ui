@@ -38,6 +38,11 @@ export class FacebookService {
     }
   }
 */
+  fbposts(pageID) {
+    const headers = this.getAuthorization();
+    return this.http.get<FbAnyData[]>(this.formatURL('posts', pageID), {headers});
+  }
+
   fbfancount(pageID) {
     const headers = this.getAuthorization();
     return this.http.get<FbNumberData[]>(this.formatURL('fancount', pageID), {headers});
