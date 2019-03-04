@@ -60,15 +60,16 @@ export class ChartsCallsService {
       case 18:
       case 19:
         return this.InstagramService.getAnyData(pageID, ID);
+      case 20:
+      case 21:
+      case 22:
+      case 23:
       case 24:
       case 25:
       case 26:
       case 27:
       case 28:
-      case 20:
-      case 21:
-      case 22:
-      case 23:
+      case 29:
         return this.InstagramService.getNumericData(pageID, ID);
 
 
@@ -343,7 +344,7 @@ export class ChartsCallsService {
       case 21:
         break; // IG Follower count
       case 22:
-        break; // IG Get directions clicks
+        break;
       case 23:
         header = [['Date', 'Impressions']];
 
@@ -352,7 +353,7 @@ export class ChartsCallsService {
         }
         break; // IG Impressions by day
       case 24:
-        break; // IG Phone Calls clicks
+        break;
       case 25:
         break; // IG Profile views
       case 26:
@@ -361,12 +362,32 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
-
         break; // IG Reach
       case 27:
-        break; // IG Text Message Clicks
+        break;
       case 28:
-        break; // IG Website Clicks
+
+        break;
+      case 29:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 - page
+         * 2 - value
+         **/
+        header = [['Type', 'Number']];
+        let map  = new Map();
+        for (let i = 0; i < data.length; i++) {
+          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
+        }
+        console.log(map);
+        map.forEach((value: boolean, key: string) => {
+          console.log(key);
+          chartData.push([key, 25/*map.get(key)*/]); // LeaseCredi doesn't have any click data (==0) so I faked it
+        });
+
+        console.log(chartData);
+
+        break; // IG composed clicks
     }
 
     return header.concat(chartData);
@@ -736,7 +757,7 @@ export class ChartsCallsService {
       case 21:
         break; // IG Follower count
       case 22:
-        break; // IG Get directions clicks
+        break;
       case 23:
         formattedData = {
           chartType: 'AreaChart',
@@ -754,7 +775,7 @@ export class ChartsCallsService {
         };
         break; // IG Impressions by day
       case 24:
-        break; // IG Phone Calls clicks
+        break;
       case 25:
         break; // IG Profile views
       case 26:
@@ -774,9 +795,26 @@ export class ChartsCallsService {
         };
         break; // IG Reach
       case 27:
-        break; // IG Text Message Clicks
+        break;
       case 28:
-        break; // IG Website Clicks
+        break;
+      case 29:
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 6,
+          options: {
+            chartArea: {left: 30, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            is3D: false,
+            pieSliceText: 'label',
+            pieSliceTextStyle: {fontSize: 13, color: '#222'},
+            colors: ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'],
+            areaOpacity: 0.4
+          }
+        };
+        break; // IG clicks pie
     }
 
     return formattedData;

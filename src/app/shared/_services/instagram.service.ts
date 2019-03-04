@@ -34,6 +34,8 @@ export class InstagramService {
         return this.http.get<IgAnyData[]>(this.formatURL('audlocale', pageID), {headers});
       case 19:
         return this.http.get<IgAnyData[]>(this.formatURL('onlinefollowers', pageID), {headers});
+      default:
+        console.log('The data you are trying to fetch are not generic, try the other method');
     }
   }
   getNumericData(pageID, ID) {
@@ -57,6 +59,10 @@ export class InstagramService {
         return this.http.get<IgNumberData[]>(this.formatURL('textmessageclicks', pageID), {headers});
       case 28:
         return this.http.get<IgNumberData[]>(this.formatURL('websiteclicks', pageID), {headers});
+      case 29:
+        return this.http.get<IgNumberData[]>(this.formatURL('composedclicks', pageID), {headers});
+      default:
+        console.log('The data you are trying to fetch are not numeric, try the other method');
 
     }
   }
