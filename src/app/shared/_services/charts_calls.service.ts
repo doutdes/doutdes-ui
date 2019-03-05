@@ -346,7 +346,7 @@ export class ChartsCallsService {
     data = this.initFormatting(ID, data);
 
     switch (ID) {
-      case 1:
+      case FB_CHART.FANS_DAY:
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -373,7 +373,7 @@ export class ChartsCallsService {
         };
 
         break;  // Fb Fan Count
-      case 2:
+      case FB_CHART.FANS_COUNTRY_GEOMAP:
         formattedData = {
           chartType: 'GeoChart',
           dataTable: data,
@@ -389,7 +389,7 @@ export class ChartsCallsService {
           }
         };
         break;  // Geo Map
-      case 3:
+      case FB_CHART.IMPRESSIONS:
 
         formattedData = {
           chartType: 'AreaChart',
@@ -407,7 +407,7 @@ export class ChartsCallsService {
           }
         };
         break;  // Page Impressions
-      case 4:
+      case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -432,7 +432,7 @@ export class ChartsCallsService {
           }
         };
         break;  // Google PageViews (impressions by day)
-      case 5:
+      case GA_CHART.SESSION_DAY:
 
         formattedData = {
           chartType: 'AreaChart',
@@ -449,7 +449,7 @@ export class ChartsCallsService {
           }
         };
         break;  // Google Sessions
-      case 6:
+      case GA_CHART.SOURCES_PIE:
         formattedData = {
           chartType: 'PieChart',
           dataTable: data,
@@ -466,7 +466,7 @@ export class ChartsCallsService {
           }
         };
         break;  // Google Sources Pie
-      case 7:
+      case GA_CHART.MOST_VISITED_PAGES:
         formattedData = {
           chartType: 'Table',
           dataTable: data,
@@ -483,7 +483,7 @@ export class ChartsCallsService {
           }
         };
         break;  // Google List Referral
-      case 8:
+      case FB_CHART.FANS_COUNTRY_PIE:
 
         formattedData = {
           chartType: 'PieChart',
@@ -504,7 +504,7 @@ export class ChartsCallsService {
           }
         };
         break;  // Fan Country Pie
-      case 9:
+      case GA_CHART.SOURCES_COLUMNS:
 
         formattedData = {
           chartType: 'ColumnChart',
@@ -520,7 +520,7 @@ export class ChartsCallsService {
           }
         };
         break;  // Google Sources Column Chart
-      case 10:
+      case GA_CHART.BOUNCE_RATE:
         type = 'ga_bounce';
 
         formattedData = {
@@ -550,7 +550,7 @@ export class ChartsCallsService {
         //average = sum / data.length;
 
         break; // Google BounceRate
-      case 11:
+      case GA_CHART.AVG_SESS_DURATION:
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -575,7 +575,7 @@ export class ChartsCallsService {
           }
         };
         break; // Google Average Session Duration
-      case 12:
+      case GA_CHART.BROWSER_SESSION:
 
         formattedData = {
           chartType: 'Table',
@@ -591,7 +591,7 @@ export class ChartsCallsService {
           }
         };
         break; // Google list sessions per browser
-      case 13:
+      case FB_CHART.PAGE_VIEWS:
 
         formattedData = {
           chartType: 'AreaChart',
@@ -608,7 +608,7 @@ export class ChartsCallsService {
           }
         };
         break; // Facebook Page Views
-      case 14:
+      case FB_CHART.FANS_CITY:
         formattedData = {
           chartType: 'Table',
           dataTable: data,
@@ -623,7 +623,7 @@ export class ChartsCallsService {
           }
         };
         break; // Facebook Fan City
-      case 15:
+      case IG_CHART.AUD_CITY:
         formattedData = {
           chartType: 'Table',
           dataTable: data,
@@ -639,7 +639,7 @@ export class ChartsCallsService {
         };
 
         break; // IG Audience City
-      case 16:
+      case IG_CHART.AUD_COUNTRY:
         formattedData = {
           chartType: 'GeoChart',
           dataTable: data,
@@ -655,7 +655,7 @@ export class ChartsCallsService {
           }
         };
         break; // IG Audience Country
-      case 17:
+      case IG_CHART.AUD_GENDER_AGE:
         formattedData = {
           chartType: 'ColumnChart',
           dataTable: data,
@@ -670,7 +670,7 @@ export class ChartsCallsService {
           }
         };
         break; // IG Audience Gender/Age
-      case 18:
+      case IG_CHART.AUD_LOCALE:
         formattedData = {
           chartType: 'ColumnChart',
           dataTable: data,
@@ -685,7 +685,7 @@ export class ChartsCallsService {
           }
         };
         break; // IG Audience Locale
-      case 19:
+      case IG_CHART.ONLINE_FOLLOWERS:
         formattedData = {
           chartType: 'ColumnChart',
           dataTable: data,
@@ -702,13 +702,13 @@ export class ChartsCallsService {
           }
         };
         break; // IG Online followers
-      case 20:
+      case IG_CHART.EMAIL_CONTACTS:
         break; // IG Email contacts
-      case 21:
+      case IG_CHART.FOLLOWER_COUNT:
         break; // IG Follower count
-      case 22:
+      case IG_CHART.DIR_CLICKS:
         break; // IG Get directions clicks
-      case 23:
+      case IG_CHART.IMPRESSIONS:
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -724,11 +724,11 @@ export class ChartsCallsService {
           }
         };
         break; // IG Impressions by day
-      case 24:
+      case IG_CHART.PHONE_CALL_CLICKS:
         break; // IG Phone Calls clicks
-      case 25:
+      case IG_CHART.PROFILE_VIEWS:
         break; // IG Profile views
-      case 26:
+      case IG_CHART.REACH:
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -744,9 +744,9 @@ export class ChartsCallsService {
           }
         };
         break; // IG Reach
-      case 27:
+      case IG_CHART.TEXT_MESSAGE_CLICKS:
         break; // IG Text Message Clicks
-      case 28:
+      case IG_CHART.WEBSITE_CLICKS:
         break; // IG Website Clicks
     }
 
