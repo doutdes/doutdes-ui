@@ -277,8 +277,9 @@ export class ChartsCallsService {
             index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys.length)));
           }
           // and collecting data
-          (keys[i].substr(0, 1) === 'M') ? chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10);
+          (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
         }
+        chartData = chartData.sort();
         break; // IG Audience Gender/Age
       case 18:
         header = [['Country', 'Number']]; /// TODO: fix containsGeoData to use header != 'Country'
@@ -382,7 +383,7 @@ export class ChartsCallsService {
         console.log(map);
         map.forEach((value: boolean, key: string) => {
           console.log(key);
-          chartData.push([key, 25/*map.get(key)*/]); // LeaseCredi doesn't have any click data (==0) so I faked it
+          chartData.push([key.replace(new RegExp('_', 'g'), ' '), 25/*map.get(key)*/]); // LeaseCredi doesn't have any click data (==0) so I faked it
         });
 
         console.log(chartData);
@@ -809,7 +810,7 @@ export class ChartsCallsService {
             height: 310,
             is3D: false,
             pieSliceText: 'label',
-            pieSliceTextStyle: {fontSize: 13, color: '#222'},
+            pieSliceTextStyle: {fontSize: 11, color: '#222'},
             colors: ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'],
             areaOpacity: 0.4
           }
