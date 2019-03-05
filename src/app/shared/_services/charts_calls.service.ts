@@ -243,8 +243,9 @@ export class ChartsCallsService {
             index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys.length)));
           }
           // and collecting data
-          (keys[i].substr(0, 1) === 'M') ? chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10);
+          (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
         }
+        chartData = chartData.sort();
         break; // IG Audience Gender/Age
       case IG_CHART.AUD_LOCALE:
         header = [['Country', 'Number']]; /// TODO: fix containsGeoData to use header != 'Country'
@@ -328,12 +329,36 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
-
         break; // IG Reach
       case IG_CHART.TEXT_MESSAGE_CLICKS:
         break; // IG Text Message Clicks
       case IG_CHART.WEBSITE_CLICKS:
         break; // IG Website Clicks
+      case 27:
+        break;
+      case 28:
+
+        break;
+      case 29:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 - page
+         * 2 - value
+         **/
+        header = [['Type', 'Number']];
+        let map  = new Map();
+        for (let i = 0; i < data.length; i++) {
+          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
+        }
+        console.log(map);
+        map.forEach((value: boolean, key: string) => {
+          console.log(key);
+          chartData.push([key.replace(new RegExp('_', 'g'), ' '), 25/*map.get(key)*/]); // LeaseCredi doesn't have any click data (==0) so I faked it
+        });
+
+        console.log(chartData);
+
+        break; // IG composed clicks
     }
 
     return header.concat(chartData);
@@ -748,6 +773,23 @@ export class ChartsCallsService {
         break; // IG Text Message Clicks
       case IG_CHART.WEBSITE_CLICKS:
         break; // IG Website Clicks
+      case 29:
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 6,
+          options: {
+            chartArea: {left: 30, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            is3D: false,
+            pieSliceText: 'label',
+            pieSliceTextStyle: {fontSize: 11, color: '#222'},
+            colors: ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'],
+            areaOpacity: 0.4
+          }
+        };
+        break; // IG clicks pie
     }
 
     return formattedData;
