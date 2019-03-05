@@ -20,6 +20,18 @@ export interface IgPage {
   id: string;
 }
 
+export interface IgMedia {
+  id: number,
+  media_type: string,
+  timestamp: Date
+}
+
+export interface IgBusinessInfo {
+  id: number,
+  follower_count: number,
+  media_count: number,
+}
+
 export interface IgAnyData {
   value: Array<any>;
   end_time: Date;

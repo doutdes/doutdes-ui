@@ -166,7 +166,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
-      last: new Date(y, m, 0)
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
     };
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.GA, null, intervalDate);

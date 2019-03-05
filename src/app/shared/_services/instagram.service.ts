@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {
   IgPage,
   IgAnyData,
-  IgNumberData, IG_CHART
+  IgNumberData, IG_CHART, IgMedia, IgBusinessInfo
 
 } from '../_models/InstagramData';
 import {environment} from '../../../environments/environment';
@@ -83,6 +83,16 @@ export class InstagramService {
     return anyType
       ? this.http.get<IgAnyData[]>(this.formatURL(call, pageID), {headers})
       : this.http.get<IgNumberData[]>(this.formatURL(call, pageID), {headers});
+  }
+
+  getMedia(pageID, n=20) {
+    const headers = this.getAuthorization();
+    return this.http.get<IgMedia[]>(this.formatURL('media/' + n, pageID), {headers})
+  }
+
+  getBusinessInfo(pageID) {
+    const headers = this.getAuthorization();
+    return this.http.get<IgBusinessInfo>(this.formatURL('businessInfo/', pageID), {headers})
   }
 
   private formatURL (call, pageID = null) {

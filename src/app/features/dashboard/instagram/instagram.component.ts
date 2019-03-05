@@ -74,6 +74,26 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  async loadMiniCards(pageID) {
+    // 1. Init intervalData (retrieve data of previous month)
+    let results;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+    };
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageID);
+
+    forkJoin(observables).subscribe(miniDatas => {
+      for(const i in miniDatas) {
+        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
+        this.miniCards[i].value = results['value'];
+        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].step = results['step'];
+      }
+    });
+  }
+
   async loadDashboard() {
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
@@ -96,6 +116,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
     this.pageID = (await this.IGService.getPages().toPromise())[0].id;
+
+    await this.loadMiniCards(this.pageID);
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id

@@ -80,7 +80,7 @@ export let IgMiniCards: MiniCard[] = [
     icon: 'icon-eye',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
-    measure: ''
+    measure: 'prof-views'
   }, {
     name: 'Impressions',
     icon: 'icon-screen-smartphone',

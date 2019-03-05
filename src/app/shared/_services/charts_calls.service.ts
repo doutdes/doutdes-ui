@@ -770,10 +770,10 @@ export class ChartsCallsService {
         observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION, intervalDate));
         break;
       case D_TYPE.IG:
-        observables.push(this.instagramService.getData(pageID, IG_CHART.IMPRESSIONS));
-        observables.push(this.instagramService.getData(pageID, IG_CHART.IMPRESSIONS));
-        observables.push(this.instagramService.getData(pageID, IG_CHART.PROFILE_VIEWS));
-        observables.push(this.instagramService.getData(pageID, IG_CHART.IMPRESSIONS));
+        observables.push(this.instagramService.getBusinessInfo(pageID));
+        observables.push(this.instagramService.getMedia(pageID));
+        observables.push(this.instagramService.getData(IG_CHART.PROFILE_VIEWS, pageID));
+        observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
         break;
@@ -793,6 +793,9 @@ export class ChartsCallsService {
         break;
       case D_TYPE.FB:
         result = this.getFacebookMiniValue(measure, data, intervalDate);
+        break;
+      case D_TYPE.IG:
+        result = this.getInstagramMiniValue(measure, data, intervalDate);
         break;
     }
 
@@ -880,6 +883,43 @@ export class ChartsCallsService {
         value = data[data.length - 1].value;
 
         break; // default take the last value as the good one, the perc is calculated dividing the avg for the max value
+    }
+
+    step = this.searchStep(value);
+    perc = value / step * 100;
+
+    return {value, perc, step};
+  }
+
+  private getInstagramMiniValue(measure, data, intervalDate) {
+    let value, perc, sum = 0, avg, max, aux, step;
+
+    switch (measure) {
+      case 'count':
+        value = data['followers_count'];
+        break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
+      // case 'post-sum':
+      // case 'prof-views':
+      default:
+        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+
+        console.log(data);
+        for (const i in data) {
+          sum += data[i].value;
+        }
+
+        // avg = sum / data.length;
+        value = sum;
+
+        break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
+      // case 'prof-views':
+      //   value = data['followers_count'];
+      //   break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
+      // default:
+      //   data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+      //   value = data[data.length - 1].value;
+      //
+      //   break; // default take the last value as the good one, the perc is calculated dividing the avg for the max value
     }
 
     step = this.searchStep(value);

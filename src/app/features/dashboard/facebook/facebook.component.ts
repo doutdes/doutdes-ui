@@ -89,19 +89,16 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
-      last: new Date(y, m, 0)
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
     };
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageID);
 
     forkJoin(observables).subscribe(miniDatas => {
       for(const i in miniDatas) {
-        // results = miniDatas[i].filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
-
-        console.log(results);
       }
     });
   }
