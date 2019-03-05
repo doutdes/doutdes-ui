@@ -5,15 +5,15 @@ import {Observable} from 'rxjs';
 import {GoogleAnalyticsService} from './googleAnalytics.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
-import {DashboardCharts} from '../_models/DashboardCharts';
-import {k} from '@angular/core/src/render3';
-import {addMinutes, subDays} from 'date-fns';
 import {D_TYPE} from '../_models/Dashboard';
+import {GA_CHART} from '../_models/GoogleData';
+import {FB_CHART} from '../_models/FacebookData';
+import {IG_CHART} from '../_models/InstagramData';
 
 @Injectable()
 export class ChartsCallsService {
 
-  constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService, private InstagramService: InstagramService) {
+  constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService, private instagramService: InstagramService) {
   }
 
   public static cutString(str, maxLength) {
@@ -24,53 +24,21 @@ export class ChartsCallsService {
   }
 
   public retrieveChartData(ID, pageID?, intervalDate?: IntervalDate): Observable<any> {
-    switch (ID) {
-      case 1:
-        return this.facebookService.fbfancount(pageID);
-      case 2:
-        return this.facebookService.fbfancountry(pageID);
-      case 3:
-        return this.facebookService.fbpageimpressions(pageID);
-      case 4:
-        return this.googleAnalyticsService.gaPageViews(intervalDate);
-      case 5:
-        return this.googleAnalyticsService.gaSessions(intervalDate);
-      case 6:
-        return this.googleAnalyticsService.gaSources(intervalDate);
-      case 7:
-        return this.googleAnalyticsService.gaMostViews(intervalDate);
-      case 8:
-        return this.facebookService.fbfancountry(pageID);
-      case 9:
-        return this.googleAnalyticsService.gaSources(intervalDate);
-      case 10:
-        return this.googleAnalyticsService.gaBounceRate(intervalDate);
-      case 11:
-        return this.googleAnalyticsService.gaAvgSessionDuration(intervalDate);
-      case 12:
-        return this.googleAnalyticsService.gaBrowsers(intervalDate);
-      case 13:
-        return this.facebookService.fbpageviewstotal(pageID);
-      case 14:
-        return this.facebookService.fbfancity(pageID);
-      case 15:
-      case 16:
-      case 17:
-      case 18:
-      case 19:
-        return this.InstagramService.getAnyData(pageID, ID);
-      case 24:
-      case 25:
-      case 26:
-      case 27:
-      case 28:
-      case 20:
-      case 21:
-      case 22:
-      case 23:
-        return this.InstagramService.getNumericData(pageID, ID);
 
+    if(Object.values(FB_CHART).includes(ID)){
+      return this.facebookService.getData(ID, pageID);
+    }
 
+    else if(Object.values(IG_CHART).includes(ID)){
+      return this.instagramService.getData(ID, pageID);
+    }
+
+    else if (Object.values(GA_CHART).includes(ID)){
+      return this.googleAnalyticsService.getData(ID, intervalDate);
+    }
+
+    else {
+      throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
     }
   }
 
@@ -790,18 +758,22 @@ export class ChartsCallsService {
 
     switch (serviceID) {
       case D_TYPE.FB:
-        observables.push(this.facebookService.fbfancount(pageID));
+        observables.push(this.facebookService.getData(FB_CHART.FANS_DAY, pageID));
         observables.push(this.facebookService.fbposts(pageID));
         observables.push(this.facebookService.fbpagereactions(pageID));
-        observables.push(this.facebookService.fbpageimpressions(pageID));
+        observables.push(this.facebookService.getData(FB_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.GA:
         observables.push(this.googleAnalyticsService.gaUsers(intervalDate));
-        observables.push(this.googleAnalyticsService.gaSessions(intervalDate));
-        observables.push(this.googleAnalyticsService.gaBounceRate(intervalDate));
-        observables.push(this.googleAnalyticsService.gaAvgSessionDuration(intervalDate));
+        observables.push(this.googleAnalyticsService.getData(GA_CHART.SESSION_DAY, intervalDate));
+        observables.push(this.googleAnalyticsService.getData(GA_CHART.BOUNCE_RATE, intervalDate));
+        observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION, intervalDate));
         break;
       case D_TYPE.IG:
+        observables.push(this.instagramService.getData(pageID, IG_CHART.IMPRESSIONS));
+        observables.push(this.instagramService.getData(pageID, IG_CHART.IMPRESSIONS));
+        observables.push(this.instagramService.getData(pageID, IG_CHART.PROFILE_VIEWS));
+        observables.push(this.instagramService.getData(pageID, IG_CHART.IMPRESSIONS));
         break;
       case D_TYPE.YT:
         break;
@@ -918,9 +890,8 @@ export class ChartsCallsService {
 
   private searchStep(value, measure?) {
     const nextStep = [10, 25, 50, 250, 1000, 5000, 10000, 50000, 100000];
-    let step = nextStep[nextStep.length - 1], aux;
+    let step;
     let done = false;
-    let date = new Date(null);
     let i = 0;
 
     if(measure === 'bounce-rate') {

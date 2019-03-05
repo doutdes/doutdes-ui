@@ -64,24 +64,28 @@ export let FbMiniCards: MiniCard[] = [
 ];
 export let IgMiniCards: MiniCard[] = [
   {
-    name: 'Fan',
+    name: 'Fans',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
-    value: '-'
+    value: '-',
+    measure: 'count'
+  }, {
+    name: 'Posts',
+    icon: 'icon-speech',
+    padding: 'pl-2 pr-sm-2 pr-0',
+    value: '-',
+    measure: 'post-sum'
+  }, {
+    name: 'Profile views',
+    icon: 'icon-eye',
+    padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
+    value: '-',
+    measure: ''
   }, {
     name: 'Impressions',
-    icon: 'icon-star',
-    padding: 'pl-2 pr-sm-2 pr-0',
-    value: '-'
-  }, {
-    name: 'Profile view',
-    icon: 'icon-people',
-    padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
-    value: '-'
-  }, {
-    name: 'Cinghiali',
-    icon: 'icon-clock',
+    icon: 'icon-screen-smartphone',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
-    value: '-'
-  },
+    value: '-',
+    measure: ''
+  }
 ];

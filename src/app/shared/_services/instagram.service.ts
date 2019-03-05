@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {
   IgPage,
   IgAnyData,
-  IgNumberData
+  IgNumberData, IG_CHART
 
 } from '../_models/InstagramData';
 import {environment} from '../../../environments/environment';
@@ -21,44 +21,68 @@ export class InstagramService {
     return this.http.get<IgPage[]>(this.formatURL('pages'), {headers});
   }
 
-  getAnyData(pageID, ID) {
+  getData(ID, pageID) {
     const headers = this.getAuthorization();
-    switch (ID) {
-      case 15:
-        return this.http.get<IgAnyData[]>(this.formatURL('audcity', pageID), {headers});
-      case 16:
-        return this.http.get<IgAnyData[]>(this.formatURL('audcountry', pageID), {headers});
-      case 17:
-        return this.http.get<IgAnyData[]>(this.formatURL('audgenderage', pageID), {headers});
-      case 18:
-        return this.http.get<IgAnyData[]>(this.formatURL('audlocale', pageID), {headers});
-      case 19:
-        return this.http.get<IgAnyData[]>(this.formatURL('onlinefollowers', pageID), {headers});
-    }
-  }
-  getNumericData(pageID, ID) {
-    const headers = this.getAuthorization();
-    switch (ID) {
-      case 20:
-        return this.http.get<IgNumberData[]>(this.formatURL('emailcontacts', pageID), {headers});
-      case 21:
-        return this.http.get<IgNumberData[]>(this.formatURL('followerCount', pageID), {headers});
-      case 22:
-        return this.http.get<IgNumberData[]>(this.formatURL('getdirclicks', pageID), {headers});
-      case 23:
-        return this.http.get<IgNumberData[]>(this.formatURL('impressions', pageID), {headers});
-      case 24:
-        return this.http.get<IgNumberData[]>(this.formatURL('phonecallclicks', pageID), {headers});
-      case 25:
-        return this.http.get<IgNumberData[]>(this.formatURL('profileviews', pageID), {headers});
-      case 26:
-        return this.http.get<IgNumberData[]>(this.formatURL('reach', pageID), {headers});
-      case 27:
-        return this.http.get<IgNumberData[]>(this.formatURL('textmessageclicks', pageID), {headers});
-      case 28:
-        return this.http.get<IgNumberData[]>(this.formatURL('websiteclicks', pageID), {headers});
+    let call;
+    let anyType = true;
 
+    switch (ID) {
+      case IG_CHART.AUD_CITY:
+        call = 'audcity';
+        break;
+      case IG_CHART.AUD_COUNTRY:
+        call = 'audcountry';
+        break;
+      case IG_CHART.AUD_GENDER_AGE:
+        call = 'audgenderage';
+        break;
+      case IG_CHART.AUD_LOCALE:
+        call = 'audlocale';
+        break;
+      case IG_CHART.ONLINE_FOLLOWERS:
+        call = 'onlinefollowers';
+        break;
+      case IG_CHART.EMAIL_CONTACTS:
+        call = 'emailcontacts';
+        anyType = false;
+        break;
+      case IG_CHART.FOLLOWER_COUNT:
+        call = 'followerCount';
+        anyType = false;
+        break;
+      case IG_CHART.DIR_CLICKS:
+        call = 'getdirclicks';
+        anyType = false;
+        break;
+      case IG_CHART.IMPRESSIONS:
+        call = 'impressions';
+        anyType = false;
+        break;
+      case IG_CHART.PHONE_CALL_CLICKS:
+        call = 'phonecallclicks';
+        anyType = false;
+        break;
+      case IG_CHART.PROFILE_VIEWS:
+        call = 'profileviews';
+        anyType = false;
+        break;
+      case IG_CHART.REACH:
+        call = 'reach';
+        anyType = false;
+        break;
+      case IG_CHART.TEXT_MESSAGE_CLICKS:
+        call = 'textmessageclicks';
+        anyType = false;
+        break;
+      case IG_CHART.WEBSITE_CLICKS:
+        call = 'websiteclicks';
+        anyType = false;
+        break;
     }
+
+    return anyType
+      ? this.http.get<IgAnyData[]>(this.formatURL(call, pageID), {headers})
+      : this.http.get<IgNumberData[]>(this.formatURL(call, pageID), {headers});
   }
 
   private formatURL (call, pageID = null) {
