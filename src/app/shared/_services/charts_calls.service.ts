@@ -13,7 +13,10 @@ import {IG_CHART} from '../_models/InstagramData';
 @Injectable()
 export class ChartsCallsService {
 
-  constructor(private facebookService: FacebookService, private googleAnalyticsService: GoogleAnalyticsService, private instagramService: InstagramService) {
+  constructor(
+    private facebookService: FacebookService,
+    private googleAnalyticsService: GoogleAnalyticsService,
+    private instagramService: InstagramService) {
   }
 
   public static cutString(str, maxLength) {
@@ -25,15 +28,15 @@ export class ChartsCallsService {
 
   public retrieveChartData(ID, pageID?, intervalDate?: IntervalDate): Observable<any> {
 
-    if(Object.values(FB_CHART).includes(ID)){
+    if (Object.values(FB_CHART).includes(ID)) {
       return this.facebookService.getData(ID, pageID);
     }
 
-    else if(Object.values(IG_CHART).includes(ID)){
+    else if (Object.values(IG_CHART).includes(ID)) {
       return this.instagramService.getData(ID, pageID);
     }
 
-    else if (Object.values(GA_CHART).includes(ID)){
+    else if (Object.values(GA_CHART).includes(ID)) {
       return this.googleAnalyticsService.getData(ID, intervalDate);
     }
 
@@ -52,6 +55,8 @@ export class ChartsCallsService {
     let interval;
     let temp, index;
 
+    // console.warn('ID: ' + ID + ' - ', data);
+
     switch (ID) {
       case FB_CHART.FANS_DAY:
         header = [['Date', 'Number of fans']];
@@ -63,13 +68,14 @@ export class ChartsCallsService {
       case FB_CHART.FANS_COUNTRY_GEOMAP:
         header = [['Country', 'Popularity']];
 
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [k, data[data.length - 1].value[k]];
-        });
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [k, data[data.length - 1].value[k]];
+          });
+        }
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
         header = [['Date', 'Impressions']];
-
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
@@ -334,34 +340,28 @@ export class ChartsCallsService {
         break; // IG Text Message Clicks
       case IG_CHART.WEBSITE_CLICKS:
         break; // IG Website Clicks
-      case 27:
-        break;
-      case 28:
-
-        break;
-      case 29:
+      case IG_CHART.COMPOSED_CLICKS:
         /** Data array is constructed as follows:
          * 0 - date
          * 1 - page
          * 2 - value
          **/
         header = [['Type', 'Number']];
-        let map  = new Map();
+        let map = new Map();
         for (let i = 0; i < data.length; i++) {
           map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
         }
         console.log(map);
         map.forEach((value: boolean, key: string) => {
-          console.log(key);
-          chartData.push([key.replace(new RegExp('_', 'g'), ' '), 25/*map.get(key)*/]); // LeaseCredi doesn't have any click data (==0) so I faked it
+          chartData.push([key.replace(new RegExp('_', 'g'), ' '), map.get(key)]);
         });
 
-        console.log(chartData);
+        chartData = [];
 
         break; // IG composed clicks
     }
 
-    return header.concat(chartData);
+    return chartData.length > 0 ? header.concat(chartData) : [];
   }
 
   public formatChart(ID, data) {
@@ -773,7 +773,7 @@ export class ChartsCallsService {
         break; // IG Text Message Clicks
       case IG_CHART.WEBSITE_CLICKS:
         break; // IG Website Clicks
-      case 29:
+      case IG_CHART.COMPOSED_CLICKS:
         formattedData = {
           chartType: 'PieChart',
           dataTable: data,
@@ -940,12 +940,8 @@ export class ChartsCallsService {
       case 'count':
         value = data['followers_count'];
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
-      // case 'post-sum':
-      // case 'prof-views':
       default:
         data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
-
-        console.log(data);
         for (const i in data) {
           sum += data[i].value;
         }
@@ -954,14 +950,6 @@ export class ChartsCallsService {
         value = sum;
 
         break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
-      // case 'prof-views':
-      //   value = data['followers_count'];
-      //   break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
-      // default:
-      //   data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
-      //   value = data[data.length - 1].value;
-      //
-      //   break; // default take the last value as the good one, the perc is calculated dividing the avg for the max value
     }
 
     step = this.searchStep(value);
@@ -976,12 +964,12 @@ export class ChartsCallsService {
     let done = false;
     let i = 0;
 
-    if(measure === 'bounce-rate') {
-      step = (value - (value % 10)).toFixed(2)+  '%';
+    if (measure === 'bounce-rate') {
+      step = (value - (value % 10)).toFixed(2) + '%';
       done = true;
     }
 
-    if(measure === 'time') {
+    if (measure === 'time') {
       step = (value - (value % 60)) + 60;
       done = true;
     }
@@ -997,7 +985,7 @@ export class ChartsCallsService {
     }
 
     while (!done && value > nextStep[i]) {
-      step = nextStep[i+1];
+      step = nextStep[i + 1];
       i++;
     }
 

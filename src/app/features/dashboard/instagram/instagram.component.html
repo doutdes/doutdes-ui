@@ -70,7 +70,7 @@
 </div>
 
 <div class="row px-3 pt-3">
-  <app-minicard *ngFor="let mini of miniCards" [minicard]="mini"></app-minicard>
+  <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.IG"></app-minicard>
 </div> <!-- Mini cards -->
 
 <div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">

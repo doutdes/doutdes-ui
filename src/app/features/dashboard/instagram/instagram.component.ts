@@ -26,6 +26,8 @@ const PrimaryWhite = '#ffffff';
 
 export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
+  public D_TYPE = D_TYPE;
+
   public HARD_DASH_DATA = {
     dashboard_type: D_TYPE.IG,
     dashboard_id: null

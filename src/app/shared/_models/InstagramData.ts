@@ -12,7 +12,8 @@ export const IG_CHART = {
   PROFILE_VIEWS: 25,
   REACH: 26,
   TEXT_MESSAGE_CLICKS: 27,
-  WEBSITE_CLICKS: 28
+  WEBSITE_CLICKS: 28,
+  COMPOSED_CLICKS: 29
 };
 
 export interface IgPage {
