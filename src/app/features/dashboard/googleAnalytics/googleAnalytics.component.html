@@ -11,7 +11,7 @@
 
       <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-export">
-        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF
+        <li class="dropdown-item cursor-pointer" (click)="openModal(reportWait); htmltoPDF();"><i class="fas fa-file-pdf mr-2"></i>Export as PDF
         </li>
       </ul>
     </div> <!-- PDF export -->
@@ -54,6 +54,16 @@
     *ngIf="!loading" class="col-lg-6 col-xl-6" [dashboard_data]="HARD_DASH_DATA"
     [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}">
   </app-emptycard>
-
-  <ngx-loading [show]="loading"></ngx-loading>
 </div> <!-- Chart cards -->
+
+<ngx-loading [show]="loading"></ngx-loading>
+
+<ng-template #reportWait>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-hourglass-half"></i> Exporting report</h4>
+  </div>
+
+  <div class="modal-body">
+    We are creating your report, please wait...
+  </div>
+</ng-template>

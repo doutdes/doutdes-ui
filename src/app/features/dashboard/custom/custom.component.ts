@@ -92,7 +92,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(0).toPromise(); // Custom dashboard type
 
-    // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
+    // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
     this.fbPageID = (await this.FBService.getPages().toPromise())[0].id;
     this.igPageID = (await this.IGService.getPages().toPromise())[0].id;
 

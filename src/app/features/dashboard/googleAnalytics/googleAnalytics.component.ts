@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
@@ -13,12 +13,13 @@ import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {addDays, subDays} from 'date-fns';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
-import * as jsPDF from 'jspdf';
+import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 
 @Component({
@@ -57,6 +58,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   dateChoice: String = 'Last 30 days';
   datePickerEnabled = false;
 
+  modalRef: BsModalRef;
 
   constructor(
     private GAService: GoogleAnalyticsService,
@@ -67,6 +69,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private filterActions: FilterActions,
     private userService: UserService,
     private ADService: AggregatedDataService,
+    private modalService: BsModalService
   ) {
   }
 
@@ -315,6 +318,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   async htmltoPDF() {
     const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
     const cards = document.querySelectorAll('app-card');
+    let fileName, userCompany;
+
+    let month = (new Date()).getMonth() + 1;
+    let day = (new Date()).getDate();
+    let year = (new Date()).getFullYear();
 
     const firstCard = await html2canvas(cards[0]);
     let dimRatio = firstCard['width'] > 400 ? 3 : 2;
@@ -322,50 +330,56 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     let graphsPage = firstCard['width'] > 400 ? 6 : 4;
     let x = 20, y = 40;
 
-    pdf.setFontSize(12);
-    pdf.text('Doutdes for ' + await this.getUserCompany(), 340, 10);
+    this.GEService.loadingScreen.next(true);
 
-    console.warn('Rapporto dimensioni: ' + dimRatio);
-    console.warn('Grafici per riga: ' + graphsRow);
+    try {
+      userCompany = await this.getUserCompany();
+      fileName = 'report_website_' + userCompany + '_' + day + '_' + month + '_' + year + '.pdf';
 
-    pdf.setFontSize(30);
-    pdf.text('Google Analytics', x, y);
-    y += 20;
+      pdf.setFontSize(12);
+      pdf.text('Doutdes for ' + userCompany, 340, 20);
 
-    pdf.setFontSize(20);
-    pdf.text('Date interval: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y);
-    y += 20;
+      pdf.setFontSize(30);
+      pdf.text('Google Analytics', x, y);
+      y += 20;
 
-    // Numero grafici per riga dipendente da dimensioni grafico
-    // width > 400: 2 per riga, dimensione / 3
-    // 200 <= width <= 400: 3 per riga, dimensione / 2
+      pdf.setFontSize(20);
+      pdf.text('Date interval: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y);
+      y += 20;
 
-    for (let i = 0; i < cards.length; i++) {
-      const canvas = await html2canvas(cards[i]);
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      console.warn('Width: ' + canvas.width + ', height: ' + canvas.height);
+      // Numero grafici per riga dipendente da dimensioni grafico
+      // width > 400: 2 per riga, dimensione / 3
+      // 200 <= width <= 400: 3 per riga, dimensione / 2
 
-      if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
-        console.warn('Ci sono già ' + (i / graphsRow) + ' grafici in una riga');
-        y += canvas.height / dimRatio + 20;
-        x = 20;
+      for (let i = 0; i < cards.length; i++) {
+        const canvas = await html2canvas(cards[i]);
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+        if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
+          y += canvas.height / dimRatio + 20;
+          x = 20;
+        }
+
+        if (i !== 0 && i % graphsPage === 0) {
+          pdf.addPage();
+          x = 20;
+          y = 20;
+        }
+
+        pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
+        x += canvas.width / dimRatio + 10;
       }
 
-      if (i !== 0 && i % graphsPage === 0) {
-        pdf.addPage();
-        x = 20;
-        y = 20;
-      }
 
-      pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
-      x += canvas.width / dimRatio + 10;
+      pdf.save(fileName);
 
-      console.warn('x -> ' + x);
-      console.warn('y -> ' + y);
-
+    } catch (e) {
+      console.error(e);
+      // TODO show message with error on frontend
     }
 
-    pdf.save('website_report.pdf');
+    this.GEService.loadingScreen.next(false);
+    this.closeModal();
   }
 
   formatStringDate(date: Date) {
@@ -373,13 +387,25 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   async getUserCompany() {
-    let company = null;
-    const user: User = await this.userService.get().toPromise();
+    let user: User;
+    try {
+      user = await this.userService.get().toPromise();
+    } catch (e) {
+      console.error(e);
+    }
 
     return user.company_name;
   }
 
   nChartEven() {
     return this.chartArray$.length % 2 === 0;
+  }
+
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  closeModal(): void {
+    this.modalRef.hide();
   }
 }

@@ -33,7 +33,8 @@ import {UserService} from '../../../shared/_services/user.service';
       backdropBackgroundColour: 'rgba(0,0,0,0.1)',
       backdropBorderRadius: '4px',
       primaryColour: '#FFF',
-      secondaryColour: '#FFF'
+      secondaryColour: '#FFF',
+      fullScreenBackdrop: true
     }),
   ],
   providers: [
