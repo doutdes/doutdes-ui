@@ -27,7 +27,16 @@ export class AggregatedDataService {
           highest = value > highest ? value : highest;
           lowest = value < lowest ? value : lowest;
         }
-
+        resultData = {average: sum / (data.length - 1), highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
+        break;
+      case 5:// GA Sessions by day
+        type = 'ga_sessions';
+        for (let i = 1; i < data.length; i++) { // i=0 is the header
+          const value = parseInt(data[i][1]);
+          sum += value;
+          highest = value > highest ? value : highest;
+          lowest = value < lowest ? value : lowest;
+        }
         resultData = {average: sum / (data.length - 1), highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
         break;
       case 10: // GA bounce rate

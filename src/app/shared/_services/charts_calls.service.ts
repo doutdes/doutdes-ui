@@ -469,13 +469,22 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
-            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, minValue: 0},
-            height: 310,
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#FFA647'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
         break;  // Google Sessions
