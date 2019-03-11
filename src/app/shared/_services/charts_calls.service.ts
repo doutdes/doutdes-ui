@@ -132,7 +132,7 @@ export class ChartsCallsService {
           }
         }
 
-        paddingRows = chartData.length % 10 ? 10 - (chartData.length % 10) : 0;
+        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
           chartData.push(['', null]);
@@ -200,6 +200,11 @@ export class ChartsCallsService {
             keys.push(data[i][1]);
             chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
+        }
+        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
         }
         break; // Google list Session per Browser
       case FB_CHART.PAGE_VIEWS:
@@ -502,7 +507,7 @@ export class ChartsCallsService {
             sort: 'enable',
             sortAscending: false,
             sortColumn: 1,
-            pageSize: 10,
+            pageSize: 11,
             height: '100%',
             width: '100%'
           }
@@ -610,7 +615,7 @@ export class ChartsCallsService {
             alternatingRowStyle: true,
             sortAscending: false,
             sortColumn: 1,
-            pageSize: 10,
+            pageSize: 11,
             height: '100%',
             width: '100%'
           }
