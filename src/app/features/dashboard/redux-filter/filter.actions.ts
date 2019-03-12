@@ -8,7 +8,6 @@ import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {parseDate} from 'ngx-bootstrap';
-import {Chart} from '../../../shared/_models/Chart';
 
 export const FILTER_INIT    = 'FILTER_INIT';
 export const FILTER_UPDATE  = 'FILTER_UPDATE';
@@ -54,13 +53,15 @@ export class FilterActions {
         chart_id = filteredDashboard.data[i].chart_id;
         filteredDashboard.data[i].chartData = this.CCService.formatChart(chart_id, filteredDashboard.data[i].chartData);
       }
-    }
 
-    // Searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
-    index = this.storedDashboards.findIndex((el: DashboardData) => el.type === currentDashboard.type);
+      // Searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
+      index = this.storedDashboards ? this.storedDashboards.findIndex((el: DashboardData) => el.type === currentDashboard.type) : -1;
 
-    if(index < 0) {
-      this.storedDashboards.push(JSON.parse(JSON.stringify(initialData)));
+      if(index < 0) { // The dashboard was never been stored
+        this.storedDashboards.push(JSON.parse(JSON.stringify(initialData)));
+      } else {
+        this.storedDashboards[index] = JSON.parse(JSON.stringify(initialData));
+      }
     }
 
     this.Redux.dispatch({type: FILTER_INIT, currentDashboard: currentDashboard, filteredDashboard: filteredDashboard, storedDashboards: this.storedDashboards});
@@ -148,12 +149,12 @@ export class FilterActions {
           console.error(chart);
         }
       }
+
+      dashToFilter.data = filtered;
     } else {
       console.error('Error in FILTER_ACTIONS. No unfiltered data found.');
       console.error(dashToFilter);
     }
-
-    dashToFilter.data = filtered;
 
     return dashToFilter;
   }
@@ -163,13 +164,13 @@ export class FilterActions {
   }
 
   // This method is been called if and only if a dashboard was already stored on the variable model called storedDashboards
-  loadStoredDashboard(dashboard_id: number){
-    const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === dashboard_id);
+  loadStoredDashboard(dashboard_type: number){
+    const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === dashboard_type);
 
     if(index >= 0){
       this.initData(this.storedDashboards[index]);
     } else {
-      console.error('ERROR: no dashboards stored found with id ' + dashboard_id);
+      console.error('ERROR: no dashboards stored found with type ' + dashboard_type);
     }
   }
 }

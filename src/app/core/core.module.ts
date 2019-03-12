@@ -9,10 +9,11 @@ import {SidebarComponent} from './sidebar/sidebar.component';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {CardComponent} from './card/card.component';
 import {EmptycardComponent} from './card/emptycard.component';
-import {BsDropdownModule, BsModalService, ModalModule} from 'ngx-bootstrap';
+import {BsDropdownModule, BsModalService, ModalModule, PopoverModule} from 'ngx-bootstrap';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import {DashboardService} from '../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../shared/_services/global-event-manager.service';
+import {MiniCardComponent} from './card/minicard.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {GlobalEventsManagerService} from '../shared/_services/global-event-manag
     SidebarComponent,
     BreadcrumbComponent,
     CardComponent,
-    EmptycardComponent
+    EmptycardComponent,
+    MiniCardComponent
   ],
   imports: [
     RouterModule,
@@ -29,7 +31,8 @@ import {GlobalEventsManagerService} from '../shared/_services/global-event-manag
     Ng2GoogleChartsModule,
     BsDropdownModule,
     ModalModule.forRoot(),
-    SelectDropDownModule
+    SelectDropDownModule,
+    PopoverModule.forRoot()
   ],
   providers: [
     GlobalEventsManagerService,
@@ -44,6 +47,7 @@ import {GlobalEventsManagerService} from '../shared/_services/global-event-manag
     BreadcrumbComponent,
     CardComponent,
     EmptycardComponent,
+    MiniCardComponent
   ]
 })
 

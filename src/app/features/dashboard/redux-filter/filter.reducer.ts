@@ -1,5 +1,5 @@
-import {DashboardData, FILTER_INITIAL_STATE, FilterState, IntervalDate} from './filter.model';
-import {FILTER_INIT, FILTER_BY_DATA, FILTER_RESET, FILTER_CLEAR, FILTER_UPDATE, FILTER_REMOVE_CURRENT} from './filter.actions';
+import {FILTER_INITIAL_STATE, FilterState} from './filter.model';
+import {FILTER_BY_DATA, FILTER_CLEAR, FILTER_INIT, FILTER_REMOVE_CURRENT, FILTER_RESET, FILTER_UPDATE} from './filter.actions';
 
 export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action): FilterState {
   switch (action.type) {
@@ -29,7 +29,7 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
       return Object.assign({}, state, {
         currentDashboard: null,
         filteredDashboard: null,
-        storedDashboards: null
+        storedDashboards: []
       });
 
     case FILTER_REMOVE_CURRENT:
@@ -42,7 +42,7 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
       return Object.assign({}, state, {
         currentDashboard: null,
         filteredDashboard: null,
-        storedDashboards: null
+        storedDashboards: []
       });
 
     default:

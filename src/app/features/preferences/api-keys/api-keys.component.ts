@@ -83,7 +83,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     let observables = [];
 
     for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
-      observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
+      if(D_TYPE[SERVICE] > 0)
+        observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
     }
 
     forkJoin(observables).subscribe((services: Service[]) => {

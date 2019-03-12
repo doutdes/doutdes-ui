@@ -15,6 +15,7 @@ import {forkJoin, Observable} from 'rxjs';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
+import {GaMiniCards, IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -24,6 +25,8 @@ const PrimaryWhite = '#ffffff';
 })
 
 export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
+
+  public D_TYPE = D_TYPE;
 
   public HARD_DASH_DATA = {
     dashboard_type: D_TYPE.IG,
@@ -39,6 +42,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  public miniCards: MiniCard[] = IgMiniCards;
   private dashStored: Array<DashboardCharts> = [];
 
   public loading = false;
@@ -72,6 +76,26 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  async loadMiniCards(pageID) {
+    // 1. Init intervalData (retrieve data of previous month)
+    let results;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+    };
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageID);
+
+    forkJoin(observables).subscribe(miniDatas => {
+      for(const i in miniDatas) {
+        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
+        this.miniCards[i].value = results['value'];
+        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].step = results['step'];
+      }
+    });
+  }
+
   async loadDashboard() {
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
@@ -80,7 +104,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData;
+    let currentData: DashboardData = {
+      data: chartsToShow,
+      interval: dateInterval,
+      type: D_TYPE.IG,
+    };
 
     if (!existence) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
@@ -95,6 +123,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
     this.pageID = (await this.IGService.getPages().toPromise())[0].id;
 
+    await this.loadMiniCards(this.pageID);
+
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
     } else {
@@ -105,6 +135,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     if (this.dashStored) {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.IG);
+      this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
@@ -134,11 +165,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                 chartsToShow.push(chart); // Original Data
               }
 
-              currentData = {
-                data: chartsToShow,
-                interval: dateInterval,
-                type: D_TYPE.IG,
-              };
+              currentData.data = chartsToShow;
 
               this.filterActions.initData(currentData);
               this.GEService.updateChartList.next(true);
@@ -151,6 +178,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
             });
 
         } else {
+          this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
           console.log('Dashboard is empty.');
         }
@@ -254,7 +282,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-      const index = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG);
+      const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG) : -1;
       this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
@@ -289,6 +317,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
-    this.filterActions.clear();
+    this.filterActions.removeCurrent();
+  }
+
+  nChartEven() {
+    return this.chartArray$.length % 2 === 0;
   }
 }

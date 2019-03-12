@@ -13,6 +13,7 @@ import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {Chart} from '../../shared/_models/Chart';
+import {D_TYPE, DS_TYPE} from '../../shared/_models/Dashboard';
 
 @Component({
   selector: 'app-emptycard',
@@ -219,7 +220,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   populateDropdown(charts : Chart[], writeType = false) {
 
-    let newDropdown = []
+    let newDropdown = [];
 
     if (charts) {
       charts.forEach(el => {
@@ -240,10 +241,14 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   getStringType(type: number){
     switch (type) {
-      case 1:
+      case D_TYPE.FB:
         return 'FACEBOOK - ';
-      case 2:
+      case D_TYPE.GA:
         return 'GOOGLE - ';
+      case D_TYPE.IG:
+        return 'INSTAGRAM - ';
+      case D_TYPE.YT:
+        return 'YOUTUBE - ';
     }
   }
 

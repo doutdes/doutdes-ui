@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {
   FbPage,
   FbAnyData,
-  FbNumberData
+  FbNumberData, FbPost, FB_CHART
 } from '../_models/FacebookData';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
@@ -21,49 +21,48 @@ export class FacebookService {
     return this.http.get<FbPage[]>(this.formatURL('pages'), {headers});
   }
 
-  ///TODO: riorganizzare ID per rendere switch case in charts_call coerente
-  /*getAnyData(pageID, ID)
-  {
+  getData(ID, pageID) {
     const headers = this.getAuthorization();
-    switch (ID)
-    {
+    let call;
+    let anyType = false;
+
+    switch (ID) {
+      case FB_CHART.FANS_COUNTRY_GEOMAP:
+      case FB_CHART.FANS_COUNTRY_PIE:
+        call = 'fancountry';
+        anyType = true;
+        break;
+      case FB_CHART.FANS_CITY:
+        call = 'fancity';
+        anyType = true;
+        break;
+      case FB_CHART.FANS_DAY:
+        call = 'fancount';
+        break;
+      case FB_CHART.IMPRESSIONS:
+        call = 'pageimpressions';
+        break;
+      case FB_CHART.PAGE_VIEWS:
+        call = 'pageviewstotal';
+        break;
     }
+
+    return anyType
+      ? this.http.get<FbAnyData[]>(this.formatURL(call, pageID), {headers})
+      : this.http.get<FbNumberData[]>(this.formatURL(call, pageID), {headers});
   }
 
-  getNumericData(pageID, ID)
-  {
+  fbposts(pageID) {
     const headers = this.getAuthorization();
-    switch (ID)
-    {
-    }
-  }
-*/
-  fbfancount(pageID) {
-    const headers = this.getAuthorization();
-    return this.http.get<FbNumberData[]>(this.formatURL('fancount', pageID), {headers});
+    return this.http.get<FbPost[]>(this.formatURL('posts', pageID), {headers});
   }
 
-  fbpageimpressions(pageID) {
+  fbpagereactions(pageID) {
     const headers = this.getAuthorization();
-    return this.http.get<FbNumberData[]>(this.formatURL('pageimpressions', pageID), {headers});
-  }
+    return this.http.get<FbNumberData[]>(this.formatURL('pagereactions', pageID), {headers});
+  } // TODO give an ID on the database
 
-  fbfancountry(pageID) {
-    const headers = this.getAuthorization();
-    return this.http.get<FbAnyData[]>(this.formatURL('fancountry', pageID), {headers});
-  }
-
-  fbpageviewstotal(pageID) {
-    const headers = this.getAuthorization();
-    return this.http.get<FbNumberData[]>(this.formatURL('pageviewstotal', pageID), {headers});
-  }
-
-  fbfancity(pageID) {
-    const headers = this.getAuthorization();
-    return this.http.get<FbAnyData[]>(this.formatURL('fancity', pageID), {headers});
-  }
-
-  private formatURL(call, pageID= null) {
+  private formatURL(call, pageID = null) {
     const aux = pageID ? (pageID + '/' + call) : call;
     return 'http://' + environment.host + ':' + environment.port + '/fb/' + aux;
   }

@@ -28,7 +28,14 @@ import {UserService} from '../../../shared/_services/user.service';
     HttpClientModule,
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
-    NgxLoadingModule.forRoot({}),
+    NgxLoadingModule.forRoot({
+      animationType: ngxLoadingAnimationTypes.threeBounce,
+      backdropBackgroundColour: 'rgba(0,0,0,0.1)',
+      backdropBorderRadius: '4px',
+      primaryColour: '#FFF',
+      secondaryColour: '#FFF',
+      fullScreenBackdrop: true
+    }),
   ],
   providers: [
     GoogleAnalyticsService,

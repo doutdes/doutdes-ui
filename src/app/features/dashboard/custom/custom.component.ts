@@ -31,6 +31,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     dashboard_id: null
   };
 
+  private fbPageID = null;
+  private igPageID = null;
   private pageID = null;
 
   public FILTER_DAYS = {
@@ -83,15 +85,16 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       last: this.maxDate
     };
     let currentData: DashboardData;
+    let pageID = null;
 
     this.GEService.loadingScreen.next(true);
 
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(0).toPromise(); // Custom dashboard type
 
-    // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
-    this.pageID = (await this.FBService.getPages().toPromise())[0].id;
-
+    // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
+    this.fbPageID = (await this.FBService.getPages().toPromise())[0].id;
+    this.igPageID = (await this.IGService.getPages().toPromise())[0].id;
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -111,7 +114,12 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
           if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
-            charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
+            console.log(charts);
+
+            charts.forEach(chart => {
+              this.getPageID(chart.type);
+              observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID));
+            }); // Retrieves data for each chart
 
             forkJoin(observables)
               .subscribe(dataArray => {
@@ -145,7 +153,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
                 this.GEService.updateChartList.next(true);
 
                 // Shows last 30 days
-                // this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+                this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
 
                 this.GEService.loadingScreen.next(false);
               });
@@ -247,7 +255,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-      const index = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG);
+      const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.CUSTOM) : -1;
       this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
@@ -285,6 +293,25 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.removeBreadcrumb();
-    this.filterActions.clear();
+    this.filterActions.removeCurrent();
+  }
+
+  nChartEven() {
+    return this.chartArray$.length % 2 === 0;
+  }
+
+  getPageID(type: number) {
+    switch (type) {
+      case D_TYPE.FB:
+        this.pageID = this.fbPageID;
+        break;
+      case D_TYPE.IG:
+        this.pageID = this.igPageID;
+        break;
+      default:
+        this.pageID = null;
+        break;
+    }
+
   }
 }

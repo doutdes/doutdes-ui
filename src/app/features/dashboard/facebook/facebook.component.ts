@@ -20,6 +20,7 @@ import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
+import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -30,6 +31,7 @@ const PrimaryWhite = '#ffffff';
 
 export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
+  public D_TYPE = D_TYPE;
   public HARD_DASH_DATA = {
     dashboard_type: D_TYPE.FB,
     dashboard_id: null
@@ -52,6 +54,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  public miniCards: MiniCard[] = FbMiniCards;
   private dashStored: Array<DashboardCharts> = [];
 
   public loading = false;
@@ -80,7 +83,27 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   }
 
-  async loadDashboard() {
+  async loadMiniCards(pageID) {
+    // 1. Init intervalData (retrieve data of previous month)
+    let results;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+    };
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageID);
+
+    forkJoin(observables).subscribe(miniDatas => {
+      for(const i in miniDatas) {
+        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
+        this.miniCards[i].value = results['value'];
+        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].step = results['step'];
+      }
+    });
+  }
+
+  async loadDashboard() { // TODO get pageID
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
@@ -88,9 +111,13 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData;
+    let currentData: DashboardData = {
+      data: chartsToShow,
+      interval: dateInterval,
+      type: D_TYPE.FB,
+    };
 
-    if(!existence['exists']) { // If the Api Key has not been set yet, then a message is print
+    if (!existence['exists']) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
       return;
     }
@@ -100,8 +127,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
 
-    // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
-    this.pageID = (await this.FBService.getPages().toPromise())[4].id;
+    // Retrieving the page ID // TODO to move into onInit and its init on a dropdown
+    this.pageID = (await this.FBService.getPages().toPromise())[0].id;
+
+    await this.loadMiniCards(this.pageID);
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -110,9 +139,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if(this.dashStored) {
+    if (this.dashStored) {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.FB);
+      this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
@@ -141,14 +171,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   chartsToShow.push(chart); // Original Data
                 }
 
-                currentData = {
-                  data: chartsToShow,
-                  interval: dateInterval,
-                  type: D_TYPE.FB,
-                };
+                currentData.data = chartsToShow;
 
                 this.filterActions.initData(currentData);
-                this.GEService.updateChartList.next(true);
+                this.GEService.updateChartList.next(true); // TODO check to remove
 
                 // Shows last 30 days
                 this.datePickerEnabled = true;
@@ -158,6 +184,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
               });
 
           } else {
+            this.filterActions.initData(currentData);
             this.GEService.loadingScreen.next(false);
             console.log('Dashboard is empty.');
           }
@@ -268,8 +295,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-      const index      = elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB);
-      this.dashStored  = index >= 0 ? elements['storedDashboards'][index] : null;
+      const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB) : -1;
+      this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
     });
 
     let dash_type = this.HARD_DASH_DATA.dashboard_type;
@@ -340,7 +367,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         x = 20;
       }
 
-      if(i !== 0 && i % graphsPage === 0) {
+      if (i !== 0 && i % graphsPage === 0) {
         pdf.addPage();
         x = 20;
         y = 20;
@@ -358,12 +385,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async getUserCompany() {
-    const user: User  = await this.userService.get().toPromise();
+    const user: User = await this.userService.get().toPromise();
 
     return user.company_name;
   }
 
-  nChartEven(){
+  nChartEven() {
     return this.chartArray$.length % 2 === 0;
   }
 }
