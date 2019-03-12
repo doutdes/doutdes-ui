@@ -55,6 +55,20 @@ export class AggregatedDataService {
         resultData = {average: sum / data.length, highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
         break;
 
+      case 23: // GA bounce rate
+        type = 'IG_impr';
+        // Calculates aggregated extra data
+        for (let i = 1; i < data['dataTable'].length; i++) {
+
+          const value = parseInt(data['dataTable'][i][1], 10);
+          sum += value;
+          highest = value > highest ? value : highest;
+          lowest = value < lowest ? value : lowest;
+        }
+
+        //resultData = {average: sum / data['dataTable'].length, highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
+        break;
+
     }
 
     return resultData;
