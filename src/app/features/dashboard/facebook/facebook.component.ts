@@ -111,7 +111,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData;
+    let currentData: DashboardData = {
+      data: chartsToShow,
+      interval: dateInterval,
+      type: D_TYPE.FB,
+    };
 
     if (!existence['exists']) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
@@ -167,14 +171,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   chartsToShow.push(chart); // Original Data
                 }
 
-                currentData = {
-                  data: chartsToShow,
-                  interval: dateInterval,
-                  type: D_TYPE.FB,
-                };
+                currentData.data = chartsToShow;
 
                 this.filterActions.initData(currentData);
-                this.GEService.updateChartList.next(true);
+                this.GEService.updateChartList.next(true); // TODO check to remove
 
                 // Shows last 30 days
                 this.datePickerEnabled = true;
@@ -184,6 +184,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
               });
 
           } else {
+            this.filterActions.initData(currentData);
             this.GEService.loadingScreen.next(false);
             console.log('Dashboard is empty.');
           }

@@ -104,7 +104,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData;
+    let currentData: DashboardData = {
+      data: chartsToShow,
+      interval: dateInterval,
+      type: D_TYPE.IG,
+    };
 
     if (!existence) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
@@ -161,11 +165,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                 chartsToShow.push(chart); // Original Data
               }
 
-              currentData = {
-                data: chartsToShow,
-                interval: dateInterval,
-                type: D_TYPE.IG,
-              };
+              currentData.data = chartsToShow;
 
               this.filterActions.initData(currentData);
               this.GEService.updateChartList.next(true);
@@ -178,6 +178,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
             });
 
         } else {
+          this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
           console.log('Dashboard is empty.');
         }

@@ -79,10 +79,14 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
-    let currentData: DashboardData;
     const dateInterval: IntervalDate = {
       first: this.minDate,
       last: this.maxDate
+    };
+    let currentData: DashboardData = {
+      data: chartsToShow,
+      interval: dateInterval,
+      type: D_TYPE.GA,
     };
 
     this.GEService.loadingScreen.next(true);
@@ -134,11 +138,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                   chartsToShow.push(chart);
                 }
 
-                currentData = {
-                  data: chartsToShow,
-                  interval: dateInterval,
-                  type: D_TYPE.GA,
-                };
+                currentData.data = chartsToShow;
 
                 this.filterActions.initData(currentData);
                 this.GEService.updateChartList.next(true);
@@ -151,6 +151,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
               });
           } else {
+            this.filterActions.initData(currentData);
             this.GEService.loadingScreen.next(false);
             console.log('Dashboard is empty.');
           }
