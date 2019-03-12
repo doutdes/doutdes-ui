@@ -132,7 +132,7 @@ export class ChartsCallsService {
           }
         }
 
-        paddingRows = chartData.length % 10 ? 10 - (chartData.length % 10) : 0;
+        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
           chartData.push(['', null]);
@@ -200,6 +200,11 @@ export class ChartsCallsService {
             keys.push(data[i][1]);
             chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
+        }
+        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
         }
         break; // Google list Session per Browser
       case FB_CHART.PAGE_VIEWS:
@@ -464,13 +469,22 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            chartArea: {left: 0, right: 0, height: 190, top: 0},
             legend: {position: 'none'},
-            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, minValue: 0},
-            height: 310,
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#FFA647'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
         break;  // Google Sessions
@@ -502,7 +516,7 @@ export class ChartsCallsService {
             sort: 'enable',
             sortAscending: false,
             sortColumn: 1,
-            pageSize: 10,
+            pageSize: 11,
             height: '100%',
             width: '100%'
           }
@@ -610,7 +624,7 @@ export class ChartsCallsService {
             alternatingRowStyle: true,
             sortAscending: false,
             sortColumn: 1,
-            pageSize: 10,
+            pageSize: 11,
             height: '100%',
             width: '100%'
           }
