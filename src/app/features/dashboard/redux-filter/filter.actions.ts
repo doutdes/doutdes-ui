@@ -64,12 +64,16 @@ export class FilterActions {
       }
     }
 
+    console.warn("FILTER ACTION CURRENT DASHBOARD ",currentDashboard);
+    console.warn("FILTER ACTION FILTERED DASHBOARD ",filteredDashboard);
+
     this.Redux.dispatch({type: FILTER_INIT, currentDashboard: currentDashboard, filteredDashboard: filteredDashboard, storedDashboards: this.storedDashboards});
   }
 
   filterData(dateInterval: IntervalDate) {
     const filteredDashboard = this.filterByDateInterval(dateInterval);
     this.Redux.dispatch({type: FILTER_BY_DATA, filteredDashboard: filteredDashboard});
+    console.warn("filterData FILTERED DASHBOARD ",filteredDashboard);
   }
 
   updateChart(chart: DashboardCharts) {
@@ -140,7 +144,21 @@ export class FilterActions {
             : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
 
           chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
-          chart.aggregated = this.ADService.getAggregatedData(chart.chartData, chart.chart_id, filterInterval);
+
+          console.log("FILTER ACTION CHART DATA");
+          console.log(chart.chartData);
+
+          console.log("FILTER ACTION CHART ID");
+          console.log(chart.chart_id);
+
+          console.log("FILTER ACTION FILTER INTERVAL");
+          console.log(filterInterval);
+
+          //TODO passare i dati di this.currentDashboard
+          chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i].chartData, chart.chart_id, filterInterval);
+
+          console.log("FILTER ACTION GET AGGR DATA");
+          console.log(chart.aggregated);
 
           filtered.push(chart);
         } else {

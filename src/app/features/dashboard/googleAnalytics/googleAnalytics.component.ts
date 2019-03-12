@@ -36,7 +36,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   };
 
   public FILTER_DAYS = {
-    seven: 7,
+    seven: 6,
     thirty: 30,
     ninety: 90
   };
@@ -108,7 +108,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
           if (charts && charts.length > 0) { // Checking if dashboard is not empty
             console.warn('Chart is not empty');
-            charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id))); // Retrieves data for each chart
+            charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id)));// Retrieves data for each chart
 
             forkJoin(observables)
               .subscribe(dataArray => {
@@ -119,7 +119,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                   if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                     chart.chartData = dataArray[i];
-                    // chart.chartData = this.CCService.formatChart(charts[i].chart_id, dataArray[i]);
                     // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO to check
                     chart.error = false;
                     chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
@@ -202,6 +201,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
           chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval);
+          console.log("GA COMPONENT RETRIEVE CHART DATA AGGREGATED", chartToPush.aggregated);
         } else {
           chartToPush.error = true;
           console.error('Errore recuperando dati per ' + dashChart);
@@ -220,7 +220,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        first: new Date(addDays(value[0], 1).setHours(0, 0, 0)),
+        first: new Date(subDays(value[0], 1).setHours(0, 0, 0)),
         last: new Date(addDays(value[1], 1).setHours(0, 0, 0))
       };
 
