@@ -9,6 +9,9 @@ import {D_TYPE} from '../_models/Dashboard';
 import {GA_CHART} from '../_models/GoogleData';
 import {FB_CHART} from '../_models/FacebookData';
 import {IG_CHART} from '../_models/InstagramData';
+import {containsElement} from '@angular/animations/browser/src/render/shared';
+import {until} from 'selenium-webdriver';
+import elementIsSelected = until.elementIsSelected;
 
 @Injectable()
 export class ChartsCallsService {
@@ -341,22 +344,34 @@ export class ChartsCallsService {
       case IG_CHART.WEBSITE_CLICKS:
         break; // IG Website Clicks
       case IG_CHART.COMPOSED_CLICKS:
-        /** Data array is constructed as follows:
-         * 0 - date
-         * 1 - page
-         * 2 - value
-         **/
         header = [['Type', 'Number']];
         let map = new Map();
+        //group by click type
         for (let i = 0; i < data.length; i++) {
           map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
+          //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(25, 10)) : map.set(data[i]['metric'], parseInt(25, 10));
+
         }
-        console.log(map);
+        //s(map);
+        let empty = true;
         map.forEach((value: boolean, key: string) => {
-          chartData.push([key.replace(new RegExp('_', 'g'), ' '), map.get(key)]);
+          //console.log(map.get(key));
+          if (parseInt(map.get(key), 10) != 0){
+            empty = false;
+          }
         });
 
-        chartData = [];
+        if(empty) {
+          map = new Map();
+          map.set('NO DATA', parseInt(100, 10));
+          map.set('empty', true);
+
+        }
+        //console.log(map);
+        map.forEach((value: boolean, key: string) => {
+          chartData.push([key.replace(new RegExp('_', 'g'), ' '), map.get(key)]); //removing all the underscores
+        });
+
 
         break; // IG composed clicks
     }
@@ -785,10 +800,19 @@ export class ChartsCallsService {
             is3D: false,
             pieSliceText: 'label',
             pieSliceTextStyle: {fontSize: 11, color: '#222'},
-            colors: ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'],
             areaOpacity: 0.4
           }
         };
+        if(data.filter(e => e[1]).length == 0){
+          formattedData.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'];
+          formattedData.dataTable = data;
+        }
+        else {
+          formattedData.colors = ['#D3D3D3'];
+          formattedData.dataTable = data.slice(0,2);
+        }
+
+
         break; // IG clicks pie
     }
 
