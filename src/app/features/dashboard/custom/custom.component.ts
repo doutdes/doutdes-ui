@@ -131,7 +131,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
                     chart.chartData = dataArray[i];
                     // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                     chart.error = false;
-                    chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO check
                   } else {
 
                     chart.error = true;
@@ -184,7 +183,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           chartToPush.chartData = chartData;
           // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval); // TODO check
 
         } else {
           chartToPush.error = true;
