@@ -104,6 +104,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     if (this.dashStored) {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.GA);
+      this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
       this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
