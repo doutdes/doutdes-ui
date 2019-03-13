@@ -8,6 +8,7 @@ import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {parseDate} from 'ngx-bootstrap';
+import {subSeconds} from 'date-fns';
 
 export const FILTER_INIT    = 'FILTER_INIT';
 export const FILTER_UPDATE  = 'FILTER_UPDATE';
@@ -64,16 +65,12 @@ export class FilterActions {
       }
     }
 
-    console.warn("FILTER ACTION CURRENT DASHBOARD ",currentDashboard);
-    console.warn("FILTER ACTION FILTERED DASHBOARD ",filteredDashboard);
-
     this.Redux.dispatch({type: FILTER_INIT, currentDashboard: currentDashboard, filteredDashboard: filteredDashboard, storedDashboards: this.storedDashboards});
   }
 
   filterData(dateInterval: IntervalDate) {
     const filteredDashboard = this.filterByDateInterval(dateInterval);
     this.Redux.dispatch({type: FILTER_BY_DATA, filteredDashboard: filteredDashboard});
-    console.warn("filterData FILTERED DASHBOARD ",filteredDashboard);
   }
 
   updateChart(chart: DashboardCharts) {
@@ -140,25 +137,13 @@ export class FilterActions {
         // If the type of the chart is known
         if (DS_TYPE.hasOwnProperty(chart.type)) {
           chart.chartData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
-            ? chart.chartData.filter(el => parseDate(el[0]) >= filterInterval.first && parseDate(el[0]) <= filterInterval.last)
+            ? chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime())
             : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
 
           chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
 
-          console.log("FILTER ACTION CHART DATA");
-          console.log(chart.chartData);
-
-          console.log("FILTER ACTION CHART ID");
-          console.log(chart.chart_id);
-
-          console.log("FILTER ACTION FILTER INTERVAL");
-          console.log(filterInterval);
-
           //TODO passare i dati di this.currentDashboard
           chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i].chartData, chart.chart_id, filterInterval);
-
-          console.log("FILTER ACTION GET AGGR DATA");
-          console.log(chart.aggregated);
 
           filtered.push(chart);
         } else {
@@ -167,6 +152,8 @@ export class FilterActions {
           console.error(chart);
         }
       }
+
+      console.warn(filtered);
 
       dashToFilter.data = filtered;
     } else {

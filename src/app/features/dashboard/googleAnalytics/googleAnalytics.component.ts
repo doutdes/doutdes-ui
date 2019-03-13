@@ -35,10 +35,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     dashboard_id: null
   };
 
-  public FILTER_DAYS = {
+  public FILTER_DAYS = { // Deve avere un valore in meno per avere un intervallo corretto
     seven: 6,
-    thirty: 30,
-    ninety: 90
+    thirty: 29,
+    ninety: 89
   };
 
   public chartArray$: Array<DashboardCharts> = [];
@@ -222,16 +222,16 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        first: new Date(subDays(value[0], 1).setHours(0, 0, 0)),
-        last: new Date(addDays(value[1], 1).setHours(0, 0, 0))
+        first: new Date(value[0].setHours(0, 0, 0, 0)), // TO REMEMBER: always set ms to 0!!!!
+        last: new Date(value[1].setHours(23, 59, 59))
       };
 
       this.filterActions.filterData(dateInterval);
 
       let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
-      let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+      let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
-      if (diffDays != this.FILTER_DAYS.seven && diffDays != 31 && diffDays != 91) {
+      if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
         this.dateChoice = 'Custom';
       }
     }

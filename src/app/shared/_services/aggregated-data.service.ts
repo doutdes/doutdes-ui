@@ -35,7 +35,7 @@ export class AggregatedDataService {
      //   ? chart.chartData.filter(el => parseDate(el[0]) >= filterInterval.first && parseDate(el[0]) <= filterInterval.last)
      //   : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
 
-    console.warn("AGGR DATA SERVICE filteredData ",filteredData);
+    // console.warn("AGGR DATA SERVICE filteredData ",filteredData);
 
     switch (chart_id) {
 
@@ -87,14 +87,14 @@ export class AggregatedDataService {
       case 23: // GA bounce rate
         type = 'IG_impr';
         // Calculates aggregated extra data
-        for (let i = 1; i < data['dataTable'].length; i++) {
+        /*for (let i = 1; i < data['dataTable'].length; i++) { TODO fix
 
           const value = parseInt(data['dataTable'][i][1], 10);
           sum += value;
           highest = value > highest ? value : highest;
           lowest = value < lowest ? value : lowest;
         }
-
+*/
         //resultData = {average: sum / data['dataTable'].length, highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
         break;
 

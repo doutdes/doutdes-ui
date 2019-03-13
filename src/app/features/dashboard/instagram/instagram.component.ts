@@ -36,9 +36,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   private pageID = null;
 
   public FILTER_DAYS = {
-    seven: 7,
-    thirty: 30,
-    ninety: 90
+    seven: 6,
+    thirty: 29,
+    ninety: 89
   };
 
   public chartArray$: Array<DashboardCharts> = [];
@@ -225,11 +225,18 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        first: value[0],
-        last: value[1].setHours(23, 59, 59, 999)
+        first: new Date(value[0].setHours(0, 0, 0, 0)),
+        last: new Date(value[1].setHours(23, 59, 59))
       };
 
       this.filterActions.filterData(dateInterval);
+
+      let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
+      let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
+
+      if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
+        this.dateChoice = 'Custom';
+      }
     }
   }
 

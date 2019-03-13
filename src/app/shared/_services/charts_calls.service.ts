@@ -351,7 +351,7 @@ export class ChartsCallsService {
 
         if(empty) {
           map = new Map();
-          map.set('NO DATA', parseInt(100, 10));
+          map.set('NO DATA', 100);//parseInt(100, 10));
           map.set('empty', true);
 
         }
@@ -378,13 +378,15 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
-          chartClass: 1,
+          chartClass: 5,
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
-            lineWidth: 2,
-            pointSize: 0,
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
+            hAxis: {gridlines: {color: '#eaeaea'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
@@ -392,11 +394,8 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            curveType: 'function',
-            height: 310,
-            explorer: {},
             colors: ['#63c2de'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
 
@@ -418,22 +417,30 @@ export class ChartsCallsService {
         };
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
-
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
-          chartClass: 3,
+          chartClass: 5,
           options: {
-            chartArea: {left: 40, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
-            format: 'decimal',
-            curveType: 'function',
-            height: 310,
-            explorer: {},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: '#eaeaea'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#63c2de'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
+
         break;  // Page Impressions
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
@@ -629,19 +636,27 @@ export class ChartsCallsService {
         };
         break; // Google list sessions per browser
       case FB_CHART.PAGE_VIEWS:
-
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
-          chartClass: 13,
+          chartClass: 5,
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
-            curveType: 'function',
-            height: 310,
-            explorer: {},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: '#eaeaea'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#63c2de'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
         break; // Facebook Page Views
