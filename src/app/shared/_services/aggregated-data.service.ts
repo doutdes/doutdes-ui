@@ -49,7 +49,7 @@ export class AggregatedDataService {
         }
         resultData = {average: sum / (filteredData.length - 1), highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
         break;
-      case 5:// GA Sessions by day
+      case GA_CHART.SESSION_DAY:// GA Sessions by day
         type = 'ga_sessions';
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseInt(filteredData[i][1]);
@@ -59,7 +59,7 @@ export class AggregatedDataService {
         }
         resultData = {average: sum / (filteredData.length - 1), highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
         break;
-      case 10: // GA bounce rate
+      case GA_CHART.BOUNCE_RATE: // GA bounce rate
         type = 'ga_bounce';
         // Calculates aggregated extra data
         for (let i = 0; i < filteredData.length; i++) {
@@ -71,7 +71,7 @@ export class AggregatedDataService {
         }
         resultData = {average: sum / filteredData.length, highest: highest, lowest: lowest, type: type, interval: dateInterval, previousInterval: this.getPrevious(dateInterval)};
         break;
-      case 11: // GA Avg Session duration
+      case GA_CHART.AVG_SESS_DURATION: // GA Avg Session duration
         type = 'ga_avgsessionduration';
         // Calculates aggregated extra data
         for (let i = 0; i < filteredData.length; i++) {

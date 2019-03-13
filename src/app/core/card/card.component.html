@@ -19,8 +19,9 @@
   </div>
   <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px; border-top: 0px !important;" class="rounded-bottom border">
 
-    <div *ngIf="this.type == 'ga_bounce' || this.type == 'ga_impressions' || this.type == 'ga_sessions' || this.type == 'ga_avgsessionduration'" style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;">
-      <i class="fas fa-chart-line mr-1" style="color:rgba(249,193,0,0.88)"></i> AVERAGE: <b>{{this.avg}}</b> (<b style="color:#960500">-3.41%</b> <span class="fas fa-caret-down ml-1" style="color:#960500"></span>)<span style="color:#bbb"></span>
+    <!--*ngIf="this.type == 'ga_bounce' || this.type == 'ga_impressions' || this.type == 'ga_sessions' || this.type == 'ga_avgsessionduration'"-->
+    <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="areAggregatedDataAvailable(dashChart.format)">
+      <i class="fas fa-chart-line mr-1" style="color:rgba(249,193,0,0.88)"></i> AVERAGE: <b>{{this.avg}}</b> <span style="color:#bbb"></span>
       <div style="font-size:12px;">
         <i class="fas fa-arrow-down mr-2" style="color:#168aad"></i> MIN: <b>{{this.low}}</b> <!--(<b style="color:#267F00">+0.67%</b> <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#bbb"></span>--><br />
         <i class="fas fa-arrow-up mr-2" style="color:#9f2548"></i> MAX: <b>{{this.high}}</b>
