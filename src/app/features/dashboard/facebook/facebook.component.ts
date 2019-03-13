@@ -206,6 +206,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
       .subscribe(data => {
 
+        this.GEService.loadingScreen.next(true);
+
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
           // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
@@ -217,6 +219,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
         this.filterActions.addChart(chartToPush);
         this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+
+        this.GEService.loadingScreen.next(false);
       }, error1 => {
         console.log('Error querying the chart');
         console.log(error1);

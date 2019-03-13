@@ -125,7 +125,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                     chart.chartData = dataArray[i];
                     // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO to check
                     chart.error = false;
-                    chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
+                    // chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
                   } else {
 
                     chart.error = true;
@@ -194,15 +194,14 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     this.CCService.retrieveChartData(dashChart.chart_id, dateInterval)
       .subscribe(chartData => {
-        console.log('GA COMPONENT ChartData');
-        console.log(chartData);
+
+        this.GEService.loadingScreen.next(true);
 
         if (!chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;
-          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval);
-          console.log("GA COMPONENT RETRIEVE CHART DATA AGGREGATED", chartToPush.aggregated);
+          // chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval);
+          // console.log("GA COMPONENT RETRIEVE CHART DATA AGGREGATED", chartToPush.aggregated);
         } else {
           chartToPush.error = true;
           console.error('Errore recuperando dati per ' + dashChart);
@@ -210,6 +209,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
         this.filterActions.addChart(chartToPush);
         this.filterActions.filterData(dateInterval); // TODO in theory, filterData should wait addChart before being executed
+
+        this.GEService.loadingScreen.next(false);
       }, error1 => {
         console.error('Error querying the Chart');
         console.error(error1);
@@ -230,7 +231,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
 
-      if (diffDays != 8 && diffDays != 31 && diffDays != 91) {
+      if (diffDays != this.FILTER_DAYS.seven && diffDays != 31 && diffDays != 91) {
         this.dateChoice = 'Custom';
       }
     }
