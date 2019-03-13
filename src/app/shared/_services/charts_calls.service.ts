@@ -386,7 +386,7 @@ export class ChartsCallsService {
             height: 210,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
-            hAxis: {gridlines: {color: '#eaeaea'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
@@ -428,7 +428,7 @@ export class ChartsCallsService {
             height: 210,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
-            hAxis: {gridlines: {color: '#eaeaea'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
@@ -647,7 +647,7 @@ export class ChartsCallsService {
             height: 210,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
-            hAxis: {gridlines: {color: '#eaeaea'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
@@ -760,13 +760,22 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
             height: 210,
-            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#ff96db'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
         break; // IG Impressions by day
@@ -776,13 +785,22 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0, bottom: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
-            height: 310,
-            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#ff96db'],
-            areaOpacity: 0.4,
+            areaOpacity: 0.1
           }
         };
         break; // IG Reach
