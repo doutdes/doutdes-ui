@@ -9,9 +9,6 @@ import {D_TYPE} from '../_models/Dashboard';
 import {GA_CHART} from '../_models/GoogleData';
 import {FB_CHART} from '../_models/FacebookData';
 import {IG_CHART} from '../_models/InstagramData';
-import {containsElement} from '@angular/animations/browser/src/render/shared';
-import {until} from 'selenium-webdriver';
-import elementIsSelected = until.elementIsSelected;
 
 @Injectable()
 export class ChartsCallsService {
@@ -320,12 +317,6 @@ export class ChartsCallsService {
         }
 
         break; // IG Online followers
-      case IG_CHART.EMAIL_CONTACTS:
-        break; // IG Email contacts
-      case IG_CHART.FOLLOWER_COUNT:
-        break; // IG Follower count
-      case IG_CHART.DIR_CLICKS:
-        break; // IG Get directions clicks
       case IG_CHART.IMPRESSIONS:
         header = [['Date', 'Impressions']];
 
@@ -333,10 +324,6 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Impressions by day
-      case IG_CHART.PHONE_CALL_CLICKS:
-        break; // IG Phone Calls clicks
-      case IG_CHART.PROFILE_VIEWS:
-        break; // IG Profile views
       case IG_CHART.REACH:
         header = [['Date', 'Reach']];
 
@@ -344,10 +331,6 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Reach
-      case IG_CHART.TEXT_MESSAGE_CLICKS:
-        break; // IG Text Message Clicks
-      case IG_CHART.WEBSITE_CLICKS:
-        break; // IG Website Clicks
       case IG_CHART.COMPOSED_CLICKS:
         header = [['Type', 'Number']];
         let map = new Map();
@@ -610,7 +593,7 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
             lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
             height: 210,
@@ -756,12 +739,6 @@ export class ChartsCallsService {
           }
         };
         break; // IG Online followers
-      case IG_CHART.EMAIL_CONTACTS:
-        break; // IG Email contacts
-      case IG_CHART.FOLLOWER_COUNT:
-        break; // IG Follower count
-      case IG_CHART.DIR_CLICKS:
-        break; // IG Get directions clicks
       case IG_CHART.IMPRESSIONS:
         formattedData = {
           chartType: 'AreaChart',
@@ -778,10 +755,6 @@ export class ChartsCallsService {
           }
         };
         break; // IG Impressions by day
-      case IG_CHART.PHONE_CALL_CLICKS:
-        break; // IG Phone Calls clicks
-      case IG_CHART.PROFILE_VIEWS:
-        break; // IG Profile views
       case IG_CHART.REACH:
         formattedData = {
           chartType: 'AreaChart',
@@ -798,10 +771,6 @@ export class ChartsCallsService {
           }
         };
         break; // IG Reach
-      case IG_CHART.TEXT_MESSAGE_CLICKS:
-        break; // IG Text Message Clicks
-      case IG_CHART.WEBSITE_CLICKS:
-        break; // IG Website Clicks
       case IG_CHART.COMPOSED_CLICKS:
         formattedData = {
           chartType: 'PieChart',

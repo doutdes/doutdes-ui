@@ -17,7 +17,7 @@
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
     <span style="font-size:14pt">{{dashChart.title}}</span><span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart.format}})</span>
   </div>
-  <div *ngIf="!dashChart.error" style="background:#fff; min-height:350px; padding:20px; border-top: 0px !important;" class="rounded-bottom border">
+  <div *ngIf="!dashChart.error" style="background:#fff; min-height:351px; max-height: 351px; padding:20px; border-top: 0px !important;" class="rounded-bottom border">
 
     <!--*ngIf="this.type == 'ga_bounce' || this.type == 'ga_impressions' || this.type == 'ga_sessions' || this.type == 'ga_avgsessionduration'"-->
     <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="areAggregatedDataAvailable(dashChart.format)">
@@ -40,7 +40,7 @@
     <span style="font-size:14pt">{{dashChart.title}}</span>
   </div>
 
-  <div *ngIf="dashChart.error" style="background:#fff; min-height:350px; padding:20px"
+  <div *ngIf="dashChart.error" style="background:#fff; min-height:351px; max-height: 351px; padding:20px"
        class="rounded-bottom border d-table w-100 h-100">
 
     <div class="align-middle d-table-cell">
