@@ -45,46 +45,17 @@ export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-xl modal-dialog-centered'});
 
     switch (imgNumber) {
-
       case 0:
-        this.imgSrc = '01-fbDevelopers.png';
+        this.imgSrc = 'chooseService.PNG';
         break;
       case 1:
-        this.imgSrc = '02-app.png';
+        this.imgSrc = 'auth.PNG';
         break;
       case 2:
-        this.imgSrc = '03-token1.png';
+        this.imgSrc = 'auth2.PNG';
         break;
       case 3:
-        this.imgSrc = '04-auth.png';
-        break;
-      case 4:
-        this.imgSrc = '05-accessTool.png';
-        break;
-      case 5:
-        this.imgSrc = '06-extend.png';
-        break;
-      case 6:
-        this.imgSrc = '07-neverExpToken.png';
-        break;
-      case 7:
-        this.imgSrc = '08-finish.png';
-        break;
-      case 8:
-        this.imgSrc = '09-doutdes.png';
-        break;
-      case 9:
-        this.imgSrc = '10-keys.png';
-        break;
-      case 10:
-        this.imgSrc = '11-addKey.png';
-        break;
-      case 11:
-        this.imgSrc = '12-last.png';
-        break;
-      case 12:
-        this.imgSrc = '13-done.png';
-        break;
+        this.imgSrc = 'fbDashboard';
     }
   }
 

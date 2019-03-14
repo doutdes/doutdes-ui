@@ -1,0 +1,27 @@
+<div class="row rounded p-4 title-header h-100">
+  <div class="col-md-12 pl-0">
+    <h2 class="my-auto pl-0">How to configure Instagram Service</h2>
+  </div>
+</div>
+<div class="rounded mt-2 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
+  <p>In this tutorial, you can find the instructions to import your Instagram Insights API key (access token), to configure your personal Instagram dashboard in <b>DoUtDes</b>.
+    Recall to perform the following steps in strict order; you can also <b>contact us</b> for any problem. Also remember that you can click over any image, to zoom it.</p>
+
+  <p class="pt-5">1) Click Preferences on the sidebar and click on <b>Login with Instagram</b>:</p>
+  <p><img src="/assets/img/tutorialInstagram/chooseService.PNG"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
+
+  <p class="pt-5">2) A pop up will appear, like below. Click on <b>Choose your authorizations</b>:</p>
+  <p><img src="/assets/img/tutorialInstagram/accessi_ig.PNG"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
+
+  <p class="pt-5">3) Select the page that you want to add to <b>DoUtDes</b> and click OK:</p>
+  <p><img src="/assets/img/tutorialInstagram/seleziona_ig.PNG"  (click)="openModal(zooming, 2)" title="Click here to zoom"/></p>
+
+  <p class="pt-5">4) Good job! Now you have added your token in <b>DoUtDes</b>. Your Instagram Insights stats are now available as below:</p>
+  <p><img src="/assets/img/tutorialInstagram/ig_dash.PNG"  (click)="openModal(zooming, 3)" title="Click here to zoom"/></p>
+
+</div>
+<ng-template #zooming>
+  <div class="modal-body" style="text-align:center">
+    <img src="/assets/img/tutorialInstagram/{{imgSrc}}" class="img-fluid" style="border: 1px solid #ccc;" />
+  </div>
+</ng-template>

@@ -1,46 +1,25 @@
-<div class="row bg-white rounded p-4 title-header col-xl-10 col-lg-12">
-  <img src="/assets/img/tutorial-head.png" style="height:80px; margin-top:-7px"/>
-  <h1 class="display-4 my-auto float-left ml-3" style="color:#888">How to > Configure Facebook Insights</h1>
+<div class="row rounded p-4 title-header h-100">
+  <div class="col-md-12 pl-0">
+    <h2 class="my-auto pl-0">How to configure Facebook Service</h2>
+  </div>
 </div>
-
-<div class="rounded mt-2 col-xl-10 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
+<div class="rounded mt-2 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
   <p>In this tutorial, you can find the instructions to import your Facebook Insights API key (access token), to configure your personal Facebook dashboard in <b>DoUtDes</b>.
     Recall to perform the following steps in strict order; you can also <b>contact us</b> for any problem. Also remember that you can click over any image, to zoom it.</p>
 
-  <p class="pt-5">1) Sign up on <a href="https://developers.facebook.com/" target="_blank">developers.facebook.com</a> and create a new Facebook app (or use an existing app if you already have one):</p>
-    <p><img src="/assets/img/tutorialFacebook/01-fbDevelopers.png"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
-    <p><img src="/assets/img/tutorialFacebook/02-app.png"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
+  <p class="pt-5">1) Click Preferences on the sidebar and click on <b>Continue with Facebook</b>:</p>
+  <p><img src="/assets/img/tutorialFacebook/chooseService.PNG"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">2) Now go to the <a href="https://developers.facebook.com/tools/explorer" target="_blank">Facebook Graph API Explorer</a>. Choose the app just created, then select <b>Get user access token</b>:</p>
-    <p><img src="/assets/img/tutorialFacebook/03-token1.png"  (click)="openModal(zooming, 2)" title="Click here to zoom"/></p>
+  <p class="pt-5">2) A pop up will appear, like below. Click on <b>Choose your authorizations</b>:</p>
+  <p><img src="/assets/img/tutorialFacebook/auth.PNG"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">3) A pop-up window will appear, like below. Select <b>read_insights</b> and <b>pages_show_list</b>. Click on <b>Get Access Token</b> button to obtain a short-lived user access token:</p>
-    <p><img src="/assets/img/tutorialFacebook/04-auth.png"  (click)="openModal(zooming, 3)" title="Click here to zoom"/></p>
+  <p class="pt-5">3) Select the page that you want to add to <b>DoUtDes</b> and click OK:</p>
+  <p><img src="/assets/img/tutorialFacebook/auth2.PNG"  (click)="openModal(zooming, 2)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">4) Now, open the <a href="https://developers.facebook.com/tools/accesstoken" target="_blank">Access Token Tool</a>. Here, you can see the access token for all the apps under your account. Click on the <b>Debug</b> button:</p>
-    <p><img src="/assets/img/tutorialFacebook/05-accessTool.png"  (click)="openModal(zooming, 4)" title="Click here to zoom"/></p>
+  <p class="pt-5">4) Good job! Now you have added your token in <b>DoUtDes</b>. Your Facebook Insights stats are now available as below:</p>
+  <p><img src="/assets/img/tutorialFacebook/fbDashboard.PNG"  (click)="openModal(zooming, 3)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">5) Observe that your access token expires in one hour. So, click on <b>Extend Access Token</b> to get a long-lived access token. Then, <b>Copy</b> your token (for the next step):</p>
-    <p><img src="/assets/img/tutorialFacebook/06-extend.png"  (click)="openModal(zooming, 5)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">6) Come back to the <a href="https://developers.facebook.com/tools/explorer" target="_blank">Facebook Graph API Explorer</a>. <b>Paste</b> the long-lived token (you just copied in step 5) into the <em>Access Token</em> field. Change the API endpoint with "<b>/me/accounts</b>" and click on <b>Submit</b>. A summary will be shown, including the <b>never expiring token</b>. <b>Copy</b> that token, as in the image:</p>
-    <p><img src="/assets/img/tutorialFacebook/07-neverExpToken.png"  (click)="openModal(zooming, 6)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">7) Done! Now open <b>DoUtDes</b>, search for <em>Preferences</em> -> <em>Configure data sources</em> on the left menu, and click on <b>Add new data source</b>:</p>
-    <p><img src="/assets/img/tutorialFacebook/09-doutdes.png"  (click)="openModal(zooming, 8)" title="Click here to zoom"/></p>
-    <p><img src="/assets/img/tutorialFacebook/10-keys.png"  (click)="openModal(zooming, 9)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">8) Select <b>Facebook Insights</b> as service type, then <b>paste</b> the never-expiring token. Conclude with <b>Insert</b>:</p>
-    <p><img src="/assets/img/tutorialFacebook/11-addKey.png"  (click)="openModal(zooming, 10)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">9) Good job! Now you have added your token in <b>DoUtDes</b>. Your Facebook Insights stats are now available as below: </p>
-    <p><img src="/assets/img/tutorialFacebook/12-last.png"  (click)="openModal(zooming, 11)" title="Click here to zoom"/></p>
-    <p><img src="/assets/img/tutorialFacebook/13-done.png"  (click)="openModal(zooming, 12)" title="Click here to zoom"/></p>
-
-  <p></p>
 </div>
-
-
 <ng-template #zooming>
   <div class="modal-body" style="text-align:center">
     <img src="/assets/img/tutorialFacebook/{{imgSrc}}" class="img-fluid" style="border: 1px solid #ccc;" />

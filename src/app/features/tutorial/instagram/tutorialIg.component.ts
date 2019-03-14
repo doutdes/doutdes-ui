@@ -4,13 +4,13 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component({
-  selector: 'app-feature-tutorial-google',
-  templateUrl: './tutorialGa.component.html',
-  styleUrls: ['./tutorialGa.component.scss'],
+  selector: 'app-feature-tutorial-instagram',
+  templateUrl: './tutorialIg.component.html',
+  styleUrls: ['./tutorialIg.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 
-export class FeatureTutorialGaComponent implements OnInit, OnDestroy {
+export class FeatureTutorialIgComponent implements OnInit, OnDestroy {
 
   modalRef: BsModalRef;
   imgSrc: string;
@@ -32,7 +32,7 @@ export class FeatureTutorialGaComponent implements OnInit, OnDestroy {
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Tutorial', '/tutorial/'));
-    bread.push(new Breadcrumb('Google', '/tutorial/google/'));
+    bread.push(new Breadcrumb('Instagram', '/tutorial/instagram/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -49,13 +49,13 @@ export class FeatureTutorialGaComponent implements OnInit, OnDestroy {
         this.imgSrc = 'chooseService.PNG';
         break;
       case 1:
-        this.imgSrc = 'scegli_google.PNG';
+        this.imgSrc = 'accessi_ig.PNG';
         break;
       case 2:
-        this.imgSrc = 'scegli_google_2.PNG';
+        this.imgSrc = 'seleziona_ig.PNG';
         break;
       case 3:
-        this.imgSrc = 'gaDashboard.PNG';
+        this.imgSrc = 'ig_dash.PNG';
         break;
     }
   }
