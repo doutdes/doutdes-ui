@@ -78,8 +78,8 @@ export class InstagramService {
         call = 'websiteclicks';
         anyType = false;
         break;
-      case IG_CHART.CLICKS_DISTRIBUTION:
-        call = 'composedclicks';
+      case IG_CHART.ACTION_PERFORMED:
+        call = 'actionsperformed';
         anyType = false;
         break;
     }

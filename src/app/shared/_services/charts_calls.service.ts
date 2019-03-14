@@ -247,11 +247,11 @@ export class ChartsCallsService {
         // putting a unique entry in chartArray for every existent age range
         for (let i = 0; i < keys.length; i++) {
           let index = 0;
-          if (!(chartData.find(e => e[0] === (keys[i].substr(2, keys.length))))) {
-            chartData.push([keys[i].substr(2, keys.length), 0, 0]);
+          if (!(chartData.find(e => e[0] === (keys[i].substr(2, keys[i].length))))) {
+            chartData.push([keys[i].substr(2, keys[i].length), 0, 0]);
             index = (chartData.length - 1);
           } else {
-            index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys.length)));
+            index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys[i].length)));
           }
           // and collecting data
           (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
@@ -331,7 +331,7 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Reach
-      case IG_CHART.CLICKS_DISTRIBUTION:
+      case IG_CHART.ACTION_PERFORMED:
         header = [['Type', 'Number']];
         let map = new Map();
         //group by click type
@@ -340,7 +340,6 @@ export class ChartsCallsService {
           map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(25, 10)) : map.set(data[i]['metric'], parseInt(25, 10));
 
         }
-        console.log(map);
         let empty = true;
         map.forEach((value: boolean, key: string) => {
           if (parseInt(map.get(key), 10) != 0){
@@ -349,7 +348,6 @@ export class ChartsCallsService {
         });
 
         if(empty) {
-          console.log("it's empty!");
           map = new Map();
           map.set('NO DATA', 100);//parseInt(100, 10));
           map.set('empty', true);
@@ -804,7 +802,7 @@ export class ChartsCallsService {
           }
         };
         break; // IG Reach
-      case IG_CHART.CLICKS_DISTRIBUTION:
+      case IG_CHART.ACTION_PERFORMED:
         formattedData = {
           chartType: 'PieChart',
           dataTable: data,

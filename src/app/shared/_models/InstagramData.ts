@@ -13,7 +13,7 @@ export const IG_CHART = {
   REACH: 26,
   TEXT_MESSAGE_CLICKS: 27,
   WEBSITE_CLICKS: 28,
-  CLICKS_DISTRIBUTION: 29
+  ACTION_PERFORMED: 29
 };
 
 export interface IgPage {
