@@ -45,7 +45,18 @@ export class FeatureTutorialGaComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-xl modal-dialog-centered'});
 
     switch (imgNumber) {
-
+      case 0:
+        this.imgSrc = 'chooseService.PNG';
+        break;
+      case 1:
+        this.imgSrc = 'scegli_google.PNG';
+        break;
+      case 2:
+        this.imgSrc = 'scegli_google_2.PNG';
+        break;
+      case 3:
+        this.imgSrc = 'gaDashboard.PNG';
+        break;
     }
   }
 
