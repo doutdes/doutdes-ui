@@ -45,6 +45,7 @@ export class FeatureTutorialGaComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-xl modal-dialog-centered'});
 
     switch (imgNumber) {
+
     }
   }
 

@@ -45,6 +45,9 @@ export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-xl modal-dialog-centered'});
 
     switch (imgNumber) {
+      case 0:
+        this.imgSrc = "chooseService.PNG";
+        break;
     }
   }
 

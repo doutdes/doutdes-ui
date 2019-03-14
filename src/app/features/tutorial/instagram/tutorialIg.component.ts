@@ -45,6 +45,18 @@ export class FeatureTutorialIgComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-xl modal-dialog-centered'});
 
     switch (imgNumber) {
+      case 0:
+        this.imgSrc = 'chooseService.PNG';
+        break;
+      case 1:
+        this.imgSrc = 'accessi_ig.PNG';
+        break;
+      case 2:
+        this.imgSrc = 'seleziona_ig.PNG';
+        break;
+      case 3:
+        this.imgSrc = 'ig_dash.PNG';
+        break;
     }
   }
 
