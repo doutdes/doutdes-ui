@@ -65,8 +65,10 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     this.services$ = {};
     let observables = [];
 
-    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE // TODO remove D_TYPE[SERVICE] < 4 when YouTube is ready
-      if(D_TYPE[SERVICE] > 0 && D_TYPE[SERVICE] < 4) observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
+    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE // TODO remove D_TYPE[SERVICE] !== D_TYPE.YT when YouTube is ready
+      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM && D_TYPE[SERVICE] !== D_TYPE.YT) {
+        observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
+      }
     }
 
     forkJoin(observables).subscribe((services: Service[]) => {
