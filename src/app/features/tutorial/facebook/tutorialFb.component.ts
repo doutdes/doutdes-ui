@@ -46,8 +46,16 @@ export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
 
     switch (imgNumber) {
       case 0:
-        this.imgSrc = "chooseService.PNG";
+        this.imgSrc = 'chooseService.PNG';
         break;
+      case 1:
+        this.imgSrc = 'auth.PNG';
+        break;
+      case 2:
+        this.imgSrc = 'auth2.PNG';
+        break;
+      case 3:
+        this.imgSrc = 'fbDashboard';
     }
   }
 
