@@ -336,8 +336,9 @@ export class ChartsCallsService {
         let map = new Map();
         //group by click type
         for (let i = 0; i < data.length; i++) {
-          //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(/map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
-          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(25, 10)) : map.set(data[i]['metric'], parseInt(25, 10));
+          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(/map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
+          //let fakeVal = 25;
+          //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(fakeVal, 10)) : map.set(data[i]['metric'], parseInt(fakeVal, 10));
 
         }
         let empty = true;
@@ -353,7 +354,6 @@ export class ChartsCallsService {
           map.set('empty', true);
 
         }
-        //console.log(map);
         map.forEach((value: boolean, key: string) => {
           chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
         });
@@ -813,18 +813,18 @@ export class ChartsCallsService {
             height: 310,
             is3D: false,
             pieHole : 0.5,
-            //pieSliceText: 'label',
+        //pieSliceText: 'label',
             pieSliceTextStyle: {fontSize: 11, color: '#ffffff'},
             areaOpacity: 0.4
           }
         };
-        if(data.filter(e => e[1]===true).length == 0){
-          formattedData.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'];
-          formattedData.dataTable = data;
+        if(data.filter(e => e[1]===true).length == 0) {
+          formattedData.options.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'],
+            formattedData.dataTable = data;
         }
         else {
-          formattedData.colors = ['#D3D3D3'];
-          formattedData.dataTable = data.slice(0,2);
+          formattedData.options.colors = ['#D3D3D3'];
+          formattedData.dataTable = data.slice(0, 2);
         }
 
 
