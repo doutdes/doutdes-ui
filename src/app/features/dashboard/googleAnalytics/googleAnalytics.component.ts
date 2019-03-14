@@ -20,6 +20,7 @@ import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 
 @Component({
@@ -46,6 +47,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   private dashStored: DashboardData;
 
   public loading = false;
+  public isApiKeySet: boolean = true;
 
   @select() filter: Observable<any>;
 
@@ -69,14 +71,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private filterActions: FilterActions,
     private userService: UserService,
     private ADService: AggregatedDataService,
-    private modalService: BsModalService
+    private modalService: BsModalService,
+    private apiKeyService: ApiKeysService
   ) {
   }
 
-  async loadDashboard() { // TODO check api key existance
-
-    await this.loadMiniCards();
-
+  async loadDashboard() {
+    const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
@@ -88,11 +89,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       interval: dateInterval,
       type: D_TYPE.GA,
     };
+    let chart: DashboardCharts;
 
     this.GEService.loadingScreen.next(true);
 
     // Retrieving dashboard ID
-    const dash = await this.DService.getDashboardByType(2).toPromise(); // Google type
+    const dash = await this.DService.getDashboardByType(D_TYPE.GA).toPromise(); // Google type
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -100,6 +102,14 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       console.error('Cannot retrieve a valid ID for the Website dashboard.');
       return;
     }
+
+    if (!existence['exists']) { // If the Api Key has not been set yet, then a message is print
+      this.isApiKeySet = false;
+      this.GEService.loadingScreen.next(false);
+      return;
+    }
+
+    await this.loadMiniCards();
 
     if (this.dashStored) {
       // Ci sono già dati salvati
@@ -112,25 +122,18 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         .subscribe(charts => {
 
           if (charts && charts.length > 0) { // Checking if dashboard is not empty
-            console.warn('Chart is not empty');
             charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id)));// Retrieves data for each chart
 
             forkJoin(observables)
               .subscribe(dataArray => {
                 for (let i = 0; i < dataArray.length; i++) {
-
-                  let chart: DashboardCharts = charts[i];
+                  chart = charts[i];
 
                   if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-
                     chart.chartData = dataArray[i];
-                    // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO to check
                     chart.error = false;
-                    // chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
                   } else {
-
                     chart.error = true;
-
                     console.error('ERROR in GANALYTICS COMPONENT. Cannot retrieve data from one of the charts. More info:');
                     console.error(dataArray[i]);
                   }
@@ -148,14 +151,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                 this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
 
                 this.GEService.loadingScreen.next(false);
-
               });
           } else {
             this.filterActions.initData(currentData);
             this.GEService.loadingScreen.next(false);
             console.log('Dashboard is empty.');
           }
-
         }, err => {
           console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
           console.error(err);
@@ -410,5 +411,17 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   closeModal(): void {
     this.modalRef.hide();
+  }
+
+  async checkExistance() { // TODO edit
+    let response = null;
+
+    try {
+      response = await this.apiKeyService.checkIfKeyExists(D_TYPE.GA).toPromise();
+    } catch (e) {
+      console.error(e);
+    }
+
+    return response;
   }
 }

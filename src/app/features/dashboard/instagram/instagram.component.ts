@@ -97,7 +97,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async loadDashboard() {
-    const existence = await this.checkExistance();
+    const existance = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
@@ -110,7 +110,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       type: D_TYPE.IG,
     };
 
-    if (!existence) { // If the Api Key has not been set yet, then a message is print
+    if (!existance) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
       return;
     }
@@ -275,16 +275,17 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async checkExistance() {
-    let response;
+    let response, result;
 
     try {
-      response = await this.apiKeyService.checkIfKeyExists(0).toPromise();
+      response = await this.apiKeyService.checkIfKeyExists(D_TYPE.IG).toPromise();
+      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise())['granted'];
     } catch (e) {
       console.error(e);
-      response = null;
+      result = null;
     }
 
-    return response;
+    return result;
   }
 
   ngOnInit(): void {
