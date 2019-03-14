@@ -2,6 +2,8 @@ import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {FeatureTutorialGaComponent} from './google/tutorialGa.component';
 import {FeatureTutorialFbComponent} from './facebook/tutorialFb.component';
+import {FeatureTutorialIgComponent} from './instagram/tutorialIg.component';
+
 
 @NgModule({
   imports: [
@@ -18,6 +20,10 @@ import {FeatureTutorialFbComponent} from './facebook/tutorialFb.component';
       {
         path: 'facebook',
         component: FeatureTutorialFbComponent
+      },
+      {
+        path: 'instagram',
+        component: FeatureTutorialIgComponent
       }
     ])
   ],

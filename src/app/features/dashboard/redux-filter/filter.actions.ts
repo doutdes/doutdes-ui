@@ -8,12 +8,13 @@ import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {parseDate} from 'ngx-bootstrap';
+import {subSeconds} from 'date-fns';
 
-export const FILTER_INIT    = 'FILTER_INIT';
-export const FILTER_UPDATE  = 'FILTER_UPDATE';
+export const FILTER_INIT = 'FILTER_INIT';
+export const FILTER_UPDATE = 'FILTER_UPDATE';
 export const FILTER_BY_DATA = 'FILTER_BY_DATA';
-export const FILTER_RESET   = 'FILTER_RESET';
-export const FILTER_CLEAR   = 'FILTER_CLEAR';
+export const FILTER_RESET = 'FILTER_RESET';
+export const FILTER_CLEAR = 'FILTER_CLEAR';
 export const FILTER_REMOVE_CURRENT = 'FILTER_REMOVE_CURRENT';
 
 
@@ -43,48 +44,52 @@ export class FilterActions {
    * After this, it requires for the right format of the data and it stores this in the formatted data
    **/
   initData(initialData: DashboardData) {
-    let currentDashboard  = initialData || null;
+    let currentDashboard = initialData || null;
     let filteredDashboard = initialData ? JSON.parse(JSON.stringify(initialData)) : null;
-    let chart_id, index;
+    let chart_id, index, dateInterval;
 
     // Given the original data, it retrieves the right format for the data
     if (filteredDashboard) {
       for (let i in filteredDashboard.data) {
         chart_id = filteredDashboard.data[i].chart_id;
+        dateInterval = this.getIntervalDate(filteredDashboard.data[i].chartData,filteredDashboard.data[i].type);
+        filteredDashboard.data[i].aggregated = this.ADService.getAggregatedData(filteredDashboard.data[i], dateInterval);
         filteredDashboard.data[i].chartData = this.CCService.formatChart(chart_id, filteredDashboard.data[i].chartData);
       }
 
       // Searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
       index = this.storedDashboards ? this.storedDashboards.findIndex((el: DashboardData) => el.type === currentDashboard.type) : -1;
 
-      if(index < 0) { // The dashboard was never been stored
+      if (index < 0) { // The dashboard was never been stored
         this.storedDashboards.push(JSON.parse(JSON.stringify(initialData)));
       } else {
         this.storedDashboards[index] = JSON.parse(JSON.stringify(initialData));
       }
     }
 
-    console.warn("FILTER ACTION CURRENT DASHBOARD ",currentDashboard);
-    console.warn("FILTER ACTION FILTERED DASHBOARD ",filteredDashboard);
-
-    this.Redux.dispatch({type: FILTER_INIT, currentDashboard: currentDashboard, filteredDashboard: filteredDashboard, storedDashboards: this.storedDashboards});
+    this.Redux.dispatch({
+      type: FILTER_INIT,
+      currentDashboard: currentDashboard,
+      filteredDashboard: filteredDashboard,
+      storedDashboards: this.storedDashboards
+    });
   }
 
   filterData(dateInterval: IntervalDate) {
     const filteredDashboard = this.filterByDateInterval(dateInterval);
     this.Redux.dispatch({type: FILTER_BY_DATA, filteredDashboard: filteredDashboard});
-    console.warn("filterData FILTERED DASHBOARD ",filteredDashboard);
   }
 
   updateChart(chart: DashboardCharts) {
-    const index       = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+    const index = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
     const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
 
     this.currentDashboard.data[index].title = chart.title;
     this.filteredDashboard.data[index].title = chart.title;
     this.storedDashboards[storedIndex].data[index].title = chart.title;
 
-    this.Redux.dispatch({type: FILTER_UPDATE,
+    this.Redux.dispatch({
+      type: FILTER_UPDATE,
       currentDashboard: this.currentDashboard,
       filteredDashboard: this.filteredDashboard,
       storedDashboards: this.storedDashboards
@@ -111,7 +116,7 @@ export class FilterActions {
   removeChart(id: number) {
     const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
 
-    this.currentDashboard.data  = this.currentDashboard.data.filter((chart) => chart.chart_id !== id);
+    this.currentDashboard.data = this.currentDashboard.data.filter((chart) => chart.chart_id !== id);
     this.filteredDashboard.data = this.filteredDashboard.data.filter((chart) => chart.chart_id !== id);
 
     this.storedDashboards[index] = JSON.parse(JSON.stringify(this.currentDashboard));
@@ -124,7 +129,7 @@ export class FilterActions {
     });
   }
 
-  removeCurrent(){
+  removeCurrent() {
     this.Redux.dispatch({type: FILTER_REMOVE_CURRENT});
   }
 
@@ -140,25 +145,13 @@ export class FilterActions {
         // If the type of the chart is known
         if (DS_TYPE.hasOwnProperty(chart.type)) {
           chart.chartData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
-            ? chart.chartData.filter(el => parseDate(el[0]) >= filterInterval.first && parseDate(el[0]) <= filterInterval.last)
+            ? chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime())
             : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
 
           chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
 
-          console.log("FILTER ACTION CHART DATA");
-          console.log(chart.chartData);
-
-          console.log("FILTER ACTION CHART ID");
-          console.log(chart.chart_id);
-
-          console.log("FILTER ACTION FILTER INTERVAL");
-          console.log(filterInterval);
-
           //TODO passare i dati di this.currentDashboard
-          chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i].chartData, chart.chart_id, filterInterval);
-
-          console.log("FILTER ACTION GET AGGR DATA");
-          console.log(chart.aggregated);
+          chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i], filterInterval);
 
           filtered.push(chart);
         } else {
@@ -167,6 +160,8 @@ export class FilterActions {
           console.error(chart);
         }
       }
+
+      console.warn(filtered);
 
       dashToFilter.data = filtered;
     } else {
@@ -182,13 +177,19 @@ export class FilterActions {
   }
 
   // This method is been called if and only if a dashboard was already stored on the variable model called storedDashboards
-  loadStoredDashboard(dashboard_type: number){
+  loadStoredDashboard(dashboard_type: number) {
     const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === dashboard_type);
 
-    if(index >= 0){
+    if (index >= 0) {
       this.initData(this.storedDashboards[index]);
     } else {
       console.error('ERROR: no dashboards stored found with type ' + dashboard_type);
     }
+  }
+
+  getIntervalDate(data, type): IntervalDate {
+    return type == D_TYPE.GA || D_TYPE.YT ?
+      {first: parseDate(data[0][0]), last: parseDate(data[data.length - 1][0])} :
+      {first: new Date(data[0]['end_time']), last: new Date (data[data.length - 1]['end_time'])};
   }
 }

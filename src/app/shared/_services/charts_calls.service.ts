@@ -228,7 +228,7 @@ export class ChartsCallsService {
           return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
         });
 
-        paddingRows = chartData.length % 10 ? 10 - (chartData.length % 10) : 0;
+        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
           chartData.push(['', null]);
@@ -317,12 +317,6 @@ export class ChartsCallsService {
         }
 
         break; // IG Online followers
-      case IG_CHART.EMAIL_CONTACTS:
-        break; // IG Email contacts
-      case IG_CHART.FOLLOWER_COUNT:
-        break; // IG Follower count
-      case IG_CHART.DIR_CLICKS:
-        break; // IG Get directions clicks
       case IG_CHART.IMPRESSIONS:
         header = [['Date', 'Impressions']];
 
@@ -330,10 +324,6 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Impressions by day
-      case IG_CHART.PHONE_CALL_CLICKS:
-        break; // IG Phone Calls clicks
-      case IG_CHART.PROFILE_VIEWS:
-        break; // IG Profile views
       case IG_CHART.REACH:
         header = [['Date', 'Reach']];
 
@@ -341,27 +331,35 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Reach
-      case IG_CHART.TEXT_MESSAGE_CLICKS:
-        break; // IG Text Message Clicks
-      case IG_CHART.WEBSITE_CLICKS:
-        break; // IG Website Clicks
       case IG_CHART.COMPOSED_CLICKS:
-        /** Data array is constructed as follows:
-         * 0 - date
-         * 1 - page
-         * 2 - value
-         **/
         header = [['Type', 'Number']];
         let map = new Map();
+        //group by click type
         for (let i = 0; i < data.length; i++) {
           map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
+          //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(25, 10)) : map.set(data[i]['metric'], parseInt(25, 10));
+
         }
-        console.log(map);
+        //s(map);
+        let empty = true;
         map.forEach((value: boolean, key: string) => {
-          chartData.push([key.replace(new RegExp('_', 'g'), ' '), map.get(key)]);
+          //console.log(map.get(key));
+          if (parseInt(map.get(key), 10) != 0){
+            empty = false;
+          }
         });
 
-        chartData = [];
+        if(empty) {
+          map = new Map();
+          map.set('NO DATA', 100);//parseInt(100, 10));
+          map.set('empty', true);
+
+        }
+        //console.log(map);
+        map.forEach((value: boolean, key: string) => {
+          chartData.push([key.replace(new RegExp('_', 'g'), ' '), map.get(key)]); //removing all the underscores
+        });
+
 
         break; // IG composed clicks
     }
@@ -380,13 +378,15 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
-          chartClass: 1,
+          chartClass: 5,
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
-            lineWidth: 2,
-            pointSize: 0,
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
@@ -394,11 +394,8 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            curveType: 'function',
-            height: 310,
-            explorer: {},
             colors: ['#63c2de'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
 
@@ -420,22 +417,30 @@ export class ChartsCallsService {
         };
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
-
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
-          chartClass: 3,
+          chartClass: 5,
           options: {
-            chartArea: {left: 40, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
-            format: 'decimal',
-            curveType: 'function',
-            height: 310,
-            explorer: {},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#63c2de'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
+
         break;  // Page Impressions
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
@@ -595,7 +600,7 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
             lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
             height: 210,
@@ -631,19 +636,27 @@ export class ChartsCallsService {
         };
         break; // Google list sessions per browser
       case FB_CHART.PAGE_VIEWS:
-
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
-          chartClass: 13,
+          chartClass: 5,
           options: {
-            chartArea: {left: 30, right: 0, height: 280, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
-            curveType: 'function',
-            height: 310,
-            explorer: {},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#63c2de'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
         break; // Facebook Page Views
@@ -656,7 +669,7 @@ export class ChartsCallsService {
             alternatingRowStyle: true,
             sortAscending: false,
             sortColumn: 1,
-            pageSize: 10,
+            pageSize: 11,
             height: '100%',
             width: '100%'
           }
@@ -671,7 +684,7 @@ export class ChartsCallsService {
             alternatingRowStyle: true,
             sortAscending: false,
             sortColumn: 1,
-            pageSize: 10,
+            pageSize: 11,
             height: '100%',
             width: '100%'
           }
@@ -741,52 +754,56 @@ export class ChartsCallsService {
           }
         };
         break; // IG Online followers
-      case IG_CHART.EMAIL_CONTACTS:
-        break; // IG Email contacts
-      case IG_CHART.FOLLOWER_COUNT:
-        break; // IG Follower count
-      case IG_CHART.DIR_CLICKS:
-        break; // IG Get directions clicks
       case IG_CHART.IMPRESSIONS:
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
             height: 210,
-            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#ff96db'],
-            areaOpacity: 0.4
+            areaOpacity: 0.1
           }
         };
         break; // IG Impressions by day
-      case IG_CHART.PHONE_CALL_CLICKS:
-        break; // IG Phone Calls clicks
-      case IG_CHART.PROFILE_VIEWS:
-        break; // IG Profile views
       case IG_CHART.REACH:
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0, bottom: 0},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
-            height: 310,
-            hAxis: {gridlines: {color: '#eaeaea', count: -1}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#ff96db'],
-            areaOpacity: 0.4,
+            areaOpacity: 0.1
           }
         };
         break; // IG Reach
-      case IG_CHART.TEXT_MESSAGE_CLICKS:
-        break; // IG Text Message Clicks
-      case IG_CHART.WEBSITE_CLICKS:
-        break; // IG Website Clicks
       case IG_CHART.COMPOSED_CLICKS:
         formattedData = {
           chartType: 'PieChart',
@@ -799,10 +816,19 @@ export class ChartsCallsService {
             is3D: false,
             pieSliceText: 'label',
             pieSliceTextStyle: {fontSize: 11, color: '#222'},
-            colors: ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'],
             areaOpacity: 0.4
           }
         };
+        if(data.filter(e => e[1]).length == 0){
+          formattedData.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'];
+          formattedData.dataTable = data;
+        }
+        else {
+          formattedData.colors = ['#D3D3D3'];
+          formattedData.dataTable = data.slice(0,2);
+        }
+
+
         break; // IG clicks pie
     }
 

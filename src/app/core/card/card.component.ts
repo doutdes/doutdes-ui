@@ -6,6 +6,7 @@ import {GlobalEventsManagerService} from '../../shared/_services/global-event-ma
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {GoogleChartInterface} from 'ng2-google-charts/google-charts-interfaces';
 import {GoogleChartComponent} from 'ng2-google-charts';
+import {GA_CHART} from '../../shared/_models/GoogleData';
 
 const enum Type {
   Facebook = 1,
@@ -124,9 +125,9 @@ export class CardComponent implements OnInit {
 
     let unit = '';
 
-    switch (this.type) {
-      case 'ga_bounce'             :  unit = ' %'; break;
-      case 'ga_avgsessionduration' :  unit = ' s'; break;
+    switch (this.dashChart.chart_id) {
+      case GA_CHART.BOUNCE_RATE    :  unit = ' %'; break;
+      case GA_CHART.AVG_SESS_DURATION :  unit = ' s'; break;
     }
 
     if (this.dashChart.aggregated.average) {
@@ -176,5 +177,10 @@ export class CardComponent implements OnInit {
       });
 
   }
+
+  areAggregatedDataAvailable (chartFormat) {
+    return chartFormat == "line";
+  }
+
 
 }

@@ -1,12 +1,16 @@
+<div class="row rounded p-4 title-header h-100">
+  <div class="col-md-12 pl-0">
+    <h2 class="my-auto pl-0">Service login</h2>
+  </div>
+</div>
+
 <div class="container-fluid h-100">
   <div class="row h-100 align-items-center">
-    <div class="col-md-8">
+    <div class="col-md-12 px-0 mt-3">
       <div class="card-group">
-        <div class="card p-4">
+        <div class="card p-2" style="background-color: #eee;">
           <div class="card-body">
-            <h2 class="text-center display-4 mb-4">Service Login</h2>
             <ngx-loading [show]="loading | async" [config]="config"></ngx-loading>
-            <hr/>
             <div class="row mb-4" *ngIf="!allGranted">
               <div class="col-md-12">
                 <p class="" style="font-size: 18px;">In order to use our service, you have to do the login with

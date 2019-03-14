@@ -35,10 +35,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     dashboard_id: null
   };
 
-  public FILTER_DAYS = {
+  public FILTER_DAYS = { // Deve avere un valore in meno per avere un intervallo corretto
     seven: 6,
-    thirty: 30,
-    ninety: 90
+    thirty: 29,
+    ninety: 89
   };
 
   public chartArray$: Array<DashboardCharts> = [];
@@ -104,6 +104,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     if (this.dashStored) {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.GA);
+      this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
       this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
@@ -125,7 +126,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
                     chart.chartData = dataArray[i];
                     // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO to check
                     chart.error = false;
-                    chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
+                    // chart.aggregated = this.ADService.getAggregatedData(dataArray[i], charts[i].chart_id, dateInterval); // TODO export this to other dashboards
                   } else {
 
                     chart.error = true;
@@ -194,15 +195,14 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     this.CCService.retrieveChartData(dashChart.chart_id, dateInterval)
       .subscribe(chartData => {
-        console.log('GA COMPONENT ChartData');
-        console.log(chartData);
+
+        this.GEService.loadingScreen.next(true);
 
         if (!chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;
-          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
-          chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval);
-          console.log("GA COMPONENT RETRIEVE CHART DATA AGGREGATED", chartToPush.aggregated);
+          // chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval);
+          // console.log("GA COMPONENT RETRIEVE CHART DATA AGGREGATED", chartToPush.aggregated);
         } else {
           chartToPush.error = true;
           console.error('Errore recuperando dati per ' + dashChart);
@@ -210,6 +210,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
         this.filterActions.addChart(chartToPush);
         this.filterActions.filterData(dateInterval); // TODO in theory, filterData should wait addChart before being executed
+
+        this.GEService.loadingScreen.next(false);
       }, error1 => {
         console.error('Error querying the Chart');
         console.error(error1);
@@ -221,16 +223,16 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        first: new Date(subDays(value[0], 1).setHours(0, 0, 0)),
-        last: new Date(addDays(value[1], 1).setHours(0, 0, 0))
+        first: new Date(value[0].setHours(0, 0, 0, 0)), // TO REMEMBER: always set ms to 0!!!!
+        last: new Date(value[1].setHours(23, 59, 59))
       };
 
       this.filterActions.filterData(dateInterval);
 
       let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
-      let diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+      let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
-      if (diffDays != 8 && diffDays != 31 && diffDays != 91) {
+      if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
         this.dateChoice = 'Custom';
       }
     }

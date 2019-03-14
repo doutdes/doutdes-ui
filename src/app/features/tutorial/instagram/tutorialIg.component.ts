@@ -4,13 +4,13 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component({
-  selector: 'app-feature-tutorial-facebook',
-  templateUrl: './tutorialFb.component.html',
-  styleUrls: ['./tutorialFb.component.scss'],
+  selector: 'app-feature-tutorial-instagram',
+  templateUrl: './tutorialIg.component.html',
+  styleUrls: ['./tutorialIg.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 
-export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
+export class FeatureTutorialIgComponent implements OnInit, OnDestroy {
 
   modalRef: BsModalRef;
   imgSrc: string;
@@ -32,7 +32,7 @@ export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Tutorial', '/tutorial/'));
-    bread.push(new Breadcrumb('Facebook', '/tutorial/facebook/'));
+    bread.push(new Breadcrumb('Instagram', '/tutorial/instagram/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }

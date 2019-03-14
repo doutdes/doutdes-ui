@@ -36,9 +36,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   private pageID = null;
 
   public FILTER_DAYS = {
-    seven: 7,
-    thirty: 30,
-    ninety: 90
+    seven: 6,
+    thirty: 29,
+    ninety: 89
   };
 
   public chartArray$: Array<DashboardCharts> = [];
@@ -135,6 +135,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     if (this.dashStored) {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.IG);
+      this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
       this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
@@ -199,6 +200,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
       .subscribe(data => {
 
+        this.GEService.loadingScreen.next(true);
+
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
           // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
@@ -210,6 +213,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
         this.filterActions.addChart(chartToPush);
         this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+
+        this.GEService.loadingScreen.next(false);
       }, error1 => {
         console.log('Error querying the chart');
         console.log(error1);
@@ -221,11 +226,18 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        first: value[0],
-        last: value[1].setHours(23, 59, 59, 999)
+        first: new Date(value[0].setHours(0, 0, 0, 0)),
+        last: new Date(value[1].setHours(23, 59, 59))
       };
 
       this.filterActions.filterData(dateInterval);
+
+      let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
+      let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
+
+      if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
+        this.dateChoice = 'Custom';
+      }
     }
   }
 
