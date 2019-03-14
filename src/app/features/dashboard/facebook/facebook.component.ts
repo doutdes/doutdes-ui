@@ -117,7 +117,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       type: D_TYPE.FB,
     };
 
-    if (!existence['exists']) { // If the Api Key has not been set yet, then a message is print
+    if (!existence) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
       return;
     }
@@ -282,16 +282,19 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async checkExistance() {
-    let response = null;
+    let response, result;
 
     try {
-      response = await this.apiKeyService.checkIfKeyExists(0).toPromise();
+      response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FB).toPromise();
+      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.FB).toPromise())['granted'];
     } catch (e) {
       console.error(e);
+      result = null;
     }
 
-    return response;
+    return result;
   }
+
 
   ngOnInit(): void {
     this.firstDateRange = this.minDate;

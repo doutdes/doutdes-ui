@@ -38,7 +38,7 @@
 
   <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>
-<div class="row px-3 pt-3">
+<div *ngIf="isApiKeySet" class="row px-3 pt-3">
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.FB"></app-minicard>
 </div> <!-- Mini cards -->
 <div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
@@ -51,9 +51,18 @@
                  [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}"
                  [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"></app-emptycard>
 </div>
-<div *ngIf="!isApiKeySet">
-  <h3 class="text-danger m-2">You can't add charts to the dashboard</h3>
-  <h4 class="m-3">First you need to login to Facebook via OAuth.</h4>
-  <button class="btn btn-success ml-3" [routerLink]="['/preferences/api-keys']">Configure Data Sources</button>
-</div>
 
+<div *ngIf="!isApiKeySet" class="row">
+  <div class="col-md-12 mt-3">
+    <div class="card-group">
+      <div class="card p-2" style="background-color: #eee;">
+        <div class="card-body">
+          <h3 class="text-danger">You can't add charts to the dashboard (TO FIX ME)</h3>
+          <h4 class="m-1">First you need to login to Facebook via OAuth.</h4>
+          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys']">Go to configure data sources
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

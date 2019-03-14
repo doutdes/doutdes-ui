@@ -82,8 +82,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.services$ = {};
     let observables = [];
 
-    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
-      if(D_TYPE[SERVICE] > 0)
+    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE // TODO remove D_TYPE[SERVICE] < 4 when YouTube is ready
+      if(D_TYPE[SERVICE] > 0 && D_TYPE[SERVICE] < 4)
         observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
     }
 
@@ -109,7 +109,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 
-  async deleteService(serviceType: number) {
+  async deleteService(serviceType: number) { // TODO check 116 -> Cannot read property 'granted' of undefined
     this.apiKeyService.revokePermissions(serviceType).subscribe(response => {
       // If the service is one between GA and YT and there are no service authorized left, the key is been deleted from the database
       if (((serviceType === D_TYPE.GA || serviceType === D_TYPE.YT) && !(this.services$[D_TYPE.GA].granted && this.services$[D_TYPE.YT].granted)) ||

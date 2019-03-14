@@ -149,8 +149,6 @@ export class FilterActions {
             : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
 
           chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
-
-          //TODO passare i dati di this.currentDashboard
           chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i], filterInterval);
 
           filtered.push(chart);
@@ -160,8 +158,6 @@ export class FilterActions {
           console.error(chart);
         }
       }
-
-      console.warn(filtered);
 
       dashToFilter.data = filtered;
     } else {
