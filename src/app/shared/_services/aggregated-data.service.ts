@@ -36,7 +36,7 @@ export class AggregatedDataService {
         break;
       case D_TYPE.FB:
       case D_TYPE.IG:
-        console.log('AGGR DATA SERVICE FB/IG ', filteredData);
+        //console.log('AGGR DATA SERVICE FB/IG ', filteredData);
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i]['value']);
           sum += value;

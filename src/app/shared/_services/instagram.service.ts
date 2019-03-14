@@ -78,7 +78,7 @@ export class InstagramService {
         call = 'websiteclicks';
         anyType = false;
         break;
-      case IG_CHART.COMPOSED_CLICKS:
+      case IG_CHART.CLICKS_DISTRIBUTION:
         call = 'composedclicks';
         anyType = false;
         break;
