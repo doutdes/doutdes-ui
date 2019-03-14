@@ -125,13 +125,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
       console.error(err);
     });
 
-    // await this.updateList();
     this.modalRef.hide();
   }
-
-  // async deleteKey(serviceType: number){
-  //   this.apiKeyService.deleteKey(serviceType).subscribe(() => {}, err => console.error(err));
-  // }
 
   getLogo(serviceID: number) {
     let classes = 'mr-2 mt-1 fab ';
