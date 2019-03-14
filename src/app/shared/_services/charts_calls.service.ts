@@ -247,11 +247,11 @@ export class ChartsCallsService {
         // putting a unique entry in chartArray for every existent age range
         for (let i = 0; i < keys.length; i++) {
           let index = 0;
-          if (!(chartData.find(e => e[0] === (keys[i].substr(2, keys.length))))) {
-            chartData.push([keys[i].substr(2, keys.length), 0, 0]);
+          if (!(chartData.find(e => e[0] === (keys[i].substr(2, keys[i].length))))) {
+            chartData.push([keys[i].substr(2, keys[i].length), 0, 0]);
             index = (chartData.length - 1);
           } else {
-            index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys.length)));
+            index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys[i].length)));
           }
           // and collecting data
           (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
@@ -331,19 +331,17 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Reach
-      case IG_CHART.COMPOSED_CLICKS:
+      case IG_CHART.ACTION_PERFORMED:
         header = [['Type', 'Number']];
         let map = new Map();
         //group by click type
         for (let i = 0; i < data.length; i++) {
-          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
-          //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(25, 10)) : map.set(data[i]['metric'], parseInt(25, 10));
+          //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(/map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
+          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(25, 10)) : map.set(data[i]['metric'], parseInt(25, 10));
 
         }
-        //s(map);
         let empty = true;
         map.forEach((value: boolean, key: string) => {
-          //console.log(map.get(key));
           if (parseInt(map.get(key), 10) != 0){
             empty = false;
           }
@@ -357,7 +355,7 @@ export class ChartsCallsService {
         }
         //console.log(map);
         map.forEach((value: boolean, key: string) => {
-          chartData.push([key.replace(new RegExp('_', 'g'), ' '), map.get(key)]); //removing all the underscores
+          chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
         });
 
 
@@ -804,22 +802,23 @@ export class ChartsCallsService {
           }
         };
         break; // IG Reach
-      case IG_CHART.COMPOSED_CLICKS:
+      case IG_CHART.ACTION_PERFORMED:
         formattedData = {
           chartType: 'PieChart',
           dataTable: data,
           chartClass: 6,
           options: {
             chartArea: {left: 30, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            //legend: {position: 'none'},
             height: 310,
             is3D: false,
-            pieSliceText: 'label',
-            pieSliceTextStyle: {fontSize: 11, color: '#222'},
+            pieHole : 0.5,
+            //pieSliceText: 'label',
+            pieSliceTextStyle: {fontSize: 11, color: '#ffffff'},
             areaOpacity: 0.4
           }
         };
-        if(data.filter(e => e[1]).length == 0){
+        if(data.filter(e => e[1]===true).length == 0){
           formattedData.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'];
           formattedData.dataTable = data;
         }
