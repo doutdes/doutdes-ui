@@ -336,7 +336,7 @@ export class ChartsCallsService {
         let map = new Map();
         //group by click type
         for (let i = 0; i < data.length; i++) {
-          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(/map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
+          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
           //let fakeVal = 25;
           //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(fakeVal, 10)) : map.set(data[i]['metric'], parseInt(fakeVal, 10));
 
