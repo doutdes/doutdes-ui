@@ -11,6 +11,7 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {forkJoin, Observable} from 'rxjs';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
 
 const PrimaryWhite = '#ffffff';
 
@@ -46,7 +47,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private modalService: BsModalService,
-    private geManager: GlobalEventsManagerService
+    private geManager: GlobalEventsManagerService,
+    private filterActions: FilterActions
   ) {
     this.loading = this.geManager.loadingScreen.asObservable();
   }
@@ -117,6 +119,9 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
       ) {
         this.deleteKey(serviceType);
       }
+
+      this.filterActions.removedStoredDashboard(serviceType);
+      delete this.services$[serviceType];
     }, err => {
       console.error(err);
     });

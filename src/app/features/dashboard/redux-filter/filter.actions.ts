@@ -183,6 +183,10 @@ export class FilterActions {
     }
   }
 
+  removedStoredDashboard(dashboard_type: number) {
+    this.storedDashboards = this.storedDashboards.filter((el: DashboardData) => el.type === dashboard_type);
+  }
+
   getIntervalDate(data, type): IntervalDate {
     return type == D_TYPE.GA || D_TYPE.YT ?
       {first: parseDate(data[0][0]), last: parseDate(data[data.length - 1][0])} :
