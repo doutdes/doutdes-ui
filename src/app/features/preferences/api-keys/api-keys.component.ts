@@ -121,6 +121,9 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
       this.filterActions.removedStoredDashboard(serviceType);
       delete this.services$[serviceType];
+
+      if(Object.keys(this.services$).length === 0) this.somethingGranted = false;
+
     }, err => {
       console.error(err);
     });

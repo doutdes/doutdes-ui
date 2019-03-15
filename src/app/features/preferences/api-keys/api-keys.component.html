@@ -21,7 +21,7 @@
             <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(D_TYPE.GA)"></i> {{services$[D_TYPE.GA].name}}</td>
             <td><div *ngFor="let perm of services$[D_TYPE.GA].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
-              <button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>
+              <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
               <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.GA])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
             </td>
           </tr> <!-- Google -->
@@ -29,7 +29,7 @@
             <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(D_TYPE.FB)"></i> {{services$[D_TYPE.FB].name}}</td>
             <td><div *ngFor="let perm of services$[D_TYPE.FB].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
-              <button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>
+              <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
               <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.FB])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
             </td>
           </tr> <!-- Facebook -->
@@ -37,7 +37,7 @@
             <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(D_TYPE.IG)"></i> {{services$[D_TYPE.IG].name}}</td>
             <td><div *ngFor="let perm of services$[D_TYPE.IG].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
-              <button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>
+              <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
               <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.IG])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
             </td>
           </tr> <!-- Instagram -->
@@ -45,7 +45,7 @@
             <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(D_TYPE.YT)"></i> {{services$[D_TYPE.YT].name}}</td>
             <td><div *ngFor="let perm of services$[D_TYPE.YT].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
-              <button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>
+              <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button> TODO restore -->
               <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.YT])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
             </td>
           </tr> <!-- YouTube -->
@@ -72,6 +72,10 @@
   <div class="modal-body">
     <p>Do you really want to remove the selected permissions?</p>
     <p>You will not be able to use the dashboard for this service anymore.</p>
+    <p *ngIf="serviceToDelete.type === D_TYPE.FB && services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted'] ">
+      <b><span class="text-danger">Attention: </span></b>if you remove the Facebook
+      service you won't be able anymore to use Instagram service too!
+    </p>
   </div>
 
   <div class="modal-footer">
