@@ -42,24 +42,8 @@ export class InstagramService {
       case IG_CHART.ONLINE_FOLLOWERS:
         call = 'onlinefollowers';
         break;
-      case IG_CHART.EMAIL_CONTACTS:
-        call = 'emailcontacts';
-        anyType = false;
-        break;
-      case IG_CHART.FOLLOWER_COUNT:
-        call = 'followerCount';
-        anyType = false;
-        break;
-      case IG_CHART.DIR_CLICKS:
-        call = 'getdirclicks';
-        anyType = false;
-        break;
       case IG_CHART.IMPRESSIONS:
         call = 'impressions';
-        anyType = false;
-        break;
-      case IG_CHART.PHONE_CALL_CLICKS:
-        call = 'phonecallclicks';
         anyType = false;
         break;
       case IG_CHART.PROFILE_VIEWS:
@@ -68,14 +52,6 @@ export class InstagramService {
         break;
       case IG_CHART.REACH:
         call = 'reach';
-        anyType = false;
-        break;
-      case IG_CHART.TEXT_MESSAGE_CLICKS:
-        call = 'textmessageclicks';
-        anyType = false;
-        break;
-      case IG_CHART.WEBSITE_CLICKS:
-        call = 'websiteclicks';
         anyType = false;
         break;
       case IG_CHART.ACTION_PERFORMED:
