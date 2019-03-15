@@ -288,7 +288,7 @@ export class ChartsCallsService {
 
         for (let i = 0; i < 24; i += interval) {
           // MIN | AVG | MAX
-          chartData.push([i + ':00-' + (i + interval) + ':00', Number.MAX_SAFE_INTEGER, 0, Number.MIN_SAFE_INTEGER]);
+          chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, Number.MIN_SAFE_INTEGER]);
         }
 
         // putting a unique entry in chartData for every existent age range
