@@ -46,7 +46,7 @@ export class AggregatedDataService {
     }
 
     return {
-      average: sum / (filteredData.length - 1),
+      average: sum / filteredData.length,
       highest: highest,
       lowest: lowest,
       interval: dateInterval,
