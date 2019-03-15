@@ -101,15 +101,12 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   async deleteService(serviceType: number) {
     this.apiKeyService.revokePermissions(serviceType).subscribe(async response => {
-      // If the service is one between FB and IG and there are no service authorized left, the key is been deleted from the database
-      if (((serviceType === D_TYPE.FB || serviceType === D_TYPE.IG) &&
-          !(this.services$[D_TYPE.FB] && this.services$[D_TYPE.FB].granted && this.services$[D_TYPE.IG] && this.services$[D_TYPE.IG].granted))
-      ) {
-        this.apiKeyService.deleteKey(serviceType).subscribe(() => {}, err => console.error(err));
-      }
-
       this.filterActions.removedStoredDashboard(serviceType);
       delete this.services$[serviceType];
+
+      if(serviceType === D_TYPE.FB && Object.keys(this.services$).includes(D_TYPE.IG+  '')) {
+        delete this.services$[D_TYPE.IG];
+      }
 
       if(Object.keys(this.services$).length === 0) this.somethingGranted = false;
 

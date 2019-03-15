@@ -54,7 +54,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   // Date variables
   firstDateRange: Date;
   lastDateRange: Date;
-  minDate: Date = new Date('2018-01-01');
+  minDate: Date = subDays(new Date(), this.FILTER_DAYS.ninety + 1);
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Last 30 days';

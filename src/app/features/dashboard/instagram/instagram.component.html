@@ -1,35 +1,3 @@
-<!--<div class="row bg-white rounded p-4 title-header h-100">
-  <div class="col-xl-8 col-lg-6 col-md-8">
-    <img src="/assets/img/facebook-head.png" class="float-left"/> &lt;!&ndash;TODO: create instagram-head?!&ndash;&gt;
-    <h1 class="display-4 my-auto float-left ml-3" style="color:#888">Instagram stats</h1>
-  </div>
-  <div *ngIf="isApiKeySet" class="col-xl-4 col-lg-6 col-md-4 my-auto">
-    <div>
-      <div class="btn-group float-right" dropdown>
-        <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
-                aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
-        </button>
-
-        <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
-            aria-labelledby="button-date-filter">
-          <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.seven)">Last 7 days</li>
-          <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.thirty)">Last 30 days</li>
-          <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.ninety)">Last 90 days</li>
-          <li class="dropdown-item">Custom</li>
-        </ul>
-      </div> &lt;!&ndash; TODO Create a component custom like card &ndash;&gt;
-      <input type="text" class="form-control float-right mr-3 filterDatePicker" #drp="bsDaterangepicker"
-             [(ngModel)]="bsRangeValue"
-             [minDate]="minDate"
-             [maxDate]="maxDate"
-             [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY' }"
-             (bsValueChange)="onValueChange($event)"
-             bsDaterangepicker>
-      &lt;!&ndash; style="border: 1px solid gray; padding: 0.375rem 0.75rem; font-size: 0.875rem;line-height: 1.5; border-radius: 0.25rem;"&ndash;&gt;
-    </div>
-  </div>
-</div>-->
-
 <div class="row rounded py-sm-4 title-header h-100">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 class="my-auto float-left">Instagram</h2>
@@ -55,7 +23,7 @@
           aria-labelledby="button-date-filter">
         <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.seven)">Last 7 days</li>
         <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.thirty)">Last 30 days</li>
-        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.ninety)">Last 90 days</li>
+        <!--<li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.ninety)">Last 90 days</li>-->
         <li class="dropdown-item">Custom</li>
       </ul>
     </div> <!-- TODO Create a component custom like card -->
