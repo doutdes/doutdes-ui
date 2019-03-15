@@ -65,8 +65,10 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     this.services$ = {};
     let observables = [];
 
-    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
-      observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
+    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE // TODO remove D_TYPE[SERVICE] !== D_TYPE.YT when YouTube is ready
+      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM && D_TYPE[SERVICE] !== D_TYPE.YT) {
+        observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
+      }
     }
 
     forkJoin(observables).subscribe((services: Service[]) => {
@@ -83,8 +85,8 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   setURL() {
     this.fbLoginURL = this.envURL + '/fb/login?user_id=' + this.store.getId();
     this.igLoginURL = this.envURL + '/ig/login?user_id=' + this.store.getId();
-    this.gaLoginURL = this.envURL + (this.services$[D_TYPE.YT].granted ? '/ga/yt' : '/ga') + '/login?user_id=' + this.store.getId();
-    this.ytLoginURL = this.envURL + (this.services$[D_TYPE.GA].granted ? '/ga/yt' : '/yt') + '/login?user_id=' + this.store.getId();
+    this.gaLoginURL = this.envURL + (this.services$[D_TYPE.YT] && this.services$[D_TYPE.YT].granted ? '/ga/yt' : '/ga') + '/login?user_id=' + this.store.getId();
+    this.ytLoginURL = this.envURL + (this.services$[D_TYPE.GA] && this.services$[D_TYPE.GA].granted ? '/ga/yt' : '/yt') + '/login?user_id=' + this.store.getId();
   }
 
   ngOnDestroy(): void {

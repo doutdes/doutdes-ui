@@ -11,6 +11,7 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {forkJoin, Observable} from 'rxjs';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
 
 const PrimaryWhite = '#ffffff';
 
@@ -46,7 +47,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private modalService: BsModalService,
-    private geManager: GlobalEventsManagerService
+    private geManager: GlobalEventsManagerService,
+    private filterActions: FilterActions
   ) {
     this.loading = this.geManager.loadingScreen.asObservable();
   }
@@ -58,8 +60,6 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
     this.route.paramMap.subscribe(params => { // TODO change for error messages on login with services
       this.tokenToSave = params.get('token');
-
-      // console.log(this.tokenToSave);
 
       if (this.tokenToSave) {
 
@@ -82,9 +82,10 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.services$ = {};
     let observables = [];
 
-    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
-      if(D_TYPE[SERVICE] > 0)
+    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE // TODO D_TYPE[SERVICE] !== D_TYPE.YT when YouTube is ready
+      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM && D_TYPE[SERVICE] !== D_TYPE.YT) {
         observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
+      }
     }
 
     forkJoin(observables).subscribe((services: Service[]) => {
@@ -110,29 +111,21 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   }
 
   async deleteService(serviceType: number) {
-    this.apiKeyService.revokePermissions(serviceType).subscribe(response => {
-      // If the service is one between GA and YT and there are no service authorized left, the key is been deleted from the database
-      if (((serviceType === D_TYPE.GA || serviceType === D_TYPE.YT) && !(this.services$[D_TYPE.GA].granted && this.services$[D_TYPE.YT].granted)) ||
-        ((serviceType === D_TYPE.FB || serviceType === D_TYPE.IG) && !(this.services$[D_TYPE.FB].granted && this.services$[D_TYPE.IG].granted))
+    this.apiKeyService.revokePermissions(serviceType).subscribe(async response => {
+      // If the service is one between FB and IG and there are no service authorized left, the key is been deleted from the database
+      if (((serviceType === D_TYPE.FB || serviceType === D_TYPE.IG) &&
+          !(this.services$[D_TYPE.FB] && this.services$[D_TYPE.FB].granted && this.services$[D_TYPE.IG] && this.services$[D_TYPE.IG].granted))
       ) {
-        this.deleteKey(serviceType);
+        this.apiKeyService.deleteKey(serviceType).subscribe(() => {}, err => console.error(err));
       }
+
+      this.filterActions.removedStoredDashboard(serviceType);
+      delete this.services$[serviceType];
     }, err => {
       console.error(err);
     });
 
-    await this.updateList();
     this.modalRef.hide();
-  }
-
-  async deleteKey(serviceType: number){
-    this.apiKeyService.deleteKey(serviceType)
-      .pipe()
-      .subscribe(async () => {
-        this.geManager.loadingScreen.next(true);
-      }, err => {
-        console.error(err);
-      });
   }
 
   getLogo(serviceID: number) {

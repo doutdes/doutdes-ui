@@ -2,7 +2,7 @@
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 class="my-auto float-left">Google Analytics</h2>
   </div> <!-- Title -->
-  <div class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
+  <div *ngIf="isApiKeySet" class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
       <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
@@ -11,7 +11,8 @@
 
       <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-export">
-        <li class="dropdown-item cursor-pointer" (click)="openModal(reportWait); htmltoPDF();"><i class="fas fa-file-pdf mr-2"></i>Export as PDF
+        <li class="dropdown-item cursor-pointer" (click)="openModal(reportWait); htmltoPDF();"><i
+          class="fas fa-file-pdf mr-2"></i>Export as PDF
         </li>
       </ul>
     </div> <!-- PDF export -->
@@ -36,25 +37,40 @@
            bsDaterangepicker> <!-- Date picker -->
   </div>
 </div> <!-- Header -->
-<div class="row px-3 pt-3">
+<div *ngIf="isApiKeySet" class="row px-3 pt-3">
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.GA"></app-minicard>
 </div> <!-- Mini cards -->
-<div class="row" style="padding-bottom: 30px">
+<div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
       <app-card [dashChart]="chart"></app-card>
     </div>
   </ng-container>
 
-  <ng-template *ngIf="!loading && chartArray$.length == 0">
+  <ng-template *ngIf="!loading && chartArray$.length == 0 && isApiKeySet">
     <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
   </ng-template>
 
   <app-emptycard
-    *ngIf="!loading" class="col-lg-6 col-xl-6" [dashboard_data]="HARD_DASH_DATA"
+    *ngIf="!loading && isApiKeySet" class="col-lg-6 col-xl-6" [dashboard_data]="HARD_DASH_DATA"
     [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}">
   </app-emptycard>
 </div> <!-- Chart cards -->
+
+<div *ngIf="!isApiKeySet" class="row">
+  <div class="col-md-12 mt-3">
+    <div class="card-group">
+      <div class="card p-2" style="background-color: #eee;">
+        <div class="card-body">
+          <h3 class="text-danger m-2">You can't add charts to the dashboard (TO FIX ME)</h3>
+          <h4 class="m-3">First you need to login to Google via OAuth.</h4>
+          <button class="btn btn-success ml-3" [routerLink]="['/preferences/api-keys']">Go to configure data sources
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <ngx-loading [show]="loading"></ngx-loading>
 

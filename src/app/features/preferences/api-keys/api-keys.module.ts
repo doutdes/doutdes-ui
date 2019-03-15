@@ -9,6 +9,10 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
 import {BsModalService} from 'ngx-bootstrap';
 import {NgxLoadingModule} from 'ngx-loading';
+import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
+import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
+import {InstagramService} from '../../../shared/_services/instagram.service';
+import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
 @NgModule({
   declarations: [
@@ -23,9 +27,13 @@ import {NgxLoadingModule} from 'ngx-loading';
   providers: [
     ApiKeysService,
     FacebookService,
+    InstagramService,
     GoogleAnalyticsService,
+    AggregatedDataService,
     BsModalService,
     BreadcrumbActions,
+    FilterActions,
+    ChartsCallsService
   ],
   exports: [
     FeaturePreferencesApiKeysComponent,
