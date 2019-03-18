@@ -103,7 +103,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       return;
     }
 
-    if (!existence['exists']) { // If the Api Key has not been set yet, then a message is print
+    if (!existence) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
       this.GEService.loadingScreen.next(false);
       return;
@@ -413,15 +413,16 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.modalRef.hide();
   }
 
-  async checkExistance() { // TODO edit
-    let response = null;
+  async checkExistance() {
+    let response, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.GA).toPromise();
+      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.GA).toPromise())['granted'];
     } catch (e) {
       console.error(e);
     }
 
-    return response;
+    return result;
   }
 }

@@ -275,14 +275,13 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async checkExistance() {
-    let response, result;
+    let response, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.IG).toPromise();
       result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise())['granted'];
     } catch (e) {
       console.error(e);
-      result = null;
     }
 
     return result;
