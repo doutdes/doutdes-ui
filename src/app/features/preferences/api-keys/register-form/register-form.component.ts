@@ -25,7 +25,7 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   services$ = {};
   D_TYPE = D_TYPE;
 
-  private envURL = 'http://' + environment.host + ':' + environment.port;
+  private envURL = environment.protocol + environment.host + ':' + environment.port;
 
   fbLoginURL: string;
   igLoginURL: string;

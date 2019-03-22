@@ -42,7 +42,7 @@ export class ApiKeysService {
   }
 
   private formatUrl(call): string {
-    return 'http://' + environment.host + ':' + environment.port + '/keys/' + call;
+    return environment.protocol + environment.host + ':' + environment.port + '/keys/' + call;
   }
 
   private getAuthorization() {

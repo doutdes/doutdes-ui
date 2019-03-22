@@ -64,7 +64,7 @@ export class FacebookService {
 
   private formatURL(call, pageID = null) {
     const aux = pageID ? (pageID + '/' + call) : call;
-    return 'http://' + environment.host + ':' + environment.port + '/fb/' + aux;
+    return environment.protocol + environment.host + ':' + environment.port + '/fb/' + aux;
   }
 
   private getAuthorization() {

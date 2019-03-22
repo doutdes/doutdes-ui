@@ -17,42 +17,42 @@ export class DashboardService {
 
   getDashboardByType(type) {
     const headers = this.getAuthorization();
-    return this.http.get<Dashboard>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardByType/'
+    return this.http.get<Dashboard>(environment.protocol + environment.host + ':' + environment.port + '/dashboards/getDashboardByType/'
       + type, {headers});
   }
 
   getAllDashboardCharts(dashboard_id) {
     const headers = this.getAuthorization();
-    return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getDashboardByID/'
+    return this.http.get<DashboardCharts[]>(environment.protocol + environment.host + ':' + environment.port + '/dashboards/getDashboardByID/'
       + dashboard_id, {headers});
   }
 
   getDashboardChart(dashboard_id, chart_id) {
     const headers = this.getAuthorization();
-    return this.http.get<DashboardCharts[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChart/'
+    return this.http.get<DashboardCharts[]>(environment.protocol + environment.host + ':' + environment.port + '/dashboards/getChart/'
       + dashboard_id + '/' + chart_id, {headers});
   }
 
   getChartsNotAddedByDashboardType(dashboard_id, dashboard_type) {
     const headers = this.getAuthorization();
-    return this.http.get<Chart[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboardAndType/'
+    return this.http.get<Chart[]>(environment.protocol + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboardAndType/'
       + dashboard_id + '/' + dashboard_type, {headers});
   }
 
   getChartsNotAdded(dashboard_id) {
     const headers = this.getAuthorization();
-    return this.http.get<Chart[]>('http://' + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboard/'
+    return this.http.get<Chart[]>(environment.protocol + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboard/'
       + dashboard_id, {headers});
   }
 
   addChartToDashboard(chart) {
     const headers = this.getAuthorization();
-    return this.http.post('http://' + environment.host + ':' + environment.port + '/dashboards/addChartToDashboard/', {chart}, {headers});
+    return this.http.post(environment.protocol + environment.host + ':' + environment.port + '/dashboards/addChartToDashboard/', {chart}, {headers});
   }
 
   updateChart(chart) {
     const headers = this.getAuthorization();
-    return this.http.put('http://' + environment.host + ':' + environment.port + '/dashboards/updateChartInDashboard/', {chart}, {headers});
+    return this.http.put(environment.protocol + environment.host + ':' + environment.port + '/dashboards/updateChartInDashboard/', {chart}, {headers});
   }
 
   removeChart(dashboard_id, chart_id) {
@@ -64,7 +64,7 @@ export class DashboardService {
       chart_id: chart_id
     };
 
-    return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + '/dashboards/removeChartFromDashboard', {
+    return this.http.request('delete', environment.protocol + environment.host + ':' + environment.port + '/dashboards/removeChartFromDashboard', {
       headers,
       body
     });
@@ -79,7 +79,7 @@ export class DashboardService {
       dashboard_category: dashboard_category
     };
 
-    return this.http.post('http://' + environment.host + ':' + environment.port + '/dashboards/addDashboard/', body, {headers});
+    return this.http.post(environment.protocol + environment.host + ':' + environment.port + '/dashboards/addDashboard/', body, {headers});
 
   }
 
@@ -91,7 +91,7 @@ export class DashboardService {
       dashboard_id: dashboard_id
     };
 
-    return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + '/dashboards/deleteDashboard', {
+    return this.http.request('delete', environment.protocol + environment.host + ':' + environment.port + '/dashboards/deleteDashboard', {
       headers,
       body
     });
@@ -105,7 +105,7 @@ export class DashboardService {
       dashboard_id: dashboard_id
     };
 
-    return this.http.post('http://' + environment.host + ':' + environment.port + '/dashboards/addUserDashboard/', body, {headers});
+    return this.http.post(environment.protocol + environment.host + ':' + environment.port + '/dashboards/addUserDashboard/', body, {headers});
   }
 
   deleteUserDashboard(dashboard_id){
@@ -116,7 +116,7 @@ export class DashboardService {
       dashboard_id: dashboard_id
     };
 
-    return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + '/dashboards/deleteUserDashboard', {
+    return this.http.request('delete', environment.protocol + environment.host + ':' + environment.port + '/dashboards/deleteUserDashboard', {
       headers,
       body
     });

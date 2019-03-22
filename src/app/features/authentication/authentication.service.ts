@@ -26,7 +26,7 @@ export class AuthenticationService {
       headers: headers
     };
 
-    return this.http.post<any>('http://' + environment.host + ':' + environment.port + '/login', {}, httpOptions)
+    return this.http.post<any>(environment.protocol + environment.host + ':' + environment.port + '/login', {}, httpOptions)
       .pipe(map(response => {
 
         if (response['User'] && response['token']) {

@@ -77,7 +77,7 @@ export class InstagramService {
 
   private formatURL (call, pageID = null) {
     const aux = pageID ? (pageID + '/' + call) : call;
-    return 'http://' + environment.host + ':' + environment.port + '/ig/' + aux;
+    return environment.protocol + environment.host + ':' + environment.port + '/ig/' + aux;
   }
 
   private getAuthorization() {
