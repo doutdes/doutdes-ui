@@ -223,59 +223,68 @@ export class ChartsCallsService {
         break; // Facebook Fan City
       case IG_CHART.AUD_CITY:
         header = [['City', 'Fans']];
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+          });
 
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
-        });
+          paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
 
-        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
-
-        for (let i = 0; i < paddingRows; i++) {
-          chartData.push(['', null]);
+          for (let i = 0; i < paddingRows; i++) {
+            chartData.push(['', null]);
+          }
         }
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
         header = [['Country', 'Popularity']];
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [k, data[data.length - 1].value[k]];
-        });
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [k, data[data.length - 1].value[k]];
+          });
+        }
         break; // IG Audience Country
       case IG_CHART.AUD_GENDER_AGE:
-        header = [['Country', 'Male', 'Female']]; /// TODO: fix containsGeoData to use header != 'Country'
-        keys = Object.keys(data[0]['value']); // getting all the gender/age data
+        header = [['Age', 'Male', 'Female']];
 
-        // putting a unique entry in chartArray for every existent age range
-        for (let i = 0; i < keys.length; i++) {
-          let index = 0;
-          if (!(chartData.find(e => e[0] === (keys[i].substr(2, keys[i].length))))) {
-            chartData.push([keys[i].substr(2, keys[i].length), 0, 0]);
-            index = (chartData.length - 1);
-          } else {
-            index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys[i].length)));
+        if (data.length > 0) {
+          keys = Object.keys(data[0]['value']); // getting all the gender/age data
+
+          // putting a unique entry in chartArray for every existent age range
+          for (let i = 0; i < keys.length; i++) {
+            index = 0;
+            if (!(chartData.find(e => e[0] === (keys[i].substr(2, keys[i].length))))) {
+              chartData.push([keys[i].substr(2, keys[i].length), 0, 0]);
+              index = (chartData.length - 1);
+            } else {
+              index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys[i].length)));
+            }
+            // and collecting data
+            (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
           }
-          // and collecting data
-          (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
+          chartData = chartData.sort();
         }
-        chartData = chartData.sort();
         break; // IG Audience Gender/Age
       case IG_CHART.AUD_LOCALE:
         header = [['Country', 'Number']]; /// TODO: fix containsGeoData to use header != 'Country'
-        keys = Object.keys(data[0]['value']); // getting all the gender/age data
 
-        // putting a unique entry in chartArray for every existent age range
-        for (let i = 0; i < keys.length; i++) {
-          chartData.push([keys[i], parseInt(data[0]['value'][keys[i]], 10)]);
+        if (data.length > 0) {
+          keys = Object.keys(data[0]['value']); // getting all the gender/age data
+
+          // putting a unique entry in chartArray for every existent age range
+          for (let i = 0; i < keys.length; i++) {
+            chartData.push([keys[i], parseInt(data[0]['value'][keys[i]], 10)]);
+          }
+          chartData.sort(function (obj1, obj2) {
+            // Ascending: first age less than the previous
+            return -(obj1[1] - obj2[1]);
+          });
+
+          other = [['Other', 0]];
+          chartData.slice(4, chartData.length).forEach(el => {
+            other[0][1] += el[1];
+          });
+          chartData = chartData.slice(0, 4).concat(other);
         }
-        chartData.sort(function (obj1, obj2) {
-          // Ascending: first age less than the previous
-          return -(obj1[1] - obj2[1]);
-        });
-
-        other = [['Other', 0]];
-        chartData.slice(4, chartData.length).forEach(el => {
-          other[0][1] += el[1];
-        });
-        chartData = chartData.slice(0, 4).concat(other);
 
         break; // IG Audience Locale
       case IG_CHART.ONLINE_FOLLOWERS:
@@ -343,12 +352,12 @@ export class ChartsCallsService {
         }
         let empty = true;
         map.forEach((value: boolean, key: string) => {
-          if (parseInt(map.get(key), 10) != 0){
+          if (parseInt(map.get(key), 10) != 0) {
             empty = false;
           }
         });
 
-        if(empty) {
+        if (empty) {
           map = new Map();
           map.set('NO DATA', 100);//parseInt(100, 10));
           map.set('empty', true);
@@ -812,13 +821,13 @@ export class ChartsCallsService {
             //legend: {position: 'none'},
             height: 310,
             is3D: false,
-            pieHole : 0.5,
-        //pieSliceText: 'label',
+            pieHole: 0.5,
+            //pieSliceText: 'label',
             pieSliceTextStyle: {fontSize: 11, color: '#ffffff'},
             areaOpacity: 0.4
           }
         };
-        if(data.filter(e => e[1]===true).length == 0) {
+        if (data.filter(e => e[1] === true).length == 0) {
           formattedData.options.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'],
             formattedData.dataTable = data;
         }

@@ -4,15 +4,9 @@ import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {GoogleChartInterface} from 'ng2-google-charts/google-charts-interfaces';
 import {GoogleChartComponent} from 'ng2-google-charts';
 import {GA_CHART} from '../../shared/_models/GoogleData';
-
-const enum Type {
-  Facebook = 1,
-  Google = 2,
-  Instagram = 3
-};
+import {D_TYPE} from '../../shared/_models/Dashboard';
 
 @Component({
   selector: 'app-card',
@@ -32,7 +26,6 @@ export class CardComponent implements OnInit {
   avg: string;
   high: string;
   low: string;
-  interval: string;
 
   icon: string;
   background = '#000';
@@ -42,6 +35,8 @@ export class CardComponent implements OnInit {
   updateChartForm: FormGroup;
   loading = false;
   submitted = false;
+
+  D_TYPE = D_TYPE;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -56,19 +51,19 @@ export class CardComponent implements OnInit {
 
     // Handling icon nicknames
     switch (this.dashChart.type) {
-      case Type.Facebook: {
+      case D_TYPE.FB: {
         this.icon = 'fa-facebook-f';
         this.color = '#407CA5';
         this.background = '#e6f6f8';
         break;
       }
-      case Type.Google: {
+      case D_TYPE.GA: {
         this.icon = 'fab fa-google';
         this.background = '#FBEEEB';
         this.color = '#DB5D43';
         break;
       }
-      case Type.Instagram: {
+      case D_TYPE.IG: {
         this.icon = 'fa-instagram';
         this.background = '#f7e6f1';
         this.color = '#e7008a';
@@ -126,8 +121,12 @@ export class CardComponent implements OnInit {
     let unit = '';
 
     switch (this.dashChart.chart_id) {
-      case GA_CHART.BOUNCE_RATE    :  unit = ' %'; break;
-      case GA_CHART.AVG_SESS_DURATION :  unit = ' s'; break;
+      case GA_CHART.BOUNCE_RATE    :
+        unit = ' %';
+        break;
+      case GA_CHART.AVG_SESS_DURATION :
+        unit = ' s';
+        break;
     }
 
     if (this.dashChart.aggregated.average) {
@@ -178,8 +177,8 @@ export class CardComponent implements OnInit {
 
   }
 
-  areAggregatedDataAvailable (chartFormat) {
-    return chartFormat == "line";
+  areAggregatedDataAvailable(chartFormat) {
+    return chartFormat == 'line';
   }
 
 

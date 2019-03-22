@@ -15,7 +15,7 @@ import {forkJoin, Observable} from 'rxjs';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
-import {GaMiniCards, IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+import {IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -59,7 +59,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   firstDateRange: Date;
   lastDateRange: Date;
-  minDate: Date = new Date('2018-01-01');
+  minDate: Date = subDays(new Date(), this.FILTER_DAYS.thirty);
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Preset';
@@ -275,14 +275,13 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async checkExistance() {
-    let response, result;
+    let response, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.IG).toPromise();
       result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise())['granted'];
     } catch (e) {
       console.error(e);
-      result = null;
     }
 
     return result;

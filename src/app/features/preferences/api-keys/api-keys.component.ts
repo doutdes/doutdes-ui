@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, TemplateRef} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
@@ -22,9 +22,10 @@ const PrimaryWhite = '#ffffff';
 
 export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
+  @ViewChild('oauthError') oauthError: ElementRef;
+
   D_TYPE = D_TYPE;
 
-  tokenToSave: string;
   loading: Observable<boolean>;
   services$: {};
   modalRef: BsModalRef;
@@ -54,28 +55,16 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    const error = this.route.snapshot.queryParamMap.get('err');
+
     this.addBreadcrumb();
     this.geManager.loadingScreen.next(true);
     await this.updateList();
 
-    this.route.paramMap.subscribe(params => { // TODO change for error messages on login with services
-      this.tokenToSave = params.get('token');
-
-      if (this.tokenToSave) {
-
-        let apiKey: ApiKey = {
-          user_id: null,
-          api_key: this.tokenToSave,
-          service_id: 0
-        };
-
-        this.apiKeyService.registerKey(apiKey).subscribe(data => {
-          this.router.navigate(['/preferences/api-keys/'], {queryParams: {token: null}, queryParamsHandling: 'merge'});
-        }, err => {
-          console.error(err);
-        });
-      }
-    });
+    if(error) {
+      this.modalRef = this.modalService.show(this.oauthError, {class: 'modal-md modal-dialog-centered'});
+      this.router.navigate([], { replaceUrl: true});
+    }
   }
 
   async updateList(){
@@ -112,15 +101,15 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   async deleteService(serviceType: number) {
     this.apiKeyService.revokePermissions(serviceType).subscribe(async response => {
-      // If the service is one between FB and IG and there are no service authorized left, the key is been deleted from the database
-      if (((serviceType === D_TYPE.FB || serviceType === D_TYPE.IG) &&
-          !(this.services$[D_TYPE.FB] && this.services$[D_TYPE.FB].granted && this.services$[D_TYPE.IG] && this.services$[D_TYPE.IG].granted))
-      ) {
-        this.apiKeyService.deleteKey(serviceType).subscribe(() => {}, err => console.error(err));
-      }
-
       this.filterActions.removedStoredDashboard(serviceType);
       delete this.services$[serviceType];
+
+      if(serviceType === D_TYPE.FB && Object.keys(this.services$).includes(D_TYPE.IG+  '')) {
+        delete this.services$[D_TYPE.IG];
+      }
+
+      if(Object.keys(this.services$).length === 0) this.somethingGranted = false;
+
     }, err => {
       console.error(err);
     });

@@ -19,7 +19,7 @@ import {FeaturePreferencesApiKeysRegisterFormComponent} from './api-keys/registe
         component: FeaturePreferencesApiKeysComponent
       },
       // {
-      //   path: 'api-keys/:token',
+      //   path: 'api-keys/:err',
       //   component: FeaturePreferencesApiKeysComponent
       // },
       {
