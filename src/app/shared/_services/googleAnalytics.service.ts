@@ -60,7 +60,7 @@ export class GoogleAnalyticsService {
 
   getScopes() {
     const headers = this.getAuthorization();
-    return this.http.get(environment.protocol + environment.host + ':' + environment.port + 'getScopes/', {headers});
+    return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/getScopes/', {headers});
   }
 
   gaViewsByCountry(intervalDate: IntervalDate): Observable<any> {

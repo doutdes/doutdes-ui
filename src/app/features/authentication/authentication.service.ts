@@ -26,6 +26,8 @@ export class AuthenticationService {
       headers: headers
     };
 
+    console.warn(environment.protocol + environment.host + ':' + environment.port + '/login');
+
     return this.http.post<any>(environment.protocol + environment.host + ':' + environment.port + '/login', {}, httpOptions)
       .pipe(map(response => {
 
