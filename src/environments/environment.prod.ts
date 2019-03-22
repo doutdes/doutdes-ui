@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
   host: 'doutdes-cluster.it',
-  port: '443',
+  port: '8080',
   protocol: 'https://'
 };
