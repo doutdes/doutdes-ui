@@ -71,8 +71,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.services$ = {};
     let observables = [];
 
-    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE // TODO D_TYPE[SERVICE] !== D_TYPE.YT when YouTube is ready
-      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM && D_TYPE[SERVICE] !== D_TYPE.YT) {
+    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
+      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM) {
         observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
       }
     }
