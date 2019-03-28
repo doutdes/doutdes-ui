@@ -8,7 +8,7 @@
 
 <ng-template #addChart>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>Add new chart</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>Aggiungi grafico</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -17,14 +17,14 @@
   <div class="modal-body">
     <form [formGroup]="insertChartForm" (ngSubmit)="onSubmit()">
       <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Type:</label>
+        <label class="col-sm-2 col-form-label">Tipo:</label>
         <div class="col-sm-10">
           <select class="form-control" (change)="selectionChanged($event.target.value)">
             <option *ngFor="let opt of dropdownOptions" [value]="opt.id">{{opt.global}}</option>
           </select>
 
           <div *ngIf="submitted" class="invalid-feedback" [style.display]="chartRequired ? 'block' : 'none'">
-            <div>The type of the chart is required.</div>
+            <div>Il tipo del grafico è obbligatorio.</div>
           </div>
 
         </div>
@@ -33,20 +33,20 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Title:</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control pl-3" formControlName="chartTitle" placeholder="Chart title"
+          <input type="text" class="form-control pl-3" formControlName="chartTitle" placeholder="Titolo del grafico"
                  [ngClass]="{ 'is-invalid': submitted && form.chartTitle.errors }">
 
           <div *ngIf="submitted && form['chartTitle'].errors" class="invalid-feedback">
-            <div *ngIf="form['chartTitle'].errors['required']">The title of the chart is required.</div>
-            <div *ngIf="form['chartTitle'].errors['maxlength']">The title must not contain more than 30 characters.</div>
+            <div *ngIf="form['chartTitle'].errors['required']">Il titolo del grafico è obbligatorio.</div>
+            <div *ngIf="form['chartTitle'].errors['maxlength']">Il titolo non può contenere più di 30 caratteri.</div>
           </div>
 
         </div>
       </div>
 
       <div class="modal-footer">
-        <button type="submit" class="btn btn-success">Add chart</button>
-        <button type="button" class="btn btn-danger" (click)="closeModal();">Cancel</button>
+        <button type="submit" class="btn btn-success">Aggiungi</button>
+        <button type="button" class="btn btn-danger" (click)="closeModal();">Annulla</button>
       </div>
 
     </form>
@@ -54,14 +54,14 @@
 </ng-template>
 <ng-template #noChartsAvailable>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">No more charts</h4>
+    <h4 class="modal-title pull-left">Nessun grafico disponibile</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    <p>You have already added all the available charts for this dashboard.</p>
+    <p>Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.</p>
 
     <div class="modal-footer">
       <button type="button" class="btn btn-danger" (click)="closeModal()">Ok</button>

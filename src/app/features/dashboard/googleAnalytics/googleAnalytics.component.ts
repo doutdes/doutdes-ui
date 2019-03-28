@@ -57,7 +57,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   minDate: Date = subDays(new Date(), this.FILTER_DAYS.ninety + 1);
   maxDate: Date = new Date();
   bsRangeValue: Date[];
-  dateChoice: String = 'Last 30 days';
+  dateChoice: String = 'Ultimi 30 giorni';
   datePickerEnabled = false;
 
   modalRef: BsModalRef;
@@ -234,7 +234,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
       }
     }
   }
@@ -244,16 +244,16 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     switch (days) {
       case this.FILTER_DAYS.seven:
-        this.dateChoice = 'Last 7 days';
+        this.dateChoice = 'Ultimi 7 giorni';
         break;
       case this.FILTER_DAYS.thirty:
-        this.dateChoice = 'Last 30 days';
+        this.dateChoice = 'Ultimi 30 giorni';
         break;
       case this.FILTER_DAYS.ninety:
-        this.dateChoice = 'Last 90 days';
+        this.dateChoice = 'Ultimi 90 giorni';
         break;
       default:
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
         break;
     }
   }
@@ -263,7 +263,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
-    bread.push(new Breadcrumb('Website', '/dashboard/google/'));
+    bread.push(new Breadcrumb('Sito web', '/dashboard/google/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -341,14 +341,14 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       fileName = 'report_website_' + userCompany + '_' + day + '_' + month + '_' + year + '.pdf';
 
       pdf.setFontSize(12);
-      pdf.text('Doutdes for ' + userCompany, 340, 20);
+      pdf.text('Doutdes per ' + userCompany, 340, 20);
 
       pdf.setFontSize(30);
       pdf.text('Google Analytics', x, y);
       y += 20;
 
       pdf.setFontSize(20);
-      pdf.text('Date interval: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y);
+      pdf.text('Intervallo temporale: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y);
       y += 20;
 
       // Numero grafici per riga dipendente da dimensioni grafico
