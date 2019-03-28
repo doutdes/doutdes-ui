@@ -249,14 +249,19 @@ export class ChartsCallsService {
         if (data.length > 0) {
           keys = Object.keys(data[0]['value']); // getting all the gender/age data
 
+          let subIndex = 0;
+          if (keys[0].indexOf('.') !== -1)
+            subIndex = 2;
+          else
+            subIndex = 1;
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
             index = 0;
-            if (!(chartData.find(e => e[0] === (keys[i].substr(2, keys[i].length))))) {
-              chartData.push([keys[i].substr(2, keys[i].length), 0, 0]);
+            if (!(chartData.find(e => e[0] === (keys[i].substr(subIndex, keys[i].length))))) {
+              chartData.push([keys[i].substr(subIndex, keys[i].length), 0, 0]);
               index = (chartData.length - 1);
             } else {
-              index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys[i].length)));
+              index = chartData.findIndex(e => e[0] === (keys[i].substr(subIndex, keys[i].length)));
             }
             // and collecting data
             (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
