@@ -178,7 +178,7 @@ export class CardComponent implements OnInit {
   }
 
   areAggregatedDataAvailable(chartFormat) {
-    return chartFormat == 'line';
+    return chartFormat == 'linea';
   }
 
 

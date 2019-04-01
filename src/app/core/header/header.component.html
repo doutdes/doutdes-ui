@@ -22,7 +22,7 @@
             <div class="pl-4">
               <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/google']"
                  (click)="showMenu(false)">
-                <span class="menu-collapsed">Website</span>
+                <span class="menu-collapsed">Sito web</span>
               </a>
               <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/facebook']"
                  (click)="showMenu(false)">
@@ -30,7 +30,7 @@
               </a>
               <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/custom']"
                  (click)="showMenu(false)">
-                <span class="menu-collapsed">Custom</span>
+                <span class="menu-collapsed">Personalizzata</span>
               </a>
               <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/instagram']"
                  (click)="showMenu(false)">
@@ -39,14 +39,14 @@
             </div>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
                data-toggle="collapse" aria-expanded="false">
-              <strong class="text-capitalize"><i class="fa fa-user fa-fw mr-2"></i>Preferences</strong></a>
+              <strong class="text-capitalize"><i class="fa fa-user fa-fw mr-2"></i>Preferenze</strong></a>
             <div class="pl-4">
               <!--<a class="list-group-item list-group-item-action py-1">-->
                 <!--<span class="menu-collapsed">Account settings</span>-->
               <!--</a>-->
               <a class="list-group-item list-group-item-action py-1"
                  [routerLink]="['/preferences/api-keys']" (click)="showMenu(false)">
-                <span class="menu-collapsed">Data sources</span>
+                <span class="menu-collapsed">Sorgenti dati</span>
               </a>
             </div>
             <!--[routerLink]="['/report']"-->
@@ -56,10 +56,10 @@
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
                [routerLink]="['/calendar']" (click)="showMenu(false)"
                data-toggle="collapse" aria-expanded="false">
-              <strong class="text-capitalize"><i class="fa fa-calendar-alt fa-fw mr-2"></i>Calendar</strong></a>
+              <strong class="text-capitalize"><i class="fa fa-calendar-alt fa-fw mr-2"></i>Calendario</strong></a>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
                data-toggle="collapse" aria-expanded="false">
-              <strong class="text-capitalize text-secondary"><i class="fa fa-envelope fa-fw mr-2"></i>Messages</strong></a>
+              <strong class="text-capitalize text-secondary"><i class="fa fa-envelope fa-fw mr-2"></i>Notifiche</strong></a>
           </div>
 
         </li>
@@ -94,10 +94,10 @@
       <div *ngIf="!isUserLoggedIn">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link text-white" [routerLink]="['/authentication/login']">Login</a>
+            <a class="nav-link text-white" [routerLink]="['/authentication/login']">Accedi</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white" [routerLink]="['/authentication/register']">Sign Up</a>
+            <a class="nav-link text-white" [routerLink]="['/authentication/register']">Registrati</a>
           </li>
         </ul>
       </div>
@@ -109,22 +109,22 @@
             <a class="nav-link nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                aria-expanded="false">
               <div class="mr-1" style="float:left; margin-top:-4px">
-                <span class="text-white" style="float:right; font-size:10pt">Signed in as <b style="font-size:13pt">{{username}}</b></span><br>
-                <span style="font-size:7pt; color: #ccc; float:right">Today is {{today}}</span>
+                <span class="text-white" style="float:right; font-size:10pt">Accesso come <b style="font-size:13pt">{{username}}</b></span><br>
+                <span style="font-size:7pt; color: #ccc; float:right">Oggi è {{today}}</span>
               </div>
               <!--<i class="fa fa-2x fa-user-tie"></i>-->
               <img class="img-avatar" src="assets/img/avatars/4.jpg" alt="admin@bootstrapmaster.com">
             </a>
             <div class="dropdown-menu dropdown-menu-right">
               <div class="dropdown-header text-center">
-                <strong class="text-capitalize">{{username}} Settings</strong>
+                <strong>Impostazioni {{username}}</strong>
               </div>
               <a class="dropdown-item" href="#">
-                <i class="fa fa-user"></i> Profile</a>
+                <i class="fa fa-user"></i> Profilo</a>
               <a class="dropdown-item" href="#">
-                <i class="fa fa-wrench"></i> Settings</a>
+                <i class="fa fa-wrench"></i> Impostazioni</a>
               <a class="dropdown-item" (click)="logout()">
-                <i class="fa fa-lock"></i> Logout</a>
+                <i class="fa fa-lock"></i> Esci</a>
             </div>
           </li>
         </ul>

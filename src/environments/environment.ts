@@ -6,5 +6,6 @@
 export const environment = {
   production: false,
   host: 'localhost',
-  port: '443'
+  port: '443',
+  protocol: 'http://'
 };

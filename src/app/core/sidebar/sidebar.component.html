@@ -2,7 +2,7 @@
   <ul class="list-group sticky-top sticky-offset" style="margin-top:13px">
     <!-- Separator with title -->
     <li class="list-group-item sidebar-separator-title d-flex align-items-center menu-collapsed">
-      <small class="font-weight-bold text-uppercase">Contents</small>
+      <small class="font-weight-bold text-uppercase">Contenuti</small>
     </li>
     <!-- /END Separator -->
     <!-- Menu with submenu -->
@@ -10,14 +10,14 @@
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-tachometer-alt mr-3"></span>
-        <span class="menu-collapsed text-black">Dashboards</span>
+        <span class="menu-collapsed text-black">Le mie dashboard</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
     <!-- Submenu content -->
     <div id="submenu1" class="collapse sidebar-submenu">
       <a [routerLink]="['/dashboard/google']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Website</span>
+        <span class="menu-collapsed">Sito web</span>
       </a>
       <a [routerLink]="['/dashboard/facebook']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Facebook</span>
@@ -26,14 +26,14 @@
         <span class="menu-collapsed">Instagram</span>
       </a>
       <a [routerLink]="['/dashboard/custom']"  class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Custom</span>
+        <span class="menu-collapsed">Personalizzata</span>
       </a>
     </div>
     <a href="#submenu2" data-toggle="collapse" aria-expanded="false"
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-user fa-fw mr-3"></span>
-        <span class="menu-collapsed">Preferences</span>
+        <span class="menu-collapsed">Preferenze</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
@@ -43,7 +43,7 @@
         <span class="menu-collapsed">Account settings</span>
       </a>-->
       <a [routerLink]="['/preferences/api-keys']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Configure data sources</span>
+        <span class="menu-collapsed">Configura sorgenti dati</span>
       </a>
     </div>
     <a class="list-group-item list-group-item-action"> <!-- [routerLink]="['/report']" -->
@@ -54,19 +54,19 @@
     </a>
     <!-- Separator with title -->
     <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
-      <small class="font-weight-bold text-uppercase">Tools</small>
+      <small class="font-weight-bold text-uppercase">Strumenti</small>
     </li>
     <!-- /END Separator -->
     <a class="list-group-item list-group-item-action" [routerLink]="['/calendar']">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-calendar-alt fa-fw mr-3"></span>
-        <span class="menu-collapsed">Calendar</span>
+        <span class="menu-collapsed">Calendario</span>
       </div>
     </a>
     <a class="list-group-item list-group-item-action">
       <div class="d-flex w-100 justify-content-start align-items-center" style="color: #777">
         <span class="fas fa-envelope fa-fw mr-3"></span>
-        <span class="menu-collapsed">Messages</span>
+        <span class="menu-collapsed">Notifiche</span>
       </div>
     </a>
 
@@ -74,14 +74,14 @@
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-question fa-fw mr-3"></span>
-        <span class="menu-collapsed">How to</span>
+        <span class="menu-collapsed">Guide d'uso</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
     <!-- Submenu content -->
     <div id="submenu3" class="collapse sidebar-submenu">
       <a [routerLink]="['/tutorial/google']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Tutorial Website</span>
+        <span class="menu-collapsed">Tutorial Analytics</span>
       </a>
       <a [routerLink]="['/tutorial/facebook']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Tutorial Facebook</span>
