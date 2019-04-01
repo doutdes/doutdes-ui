@@ -28,6 +28,11 @@ html, body {
 
 #sidebar-container .list-group a.list-group-item:hover {
   background-color: #abc9d4 !important;
+  color:black;
+}
+
+#sidebar-container .list-group a.list-group-item:focus {
+  color:black;
 }
 
 app-core-header button.navbar-toggler {

@@ -3,7 +3,7 @@
     <h2 class="my-auto float-left">Google Analytics</h2>
   </div> <!-- Title -->
   <div *ngIf="isApiKeySet" class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
-    <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
+    <h5 class="d-inline-block d-sm-none mt-1">Filtra:</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
       <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
               aria-controls="button-export"><span class="caret"><i class="fas fa-download"></i></span>
@@ -12,7 +12,7 @@
       <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-export">
         <li class="dropdown-item cursor-pointer" (click)="openModal(reportWait); htmltoPDF();"><i
-          class="fas fa-file-pdf mr-2"></i>Export as PDF
+          class="fas fa-file-pdf mr-2"></i>Esporta in PDF
         </li>
       </ul>
     </div> <!-- PDF export -->
@@ -23,9 +23,9 @@
 
       <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-date-filter">
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Last 7 days</li>
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Last 30 days</li>
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Ultimi 7 giorni</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Ultimi 30 giorni</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Ultimi 90 giorni</li>
       </ul>
     </div> <!-- TODO Create a component custom like card -->
     <input type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker"
@@ -48,7 +48,7 @@
   </ng-container>
 
   <ng-template *ngIf="!loading && chartArray$.length == 0 && isApiKeySet">
-    <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
+    <h5 class="col-md-12 mt-3">La dashboard è vuota. Puoi iniziare inserendo il primo grafico!</h5>
   </ng-template>
 
   <app-emptycard
@@ -62,10 +62,8 @@
     <div class="card-group">
       <div class="card p-2" style="background-color: #eee;">
         <div class="card-body">
-          <h3 class="text-danger m-2">You can't add charts to the dashboard (TO FIX ME)</h3>
-          <h4 class="m-3">First you need to login to Google via OAuth.</h4>
-          <button class="btn btn-success ml-3" [routerLink]="['/preferences/api-keys']">Go to configure data sources
-          </button>
+          <i class="fas fa-crow mr-1" style="font-size:30pt"></i><h5 class="mt-3"> Qua non c'è niente! Prima di poter visualizzare i dati, devi aggiungere la <b>sorgente dati</b> "Google".</h5><br/>
+          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys']">Aggiungi una sorgente dati</button>
         </div>
       </div>
     </div>
@@ -76,10 +74,10 @@
 
 <ng-template #reportWait>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-hourglass-half"></i> Exporting report</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-hourglass-half"></i> Esporta il report</h4>
   </div>
 
   <div class="modal-body">
-    We are creating your report, please wait...
+    Stiamo creando il tuo report, attendi...
   </div>
 </ng-template>

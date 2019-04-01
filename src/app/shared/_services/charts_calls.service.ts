@@ -189,7 +189,7 @@ export class ChartsCallsService {
          * 2 - value
          **/
 
-        header = [['Browser', 'Sessions']];
+        header = [['Browser', 'Sessioni']];
 
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
