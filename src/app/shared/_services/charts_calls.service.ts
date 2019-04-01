@@ -119,7 +119,7 @@ export class ChartsCallsService {
          * 1 - page
          * 2 - value
          **/
-        header = [['Website', 'Views']];
+        header = [['Pagina', 'Visite']];
 
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
@@ -132,7 +132,7 @@ export class ChartsCallsService {
           }
         }
 
-        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
           chartData.push(['', null]);
@@ -201,7 +201,7 @@ export class ChartsCallsService {
             chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
         }
-        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
           chartData.push(['', null]);
@@ -455,10 +455,10 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
             legend: {position: 'none'},
             lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
+            height: 230,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
@@ -481,10 +481,10 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
             legend: {position: 'none'},
             lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
+            height: 230,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
@@ -495,8 +495,8 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#FFA647'],
-            areaOpacity: 0.1
+            colors: ['#01B8AA'],
+            areaOpacity: 0.05
           }
         };
         break;  // Google Sessions
@@ -506,14 +506,15 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 6,
           options: {
-            chartArea: {left: 30, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
             is3D: false,
-            pieSliceText: 'label',
-            pieSliceTextStyle: {fontSize: 16, color: '#222'},
-            colors: ['#FFAF60', '#FFBD7F', '#FFCB9B', '#FFD7B5', '#FFE2CC'],
-            areaOpacity: 0.4
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#fd8f8d','#c96565'],
+            areaOpacity: 0.2
           }
         };
         break;  // Google Sources Pie
@@ -523,12 +524,21 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 7,
           options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': '',
+              'oddTableRow': '',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'},
             alternatingRowStyle: true,
             allowHtml: true,
-            sort: 'enable',
+            sort: 'disable',
             sortAscending: false,
             sortColumn: 1,
-            pageSize: 11,
+            pageSize: 9,
             height: '100%',
             width: '100%'
           }
@@ -562,12 +572,13 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 9,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            chartArea: {left: 0, right: 0, height: 310, top: 0},
             legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#FFC993'],
-            areaOpacity: 0.4
+            height: 330,
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#ffdda4'],
+            bar: { groupWidth: '70%'},
+            areaOpacity: 0.3
           }
         };
         break;  // Google Sources Column Chart
@@ -579,10 +590,10 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 10,
           options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
             legend: {position: 'none'},
             lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
+            height: 230,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
@@ -593,8 +604,8 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#FFA647'],
-            areaOpacity: 0.1
+            colors: ['#dd738a'],
+            areaOpacity: 0.05
           }
         };
 
@@ -607,10 +618,10 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            chartArea: {left: 0, right: 0, height: 212, top: 0},
             legend: {position: 'none'},
             lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
+            height: 230,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
@@ -621,8 +632,8 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#FFA647'],
-            areaOpacity: 0.1
+            colors: ['#52b4de'],
+            areaOpacity: 0.05
           }
         };
         break; // Google Average Session Duration
@@ -633,10 +644,20 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 12,
           options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': '',
+              'oddTableRow': '',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'},
             alternatingRowStyle: true,
             sortAscending: false,
+            sort:'disable',
             sortColumn: 1,
-            pageSize: 11,
+            pageSize: 9,
             height: '100%',
             width: '100%'
           }
