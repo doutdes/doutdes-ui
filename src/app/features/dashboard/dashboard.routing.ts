@@ -4,6 +4,7 @@ import {FeatureDashboardFacebookComponent} from './facebook/facebook.component';
 import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics/googleAnalytics.component';
 import {FeatureDashboardCustomComponent} from './custom/custom.component';
 import {FeatureDashboardInstagramComponent} from './instagram/instagram.component';
+import {FeatureDashboardComponent} from './dashboard.component';
 
 /** App Components **/
 
@@ -13,9 +14,7 @@ import {FeatureDashboardInstagramComponent} from './instagram/instagram.componen
     RouterModule.forChild([
       {
         path: '',
-        // component: FeatureDashboardComponent
-        redirectTo: 'facebook',
-        pathMatch: 'full'
+        component: FeatureDashboardComponent
       },
       {
         path: 'facebook',
