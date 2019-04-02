@@ -123,44 +123,45 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
               observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID));
             }
           }); // Retrieves data for each chart
-        }
 
-        dataArray = await forkJoin(observables).toPromise();
 
-        if(dataArray) {
-          for (let i = 0; i < dataArray.length; i++) {
+          dataArray = await forkJoin(observables).toPromise();
 
-            let chart: DashboardCharts = charts[i];
+          if (dataArray) {
+            for (let i = 0; i < dataArray.length; i++) {
 
-            if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-              chart.chartData = dataArray[i];
-              chart.error = false;
-            } else {
-              chart.error = true;
+              let chart: DashboardCharts = charts[i];
 
-              console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
-              console.error(dataArray[i]);
+              if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+                chart.chartData = dataArray[i];
+                chart.error = false;
+              } else {
+                chart.error = true;
+
+                console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
+                console.error(dataArray[i]);
+              }
+
+              chartsToShow.push(chart);
             }
 
-            chartsToShow.push(chart);
+            currentData = {
+              data: chartsToShow,
+              interval: dateInterval,
+              type: D_TYPE.CUSTOM,
+            };
+
+            this.filterActions.initData(currentData);
+
+            this.GEService.updateChartList.next(true);
+
+            // Shows last 30 days
+            this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
           }
-
-          currentData = {
-            data: chartsToShow,
-            interval: dateInterval,
-            type: D_TYPE.CUSTOM,
-          };
-
-          this.filterActions.initData(currentData);
-
         }
-        this.GEService.updateChartList.next(true);
-
-        // Shows last 30 days
-        this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
 
         this.GEService.loadingScreen.next(false);
-
+        this.filterActions.initData(currentData);
       }
 
     } catch (e) {
