@@ -126,8 +126,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
             forkJoin(observables)
               .subscribe(dataArray => {
+
+                console.warn(dataArray);
+
                 for (let i = 0; i < dataArray.length; i++) {
                   chart = charts[i];
+
+                  console.log(dataArray[i]);
 
                   if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
                     chart.chartData = dataArray[i];
@@ -177,6 +182,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.GA, null, intervalDate);
 
     forkJoin(observables).subscribe(miniDatas => {
+
+      console.warn('minidatas:', miniDatas);
+
       for(const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
         this.miniCards[i].value = results['value'];

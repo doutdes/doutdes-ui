@@ -13,9 +13,9 @@ import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {FacebookService} from '../../../shared/_services/facebook.service';
-import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
+import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 const PrimaryWhite = '#ffffff';
 
@@ -28,7 +28,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   public HARD_DASH_DATA = {
     dashboard_type: D_TYPE.CUSTOM,
-    dashboard_id: null
+    dashboard_id: null,
+    permissions: null
   };
 
   private fbPageID = null;
@@ -71,7 +72,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions,
-    private ADService: AggregatedDataService
+    private apiKeyService: ApiKeysService
   ) {
 
   }
@@ -85,23 +86,86 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       last: this.maxDate
     };
     let currentData: DashboardData;
-    let pageID = null;
+    let dash, permissions, charts, dataArray;
 
     this.GEService.loadingScreen.next(true);
 
-    // Retrieving dashboard ID
-    const dash = await this.DService.getDashboardByType(0).toPromise(); // Custom dashboard type
+    try {
+      // Retrieving dashboard ID
+      dash = await this.DService.getDashboardByType(D_TYPE.CUSTOM).toPromise(); // Custom dashboard type
 
-    // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
-    this.fbPageID = (await this.FBService.getPages().toPromise())[0].id;
-    this.igPageID = (await this.IGService.getPages().toPromise())[0].id;
+      if (dash.id) {
+        this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
+      } else {
+        throw new Error('Cannot retrieve a valid ID for the Facebook dashboard.');
+      }
 
-    if (dash.id) {
-      this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
-    }
-    else {
-      console.error('Cannot retrieve a valid ID for the Facebook dashboard.');
-      return;
+      permissions = await this.checkExistance();
+
+      this.HARD_DASH_DATA.permissions = permissions;
+
+      // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
+      this.fbPageID = permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
+      this.igPageID = permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
+
+      if (this.dashStored) {
+        // Ci sono già dati salvati
+        this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
+        this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+      } else {
+        charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
+
+        if (charts && charts.length > 0) { // Checking if dashboard is not empty
+          charts.forEach(async chart => {
+            // If the permission for the service is granted
+            if (permissions[chart.type] === true) {
+              this.getPageID(chart.type);
+              observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID));
+            }
+          }); // Retrieves data for each chart
+        }
+
+        dataArray = await forkJoin(observables).toPromise();
+
+        if(dataArray) {
+          for (let i = 0; i < dataArray.length; i++) {
+
+            let chart: DashboardCharts = charts[i];
+
+            if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+              chart.chartData = dataArray[i];
+              chart.error = false;
+            } else {
+              chart.error = true;
+
+              console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
+              console.error(dataArray[i]);
+            }
+
+            chartsToShow.push(chart);
+          }
+
+          currentData = {
+            data: chartsToShow,
+            interval: dateInterval,
+            type: D_TYPE.CUSTOM,
+          };
+
+          this.filterActions.initData(currentData);
+
+        }
+        this.GEService.updateChartList.next(true);
+
+        // Shows last 30 days
+        this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+
+        this.GEService.loadingScreen.next(false);
+
+      }
+
+    } catch (e) {
+      console.error(e);
+      this.GEService.loadingScreen.next(false);
     }
 
     if (this.dashStored) {
@@ -199,7 +263,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   onValueChange(value): void {
     if (value) {
       const dateInterval: IntervalDate = {
-        first: new Date(value[0].setHours(0, 0, 0,0)),
+        first: new Date(value[0].setHours(0, 0, 0, 0)),
         last: new Date(value[1].setHours(23, 59, 59))
       };
       this.filterActions.filterData(dateInterval);
@@ -311,6 +375,24 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.pageID = null;
         break;
     }
+  }
 
+  async checkExistance() {
+    let permissions = {};
+    let response, result = null;
+    let keys = Object.keys(D_TYPE);
+
+    try {
+      for (const i in keys) {
+        if (D_TYPE[keys[i]] !== D_TYPE.CUSTOM) {
+          response = await this.apiKeyService.checkIfKeyExists(D_TYPE[keys[i]]).toPromise();
+          permissions[D_TYPE[keys[i]]] = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE[keys[i]]).toPromise())['granted'];
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    return permissions;
   }
 }

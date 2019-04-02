@@ -8,7 +8,6 @@ import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {parseDate} from 'ngx-bootstrap';
-import {subSeconds} from 'date-fns';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -142,15 +141,11 @@ export class FilterActions {
       for (let i = 0; i < dashToFilter.data.length; i++) {
         chart = dashToFilter.data[i];
 
-        // console.warn('DATA TO FILTER: ', JSON.parse(JSON.stringify(chart)));
-
         // If the type of the chart is known
         if (DS_TYPE.hasOwnProperty(chart.type)) {
           chart.chartData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
             ? chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime())
             : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
-
-          // console.warn('DATA FILTERED: ', JSON.parse(JSON.stringify(chart)));
 
           chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
           chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i], filterInterval);
@@ -164,11 +159,9 @@ export class FilterActions {
       }
 
       dashToFilter.data = filtered;
-
-      console.log(dashToFilter);
     } else {
-      console.error('Error in FILTER_ACTIONS. No unfiltered data found.');
-      console.error(dashToFilter);
+      console.warn('Error in FILTER_ACTIONS. No unfiltered data found.');
+      console.warn(dashToFilter);
     }
 
     return dashToFilter;
@@ -190,7 +183,13 @@ export class FilterActions {
   }
 
   removedStoredDashboard(dashboard_type: number) {
+    let index = this.storedDashboards.findIndex((el: DashboardData) => el.type === D_TYPE.CUSTOM);
+
     this.storedDashboards = this.storedDashboards.filter((el: DashboardData) => el.type === dashboard_type);
+
+    if(index >= 0) {
+      this.storedDashboards[index].data = this.storedDashboards[index].data.filter(chart => chart.type === dashboard_type);
+    }
   }
 
   getIntervalDate(data, type): IntervalDate {

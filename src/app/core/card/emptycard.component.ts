@@ -213,26 +213,26 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   selectionChanged(optionID) {
     this.chartSelected = this.dropdownOptions.find(opt => opt.id == optionID);
-
-    console.log(this.chartSelected);
     this.insertChartForm.controls['chartTitle'].setValue(this.chartSelected.title);
   }
 
   populateDropdown(charts : Chart[], writeType = false) {
 
-    let newDropdown = [];
+    let global, newDropdown = [];
 
     if (charts) {
       charts.forEach(el => {
 
-        let global = writeType ? this.getStringType(el.Type) + el.Title + ' (' + el.format + ')' : el.Title + ' (' + el.format + ')';
-        newDropdown.push({
-          id: el.ID,
-          title: el.Title,
-          format: el.format,
-          type: el.Type,
-          global: global
-        });
+        if((this.dashboard_data.permission && this.dashboard_data.permissions[el.Type]) || (this.dashboard_data.dashboard_type !== D_TYPE.CUSTOM)) {
+          global = writeType ? this.getStringType(el.Type) + el.Title + ' (' + el.format + ')' : el.Title + ' (' + el.format + ')';
+          newDropdown.push({
+            id: el.ID,
+            title: el.Title,
+            format: el.format,
+            type: el.Type,
+            global: global
+          });
+        }
       });
 
       return _.orderBy(newDropdown, ['global', 'title', 'id']);
