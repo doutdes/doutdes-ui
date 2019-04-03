@@ -16,6 +16,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+import {ToastrService} from 'ngx-toastr';
 
 const PrimaryWhite = '#ffffff';
 
@@ -72,7 +73,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     private DService: DashboardService,
     private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
-    private filterActions: FilterActions
+    private filterActions: FilterActions,
+    private toastr: ToastrService
   ) {
   }
 
@@ -181,7 +183,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         } else {
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
-          console.log('Dashboard is empty.');
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
         }
       }, err => {
         console.error('ERROR in INSTAGRAM COMPONENT, when fetching charts.');

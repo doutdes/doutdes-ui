@@ -84,7 +84,7 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Calendar', '/calendar/'));
+    bread.push(new Breadcrumb('Calendario', '/calendar/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }

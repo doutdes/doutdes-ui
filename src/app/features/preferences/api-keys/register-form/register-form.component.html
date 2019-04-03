@@ -1,6 +1,6 @@
 <div class="row rounded p-4 title-header h-100">
   <div class="col-md-12 pl-0">
-    <h2 class="my-auto pl-0">Service login</h2>
+    <h2 class="my-auto pl-0">Autorizzazioni esterne</h2>
   </div>
 </div>
 
@@ -8,48 +8,47 @@
   <div class="row h-100 align-items-center">
     <div class="col-md-12 px-0 mt-3">
       <div class="card-group">
-        <div class="card p-2" style="background-color: #eee;">
+        <div class="card p-2">
           <div class="card-body">
             <ngx-loading [show]="loading | async" [config]="config"></ngx-loading>
             <div class="row mb-4" *ngIf="!allGranted">
               <div class="col-md-12">
-                <p class="" style="font-size: 18px;">In order to use our service, you have to do the login with
-                different sources:</p>
+                <p class="" style="font-size: 16px;">Per visualizzare i tuoi dati su Doutdes, <b>è necessario accedere</b> con i seguenti servizi esterni.</p>
               </div>
-
-              <div class="col-md-12 h-100"      *ngIf="services$[D_TYPE.GA] && !services$[D_TYPE.GA]['granted']">
-                <h4 class="w-50 d-inline-block align-middle">To use website dashboard</h4>
-                <a class="btn btn-lg bg-ga-color text-white d-inline-block" style="width: 40%;" [href]="gaLoginURL">
-                  <i class="fab fa-google mr-2"></i>Login with Google
+<!--todo-->
+              <div class="col-md-12 h-100 bg-ga-color"      *ngIf="services$[D_TYPE.GA] && !services$[D_TYPE.GA]['granted']">
+                <p class="w-50 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati del tuo sito web:</p>
+                <a class="btn btn-lg bg-ga-color text-white d-inline-block" style="width: 30%;" [href]="gaLoginURL">
+                  <i class="fab fa-google mr-2"></i>Accedi con Google
                 </a>
               </div> <!-- Google login -->
               <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.FB] && !services$[D_TYPE.FB]['granted']">
-                <h4 class="w-50 d-inline-block align-middle">To use Facebook dashboard</h4>
-                <a class="btn btn-lg bg-fb-color text-white d-inline-block" style="width: 40%;" [href]="fbLoginURL">
-                  <i class="fab fa-facebook-square mr-2"></i>Continue with Facebook
+                <p class="w-50 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati della tua pagina Facebook:</p>
+                <a class="btn btn-lg bg-fb-color text-white d-inline-block" style="width: 30%;" [href]="fbLoginURL">
+                  <i class="fab fa-facebook-square mr-2"></i>Accedi con Facebook
                 </a>
               </div> <!-- Facebook login -->
               <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.IG] && !services$[D_TYPE.IG]['granted']">
-                <h4 class="w-50 d-inline-block align-middle">To use Instagram dashboard</h4>
-                <a class="btn btn-lg bg-ig-color text-white d-inline-block" style="width: 40%;" [href]="igLoginURL">
-                  <i class="fab fa-instagram mr-2"></i>Login with Instagram
+                <p class="w-50 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati della tua pagina Instagram:</p>
+                <a class="btn btn-lg bg-ig-color text-white d-inline-block" style="width: 30%;" [href]="igLoginURL">
+                  <i class="fab fa-instagram mr-2"></i>Accedi con Instagram
                 </a>
               </div>      <!-- Instagram login -->
               <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.YT] && !services$[D_TYPE.YT]['granted']">
-                <h4 class="w-50 d-inline-block align-middle">To use YouTube dashboard</h4>
-                <a class="btn btn-lg bg-yt-color text-white d-inline-block" style="width: 40%;" [href]="ytLoginURL">
-                  <i class="fab fa-youtube mr-2"></i>Login with YouTube
+                <p class="w-50 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati del tuo canale YouTube:</p>
+                <a class="btn btn-lg bg-yt-color text-white d-inline-block" style="width: 30%;" [href]="ytLoginURL">
+                  <i class="fab fa-youtube mr-2"></i>Accedi con YouTube
                 </a>
               </div> <!-- YouTube login -->
 
             </div>
             <div class="row mb-4" *ngIf="allGranted">
               <div class="col-md-12">
-                <p style="font-size: 18px;">You have already configured all the available services!</p>
+                <p style="font-size: 18px;">Hai già configurato tutti i servizi disponibili!</p>
               </div>
             </div>
             <button class="btn btn-lg btn-danger mt-4" [routerLink]="['/preferences/api-keys']">
-              <i class="fas fa-arrow-circle-left mr-2"></i>Go back to Api Keys
+              <i class="fas fa-arrow-circle-left mr-2"></i>Torna a sorgenti dati
             </button>
           </div>
         </div>

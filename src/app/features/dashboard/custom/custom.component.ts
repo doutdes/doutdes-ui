@@ -302,7 +302,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
-    bread.push(new Breadcrumb('Website', '/dashboard/google/'));
+    bread.push(new Breadcrumb('Sito web', '/dashboard/google/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }

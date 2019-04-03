@@ -100,9 +100,9 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Preferences', '/preferences/'));
-    bread.push(new Breadcrumb('Api Keys', '/preferences/api-keys/'));
-    bread.push(new Breadcrumb('Insert', '/preferences/api-keys/insert'));
+    bread.push(new Breadcrumb('Preferenze', '/preferences/'));
+    bread.push(new Breadcrumb('Sorgenti dati', '/preferences/api-keys/'));
+    bread.push(new Breadcrumb('Inserisci', '/preferences/api-keys/insert'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }

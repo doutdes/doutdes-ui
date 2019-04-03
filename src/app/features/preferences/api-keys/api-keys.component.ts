@@ -152,8 +152,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Preferences', '/preferences/'));
-    bread.push(new Breadcrumb('Api Keys', '/preferences/api-keys/'));
+    bread.push(new Breadcrumb('Preferenze', '/preferences/'));
+    bread.push(new Breadcrumb('Sorgenti dati', '/preferences/api-keys/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }

@@ -119,7 +119,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
-      // await this.loadMiniCards(); TODO remove
+      await this.loadMiniCards();
 
       if (this.dashStored) {
         // Ci sono già dati salvati
