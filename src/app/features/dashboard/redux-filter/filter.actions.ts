@@ -50,10 +50,12 @@ export class FilterActions {
     // Given the original data, it retrieves the right format for the data
     if (filteredDashboard) {
       for (let i in filteredDashboard.data) {
-        chart_id = filteredDashboard.data[i].chart_id;
-        dateInterval = this.getIntervalDate(filteredDashboard.data[i].chartData,filteredDashboard.data[i].type);
-        filteredDashboard.data[i].aggregated = this.ADService.getAggregatedData(filteredDashboard.data[i], dateInterval);
-        filteredDashboard.data[i].chartData = this.CCService.formatChart(chart_id, filteredDashboard.data[i].chartData);
+        if(!filteredDashboard.data[i].error) { // If there was not error during the retrieving of the chart data
+          chart_id = filteredDashboard.data[i].chart_id;
+          dateInterval = this.getIntervalDate(filteredDashboard.data[i].chartData, filteredDashboard.data[i].type);
+          filteredDashboard.data[i].aggregated = this.ADService.getAggregatedData(filteredDashboard.data[i], dateInterval);
+          filteredDashboard.data[i].chartData = this.CCService.formatChart(chart_id, filteredDashboard.data[i].chartData);
+        }
       }
 
       // Searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
@@ -143,13 +145,15 @@ export class FilterActions {
 
         // If the type of the chart is known
         if (DS_TYPE.hasOwnProperty(chart.type)) {
-          chart.chartData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
-            ? chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime())
-            : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
+          if(!chart.error) {
+            chart.chartData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+              ? chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime())
+              : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
 
-          chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
-          chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i], filterInterval);
+            chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
+            chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i], filterInterval);
 
+          }
           filtered.push(chart);
         } else {
           console.error('Error in FILTER_ACTIONS. A chart of unknown type (' + chart.type + ') was found, filter action skipped.');

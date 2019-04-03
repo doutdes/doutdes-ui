@@ -23,6 +23,7 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
+import {ToastContainerDirective, ToastrService} from 'ngx-toastr';
 
 
 @Component({
@@ -32,6 +33,7 @@ import {ApiKey} from '../../../shared/_models/ApiKeys';
 
 export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestroy {
 
+  // @ViewChild(ToastContainerDirective) toastContainer: ToastContainerDirective;
   @ViewChild('selectView') selectView;
 
   public D_TYPE = D_TYPE;
@@ -81,6 +83,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions,
     private userService: UserService,
+    private toastr: ToastrService,
     private ADService: AggregatedDataService,
     private modalService: BsModalService,
     private apiKeyService: ApiKeysService,
@@ -116,7 +119,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
-      await this.loadMiniCards();
+      // await this.loadMiniCards(); TODO remove
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -134,14 +137,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           for (let i = 0; i < dataArray.length; i++) {
             chart = charts[i];
 
-            console.warn('Chart n. ' + i + ': ', dataArray[i], chart);
-
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
               chart.error = false;
             } else {
               chart.error = true;
-              console.error('ERROR in Google Analytics COMPONENT. Cannot retrieve data from one of the charts. More info:');
+              console.error('ERROR in Google Analytics COMPONENT. The chart data is undefined or it\'s not possible to retrieve data from the chart ', chart, '. More info:');
               console.error(dataArray[i]);
             }
 
@@ -162,7 +163,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         } else {
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
-          console.log('Dashboard is empty.');
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
         }
       }
 
@@ -185,9 +186,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.GA, null, intervalDate);
 
     forkJoin(observables).subscribe(miniDatas => {
-
-      console.warn('minidatas:', miniDatas);
-
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
         this.miniCards[i].value = results['value'];
@@ -287,6 +285,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     let existence, view_id, update;
     let key: ApiKey;
 
+    // this.toastr.overlayContainer = this.toastContainer;
+
     this.addBreadcrumb();
 
     try {
@@ -324,7 +324,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           return;
         }
       }
-
 
       this.firstDateRange = subDays(new Date(), 30); //this.minDate;
       this.lastDateRange = this.maxDate;
