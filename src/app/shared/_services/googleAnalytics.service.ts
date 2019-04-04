@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
-import {GA_CHART, GoogleData, GoogleDataWithDate} from '../_models/GoogleData';
+import {GA_CHART, GoogleData} from '../_models/GoogleData';
 
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import * as moment from 'moment';
@@ -33,11 +33,11 @@ export class GoogleAnalyticsService {
       case GA_CHART.SOURCES_COLUMNS:
       case GA_CHART.SOURCES_PIE:
         call = 'sources/';
-        withDate = false;
+        // withDate = false;
         break;
       case GA_CHART.MOST_VISITED_PAGES:
         call = 'mostviews/';
-        withDate = false;
+        // withDate = false;/
         break;
       case GA_CHART.BOUNCE_RATE:
         call = 'bouncerate/';
@@ -47,14 +47,13 @@ export class GoogleAnalyticsService {
         break;
       case GA_CHART.BROWSER_SESSION:
         call = 'browsers/';
-        withDate = false;
+        // withDate = false;
         break;
+
+
     }
 
-    return withDate
-      ? this.http.get<GoogleDataWithDate[]>(this.formatURL(intervalDate, call), {headers})
-        .pipe(map((res) => res), catchError(e => of(e)))
-      : this.http.get<GoogleData[]>(this.formatURL(intervalDate, call), {headers})
+    return this.http.get<GoogleData[]>(this.formatURL(intervalDate, call), {headers})
         .pipe(map((res) => res), catchError(e => of(e)));
   }
 
@@ -73,14 +72,14 @@ export class GoogleAnalyticsService {
   gaUsers(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleDataWithDate[]>(this.formatURL(intervalDate, 'users/'), {headers})
+    return this.http.get<GoogleData[]>(this.formatURL(intervalDate, 'users/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   gaNewUsers(intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleDataWithDate[]>(this.formatURL(intervalDate, 'newusers/'), {headers})
+    return this.http.get<GoogleData[]>(this.formatURL(intervalDate, 'newusers/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 

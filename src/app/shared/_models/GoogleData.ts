@@ -9,12 +9,8 @@ export const GA_CHART = {
   BROWSER_SESSION: 12
 };
 
-export interface GoogleDataWithDate {
-  date: string;
-  value: string;
-}
-
 export interface GoogleData {
-  string: string;
-  value: number;
+  date: string;
+  value: string,
+  opt_value?: number;
 }
