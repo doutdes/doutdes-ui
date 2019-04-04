@@ -10,25 +10,25 @@ export interface MiniCard {
 
 export let GaMiniCards: MiniCard[] = [
   {
-    name: 'Tot users',
+    name: 'Utenti tot.',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     measure: '',
     value: '-'
   }, {
-    name: 'Tot sessions',
+    name: 'Visite tot.',
     icon: 'icon-screen-desktop',
     padding: 'pl-2 pr-sm-2 pr-0',
     measure: '',
     value: '-'
   }, {
-    name: 'Bounce rate',
+    name: 'Freq. rimbalzo',
     icon: 'icon-action-undo',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     measure: 'bounce-rate',
     value: '-'
   }, {
-    name: 'Avg sess. time',
+    name: 'Permanenza media',
     icon: 'icon-hourglass',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     measure: 'time',
@@ -37,25 +37,25 @@ export let GaMiniCards: MiniCard[] = [
 ];
 export let FbMiniCards: MiniCard[] = [
   {
-    name: 'Fans',
+    name: 'Fan',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     value: '-',
     measure: 'count'
   }, {
-    name: 'Posts',
+    name: 'Post',
     icon: 'icon-speech',
     padding: 'pl-2 pr-sm-2 pr-0',
     value: '-',
     measure: 'post-sum'
   }, {
-    name: 'Reactions',
+    name: 'Reazioni',
     icon: 'icon-heart',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
     measure: 'reactions'
   }, {
-    name: 'Impressions',
+    name: 'Visite',
     icon: 'icon-screen-desktop',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     value: '-',
@@ -64,25 +64,25 @@ export let FbMiniCards: MiniCard[] = [
 ];
 export let IgMiniCards: MiniCard[] = [
   {
-    name: 'Fans',
+    name: 'Fan',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     value: '-',
     measure: 'count'
   }, {
-    name: 'Posts',
+    name: 'Post',
     icon: 'icon-speech',
     padding: 'pl-2 pr-sm-2 pr-0',
     value: '-',
     measure: 'post-sum'
   }, {
-    name: 'Profile views',
+    name: 'Visual. profilo',
     icon: 'icon-eye',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
     measure: 'prof-views'
   }, {
-    name: 'Impressions',
+    name: 'Visite',
     icon: 'icon-screen-smartphone',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     value: '-',

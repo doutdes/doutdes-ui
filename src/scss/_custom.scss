@@ -28,6 +28,11 @@ html, body {
 
 #sidebar-container .list-group a.list-group-item:hover {
   background-color: #abc9d4 !important;
+  color:black;
+}
+
+#sidebar-container .list-group a.list-group-item:focus {
+  color:black;
 }
 
 app-core-header button.navbar-toggler {
@@ -387,4 +392,18 @@ ul {
 
 popover-container {
   float: right!important;
+}
+
+.gradient {
+  background: #fff !important;
+}
+
+.google-visualization-table-table {
+  padding:4px;
+}
+
+.headercellbg {
+  background: #fff;
+  font-size:10pt;
+  text-transform: uppercase;
 }

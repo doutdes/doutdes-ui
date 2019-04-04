@@ -11,7 +11,7 @@
 
       <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-export">
-        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF</li>
+        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Esporta in PDF</li>
       </ul>
     </div> <!-- PDF export -->
     <div class="btn-group float-right d-md-block d-none" dropdown>
@@ -21,10 +21,10 @@
 
       <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-date-filter">
-        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.seven)">Last 7 days</li>
-        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.thirty)">Last 30 days</li>
-        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.ninety)">Last 90 days</li>
-        <li class="dropdown-item">Custom</li>
+        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.seven)">Ultimi 7 giorni</li>
+        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.thirty)">Ultimi 30 giorni</li>
+        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.ninety)">Ultimi 90 giorni</li>
+        <li class="dropdown-item">Personalizzato</li>
       </ul>
     </div> <!-- TODO Create a component custom like card -->
     <input type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
@@ -57,10 +57,8 @@
     <div class="card-group">
       <div class="card p-2" style="background-color: #eee;">
         <div class="card-body">
-          <h3 class="text-danger">You can't add charts to the dashboard (TO FIX ME)</h3>
-          <h4 class="m-1">First you need to login to Facebook via OAuth.</h4>
-          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys']">Go to configure data sources
-          </button>
+          <i class="fas fa-crow mr-1" style="font-size:30pt"></i><h5 class="mt-3"> Qua non c'è niente! Prima di poter visualizzare i dati, devi aggiungere la <b>sorgente dati</b> "Facebook".</h5><br/>
+          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys']">Aggiungi una sorgente dati</button>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 <div class="row rounded p-4 title-header h-100">
   <div class="col-md-12 pl-0">
-    <h2 class="my-auto pl-0">Data sources</h2>
+    <h2 class="my-auto pl-0">Sorgenti dati</h2>
   </div>
 </div>
 <ngx-loading [show]="loading | async" [config]="config"></ngx-loading>
@@ -10,8 +10,8 @@
       <table class="table table-hover mt-4" *ngIf="somethingGranted; else no_content">
         <thead>
           <tr class="border" style="background: #ddd; border: 1px solid #999">
-            <th scope="col" style="width: 20%; font-size: 18px;">Service</th>
-            <th scope="col" style="width: 60%; font-size: 18px;">Scopes</th>
+            <th scope="col" style="width: 20%; font-size: 18px;">Servizio</th>
+            <th scope="col" style="width: 60%; font-size: 18px;">Permessi ricevuti</th>
             <th scope="col" style="width: 20%;"></th>
           </tr>
         </thead>
@@ -22,7 +22,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.GA].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.GA])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.GA])"><i class="fas fa-trash-alt mr-2"></i>Elimina</button>
             </td>
           </tr> <!-- Google -->
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.FB] && services$[D_TYPE.FB]['granted']">
@@ -30,7 +30,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.FB].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.FB])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.FB])"><i class="fas fa-trash-alt mr-2"></i>Elimina</button>
             </td>
           </tr> <!-- Facebook -->
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted']">
@@ -38,7 +38,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.IG].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.IG])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.IG])"><i class="fas fa-trash-alt mr-2"></i>Elimina</button>
             </td>
           </tr> <!-- Instagram -->
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.YT] && services$[D_TYPE.YT]['granted']">
@@ -46,7 +46,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.YT].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button> TODO restore -->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.YT])"><i class="fas fa-trash-alt mr-2"></i>Remove</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.YT])"><i class="fas fa-trash-alt mr-2"></i>Elimina</button>
             </td>
           </tr> <!-- YouTube -->
         </tbody>
@@ -57,49 +57,50 @@
 
 <ng-template #no_content>
   <div class="mt-3 mb-5 ml-1">
-    <h5 style="color: #666">No external data source added yet. To add a new one, you must provide its access token.</h5>
+    <h5 style="color: #666">Nessuna sorgente dati esterna presente. Per aggiungerne una nuova, accedi col rispettivo account e concedi i permessi.</h5>
   </div>
 </ng-template>
 
 <ng-template #deleteKey> <!-- Modal warning for deletion of service -->
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Removing '{{serviceToDelete.name}}' permissions</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Elimina permessi di '{{serviceToDelete.name}}'</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    <p>Do you really want to remove the selected permissions?</p>
-    <p>You will not be able to use the dashboard for this service anymore.</p>
+    <p>Sei veramente sicuro di voler rimuovere i permessi selezionati?</p>
+    <p style="text-align: justify"><i class="fas fa-exclamation-circle mr-1" style="color: #ad0009; font-size:14pt"></i><b style="color: #ad0009;">Operazione pericolosa</b>: l'eliminazione di una sorgente dati comporta la definitiva rimozione da DoUtDes di tutti i dati associati al servizio.
+      Alcuni dati, non essendo presenti sulla sorgente esterna, <b>non saranno più recuperabili</b>. Non sarà
+    inoltre possibile visualizzare i grafici associati al servizio stesso.</p>
     <p *ngIf="serviceToDelete.type === D_TYPE.FB && services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted'] ">
-      <b><span class="text-danger">Attention: </span></b>if you remove the Facebook
-      service you won't be able anymore to use Instagram service too!
-    </p>
+    <i class="fas fa-exclamation-triangle mr-1" style="color: #ffbb00; font-size:14pt"></i>Avviso: l'eliminazione del servizio Facebook comporta l'eliminazione contestuale del servizio Instagram.</p>
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-success" (click)="modalRef.hide()">No, keep it</button>
+
     <button type="button" class="btn btn-danger" (click)="deleteService(serviceToDelete.type)">
-      Yes, remove it
+      Sì, elimina
     </button>
+    <button type="button" class="btn btn-success" (click)="modalRef.hide()">No, mantieni</button>
   </div>
 </ng-template>
-<button type="button" class="btn btn-lg btn-success" [routerLink]="['insert']"><i class="fas fa-plus-circle mr-2"></i>Add new data source</button>
+<button type="button" class="btn btn-lg btn-success" [routerLink]="['insert']"><i class="fas fa-plus-circle mr-2"></i>Aggiungi nuova sorgente dati</button>
 
 <ng-template #oauthError>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-exclamation-circle mr-2"></i> Error during the login</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-exclamation-circle mr-2"></i> Errore durante l'accesso</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    <p>An error occurred while trying to access at the chosen service. <br/>Please try again later or contact the support.</p>
+    <p>Si è verificato un errore durante l'accesso al servizio richiesto. <br/>Riprova più tardi o contatta il supporto tecnico.</p>
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="modalRef.hide()">Close</button>
+    <button type="button" class="btn btn-danger" (click)="modalRef.hide()">Chiudi</button>
   </div>
 </ng-template>
