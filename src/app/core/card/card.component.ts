@@ -7,6 +7,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {GoogleChartComponent} from 'ng2-google-charts';
 import {GA_CHART} from '../../shared/_models/GoogleData';
 import {D_TYPE} from '../../shared/_models/Dashboard';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-card',
@@ -42,7 +43,10 @@ export class CardComponent implements OnInit {
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
-    private GEService: GlobalEventsManagerService) {
+    private GEService: GlobalEventsManagerService,
+    private toastr: ToastrService
+
+  ) {
   }
 
   ngOnInit() {
@@ -105,7 +109,7 @@ export class CardComponent implements OnInit {
 
     this.loading = true;
 
-    this.updateChart(chart);
+    this.updateChart(this.dashChart.title, chart);
   }
 
   chartResizer(): void {
@@ -159,18 +163,22 @@ export class CardComponent implements OnInit {
       .subscribe(() => {
         this.GEService.removeFromDashboard.next([chart_id, dashboard_id]);
         this.closeModal();
+        this.toastr.success('"' + this.dashChart.title + '" è stato correttamente rimosso.', 'Grafico rimosso correttamente!');
       }, error => {
+        this.toastr.error('Non è stato possibile rimuovere "' + this.dashChart.title + '" dalla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione del grafico.');
         console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
-        console.log(error);
+        console.error(error);
       });
   }
 
-  updateChart(toUpdate): void {
+  updateChart(title, toUpdate): void {
     this.dashboardService.updateChart(toUpdate)
       .subscribe(() => {
         this.GEService.updateChartInDashboard.next(toUpdate);
         this.closeModal();
+        this.toastr.success('"' + title + '" è stato correttamente rinominato in "' + toUpdate.title + '".', 'Grafico aggiornato correttamente!');
       }, error => {
+        this.toastr.error('Non è stato possibile rinominare il grafico "' + this.dashChart.title + '". Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiornamento del grafico.');
         console.log('Error updating the Chart');
         console.log(error);
       });

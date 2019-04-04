@@ -16,6 +16,7 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
+import {ToastrService} from 'ngx-toastr';
 
 const PrimaryWhite = '#ffffff';
 
@@ -72,7 +73,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions,
-    private apiKeyService: ApiKeysService
+    private apiKeyService: ApiKeysService,
+    private toastr: ToastrService
   ) {
 
   }
@@ -97,10 +99,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       if (dash.id) {
         this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
       } else {
-        throw new Error('Cannot retrieve a valid ID for the Facebook dashboard.');
+        this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
+        return;
       }
 
-      permissions = await this.checkExistance();
+      permissions = await this.checkExistence();
+
+      console.log(permissions);
 
       this.HARD_DASH_DATA.permissions = permissions;
 
@@ -167,69 +172,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     } catch (e) {
       console.error(e);
       this.GEService.loadingScreen.next(false);
-    }
-
-    if (this.dashStored) {
-      // Ci sono già dati salvati
-      this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
-      this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
-    } else {
-
-      this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
-        .subscribe(charts => {
-
-          if (charts && charts.length > 0) { // Checking if dashboard is not empty
-
-            console.log(charts);
-
-            charts.forEach(chart => {
-              this.getPageID(chart.type);
-              observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID));
-            }); // Retrieves data for each chart
-
-            forkJoin(observables)
-              .subscribe(dataArray => {
-                for (let i = 0; i < dataArray.length; i++) {
-
-                  let chart: DashboardCharts = charts[i];
-
-                  if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-                    chart.chartData = dataArray[i];
-                    // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
-                    chart.error = false;
-                  } else {
-
-                    chart.error = true;
-
-                    console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
-                    console.error(dataArray[i]);
-                  }
-
-                  chartsToShow.push(chart);
-                }
-
-                currentData = {
-                  data: chartsToShow,
-                  interval: dateInterval,
-                  type: D_TYPE.CUSTOM,
-                };
-
-                this.filterActions.initData(currentData);
-                this.GEService.updateChartList.next(true);
-
-                // Shows last 30 days
-                this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
-
-                this.GEService.loadingScreen.next(false);
-              });
-
-          } else {
-            this.GEService.loadingScreen.next(false);
-          }
-        }, err => {
-          console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
-          console.log(err);
-        });
     }
   }
 
@@ -378,9 +320,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     }
   }
 
-  async checkExistance() {
+  async checkExistence() {
     let permissions = {};
-    let response, result = null;
+    let response;
     let keys = Object.keys(D_TYPE);
 
     try {

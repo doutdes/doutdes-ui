@@ -29,7 +29,7 @@ export class FilterActions {
   constructor(
     private Redux: NgRedux<IAppState>,
     private CCService: ChartsCallsService,
-    private ADService: AggregatedDataService
+    private ADService: AggregatedDataService,
   ) {
     this.filter.subscribe(elements => {
       this.currentDashboard = elements['currentDashboard'];

@@ -14,6 +14,7 @@ import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {Chart} from '../../shared/_models/Chart';
 import {D_TYPE, DS_TYPE} from '../../shared/_models/Dashboard';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-emptycard',
@@ -51,6 +52,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit() {
@@ -144,7 +146,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       .pipe(first())
       .subscribe(() => {
         dashChart.type = this.chartSelected.type;
-        console.log("EMPTY-CARD Add Chart");
+
         this.GEService.showChartInDashboard.next(dashChart);
         this.insertChartForm.reset();
         this.chartSelected = null;
@@ -160,8 +162,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
         this.closeModal();
 
       }, error => {
-        console.log('Error inserting the Chart in the dashboard');
-        console.log(error);
+        this.toastr.error('Non è stato possibile aggiungere "' + dashChart.title + '" alla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico.');
+        console.error('Error inserting the Chart in the dashboard');
+        console.error(error);
       });
 
   }
@@ -223,7 +226,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     if (charts) {
       charts.forEach(el => {
 
-        if((this.dashboard_data.permission && this.dashboard_data.permissions[el.Type]) || (this.dashboard_data.dashboard_type !== D_TYPE.CUSTOM)) {
+        if((this.dashboard_data.permissions && this.dashboard_data.permissions[el.Type]) || (this.dashboard_data.dashboard_type !== D_TYPE.CUSTOM)) {
           global = writeType ? this.getStringType(el.Type) + el.Title + ' (' + el.format + ')' : el.Title + ' (' + el.format + ')';
           newDropdown.push({
             id: el.ID,
