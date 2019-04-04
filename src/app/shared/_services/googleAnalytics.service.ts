@@ -23,7 +23,7 @@ export class GoogleAnalyticsService {
 
     return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/ga/getViewList', {headers});
   }
-  
+
   getData(ID, intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();
     let call;
@@ -55,12 +55,22 @@ export class GoogleAnalyticsService {
         call = 'browsers/';
         // withDate = false;
         break;
-
-
+      case GA_CHART.NEW_USERS:
+        call = 'newusers/';
+        break;
+      case GA_CHART.MOBILE_DEVICES:
+        call = 'mobiledevices/';
+        break;
+      case GA_CHART.PAGE_LOAD_TIME:
+        call = 'pageloadtime/';
+        break;
+      case GA_CHART.PERCENT_NEW_SESSION:
+        call = 'percentnewsessions/';
+        break;
     }
 
     return this.http.get<GoogleData[]>(this.formatURL(intervalDate, call), {headers})
-        .pipe(map((res) => res), catchError(e => of(e)));
+      .pipe(map((res) => res), catchError(e => of(e)));
   }
 
   getScopes() {

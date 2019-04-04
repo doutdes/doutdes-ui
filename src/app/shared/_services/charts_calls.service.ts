@@ -349,6 +349,7 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Reach
+
       case IG_CHART.ACTION_PERFORMED:
         header = [['Type', 'Number']];
         let map = new Map();
@@ -375,9 +376,15 @@ export class ChartsCallsService {
         map.forEach((value: boolean, key: string) => {
           chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
         });
+        break;// IG composed clicks
 
+      case GA_CHART.NEW_USERS:
+        header = [['Date', 'Users']];
 
-        break; // IG composed clicks
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+        break;//GA New Users
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -865,9 +872,33 @@ export class ChartsCallsService {
           formattedData.options.colors = ['#D3D3D3'];
           formattedData.dataTable = data.slice(0, 2);
         }
-
-
         break; // IG clicks pie
+
+      case GA_CHART.NEW_USERS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 230,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#FFA647'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
     }
 
     return formattedData;
