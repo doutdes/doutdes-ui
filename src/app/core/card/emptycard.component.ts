@@ -107,7 +107,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
 
     } catch (err) {
-      this.modalRef = this.modalService.show(this.noChartsAvailable, {class: 'modal-md modal-dialog-centered'});
+      this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
+      // this.modalRef = this.modalService.show(this.noChartsAvailable, {class: 'modal-md modal-dialog-centered'});
     }
   }
 

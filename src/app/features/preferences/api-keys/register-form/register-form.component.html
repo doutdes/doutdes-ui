@@ -13,30 +13,30 @@
             <ngx-loading [show]="loading | async" [config]="config"></ngx-loading>
             <div class="row mb-4" *ngIf="!allGranted">
               <div class="col-md-12">
-                <p class="" style="font-size: 16px;">Per visualizzare i tuoi dati su Doutdes, <b>è necessario accedere</b> con i seguenti servizi esterni.</p>
+                <p class="mb-3" style="font-size: 16px;">Per visualizzare i tuoi dati su Doutdes, <b>è necessario accedere</b> con i seguenti servizi esterni.</p>
               </div>
 <!--todo-->
-              <div class="col-md-12 h-100 bg-ga-color"      *ngIf="services$[D_TYPE.GA] && !services$[D_TYPE.GA]['granted']">
-                <p class="w-50 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati del tuo sito web:</p>
-                <a class="btn btn-lg bg-ga-color text-white d-inline-block" style="width: 30%;" [href]="gaLoginURL">
+              <div class="col-md-12 col-12 h-100"      *ngIf="services$[D_TYPE.GA] && !services$[D_TYPE.GA]['granted']">
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati del tuo sito web:</p>
+                <a class="btn btn-lg bg-ga-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px;" [href]="gaLoginURL">
                   <i class="fab fa-google mr-2"></i>Accedi con Google
                 </a>
               </div> <!-- Google login -->
-              <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.FB] && !services$[D_TYPE.FB]['granted']">
-                <p class="w-50 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati della tua pagina Facebook:</p>
-                <a class="btn btn-lg bg-fb-color text-white d-inline-block" style="width: 30%;" [href]="fbLoginURL">
+              <div class="col-md-12 col-12 h-100 mt-3" *ngIf="services$[D_TYPE.FB] && !services$[D_TYPE.FB]['granted']">
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati della tua pagina Facebook:</p>
+                <a class="btn btn-lg bg-fb-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px" [href]="fbLoginURL">
                   <i class="fab fa-facebook-square mr-2"></i>Accedi con Facebook
                 </a>
               </div> <!-- Facebook login -->
-              <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.IG] && !services$[D_TYPE.IG]['granted']">
-                <p class="w-50 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati della tua pagina Instagram:</p>
-                <a class="btn btn-lg bg-ig-color text-white d-inline-block" style="width: 30%;" [href]="igLoginURL">
+              <div class="col-md-12 col-12 h-100 mt-3" *ngIf="services$[D_TYPE.IG] && !services$[D_TYPE.IG]['granted']">
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati della tua pagina Instagram:</p>
+                <a class="btn btn-lg bg-ig-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px" [href]="igLoginURL">
                   <i class="fab fa-instagram mr-2"></i>Accedi con Instagram
                 </a>
               </div>      <!-- Instagram login -->
-              <div class="col-md-12 h-100 mt-3" *ngIf="services$[D_TYPE.YT] && !services$[D_TYPE.YT]['granted']">
-                <p class="w-50 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati del tuo canale YouTube:</p>
-                <a class="btn btn-lg bg-yt-color text-white d-inline-block" style="width: 30%;" [href]="ytLoginURL">
+              <div class="col-md-12 col-12 h-100 mt-3" *ngIf="services$[D_TYPE.YT] && !services$[D_TYPE.YT]['granted']">
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati del tuo canale YouTube:</p>
+                <a class="btn btn-lg bg-yt-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px" [href]="ytLoginURL">
                   <i class="fab fa-youtube mr-2"></i>Accedi con YouTube
                 </a>
               </div> <!-- YouTube login -->

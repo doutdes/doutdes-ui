@@ -291,12 +291,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     try {
       existence = await this.checkExistance();
-      view_id = await this.getViewID();
 
       if (!existence) { // If the Api Key has not been set yet, then a message is print
         this.isApiKeySet = false;
         return;
       }
+
+      view_id = await this.getViewID();
 
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if(!view_id) {

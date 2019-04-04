@@ -89,6 +89,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageID);
 
     forkJoin(observables).subscribe(miniDatas => {
+      console.log(miniDatas)
       for(const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
         this.miniCards[i].value = results['value'];

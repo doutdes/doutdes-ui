@@ -58,14 +58,21 @@ export class FilterActions {
         }
       }
 
+      console.warn(JSON.parse(JSON.stringify(this.storedDashboards)));
+      console.log('INIT DATA -> cerco se la dashboard è stata già salvata');
+
       // Searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
       index = this.storedDashboards ? this.storedDashboards.findIndex((el: DashboardData) => el.type === currentDashboard.type) : -1;
+
+      console.log('INIT DATA -> index: ', index);
 
       if (index < 0) { // The dashboard was never been stored
         this.storedDashboards.push(JSON.parse(JSON.stringify(initialData)));
       } else {
         this.storedDashboards[index] = JSON.parse(JSON.stringify(initialData));
       }
+
+      console.warn(JSON.parse(JSON.stringify(this.storedDashboards)));
     }
 
     this.Redux.dispatch({
@@ -104,7 +111,13 @@ export class FilterActions {
 
     this.currentDashboard.data.push(chart);
     this.filteredDashboard.data.push(filteredChart);
+
+    console.warn('FILTER ACTIONS -> stored: ', this.storedDashboards);
+    console.warn('FILTER ACTIONS -> index: ', index);
+
     this.storedDashboards[index] = JSON.parse(JSON.stringify(this.currentDashboard));
+
+    console.warn('FILTER ACTIONS -> new stored: ', this.storedDashboards);
 
     this.Redux.dispatch({
       type: FILTER_UPDATE,

@@ -88,7 +88,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       last: this.maxDate
     };
     let currentData: DashboardData;
-    let dash, permissions, charts, dataArray;
+    let dash, charts, dataArray;
 
     this.GEService.loadingScreen.next(true);
 
@@ -103,15 +103,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         return;
       }
 
-      permissions = await this.checkExistence();
-
-      console.log(permissions);
-
-      this.HARD_DASH_DATA.permissions = permissions;
+      this.HARD_DASH_DATA.permissions = await this.checkExistence();
 
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
-      this.fbPageID = permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
-      this.igPageID = permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
+      this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
+      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -123,7 +119,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
           charts.forEach(async chart => {
             // If the permission for the service is granted
-            if (permissions[chart.type] === true) {
+            if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
               this.getPageID(chart.type);
               observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID));
             }
@@ -189,7 +185,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         if (!chartData['status']) { // Se la chiamata non rende errori
 
           chartToPush.chartData = chartData;
-          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
 
         } else {
