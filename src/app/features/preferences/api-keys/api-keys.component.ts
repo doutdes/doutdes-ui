@@ -12,6 +12,7 @@ import {forkJoin, Observable} from 'rxjs';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
+import {ToastrService} from 'ngx-toastr';
 
 const PrimaryWhite = '#ffffff';
 
@@ -49,7 +50,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     private router: Router,
     private modalService: BsModalService,
     private geManager: GlobalEventsManagerService,
-    private filterActions: FilterActions
+    private filterActions: FilterActions,
+    private toastr: ToastrService
   ) {
     this.loading = this.geManager.loadingScreen.asObservable();
   }
@@ -61,9 +63,12 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.geManager.loadingScreen.next(true);
     await this.updateList();
 
-    if(error) {
+    if(error == 'true') {
       this.modalRef = this.modalService.show(this.oauthError, {class: 'modal-md modal-dialog-centered'});
       this.router.navigate([], { replaceUrl: true});
+    }
+    if(error != null && error == 'false') {
+      this.toastr.success('La configurazione del servizio scelto è andata a buon fine.','Servizio configurato correttamente!')
     }
   }
 
@@ -71,8 +76,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.services$ = {};
     let observables = [];
 
-    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE // TODO D_TYPE[SERVICE] !== D_TYPE.YT when YouTube is ready
-      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM && D_TYPE[SERVICE] !== D_TYPE.YT) {
+    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
+      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM) {
         observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
       }
     }
@@ -110,6 +115,11 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
       if(Object.keys(this.services$).length === 0) this.somethingGranted = false;
 
+      this.toastr.info(
+        'Da adesso non potrai più accedere alle dashboard collegate a ' + DS_TYPE[serviceType],
+        'Sorgente ' + DS_TYPE[serviceType] + ' eliminata'
+      );
+
     }, err => {
       console.error(err);
     });
@@ -142,8 +152,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Preferences', '/preferences/'));
-    bread.push(new Breadcrumb('Api Keys', '/preferences/api-keys/'));
+    bread.push(new Breadcrumb('Preferenze', '/preferences/'));
+    bread.push(new Breadcrumb('Sorgenti dati', '/preferences/api-keys/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }

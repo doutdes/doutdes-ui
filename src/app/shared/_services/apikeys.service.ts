@@ -16,6 +16,11 @@ export class ApiKeysService {
     return this.http.post(this.formatUrl('insert'), api);
   }
 
+  updateKey(api: ApiKey) {
+    const headers = this.getAuthorization();
+    return this.http.put(this.formatUrl('update'), {api}, {headers});
+  }
+
   isPermissionGranted(idService: number) {
     const headers = this.getAuthorization();
     return this.http.get<Service>(this.formatUrl('isPermissionGranted/' + idService), {headers})
@@ -28,7 +33,8 @@ export class ApiKeysService {
   }
 
   getAllKeys() {
-    return this.http.get<ApiKey[]>(this.formatUrl('getAll'));
+    const headers = this.getAuthorization();
+    return this.http.get<ApiKey>(this.formatUrl('getAll'), {headers});
   }
 
   checkIfKeyExists(type: number) {

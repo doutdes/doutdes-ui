@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Router, NavigationEnd} from '@angular/router';
-import {environment} from '../environments/environment';
+import {NavigationEnd, Router} from '@angular/router';
 
 @Component({
   // tslint:disable-next-line
@@ -13,9 +12,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    console.warn(environment.production);
-
     this.router.events.subscribe((evt) => {
       if (!(evt instanceof NavigationEnd)) {
         return;

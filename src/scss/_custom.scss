@@ -407,3 +407,13 @@ popover-container {
   font-size:10pt;
   text-transform: uppercase;
 }
+
+.toast-top-right {
+  top: 71px!important;
+}
+
+@media only screen and (max-width: 767px) {
+  app-core-header > nav {
+    padding-top: 0 !important;
+  }
+}

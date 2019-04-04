@@ -17,6 +17,12 @@ export class GoogleAnalyticsService {
     private storeService: StoreService
   ) {
   }
+
+  getViewList() {
+    const headers = this.getAuthorization();
+
+    return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/ga/getViewList', {headers});
+  }
   
   getData(ID, intervalDate: IntervalDate): Observable<any> {
     const headers = this.getAuthorization();

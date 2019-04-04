@@ -21,6 +21,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+import {ToastrService} from 'ngx-toastr';
 
 const PrimaryWhite = '#ffffff';
 
@@ -78,7 +79,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions,
-    private userService: UserService
+    private userService: UserService,
+    private toastr: ToastrService
   ) {
 
   }
@@ -103,7 +105,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     });
   }
 
-  async loadDashboard() { // TODO get pageID
+  async loadDashboard() { // TODO get pageID and refactor
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
@@ -187,7 +189,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           } else {
             this.filterActions.initData(currentData);
             this.GEService.loadingScreen.next(false);
-            console.log('Dashboard is empty.');
+            this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
           }
         }, err => {
           console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
@@ -211,8 +213,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
-          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
+
+          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico correttamente aggiunto!');
+
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
@@ -294,7 +298,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     return result;
   }
-
 
   ngOnInit(): void {
     this.firstDateRange = this.minDate;

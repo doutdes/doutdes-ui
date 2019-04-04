@@ -80,6 +80,30 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break;  // Page Impressions
+      case FB_CHART.FANS_COUNTRY_PIE:
+        header = [['Country', 'Popularity']];
+
+        // Push data pairs in the Chart array
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
+        });
+
+        break;  // Fan Country Pie
+      case FB_CHART.PAGE_VIEWS:
+        header = [['Date', 'Views']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // Facebook Page Views
+      case FB_CHART.FANS_CITY:
+        header = [['City', 'Fans']];
+
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+        });
+        break; // Facebook Fan City
+
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Date', 'Impressions']];
 
@@ -138,21 +162,14 @@ export class ChartsCallsService {
           chartData.push(['', null]);
         }
         break;  // Google List Referral
-      case FB_CHART.FANS_COUNTRY_PIE:
-        header = [['Country', 'Popularity']];
-
-        // Push data pairs in the Chart array
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [k, data[data.length - 1].value[k]];
-        });
-
-        break;  // Fan Country Pie
       case GA_CHART.SOURCES_COLUMNS:
         /** Data array is constructed as follows:
          * 0 - date
          * 1 - page
          * 2 - value
          **/
+
+        console.warn('Data on cc:', data);
 
         header = [['Type', 'Number']];
 
@@ -207,20 +224,7 @@ export class ChartsCallsService {
           chartData.push(['', null]);
         }
         break; // Google list Session per Browser
-      case FB_CHART.PAGE_VIEWS:
-        header = [['Date', 'Views']];
 
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
-        }
-        break; // Facebook Page Views
-      case FB_CHART.FANS_CITY:
-        header = [['City', 'Fans']];
-
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
-        });
-        break; // Facebook Fan City
       case IG_CHART.AUD_CITY:
         header = [['City', 'Fans']];
         if (data.length > 0) {

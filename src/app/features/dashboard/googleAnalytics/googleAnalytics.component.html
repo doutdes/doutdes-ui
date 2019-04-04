@@ -1,3 +1,4 @@
+<!--<div toastContainer></div>-->
 <div class="row rounded py-sm-4 title-header h-100">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 class="my-auto float-left">Google Analytics</h2>
@@ -79,5 +80,35 @@
 
   <div class="modal-body">
     Stiamo creando il tuo report, attendi...
+  </div>
+</ng-template>
+
+<ng-template #selectView>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>Seleziona dati da importare</h4>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
+      <div class="form-group row">
+        <p class="col-sm-12 text-justify">
+          Il tuo account Google Analytics è associato a più siti web. Quale vuoi includere in Doutdes?
+        </p>
+        <div class="col-sm-12">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="view_id" [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['view_id'].errors }">
+            <!--<option [value]="viewList[0].id" selected>{{viewList[0].name}}</option>-->
+            <option *ngFor="let view of viewList" [value]="view.id">{{view.name}}</option>
+          </select>
+
+          <div *ngIf="this.submitted && selectViewForm.controls['view_id'].errors" class="invalid-feedback">
+            <div>Devi obbligatoriamente selezionare un sito</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pr-0 pb-0">
+        <button type="submit" class="btn btn-success">Conferma</button>
+      </div>
+    </form>
   </div>
 </ng-template>
