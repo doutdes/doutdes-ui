@@ -645,8 +645,8 @@ export class ChartsCallsService {
           options: {
             cssClassNames: {
               'headerRow': 'border m-3 headercellbg',
-              'tableRow': '',
-              'oddTableRow': '',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
               'selectedTableRow': '',
               'hoverTableRow': '',
               'headerCell': 'border-0 py-2 pl-2',
@@ -750,8 +750,8 @@ export class ChartsCallsService {
           options: {
             cssClassNames: {
               'headerRow': 'border m-3 headercellbg',
-              'tableRow': '',
-              'oddTableRow': '',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
               'selectedTableRow': '',
               'hoverTableRow': '',
               'headerCell': 'border-0 py-2 pl-2',
@@ -956,8 +956,8 @@ export class ChartsCallsService {
           options: {
             cssClassNames: {
               'headerRow': 'border m-3 headercellbg',
-              'tableRow': '',
-              'oddTableRow': '',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
               'selectedTableRow': '',
               'hoverTableRow': '',
               'headerCell': 'border-0 py-2 pl-2',
