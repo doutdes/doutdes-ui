@@ -383,12 +383,6 @@ export class ChartsCallsService {
         }
         break;//GA New Users
       case GA_CHART.MOBILE_DEVICES:
-        /** Data array is constructed as follows:
-         * 0 - date
-         * 1 - browser
-         * 2 - value
-         **/
-
         header = [['Dispositivo', 'Sessioni']];
 
         for (let i = 0; i < data.length; i++) {
@@ -406,7 +400,7 @@ export class ChartsCallsService {
         for (let i = 0; i < paddingRows; i++) {
           chartData.push(['', null]);
         }
-        break; // Google list Sessions per mobile devices
+        break; // GA List mobile devices per sessions
       case GA_CHART.PERCENT_NEW_SESSION:
         header = [['Utenti di ritorno', 'Nuovi utenti']];
         let avg = 0;
@@ -419,6 +413,19 @@ export class ChartsCallsService {
         chartData.push(['Nuovi', avg]);
         chartData.push(['Di ritorno', 100 - avg]);
         break;  // Google New Users vs Return users
+      case GA_CHART.PAGE_LOAD_TIME:
+        header = [['Pagina', 'Tempo Medio (s)']];
+        temp = 0;
+        for (let i = 0; i < data.length; i++) {
+          indexFound = keys.findIndex(el => el === data[i][1]);
+          if (indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+          }
+        }
+        break;
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -984,6 +991,28 @@ export class ChartsCallsService {
           }
         };
         break;  // Google New Users vs Returning
+      case GA_CHART.PAGE_LOAD_TIME:
+        console.warn(data);
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 310, top: 0},
+            legend: {position: 'none'},
+            height: 330,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ffdda4'],
+            bar: {groupWidth: '70%'},
+            areaOpacity: 0.3
+          }
+        };
+        break;  // Google Sources Column Chart
     }
 
     return formattedData;
