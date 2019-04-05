@@ -136,6 +136,7 @@ export class ChartsCallsService {
             chartData.push([data[i][1] === '(none)' ? 'unknown' : data[i][1], parseInt(data[i][2], 10)]);
           }
         }
+
         break;  // Google Sources Pie
       case GA_CHART.MOST_VISITED_PAGES:
         /** Data array is constructed as follows:
@@ -385,6 +386,32 @@ export class ChartsCallsService {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
         break;//GA New Users
+
+      case GA_CHART.MOBILE_DEVICES:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 - browser
+         * 2 - value
+         **/
+
+        header = [['Dispositivo', 'Sessioni']];
+
+        for (let i = 0; i < data.length; i++) {
+          indexFound = keys.findIndex(el => el === data[i][1]);
+
+          if (indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+          }
+        }
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
+        }
+        break; // Google list Sessions per mobile devices
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -896,6 +923,32 @@ export class ChartsCallsService {
             },
             colors: ['#FFA647'],
             areaOpacity: 0.1
+          }
+        };
+        break;
+      case GA_CHART.MOBILE_DEVICES:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 7,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': '',
+              'oddTableRow': '',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'},
+            alternatingRowStyle: true,
+            allowHtml: true,
+            sort: 'disable',
+            sortAscending: true,
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
           }
         };
         break;
