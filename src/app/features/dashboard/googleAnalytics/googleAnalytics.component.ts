@@ -305,8 +305,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         await this.getViewList();
 
         if(this.viewList.length === 1) {
-          console.warn('SONO QUA', this.viewList);
-
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
           update = await this.apiKeyService.updateKey(key).toPromise();
 

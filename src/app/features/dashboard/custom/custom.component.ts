@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
@@ -17,6 +17,9 @@ import {InstagramService} from '../../../shared/_services/instagram.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {ToastrService} from 'ngx-toastr';
+import {ApiKey} from '../../../shared/_models/ApiKeys';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 const PrimaryWhite = '#ffffff';
 
@@ -27,6 +30,8 @@ const PrimaryWhite = '#ffffff';
 
 export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
+  @ViewChild('selectView') selectView;
+
   public HARD_DASH_DATA = {
     dashboard_type: D_TYPE.CUSTOM,
     dashboard_id: null,
@@ -36,6 +41,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   private fbPageID = null;
   private igPageID = null;
   private pageID = null;
+  public somethingGranted = true;
 
   public FILTER_DAYS = {
     seven: 6,
@@ -63,6 +69,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Preset';
+  modalRef: BsModalRef;
+
+  // Form for init
+  selectViewForm: FormGroup;
+  loadingForm: boolean;
+  submitted: boolean;
+  viewList;
 
   constructor(
     private GAService: GoogleAnalyticsService,
@@ -74,9 +87,97 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions,
     private apiKeyService: ApiKeysService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private modalService: BsModalService,
+    private formBuilder: FormBuilder
   ) {
+  }
 
+  async ngOnInit() {
+    let existence, view_id, update;
+    let key: ApiKey;
+
+    this.addBreadcrumb();
+
+    try {
+      existence = await this.checkExistence();
+
+      if(!existence.somethingGranted) {
+        this.somethingGranted = false;
+        this.toastr.info('Prima di iniziare, devi importare i tuoi dati su "Sorgenti dati"', 'Non hai ancora fornito alcun accesso ai dati.');
+        return;
+      }
+
+      this.HARD_DASH_DATA.permissions = await this.checkExistence();
+      view_id = await this.getViewID();
+
+      // We check if the user has already set a preferred GOOGLE page if there is more than one in his permissions.
+      if(!view_id) {
+        await this.getViewList();
+
+        if(this.viewList.length === 1) {
+          key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
+          update = await this.apiKeyService.updateKey(key).toPromise();
+
+          if(!update) {
+            return;
+          }
+        } else {
+          this.selectViewForm = this.formBuilder.group({
+            view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
+          });
+
+          this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
+          this.openModal(this.selectView, true);
+
+          return;
+        }
+      }
+
+      this.firstDateRange = subDays(new Date(), 30); //this.minDate;
+      this.lastDateRange = this.maxDate;
+      //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+      this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
+
+      this.filter.subscribe(elements => {
+        this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
+        const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.CUSTOM) : -1;
+        this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
+      });
+
+      let dash_type = this.HARD_DASH_DATA.dashboard_type;
+
+      if (!this.GEService.isSubscriber(dash_type)) {
+        this.GEService.removeFromDashboard.subscribe(values => {
+          if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+            this.filterActions.removeChart(values[0]);
+          }
+        });
+        this.GEService.showChartInDashboard.subscribe(chart => {
+          if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+            this.addChartToDashboard(chart);
+            //this.GEService.showChartInDashboard.next(null); //reset data
+            console.log(this.GEService.getSubscribers());
+          }
+        });
+        this.GEService.updateChartInDashboard.subscribe(chart => {
+          if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+            this.filterActions.updateChart(chart);
+          }
+        });
+        this.GEService.loadingScreen.subscribe(value => {
+          this.loading = value;
+        });
+
+        this.GEService.addSubscriber(dash_type);
+      }
+
+      await this.loadDashboard();
+
+    } catch (e) {
+      console.error('Error on ngOnInit of Google Analytics', e);
+      this.toastr.error('È stato riscontrato un errore durante il carimento della dashboard. Per favore, riprova oppure contatta il supporto.', 'Errore nel carimento della dashboard');
+    }
   }
 
   async loadDashboard() {
@@ -102,8 +203,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
         return;
       }
-
-      this.HARD_DASH_DATA.permissions = await this.checkExistence();
 
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
       this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
@@ -250,50 +349,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
-  ngOnInit(): void {
-    this.firstDateRange = subDays(new Date(), 30); //this.minDate;
-    this.lastDateRange = this.maxDate;
-    //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-    this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
-
-    this.filter.subscribe(elements => {
-      this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-      const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.CUSTOM) : -1;
-      this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
-    });
-
-    let dash_type = this.HARD_DASH_DATA.dashboard_type;
-
-    if (!this.GEService.isSubscriber(dash_type)) {
-      this.GEService.removeFromDashboard.subscribe(values => {
-        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
-          this.filterActions.removeChart(values[0]);
-        }
-      });
-      this.GEService.showChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          this.addChartToDashboard(chart);
-          //this.GEService.showChartInDashboard.next(null); //reset data
-          console.log(this.GEService.getSubscribers());
-        }
-      });
-      this.GEService.updateChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          this.filterActions.updateChart(chart);
-        }
-      });
-      this.GEService.loadingScreen.subscribe(value => {
-        this.loading = value;
-      });
-
-      this.GEService.addSubscriber(dash_type);
-      console.log(this.GEService.getSubscribers());
-    }
-
-    this.addBreadcrumb();
-    this.loadDashboard();
-  }
-
   ngOnDestroy() {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
@@ -319,20 +374,78 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   async checkExistence() {
     let permissions = {};
-    let response;
     let keys = Object.keys(D_TYPE);
+    let response, somethingGranted = false;
 
     try {
       for (const i in keys) {
         if (D_TYPE[keys[i]] !== D_TYPE.CUSTOM) {
           response = await this.apiKeyService.checkIfKeyExists(D_TYPE[keys[i]]).toPromise();
           permissions[D_TYPE[keys[i]]] = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE[keys[i]]).toPromise())['granted'];
+          somethingGranted = somethingGranted || permissions[D_TYPE[keys[i]]];
         }
       }
     } catch (e) {
       console.error(e);
     }
 
-    return permissions;
+    return {
+      permissions: permissions,
+      somethingGranted: somethingGranted
+    };
+  }
+
+  async getViewID()  {
+    let viewID;
+
+    try {
+      viewID = (await this.apiKeyService.getAllKeys().toPromise()).ga_view_id;
+    } catch (e) {
+      console.error('getViewID -> error doing the query', e);
+    }
+
+    return viewID;
+  }
+
+  async getViewList() {
+    try {
+      this.viewList = await this.GAService.getViewList().toPromise();
+    } catch (e) {
+      console.error('getViewList -> Error doing the query');
+    }
+  }
+
+  async selectViewSubmit(){
+    let update;
+    this.submitted = true;
+
+    if (this.selectViewForm.invalid) {
+      this.loadingForm = false;
+      return;
+    }
+
+    const key: ApiKey = {
+      ga_view_id: this.selectViewForm.value.view_id,
+      service_id: D_TYPE.GA
+    };
+
+    this.loadingForm = true;
+
+    update = await this.apiKeyService.updateKey(key).toPromise();
+
+    if(update) {
+      this.closeModal();
+      await this.ngOnInit();
+    } else {
+      console.error('MANDARE ERRORE');
+    }
+  }
+
+  openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered', ignoreBackdropClick: ignoreBackdrop, keyboard: !ignoreBackdrop});
+  }
+
+  closeModal(): void {
+    this.modalRef.hide();
   }
 }
