@@ -1,3 +1,5 @@
+import {D_TYPE} from './Dashboard';
+
 export interface MiniCard {
   name: string,
   icon: string,
@@ -5,7 +7,8 @@ export interface MiniCard {
   measure?: string;
   value?: string,
   progress?: string,
-  step?: number
+  step?: number,
+  type?: number
 }
 
 export let GaMiniCards: MiniCard[] = [
@@ -64,7 +67,7 @@ export let FbMiniCards: MiniCard[] = [
 ];
 export let IgMiniCards: MiniCard[] = [
   {
-    name: 'Fan',
+    name: 'Follower',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     value: '-',
@@ -87,5 +90,37 @@ export let IgMiniCards: MiniCard[] = [
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     value: '-',
     measure: ''
+  }
+];
+
+export let CustomMiniCards: MiniCard[] = [
+  {
+    name: 'FB Fan',
+    icon: 'fab fa-facebook',
+    padding: 'pl-0 pr-2',
+    value: '-',
+    measure: 'fb-fan-count',
+    type: D_TYPE.FB
+  }, {
+    name: 'IG Follower',
+    icon: 'fab fa-instagram',
+    padding: 'pl-2 pr-sm-2 pr-0',
+    value: '-',
+    measure: 'ig-follower',
+    type: D_TYPE.IG
+  }, {
+    name: 'GA Utenti tot.',
+    icon: 'fab fa-google',
+    padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
+    measure: 'ga-tot-user',
+    value: '-',
+    type: D_TYPE.GA
+  }, {
+    name: 'YT iscritti',
+    icon: 'fab fa-youtube',
+    padding: 'pl-2 pr-0 pt-sm-0 pt-3',
+    measure: 'yt-subscribers',
+    value: '-',
+    type: D_TYPE.YT
   }
 ];

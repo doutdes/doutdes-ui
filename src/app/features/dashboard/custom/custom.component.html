@@ -36,6 +36,10 @@
   </div>
 </div> <!-- Header -->
 
+<div *ngIf="somethingGranted" class="row px-3 pt-3">
+  <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="mini.type"></app-minicard>
+</div> <!-- Mini cards -->
+
 <div *ngIf="somethingGranted" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">

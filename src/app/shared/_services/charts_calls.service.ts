@@ -1042,6 +1042,11 @@ export class ChartsCallsService {
         break;
       case D_TYPE.YT:
         break;
+      case D_TYPE.CUSTOM:
+        observables.push(this.facebookService.getData(FB_CHART.FANS_DAY, pageID));
+        observables.push(this.instagramService.getBusinessInfo(pageID));
+        observables.push(this.googleAnalyticsService.gaUsers(intervalDate));
+        break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
     }
@@ -1062,6 +1067,8 @@ export class ChartsCallsService {
       case D_TYPE.IG:
         result = this.getInstagramMiniValue(measure, data, intervalDate);
         break;
+      case D_TYPE.CUSTOM:
+        result = this.getCustomMiniValue(measure, data, intervalDate);
     }
 
     return result;
@@ -1115,9 +1122,6 @@ export class ChartsCallsService {
 
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
-        max = Math.max.apply(Math, data.map((o) => {
-          return o.value;
-        }));
         data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
         value = data[data.length - 1].value;
 
@@ -1179,6 +1183,34 @@ export class ChartsCallsService {
     perc = value / step * 100;
 
     return {value, perc, step};
+  }
+
+  private getCustomMiniValue(measure, data, intervalDate) {
+    let value, perc, step;
+
+    switch (measure) {
+      case 'fb-fan-count':
+        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        value = data[data.length - 1].value;
+        break;
+      case 'ig-follower':
+        value = data['followers_count'];
+        break;
+      case 'ga-tot-user':
+        value = 0;
+        for (const i in data) {
+          value += parseInt(data[i][1]);
+        }
+        break;
+      case 'yt-subscribers':
+        value = '-';
+        break;
+    }
+
+    step = this.searchStep(value);
+    perc = value / step * 100;
+
+    return {value, perc, step}
   }
 
   private searchStep(value, measure?) {

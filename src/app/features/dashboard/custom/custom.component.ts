@@ -20,6 +20,7 @@ import {ToastrService} from 'ngx-toastr';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {CustomMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 const PrimaryWhite = '#ffffff';
 
@@ -50,6 +51,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   };
 
   public chartArray$: Array<DashboardCharts> = [];
+  public miniCards: MiniCard[] = CustomMiniCards;
   private dashStored: Array<DashboardCharts> = [];
 
   public loading = false;
@@ -169,6 +171,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.GEService.addSubscriber(dash_type);
       }
 
+      await this.loadMiniCards();
       await this.loadDashboard();
       this.GEService.loadingScreen.next(false);
 
@@ -398,6 +401,30 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       permissions: permissions,
       somethingGranted: somethingGranted
     };
+  }
+
+  async loadMiniCards() {
+    // 1. Init intervalData (retrieve data of previous month)
+    let results;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+    };
+
+    // TODO to give pageID
+
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, null, intervalDate);
+
+    forkJoin(observables).subscribe(miniDatas => {
+      for (const i in miniDatas) {
+        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure);
+        this.miniCards[i].value = results['value'];
+        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].step = results['step'];
+      }
+    });
   }
 
   async getViewID()  {
