@@ -413,16 +413,25 @@ export class ChartsCallsService {
         break;  // Google New Users vs Return users
       case GA_CHART.PAGE_LOAD_TIME:
         header = [['Pagina', 'Tempo Medio (s)']];
-        temp = 0;
+        let tmpArray = [];
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
           if (indexFound >= 0) {
-            chartData[indexFound][1] += parseInt(data[i][2], 10);
+            chartData[indexFound][1] += parseFloat(data[i][2]);
+            (tmpArray[indexFound][1])++;
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseFloat(data[i][2])]);
+            tmpArray.push([ChartsCallsService.cutString(data[i][1], 30), 1]);
           }
         }
+
+        // Calculating average
+        for (let i=0; i < chartData.length; i++) {
+          chartData[i][1] /= (tmpArray[i][1] * 1000);
+        }
+
+        console.log(chartData);
         break;
     }
 
