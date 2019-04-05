@@ -103,7 +103,6 @@ export class ChartsCallsService {
           return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
         });
         break; // Facebook Fan City
-
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Date', 'Impressions']];
 
@@ -225,7 +224,6 @@ export class ChartsCallsService {
           chartData.push(['', null]);
         }
         break; // Google list Session per Browser
-
       case IG_CHART.AUD_CITY:
         header = [['City', 'Fans']];
         if (data.length > 0) {
@@ -350,7 +348,6 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Reach
-
       case IG_CHART.ACTION_PERFORMED:
         header = [['Type', 'Number']];
         let map = new Map();
@@ -378,7 +375,6 @@ export class ChartsCallsService {
           chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
         });
         break;// IG composed clicks
-
       case GA_CHART.NEW_USERS:
         header = [['Date', 'Users']];
 
@@ -386,7 +382,6 @@ export class ChartsCallsService {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
         break;//GA New Users
-
       case GA_CHART.MOBILE_DEVICES:
         /** Data array is constructed as follows:
          * 0 - date
@@ -412,6 +407,18 @@ export class ChartsCallsService {
           chartData.push(['', null]);
         }
         break; // Google list Sessions per mobile devices
+      case GA_CHART.PERCENT_NEW_SESSION:
+        header = [['Utenti di ritorno', 'Nuovi utenti']];
+        let avg = 0;
+        for (let i = 0; i < data.length; i++) {
+          avg += parseFloat(data[i][1]);
+        }
+
+        avg /= data.length;
+
+        chartData.push(['Nuovi', avg]);
+        chartData.push(['Di ritorno', 100 - avg]);
+        break;  // Google New Users vs Return users
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -556,7 +563,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#fd8f8d','#c96565'],
+            colors: ['#fd8f8d', '#c96565'],
             areaOpacity: 0.2
           }
         };
@@ -575,7 +582,8 @@ export class ChartsCallsService {
               'hoverTableRow': '',
               'headerCell': 'border-0 py-2 pl-2',
               'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'},
+              'rowNumberCell': 'underline-blue-font'
+            },
             alternatingRowStyle: true,
             allowHtml: true,
             sort: 'disable',
@@ -618,9 +626,14 @@ export class ChartsCallsService {
             chartArea: {left: 0, right: 0, height: 310, top: 0},
             legend: {position: 'none'},
             height: 330,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'}, textPosition: 'in', textStyle: {color: '#999'}},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#ffdda4'],
-            bar: { groupWidth: '70%'},
+            bar: {groupWidth: '70%'},
             areaOpacity: 0.3
           }
         };
@@ -695,10 +708,11 @@ export class ChartsCallsService {
               'hoverTableRow': '',
               'headerCell': 'border-0 py-2 pl-2',
               'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'},
+              'rowNumberCell': 'underline-blue-font'
+            },
             alternatingRowStyle: true,
             sortAscending: false,
-            sort:'disable',
+            sort: 'disable',
             sortColumn: 1,
             pageSize: 9,
             height: '100%',
@@ -900,7 +914,6 @@ export class ChartsCallsService {
           formattedData.dataTable = data.slice(0, 2);
         }
         break; // IG clicks pie
-
       case GA_CHART.NEW_USERS:
         formattedData = {
           chartType: 'AreaChart',
@@ -925,7 +938,7 @@ export class ChartsCallsService {
             areaOpacity: 0.1
           }
         };
-        break;
+        break;// GA new users
       case GA_CHART.MOBILE_DEVICES:
         formattedData = {
           chartType: 'Table',
@@ -940,7 +953,8 @@ export class ChartsCallsService {
               'hoverTableRow': '',
               'headerCell': 'border-0 py-2 pl-2',
               'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'},
+              'rowNumberCell': 'underline-blue-font'
+            },
             alternatingRowStyle: true,
             allowHtml: true,
             sort: 'disable',
@@ -951,7 +965,25 @@ export class ChartsCallsService {
             width: '100%'
           }
         };
-        break;
+        break;// GA mobile devices per session
+      case GA_CHART.PERCENT_NEW_SESSION:
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 6,
+          options: {
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
+            height: 310,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#fd8f8d', '#c96565'],
+            areaOpacity: 0.2
+          }
+        };
+        break;  // Google New Users vs Returning
     }
 
     return formattedData;
