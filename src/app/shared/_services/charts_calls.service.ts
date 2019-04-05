@@ -169,8 +169,6 @@ export class ChartsCallsService {
          * 2 - value
          **/
 
-        console.warn('Data on cc:', data);
-
         header = [['Type', 'Number']];
 
         for (let i = 0; i < data.length; i++) {

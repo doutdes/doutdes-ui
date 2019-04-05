@@ -16,8 +16,10 @@ import {P404Component} from '../errors/404.component';
         children: [
           {
             path: '',
-            redirectTo: 'dashboard',
-            pathMatch: 'full'
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './home/home.module#HomeModule'
           },
           {
             path: 'report',

@@ -14,23 +14,24 @@ import {FeatureDashboardComponent} from './dashboard.component';
     RouterModule.forChild([
       {
         path: '',
-        component: FeatureDashboardComponent
-      },
-      {
-        path: 'facebook',
-        component: FeatureDashboardFacebookComponent
+        redirectTo: 'google',
+        pathMatch: 'full'
       },
       {
         path: 'google',
         component: FeatureDashboardGoogleAnalyticsComponent
       },
       {
-        path: 'custom',
-        component: FeatureDashboardCustomComponent
+        path: 'facebook',
+        component: FeatureDashboardFacebookComponent
       },
       {
         path: 'instagram',
         component: FeatureDashboardInstagramComponent
+      },
+      {
+        path: 'custom',
+        component: FeatureDashboardCustomComponent
       }
     ])
   ],
