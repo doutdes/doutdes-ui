@@ -64,7 +64,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
-  datePickerEnabled = false;
+  // datePickerEnabled = false;
 
   modalRef: BsModalRef;
 
@@ -125,7 +125,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         // Ci sono già dati salvati
         this.filterActions.loadStoredDashboard(D_TYPE.GA);
         this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
-        this.datePickerEnabled = true;
+        // this.datePickerEnabled = true;
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
@@ -155,7 +155,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.GEService.updateChartList.next(true);
 
           // Shows last 30 days
-          this.datePickerEnabled = true;
+          // this.datePickerEnabled = true;
           this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
 
           this.GEService.loadingScreen.next(false);
@@ -212,10 +212,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           chartToPush.chartData = chartData;
           chartToPush.error = false;
 
-          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico correttamente aggiunto!');
+          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
         } else {
           chartToPush.error = true;
           console.error('Errore recuperando dati per ' + dashChart);
+
+          this.toastr.error('I dati disponibili per ' + dashChart.title +' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
         }
 
         this.filterActions.addChart(chartToPush);
@@ -225,12 +227,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       }, error1 => {
         console.error('Error querying the Chart');
         console.error(error1);
+        this.toastr.error('C\'è stato un errore recuperando i dati per il grafico ' + dashChart.title + '. Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
       });
   }
 
   onValueChange(value): void {
 
-    if (value && this.datePickerEnabled) {
+    if (value){// && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
         first: new Date(value[0].setHours(0, 0, 0, 0)), // TO REMEMBER: always set ms to 0!!!!

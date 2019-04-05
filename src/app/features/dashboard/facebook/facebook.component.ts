@@ -215,7 +215,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           chartToPush.chartData = data;
           chartToPush.error = false;
 
-          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico correttamente aggiunto!');
+          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
 
         } else {
           chartToPush.error = true;

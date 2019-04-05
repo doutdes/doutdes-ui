@@ -94,17 +94,18 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    let existence, view_id, update;
+    let existence, view_id;
     let key: ApiKey;
 
     this.addBreadcrumb();
+    this.GEService.loadingScreen.next(true);
 
     try {
       existence = await this.checkExistence();
 
       if(!existence.somethingGranted) {
         this.somethingGranted = false;
-        // this.toastr.info('Prima di iniziare, devi importare i tuoi dati su "Sorgenti dati"', 'Non hai ancora fornito alcun accesso ai dati.');
+        this.GEService.loadingScreen.next(false);
         return;
       }
 
@@ -117,24 +118,20 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
         if(this.viewList.length === 1) {
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
-          update = await this.apiKeyService.updateKey(key).toPromise();
+          await this.apiKeyService.updateKey(key).toPromise();
 
-          if(!update) {
-            return;
-          }
         } else {
           this.selectViewForm = this.formBuilder.group({
             view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
           });
 
           this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
+          this.GEService.loadingScreen.next(false);
           this.openModal(this.selectView, true);
 
           return;
         }
       }
-
-      this.GEService.loadingScreen.next(true);
 
       this.firstDateRange = subDays(new Date(), 30); //this.minDate;
       this.lastDateRange = this.maxDate;
@@ -158,8 +155,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.GEService.showChartInDashboard.subscribe(chart => {
           if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
             this.addChartToDashboard(chart);
-            //this.GEService.showChartInDashboard.next(null); //reset data
-            console.log(this.GEService.getSubscribers());
           }
         });
         this.GEService.updateChartInDashboard.subscribe(chart => {
@@ -258,19 +253,22 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             };
 
             this.filterActions.initData(currentData);
-
             this.GEService.updateChartList.next(true);
 
             // Shows last 30 days
             this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+
+            this.GEService.loadingScreen.next(false);
           }
         } else {
+          this.filterActions.initData(currentData);
+          this.GEService.loadingScreen.next(false);
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
         }
       }
 
     } catch (e) {
-      console.error(e);
+      this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
     }
   }
 
@@ -286,22 +284,23 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     this.CCService.retrieveChartData(dashChart.chart_id, this.pageID, dateInterval)
       .subscribe(chartData => {
-
-        console.warn('Dati ricevuti: ', chartData);
-
         if (!chartData['status']) { // Se la chiamata non rende errori
-
           chartToPush.chartData = chartData;
           chartToPush.error = false;
 
+          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
+
+          this.toastr.error('I dati disponibili per ' + dashChart.title +' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
         }
         this.filterActions.addChart(chartToPush);
       }, error1 => {
         console.log('Error querying the Chart');
         console.log(error1);
+
+        this.toastr.error('C\'è stato un errore recuperando i dati per il grafico ' + dashChart.title + '. Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
       });
   }
 
