@@ -75,7 +75,7 @@
       Alcuni dati, non essendo presenti sulla sorgente esterna, <b>non saranno più recuperabili</b>. Non sarà
     inoltre possibile visualizzare i grafici associati al servizio stesso.</p>
     <p *ngIf="serviceToDelete.type === D_TYPE.FB && services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted'] ">
-    <i class="fas fa-exclamation-triangle mr-1" style="color: #ffbb00; font-size:14pt"></i>Avviso: l'eliminazione del servizio Facebook comporta l'eliminazione contestuale del servizio Instagram.</p>
+    <i class="fas fa-exclamation-triangle text-warning mr-1" style="font-size:14pt"></i><b class="text-warning">Avviso:</b> l'eliminazione del servizio Facebook comporta l'eliminazione contestuale del servizio Instagram.</p>
   </div>
 
   <div class="modal-footer">

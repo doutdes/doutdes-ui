@@ -1,22 +1,18 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import {APP_BASE_HREF, HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 
-import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 
-import { AppComponent } from './app.component';
-
-
+import {AppComponent} from './app.component';
 // Import routing module
-import { AppRoutingModule } from './app.routing';
-
+import {AppRoutingModule} from './app.routing';
 // Import 3rd party components
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { TabsModule } from 'ngx-bootstrap/tabs';
-import { ChartsModule } from 'ng2-charts/ng2-charts';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import { AlertModule } from 'ngx-bootstrap/alert';
+import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
+import {TabsModule} from 'ngx-bootstrap/tabs';
+import {ChartsModule} from 'ng2-charts/ng2-charts';
+import {ReactiveFormsModule} from '@angular/forms';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {AlertModule} from 'ngx-bootstrap/alert';
 
 import {CoreModule} from './core/core.module';
 import {StoreModule} from './shared/store/store.module';
@@ -24,6 +20,7 @@ import {StoreService} from './shared/_services/store.service';
 import {GlobalEventsManagerService} from './shared/_services/global-event-manager.service';
 import {JwtInterceptor} from './shared/jwt.interceptor';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ToastContainerModule, ToastrModule} from 'ngx-toastr';
 
 @NgModule({
   imports: [
@@ -38,6 +35,11 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     ChartsModule,
     HttpClientModule,
     AlertModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      positionClass: 'toast-top-right',
+    }),
+    ToastContainerModule,
     StoreModule
   ],
   declarations: [

@@ -65,8 +65,8 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     this.services$ = {};
     let observables = [];
 
-    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE // TODO remove D_TYPE[SERVICE] !== D_TYPE.YT when YouTube is ready
-      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM && D_TYPE[SERVICE] !== D_TYPE.YT) {
+    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
+      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM) {
         observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
       }
     }
@@ -77,12 +77,15 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
         this.allGranted = this.allGranted && services[i].granted;
       }
       this.geManager.loadingScreen.next(false);
+      this.setURL();
     });
-
-    this.setURL();
   }
 
   setURL() {
+
+    console.log(this.services$[D_TYPE.GA]);
+    console.log(this.services$[D_TYPE.GA].granted);
+
     this.fbLoginURL = this.envURL + '/fb/login?user_id=' + this.store.getId();
     this.igLoginURL = this.envURL + '/ig/login?user_id=' + this.store.getId();
     this.gaLoginURL = this.envURL + (this.services$[D_TYPE.YT] && this.services$[D_TYPE.YT].granted ? '/ga/yt' : '/ga') + '/login?user_id=' + this.store.getId();
@@ -97,9 +100,9 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Preferences', '/preferences/'));
-    bread.push(new Breadcrumb('Api Keys', '/preferences/api-keys/'));
-    bread.push(new Breadcrumb('Insert', '/preferences/api-keys/insert'));
+    bread.push(new Breadcrumb('Preferenze', '/preferences/'));
+    bread.push(new Breadcrumb('Sorgenti dati', '/preferences/api-keys/'));
+    bread.push(new Breadcrumb('Inserisci', '/preferences/api-keys/insert'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
