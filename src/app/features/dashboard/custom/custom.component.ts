@@ -179,6 +179,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       last: this.bsRangeValue[1]
     };
 
+    this.getPageID(dashChart.type);
+
     this.CCService.retrieveChartData(dashChart.chart_id, this.pageID, dateInterval)
       .subscribe(chartData => {
 
