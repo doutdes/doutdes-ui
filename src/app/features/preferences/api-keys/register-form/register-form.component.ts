@@ -82,10 +82,6 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
   }
 
   setURL() {
-
-    console.log(this.services$[D_TYPE.GA]);
-    console.log(this.services$[D_TYPE.GA].granted);
-
     this.fbLoginURL = this.envURL + '/fb/login?user_id=' + this.store.getId();
     this.igLoginURL = this.envURL + '/ig/login?user_id=' + this.store.getId();
     this.gaLoginURL = this.envURL + (this.services$[D_TYPE.YT] && this.services$[D_TYPE.YT].granted ? '/ga/yt' : '/ga') + '/login?user_id=' + this.store.getId();

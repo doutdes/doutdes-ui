@@ -64,11 +64,12 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     await this.updateList();
 
     if(error == 'true') {
-      this.modalRef = this.modalService.show(this.oauthError, {class: 'modal-md modal-dialog-centered'});
+      this.toastr.error('Si è verificato un errore durante l\'accesso ai dati. Per favore, riprova oppure contatta il supporto.','Errore durante l\'accesso ai dati!');
       this.router.navigate([], { replaceUrl: true});
     }
     if(error != null && error == 'false') {
-      this.toastr.success('La configurazione del servizio scelto è andata a buon fine.','Servizio configurato correttamente!')
+      this.toastr.success('La configurazione del servizio scelto è andata a buon fine.','Servizio configurato correttamente!');
+      this.router.navigate([], { replaceUrl: true});
     }
   }
 
@@ -111,6 +112,10 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
       if(serviceType === D_TYPE.FB && Object.keys(this.services$).includes(D_TYPE.IG+  '')) {
         delete this.services$[D_TYPE.IG];
+        this.toastr.info(
+          'Da adesso non potrai più accedere alle dashboard collegate a ' + DS_TYPE[D_TYPE.IG],
+          'Sorgente ' + DS_TYPE[D_TYPE.IG] + ' eliminata'
+        );
       }
 
       if(Object.keys(this.services$).length === 0) this.somethingGranted = false;

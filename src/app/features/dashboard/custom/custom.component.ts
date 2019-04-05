@@ -104,11 +104,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
       if(!existence.somethingGranted) {
         this.somethingGranted = false;
-        this.toastr.info('Prima di iniziare, devi importare i tuoi dati su "Sorgenti dati"', 'Non hai ancora fornito alcun accesso ai dati.');
+        // this.toastr.info('Prima di iniziare, devi importare i tuoi dati su "Sorgenti dati"', 'Non hai ancora fornito alcun accesso ai dati.');
         return;
       }
 
-      this.HARD_DASH_DATA.permissions = await this.checkExistence();
+      this.HARD_DASH_DATA.permissions = (await this.checkExistence()).permissions;
       view_id = await this.getViewID();
 
       // We check if the user has already set a preferred GOOGLE page if there is more than one in his permissions.
@@ -133,6 +133,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           return;
         }
       }
+
+      this.GEService.loadingScreen.next(true);
 
       this.firstDateRange = subDays(new Date(), 30); //this.minDate;
       this.lastDateRange = this.maxDate;
@@ -173,6 +175,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       }
 
       await this.loadDashboard();
+      this.GEService.loadingScreen.next(false);
 
     } catch (e) {
       console.error('Error on ngOnInit of Google Analytics', e);
@@ -188,10 +191,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData;
-    let dash, charts, dataArray;
+    let currentData: DashboardData = {
+      data: chartsToShow,
+      interval: dateInterval,
+      type: D_TYPE.CUSTOM,
+    };
 
-    this.GEService.loadingScreen.next(true);
+    let dash, charts, dataArray;
 
     try {
       // Retrieving dashboard ID
@@ -258,15 +264,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             // Shows last 30 days
             this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
           }
+        } else {
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
         }
-
-        this.GEService.loadingScreen.next(false);
-        this.filterActions.initData(currentData);
       }
 
     } catch (e) {
       console.error(e);
-      this.GEService.loadingScreen.next(false);
     }
   }
 
@@ -282,6 +286,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     this.CCService.retrieveChartData(dashChart.chart_id, this.pageID, dateInterval)
       .subscribe(chartData => {
+
+        console.warn('Dati ricevuti: ', chartData);
 
         if (!chartData['status']) { // Se la chiamata non rende errori
 
