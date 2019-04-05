@@ -453,6 +453,68 @@ export class ChartsCallsService {
         };
 
         break;  // Page Impressions
+      case FB_CHART.PAGE_VIEWS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#63c2de'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Facebook Page Views
+      case FB_CHART.FANS_CITY:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 14,
+          options: {
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sortColumn: 1,
+            pageSize: 11,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; // Facebook Fan City
+      case FB_CHART.FANS_COUNTRY_PIE:
+
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 8,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            sliceVisibilityThreshold: 0.05,
+            height: 310,
+            // is3D: true,
+            colors: ['#63c2de'],
+            pieSliceText: 'label',
+            pieSliceTextStyle: {fontSize: 13, color: 'black'},
+            pieHole: 0.1,
+            slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
+            areaOpacity: 0.4
+          }
+        };
+        break;  // Fan Country Pie
+
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
           chartType: 'AreaChart',
@@ -548,27 +610,6 @@ export class ChartsCallsService {
           }
         };
         break;  // Google List Referral
-      case FB_CHART.FANS_COUNTRY_PIE:
-
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            sliceVisibilityThreshold: 0.05,
-            height: 310,
-            // is3D: true,
-            colors: ['#63c2de'],
-            pieSliceText: 'label',
-            pieSliceTextStyle: {fontSize: 13, color: 'black'},
-            pieHole: 0.1,
-            slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
-            areaOpacity: 0.4
-          }
-        };
-        break;  // Fan Country Pie
       case GA_CHART.SOURCES_COLUMNS:
 
         formattedData = {
@@ -667,46 +708,7 @@ export class ChartsCallsService {
           }
         };
         break; // Google list sessions per browser
-      case FB_CHART.PAGE_VIEWS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#63c2de'],
-            areaOpacity: 0.1
-          }
-        };
-        break; // Facebook Page Views
-      case FB_CHART.FANS_CITY:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 14,
-          options: {
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sortColumn: 1,
-            pageSize: 11,
-            height: '100%',
-            width: '100%'
-          }
-        };
-        break; // Facebook Fan City
+
       case IG_CHART.AUD_CITY:
         formattedData = {
           chartType: 'Table',

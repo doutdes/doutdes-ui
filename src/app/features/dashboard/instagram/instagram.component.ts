@@ -89,6 +89,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageID);
 
     forkJoin(observables).subscribe(miniDatas => {
+      console.log(miniDatas)
       for(const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
         this.miniCards[i].value = results['value'];
@@ -206,8 +207,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
-          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
+
+          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico correttamente aggiunto!');
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);

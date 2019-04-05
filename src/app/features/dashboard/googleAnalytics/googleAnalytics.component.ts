@@ -211,15 +211,15 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         if (chartData && !chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;
           chartToPush.error = false;
-          // chartToPush.aggregated = this.ADService.getAggregatedData(chartData, dashChart.chart_id, dateInterval);
-          // console.log("GA COMPONENT RETRIEVE CHART DATA AGGREGATED", chartToPush.aggregated);
+
+          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico correttamente aggiunto!');
         } else {
           chartToPush.error = true;
           console.error('Errore recuperando dati per ' + dashChart);
         }
 
         this.filterActions.addChart(chartToPush);
-        this.filterActions.filterData(dateInterval); // TODO in theory, filterData should wait addChart before being executed
+        this.filterActions.filterData(dateInterval);
 
         this.GEService.loadingScreen.next(false);
       }, error1 => {
@@ -291,12 +291,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     try {
       existence = await this.checkExistance();
-      view_id = await this.getViewID();
 
       if (!existence) { // If the Api Key has not been set yet, then a message is print
         this.isApiKeySet = false;
         return;
       }
+
+      view_id = await this.getViewID();
 
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if(!view_id) {
@@ -304,8 +305,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         await this.getViewList();
 
         if(this.viewList.length === 1) {
-          console.warn('SONO QUA', this.viewList);
-
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
           update = await this.apiKeyService.updateKey(key).toPromise();
 

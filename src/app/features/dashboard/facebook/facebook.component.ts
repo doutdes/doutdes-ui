@@ -213,8 +213,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
-          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
+
+          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico correttamente aggiunto!');
+
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
@@ -296,7 +298,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     return result;
   }
-
 
   ngOnInit(): void {
     this.firstDateRange = this.minDate;

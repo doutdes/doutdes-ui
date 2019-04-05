@@ -29,7 +29,7 @@ export class FilterActions {
   constructor(
     private Redux: NgRedux<IAppState>,
     private CCService: ChartsCallsService,
-    private ADService: AggregatedDataService
+    private ADService: AggregatedDataService,
   ) {
     this.filter.subscribe(elements => {
       this.currentDashboard = elements['currentDashboard'];
@@ -58,7 +58,7 @@ export class FilterActions {
         }
       }
 
-      // Searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
+      // It searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
       index = this.storedDashboards ? this.storedDashboards.findIndex((el: DashboardData) => el.type === currentDashboard.type) : -1;
 
       if (index < 0) { // The dashboard was never been stored
@@ -98,13 +98,18 @@ export class FilterActions {
   }
 
   addChart(chart: DashboardCharts) {
-    const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === chart.type);
+    const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
     let filteredChart = JSON.parse(JSON.stringify(chart));
     filteredChart.chartData = this.CCService.formatChart(filteredChart.chart_id, filteredChart.chartData);
 
     this.currentDashboard.data.push(chart);
     this.filteredDashboard.data.push(filteredChart);
-    this.storedDashboards[index] = JSON.parse(JSON.stringify(this.currentDashboard));
+
+    if (index < 0) { // The dashboard was never been stored
+      this.storedDashboards.push(JSON.parse(JSON.stringify(this.currentDashboard)));
+    } else {
+      this.storedDashboards[index] = JSON.parse(JSON.stringify(this.currentDashboard));
+    }
 
     this.Redux.dispatch({
       type: FILTER_UPDATE,
