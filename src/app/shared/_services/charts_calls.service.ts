@@ -103,7 +103,6 @@ export class ChartsCallsService {
           return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
         });
         break; // Facebook Fan City
-
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Date', 'Impressions']];
 
@@ -136,6 +135,7 @@ export class ChartsCallsService {
             chartData.push([data[i][1] === '(none)' ? 'unknown' : data[i][1], parseInt(data[i][2], 10)]);
           }
         }
+
         break;  // Google Sources Pie
       case GA_CHART.MOST_VISITED_PAGES:
         /** Data array is constructed as follows:
@@ -224,7 +224,6 @@ export class ChartsCallsService {
           chartData.push(['', null]);
         }
         break; // Google list Session per Browser
-
       case IG_CHART.AUD_CITY:
         header = [['City', 'Fans']];
         if (data.length > 0) {
@@ -253,14 +252,19 @@ export class ChartsCallsService {
         if (data.length > 0) {
           keys = Object.keys(data[0]['value']); // getting all the gender/age data
 
+          let subIndex = 0;
+          if (keys[0].indexOf('.') !== -1)
+            subIndex = 2;
+          else
+            subIndex = 1;
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
             index = 0;
-            if (!(chartData.find(e => e[0] === (keys[i].substr(2, keys[i].length))))) {
-              chartData.push([keys[i].substr(2, keys[i].length), 0, 0]);
+            if (!(chartData.find(e => e[0] === (keys[i].substr(subIndex, keys[i].length))))) {
+              chartData.push([keys[i].substr(subIndex, keys[i].length), 0, 0]);
               index = (chartData.length - 1);
             } else {
-              index = chartData.findIndex(e => e[0] === (keys[i].substr(2, keys[i].length)));
+              index = chartData.findIndex(e => e[0] === (keys[i].substr(subIndex, keys[i].length)));
             }
             // and collecting data
             (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
@@ -370,9 +374,58 @@ export class ChartsCallsService {
         map.forEach((value: boolean, key: string) => {
           chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
         });
+        break;// IG composed clicks
+      case GA_CHART.NEW_USERS:
+        header = [['Date', 'Users']];
 
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
+        }
+        break;//GA New Users
+      case GA_CHART.MOBILE_DEVICES:
+        header = [['Dispositivo', 'Sessioni']];
 
-        break; // IG composed clicks
+        for (let i = 0; i < data.length; i++) {
+          indexFound = keys.findIndex(el => el === data[i][1]);
+
+          if (indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+          }
+        }
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
+        }
+        break; // GA List mobile devices per sessions
+      case GA_CHART.PERCENT_NEW_SESSION:
+        header = [['Utenti di ritorno', 'Nuovi utenti']];
+        let avg = 0;
+        for (let i = 0; i < data.length; i++) {
+          avg += parseFloat(data[i][1]);
+        }
+
+        avg /= data.length;
+
+        chartData.push(['Nuovi', avg]);
+        chartData.push(['Di ritorno', 100 - avg]);
+        break;  // Google New Users vs Return users
+      case GA_CHART.PAGE_LOAD_TIME:
+        header = [['Pagina', 'Tempo Medio (s)']];
+        temp = 0;
+        for (let i = 0; i < data.length; i++) {
+          indexFound = keys.findIndex(el => el === data[i][1]);
+          if (indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+          }
+        }
+        break;
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -579,7 +632,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#fd8f8d','#c96565'],
+            colors: ['#fd8f8d', '#c96565'],
             areaOpacity: 0.2
           }
         };
@@ -598,7 +651,8 @@ export class ChartsCallsService {
               'hoverTableRow': '',
               'headerCell': 'border-0 py-2 pl-2',
               'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'},
+              'rowNumberCell': 'underline-blue-font'
+            },
             alternatingRowStyle: true,
             allowHtml: true,
             sort: 'disable',
@@ -620,9 +674,14 @@ export class ChartsCallsService {
             chartArea: {left: 0, right: 0, height: 310, top: 0},
             legend: {position: 'none'},
             height: 330,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'}, textPosition: 'in', textStyle: {color: '#999'}},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
             colors: ['#ffdda4'],
-            bar: { groupWidth: '70%'},
+            bar: {groupWidth: '70%'},
             areaOpacity: 0.3
           }
         };
@@ -697,10 +756,11 @@ export class ChartsCallsService {
               'hoverTableRow': '',
               'headerCell': 'border-0 py-2 pl-2',
               'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'},
+              'rowNumberCell': 'underline-blue-font'
+            },
             alternatingRowStyle: true,
             sortAscending: false,
-            sort:'disable',
+            sort: 'disable',
             sortColumn: 1,
             pageSize: 9,
             height: '100%',
@@ -862,9 +922,99 @@ export class ChartsCallsService {
           formattedData.options.colors = ['#D3D3D3'];
           formattedData.dataTable = data.slice(0, 2);
         }
-
-
         break; // IG clicks pie
+      case GA_CHART.NEW_USERS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 230,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#FFA647'],
+            areaOpacity: 0.1
+          }
+        };
+        break;// GA new users
+      case GA_CHART.MOBILE_DEVICES:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 7,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': '',
+              'oddTableRow': '',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            allowHtml: true,
+            sort: 'disable',
+            sortAscending: true,
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;// GA mobile devices per session
+      case GA_CHART.PERCENT_NEW_SESSION:
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 6,
+          options: {
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
+            height: 310,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#fd8f8d', '#c96565'],
+            areaOpacity: 0.2
+          }
+        };
+        break;  // Google New Users vs Returning
+      case GA_CHART.PAGE_LOAD_TIME:
+        console.warn(data);
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 310, top: 0},
+            legend: {position: 'none'},
+            height: 330,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ffdda4'],
+            bar: {groupWidth: '70%'},
+            areaOpacity: 0.3
+          }
+        };
+        break;  // Google Sources Column Chart
     }
 
     return formattedData;
