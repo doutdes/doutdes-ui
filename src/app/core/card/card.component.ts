@@ -51,7 +51,7 @@ export class CardComponent implements OnInit {
 
   ngOnInit() {
 
-    this.aggregated = this.dashChart.aggregated ? true : false;
+    this.aggregated = !!this.dashChart.aggregated;
 
     // Handling icon nicknames
     switch (this.dashChart.type) {
@@ -133,20 +133,24 @@ export class CardComponent implements OnInit {
         break;
     }
 
-    if (this.dashChart.aggregated.average) {
+    if(this.aggregated) {
+
+      // if (this.dashChart.aggregated.average) {
       this.avg = this.dashChart.aggregated.average.toFixed(2) + unit;
-    }
+      // }
 
-    if (this.dashChart.aggregated.lowest) {
-      this.low = this.type == 'ga_impressions' ? this.dashChart.aggregated.lowest.toFixed(0) + unit : this.dashChart.aggregated.lowest.toFixed(2) + unit;
-    }
+      // if (this.dashChart.aggregated.lowest) {
+      this.low = this.dashChart.aggregated.lowest + unit;
+      // }
 
-    if (this.dashChart.aggregated.highest) {
-      this.high = this.type == 'ga_impressions' ? this.dashChart.aggregated.highest.toFixed(0) + unit : this.dashChart.aggregated.highest.toFixed(2) + unit;
-    }
+      // if (this.dashChart.aggregated.highest) {
+      this.high = this.dashChart.aggregated.highest + unit;
+      // }
 
-    //this.interval = 'BASE INTERVAL: ' + new Date(this.dashChart.aggregated.interval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.interval.last).toLocaleString() +
-    //' | PREVIOUS: ' + new Date(this.dashChart.aggregated.previousInterval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.previousInterval.last).toLocaleString();
+      //this.interval = 'BASE INTERVAL: ' + new Date(this.dashChart.aggregated.interval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.interval.last).toLocaleString() +
+      //' | PREVIOUS: ' + new Date(this.dashChart.aggregated.previousInterval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.previousInterval.last).toLocaleString();
+
+    }
   }
 
   openModal(template: TemplateRef<any>) {

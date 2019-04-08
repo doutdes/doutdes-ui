@@ -41,7 +41,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   private fbPageID = null;
   private igPageID = null;
-  private pageID = null;
   public somethingGranted = true;
 
   public FILTER_DAYS = {
@@ -135,6 +134,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         }
       }
 
+      // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
+      this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
+      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
+
       this.firstDateRange = subDays(new Date(), 30); //this.minDate;
       this.lastDateRange = this.maxDate;
       //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -195,7 +198,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       type: D_TYPE.CUSTOM,
     };
 
-    let dash, charts, dataArray;
+    let pageID, dash, charts, dataArray;
 
     try {
       // Retrieving dashboard ID
@@ -208,10 +211,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
-      this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
-      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
-
       if (this.dashStored) {
         // Ci sono già dati salvati
         this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
@@ -223,8 +222,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           charts.forEach(async chart => {
             // If the permission for the service is granted
             if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
-              this.getPageID(chart.type);
-              observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID));
+              pageID = this.getPageID(chart.type);
+              observables.push(this.CCService.retrieveChartData(chart.chart_id, pageID));
             }
           }); // Retrieves data for each chart
 
@@ -277,15 +276,16 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
+    let pageID = null;
 
     const dateInterval: IntervalDate = {
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
     };
 
-    this.getPageID(dashChart.type);
+    pageID = this.getPageID(dashChart.type);
 
-    this.CCService.retrieveChartData(dashChart.chart_id, this.pageID, dateInterval)
+    this.CCService.retrieveChartData(dashChart.chart_id, pageID, dateInterval)
       .subscribe(chartData => {
         if (!chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;
@@ -367,17 +367,21 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   getPageID(type: number) {
+    let pageID;
+
     switch (type) {
       case D_TYPE.FB:
-        this.pageID = this.fbPageID;
+        pageID = this.fbPageID;
         break;
       case D_TYPE.IG:
-        this.pageID = this.igPageID;
+        pageID = this.igPageID;
         break;
       default:
-        this.pageID = null;
+        pageID = null;
         break;
     }
+
+    return pageID;
   }
 
   async checkExistence() {
@@ -405,7 +409,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   async loadMiniCards() {
     // 1. Init intervalData (retrieve data of previous month)
-    let results;
+    let results, pageIDs = {};
+    let permissions = this.HARD_DASH_DATA.permissions;
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
@@ -413,18 +418,31 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
     };
 
-    // TODO to give pageID
+    pageIDs[D_TYPE.FB] = this.fbPageID;
+    pageIDs[D_TYPE.IG] = this.igPageID;
 
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, null, intervalDate);
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
-        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure);
-        this.miniCards[i].value = results['value'];
-        this.miniCards[i].progress = results['perc'] + '%';
-        this.miniCards[i].step = results['step'];
+        if(Object.entries(miniDatas[i]).length !== 0) {
+          results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
+          this.miniCards[i].value = results['value'];
+          this.miniCards[i].progress = results['perc'] + '%';
+          this.miniCards[i].step = results['step'];
+        } else {
+          this.miniCards[i].value = '-';
+          this.miniCards[i].progress = '0%';
+          this.miniCards[i].step = 0;
+        }
       }
     });
+
+    // TODO Remove YT simulation card
+    results = this.CCService.formatMiniChartData(null, D_TYPE.CUSTOM, this.miniCards[3].measure);
+    this.miniCards[3].value = results['value'];
+    this.miniCards[3].progress = results['perc'] + '%';
+    this.miniCards[3].step = results['step'];
   }
 
   async getViewID()  {

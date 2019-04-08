@@ -92,35 +92,35 @@ export let IgMiniCards: MiniCard[] = [
     measure: ''
   }
 ];
-
 export let CustomMiniCards: MiniCard[] = [
   {
-    name: 'FB Fan',
-    icon: 'fab fa-facebook',
+    name: 'Utenti tot.',
+    icon: 'fab fa-google',
     padding: 'pl-0 pr-2',
+    measure: 'ga-tot-user',
+    value: '-',
+    type: D_TYPE.GA
+  },
+  {
+    name: 'Fan',
+    icon: 'fab fa-facebook',
+    padding: 'pl-2 pr-sm-2 pr-0',
     value: '-',
     measure: 'fb-fan-count',
     type: D_TYPE.FB
   }, {
-    name: 'IG Follower',
+    name: 'Followers',
     icon: 'fab fa-instagram',
-    padding: 'pl-2 pr-sm-2 pr-0',
+    padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
     measure: 'ig-follower',
     type: D_TYPE.IG
   }, {
-    name: 'GA Utenti tot.',
-    icon: 'fab fa-google',
-    padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
-    measure: 'ga-tot-user',
-    value: '-',
-    type: D_TYPE.GA
-  }, {
-    name: 'YT iscritti',
+    name: 'Iscritti',
     icon: 'fab fa-youtube',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     measure: 'yt-subscribers',
-    value: '-',
+    value: '30',
     type: D_TYPE.YT
   }
 ];

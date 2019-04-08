@@ -69,7 +69,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Preset';
-  datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
+  // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
   constructor(
     private FBService: FacebookService,
@@ -93,14 +93,18 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       first: new Date(y, m - 1, 1),
       last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
     };
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageID);
+    let pageIDs = {};
+
+    pageIDs[D_TYPE.FB] = pageID;
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs);
+
 
     forkJoin(observables).subscribe(miniDatas => {
       for(const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
-        this.miniCards[i].step = results['step'];
+        this.miniCards[i].step = undefined;
       }
     });
   }
@@ -127,7 +131,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.GEService.loadingScreen.next(true);
 
     // Retrieving dashboard ID
-    const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
+    const dash = await this.DService.getDashboardByType(D_TYPE.FB).toPromise(); // Facebook type
 
     // Retrieving the page ID // TODO to move into onInit and its init on a dropdown
     this.pageID = (await this.FBService.getPages().toPromise())[0].id;
@@ -145,7 +149,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.FB);
       this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
-      this.datePickerEnabled = true;
+      // this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
@@ -180,7 +184,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 this.GEService.updateChartList.next(true); // TODO check to remove
 
                 // Shows last 30 days
-                this.datePickerEnabled = true;
+                // this.datePickerEnabled = true;
                 this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
 
                 this.GEService.loadingScreen.next(false);
@@ -234,7 +238,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   onValueChange(value): void {
 
-    if (value && this.datePickerEnabled) {
+    if (value) {// && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
         first: new Date(value[0].setHours(0, 0, 0, 0)),

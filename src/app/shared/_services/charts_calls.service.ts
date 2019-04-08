@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FacebookService} from './facebook.service';
 import {InstagramService} from './instagram.service';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {GoogleAnalyticsService} from './googleAnalytics.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
@@ -1018,11 +1018,12 @@ export class ChartsCallsService {
     return formattedData;
   }
 
-  public retrieveMiniChartData(serviceID: number, pageID?, intervalDate?: IntervalDate) {
-    let observables: Observable<any>[] = [];
+  public retrieveMiniChartData(serviceID: number, pageIDs?, intervalDate?: IntervalDate, permissions?) {
+    let observables: Observable<any>[] = [], pageID;
 
     switch (serviceID) {
       case D_TYPE.FB:
+        pageID = pageIDs[D_TYPE.FB];
         observables.push(this.facebookService.getData(FB_CHART.FANS_DAY, pageID));
         observables.push(this.facebookService.fbposts(pageID));
         observables.push(this.facebookService.fbpagereactions(pageID));
@@ -1035,6 +1036,7 @@ export class ChartsCallsService {
         observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION, intervalDate));
         break;
       case D_TYPE.IG:
+        pageID = pageIDs[D_TYPE.IG];
         observables.push(this.instagramService.getBusinessInfo(pageID));
         observables.push(this.instagramService.getMedia(pageID));
         observables.push(this.instagramService.getData(IG_CHART.PROFILE_VIEWS, pageID));
@@ -1043,9 +1045,9 @@ export class ChartsCallsService {
       case D_TYPE.YT:
         break;
       case D_TYPE.CUSTOM:
-        observables.push(this.facebookService.getData(FB_CHART.FANS_DAY, pageID));
-        observables.push(this.instagramService.getBusinessInfo(pageID));
-        observables.push(this.googleAnalyticsService.gaUsers(intervalDate));
+        observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers(intervalDate) : of({}));
+        observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
+        observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
@@ -1202,8 +1204,8 @@ export class ChartsCallsService {
           value += parseInt(data[i][1]);
         }
         break;
-      case 'yt-subscribers':
-        value = '-';
+      case 'yt-subscribers': // TODO edit
+        value = 30;
         break;
     }
 
