@@ -152,10 +152,13 @@ export class ChartsCallsService {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 40), parseInt(data[i][2], 10)]);
           }
         }
 
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
         paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
@@ -216,6 +219,11 @@ export class ChartsCallsService {
             chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
         }
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
         paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
@@ -393,6 +401,11 @@ export class ChartsCallsService {
             chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
         }
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
         paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
@@ -421,8 +434,8 @@ export class ChartsCallsService {
             (tmpArray[indexFound][1])++;
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseFloat(data[i][2])]);
-            tmpArray.push([ChartsCallsService.cutString(data[i][1], 30), 1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 50), parseFloat(data[i][2])]);
+            tmpArray.push([ChartsCallsService.cutString(data[i][1], 50), 1]);
           }
         }
 
@@ -639,7 +652,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#fd8f8d', '#c96565'],
+            colors: ['#A790A5', '#875C74', '#AFD0BE', '#54414E'],
             areaOpacity: 0.2
           }
         };
@@ -950,7 +963,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#FFA647'],
+            colors: ['#ffc423'],
             areaOpacity: 0.1
           }
         };
@@ -1016,7 +1029,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffdda4'],
+            colors: ['#A0D8C5'],
             bar: {groupWidth: '70%'},
             areaOpacity: 0.3
           }
