@@ -98,6 +98,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     let existence, view_id;
     let key: ApiKey;
 
+    this.GEService.loadingScreen.subscribe(value => {this.loading = value});
+
     this.addBreadcrumb();
     this.GEService.loadingScreen.next(true);
 
@@ -166,9 +168,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
             this.filterActions.updateChart(chart);
           }
-        });
-        this.GEService.loadingScreen.subscribe(value => {
-          this.loading = value;
         });
 
         this.GEService.addSubscriber(dash_type);

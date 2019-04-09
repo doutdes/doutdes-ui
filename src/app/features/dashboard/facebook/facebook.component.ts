@@ -308,6 +308,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.lastDateRange = this.maxDate;
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
+    this.GEService.loadingScreen.subscribe(value => {this.loading = value});
+
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
       const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB) : -1;
@@ -331,9 +333,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
           this.filterActions.updateChart(chart);
         }
-      });
-      this.GEService.loadingScreen.subscribe(value => {
-        this.loading = value;
       });
 
       this.GEService.addSubscriber(dash_type);

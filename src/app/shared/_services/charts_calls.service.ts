@@ -21,7 +21,7 @@ export class ChartsCallsService {
 
   public static cutString(str, maxLength) {
     if (str) {
-      return str.length > maxLength ? str.substr(0, 30) + '...' : str;
+      return str.length > maxLength ? str.substr(0, maxLength) + '...' : str;
     }
     return '...';
   }
@@ -103,6 +103,7 @@ export class ChartsCallsService {
           return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
         });
         break; // Facebook Fan City
+
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Date', 'Impressions']];
 
@@ -152,7 +153,7 @@ export class ChartsCallsService {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 10), parseInt(data[i][2], 10)]);
           }
         }
 
@@ -222,6 +223,7 @@ export class ChartsCallsService {
           chartData.push(['', null]);
         }
         break; // Google list Session per Browser
+
       case IG_CHART.AUD_CITY:
         header = [['City', 'Fans']];
         if (data.length > 0) {
