@@ -21,6 +21,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+import {ToastrService} from 'ngx-toastr';
 
 const PrimaryWhite = '#ffffff';
 
@@ -68,7 +69,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Preset';
-  datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
+  // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
   constructor(
     private FBService: FacebookService,
@@ -78,7 +79,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions,
-    private userService: UserService
+    private userService: UserService,
+    private toastr: ToastrService
   ) {
 
   }
@@ -91,19 +93,23 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       first: new Date(y, m - 1, 1),
       last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
     };
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageID);
+    let pageIDs = {};
+
+    pageIDs[D_TYPE.FB] = pageID;
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs);
+
 
     forkJoin(observables).subscribe(miniDatas => {
       for(const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
-        this.miniCards[i].step = results['step'];
+        this.miniCards[i].step = undefined;
       }
     });
   }
 
-  async loadDashboard() { // TODO get pageID
+  async loadDashboard() { // TODO get pageID and refactor
     const existence = await this.checkExistance();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
@@ -125,7 +131,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.GEService.loadingScreen.next(true);
 
     // Retrieving dashboard ID
-    const dash = await this.DService.getDashboardByType(1).toPromise(); // Facebook type
+    const dash = await this.DService.getDashboardByType(D_TYPE.FB).toPromise(); // Facebook type
 
     // Retrieving the page ID // TODO to move into onInit and its init on a dropdown
     this.pageID = (await this.FBService.getPages().toPromise())[0].id;
@@ -143,7 +149,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.FB);
       this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
-      this.datePickerEnabled = true;
+      // this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
@@ -178,7 +184,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 this.GEService.updateChartList.next(true); // TODO check to remove
 
                 // Shows last 30 days
-                this.datePickerEnabled = true;
+                // this.datePickerEnabled = true;
                 this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
 
                 this.GEService.loadingScreen.next(false);
@@ -187,7 +193,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           } else {
             this.filterActions.initData(currentData);
             this.GEService.loadingScreen.next(false);
-            console.log('Dashboard is empty.');
+            this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
           }
         }, err => {
           console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
@@ -211,8 +217,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
-          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
+
+          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
+
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
@@ -230,7 +238,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   onValueChange(value): void {
 
-    if (value && this.datePickerEnabled) {
+    if (value) {// && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
         first: new Date(value[0].setHours(0, 0, 0, 0)),
@@ -295,11 +303,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     return result;
   }
 
-
   ngOnInit(): void {
     this.firstDateRange = this.minDate;
     this.lastDateRange = this.maxDate;
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+    this.GEService.loadingScreen.subscribe(value => {this.loading = value});
 
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
@@ -324,9 +333,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
           this.filterActions.updateChart(chart);
         }
-      });
-      this.GEService.loadingScreen.subscribe(value => {
-        this.loading = value;
       });
 
       this.GEService.addSubscriber(dash_type);

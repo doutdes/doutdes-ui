@@ -28,7 +28,6 @@ import {GlobalEventsManagerService} from '../shared/_services/global-event-manag
     GlobalEventsManagerService
   ],
   exports: [
-
   ]
 })
 

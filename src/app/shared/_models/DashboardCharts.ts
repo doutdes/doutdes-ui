@@ -1,5 +1,3 @@
-import {Chart} from './Chart';
-
 export interface DashboardCharts {
   dashboard_id: number;
   chart_id: number;

@@ -3,10 +3,10 @@ import {Breadcrumb} from '../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
 
 @Component({
-  selector: 'app-feature-dashboard',
-  templateUrl: './dashboard.component.html'
+  selector: 'app-home',
+  templateUrl: './home.component.html'
 })
-export class FeatureDashboardComponent implements OnInit, OnDestroy{
+export class HomeComponent implements OnInit, OnDestroy{
 
   constructor(private breadcrumbActions: BreadcrumbActions){
   }
@@ -23,7 +23,6 @@ export class FeatureDashboardComponent implements OnInit, OnDestroy{
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }

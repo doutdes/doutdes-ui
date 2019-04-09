@@ -62,7 +62,7 @@ export class FeatureAuthenticationLoginFormComponent implements OnInit {
       .pipe(first())
       .subscribe(data => {
         setTimeout(() => {
-            this.router.navigate(['dashboard']);
+            this.router.navigate(['']);
           },
           500);
       }, error => {

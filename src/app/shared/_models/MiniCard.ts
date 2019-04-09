@@ -1,3 +1,5 @@
+import {D_TYPE} from './Dashboard';
+
 export interface MiniCard {
   name: string,
   icon: string,
@@ -5,30 +7,31 @@ export interface MiniCard {
   measure?: string;
   value?: string,
   progress?: string,
-  step?: number
+  step?: number,
+  type?: number
 }
 
 export let GaMiniCards: MiniCard[] = [
   {
-    name: 'Tot users',
+    name: 'Utenti tot.',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     measure: '',
     value: '-'
   }, {
-    name: 'Tot sessions',
+    name: 'Visite tot.',
     icon: 'icon-screen-desktop',
     padding: 'pl-2 pr-sm-2 pr-0',
     measure: '',
     value: '-'
   }, {
-    name: 'Bounce rate',
+    name: 'Freq. rimbalzo',
     icon: 'icon-action-undo',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     measure: 'bounce-rate',
     value: '-'
   }, {
-    name: 'Avg sess. time',
+    name: 'Permanenza media',
     icon: 'icon-hourglass',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     measure: 'time',
@@ -37,25 +40,25 @@ export let GaMiniCards: MiniCard[] = [
 ];
 export let FbMiniCards: MiniCard[] = [
   {
-    name: 'Fans',
+    name: 'Fan',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     value: '-',
     measure: 'count'
   }, {
-    name: 'Posts',
+    name: 'Post',
     icon: 'icon-speech',
     padding: 'pl-2 pr-sm-2 pr-0',
     value: '-',
     measure: 'post-sum'
   }, {
-    name: 'Reactions',
+    name: 'Reazioni',
     icon: 'icon-heart',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
     measure: 'reactions'
   }, {
-    name: 'Impressions',
+    name: 'Visite',
     icon: 'icon-screen-desktop',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     value: '-',
@@ -64,28 +67,60 @@ export let FbMiniCards: MiniCard[] = [
 ];
 export let IgMiniCards: MiniCard[] = [
   {
-    name: 'Fans',
+    name: 'Follower',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     value: '-',
     measure: 'count'
   }, {
-    name: 'Posts',
+    name: 'Post',
     icon: 'icon-speech',
     padding: 'pl-2 pr-sm-2 pr-0',
     value: '-',
     measure: 'post-sum'
   }, {
-    name: 'Profile views',
+    name: 'Visite profilo',
     icon: 'icon-eye',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
     measure: 'prof-views'
   }, {
-    name: 'Impressions',
+    name: 'Visual. post',
     icon: 'icon-screen-smartphone',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     value: '-',
     measure: ''
+  }
+];
+export let CustomMiniCards: MiniCard[] = [
+  {
+    name: 'Utenti tot.',
+    icon: 'fab fa-google',
+    padding: 'pl-0 pr-2',
+    measure: 'ga-tot-user',
+    value: '-',
+    type: D_TYPE.GA
+  },
+  {
+    name: 'Fan',
+    icon: 'fab fa-facebook',
+    padding: 'pl-2 pr-sm-2 pr-0',
+    value: '-',
+    measure: 'fb-fan-count',
+    type: D_TYPE.FB
+  }, {
+    name: 'Followers',
+    icon: 'fab fa-instagram',
+    padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
+    value: '-',
+    measure: 'ig-follower',
+    type: D_TYPE.IG
+  }, {
+    name: 'Iscritti',
+    icon: 'fab fa-youtube',
+    padding: 'pl-2 pr-0 pt-sm-0 pt-3',
+    measure: 'yt-subscribers',
+    value: '30',
+    type: D_TYPE.YT
   }
 ];

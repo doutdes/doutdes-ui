@@ -25,7 +25,7 @@ export class AggregatedDataService {
 
     switch (chart.type) {
 
-      case D_TYPE.GA: //GA
+      case D_TYPE.GA:
       case D_TYPE.YT:
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i][filteredData[i].length - 1]);

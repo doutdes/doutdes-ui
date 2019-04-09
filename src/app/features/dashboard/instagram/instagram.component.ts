@@ -16,6 +16,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+import {ToastrService} from 'ngx-toastr';
 
 const PrimaryWhite = '#ffffff';
 
@@ -72,7 +73,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     private DService: DashboardService,
     private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
-    private filterActions: FilterActions
+    private filterActions: FilterActions,
+    private toastr: ToastrService
   ) {
   }
 
@@ -84,7 +86,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       first: new Date(y, m - 1, 1),
       last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
     };
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageID);
+    let pageIDs = {};
+
+    pageIDs[D_TYPE.IG] = pageID;
+
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageIDs);
 
     forkJoin(observables).subscribe(miniDatas => {
       for(const i in miniDatas) {
@@ -181,7 +187,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         } else {
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
-          console.log('Dashboard is empty.');
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
         }
       }, err => {
         console.error('ERROR in INSTAGRAM COMPONENT, when fetching charts.');
@@ -204,8 +210,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
-          // chartToPush.color = chartToPush.chartData.chartType === 'Table' ? null : chartToPush.chartData.options.colors[0];
           chartToPush.error = false;
+
+          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);

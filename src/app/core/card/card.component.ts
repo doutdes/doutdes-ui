@@ -7,6 +7,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {GoogleChartComponent} from 'ng2-google-charts';
 import {GA_CHART} from '../../shared/_models/GoogleData';
 import {D_TYPE} from '../../shared/_models/Dashboard';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-card',
@@ -42,12 +43,15 @@ export class CardComponent implements OnInit {
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
-    private GEService: GlobalEventsManagerService) {
+    private GEService: GlobalEventsManagerService,
+    private toastr: ToastrService
+
+  ) {
   }
 
   ngOnInit() {
 
-    this.aggregated = this.dashChart.aggregated ? true : false;
+    this.aggregated = !!this.dashChart.aggregated;
 
     // Handling icon nicknames
     switch (this.dashChart.type) {
@@ -105,7 +109,7 @@ export class CardComponent implements OnInit {
 
     this.loading = true;
 
-    this.updateChart(chart);
+    this.updateChart(this.dashChart.title, chart);
   }
 
   chartResizer(): void {
@@ -120,29 +124,46 @@ export class CardComponent implements OnInit {
 
     let unit = '';
 
-    switch (this.dashChart.chart_id) {
-      case GA_CHART.BOUNCE_RATE    :
-        unit = ' %';
-        break;
-      case GA_CHART.AVG_SESS_DURATION :
-        unit = ' s';
-        break;
+    if (this.aggregated) {
+      switch (this.dashChart.chart_id) {
+        case GA_CHART.BOUNCE_RATE    :
+          unit = ' %';
+          this.low = this.dashChart.aggregated.lowest.toFixed(2);
+          this.high = this.dashChart.aggregated.highest.toFixed(2);
+          break;
+        case GA_CHART.AVG_SESS_DURATION :
+          unit = ' s';
+          this.low = this.dashChart.aggregated.lowest.toFixed(2);
+          this.high = this.dashChart.aggregated.highest.toFixed(2);
+          break;
+        default:
+          this.low = this.dashChart.aggregated.lowest;
+          this.high = this.dashChart.aggregated.highest;
+          break;
+      }
+
+      this.low += unit;
+      this.high += unit;
     }
 
-    if (this.dashChart.aggregated.average) {
+/*    if(this.aggregated) {
+
+      // if (this.dashChart.aggregated.average) {
       this.avg = this.dashChart.aggregated.average.toFixed(2) + unit;
-    }
+      // }
 
-    if (this.dashChart.aggregated.lowest) {
-      this.low = this.type == 'ga_impressions' ? this.dashChart.aggregated.lowest.toFixed(0) + unit : this.dashChart.aggregated.lowest.toFixed(2) + unit;
-    }
+      // if (this.dashChart.aggregated.lowest) {
+      this.low = (this.dashChart.chart_id === GA_CHART.BOUNCE_RATE ? this.dashChart.aggregated.lowest.toFixed(2) : this.dashChart.aggregated.lowest) + unit;
+      // }
 
-    if (this.dashChart.aggregated.highest) {
-      this.high = this.type == 'ga_impressions' ? this.dashChart.aggregated.highest.toFixed(0) + unit : this.dashChart.aggregated.highest.toFixed(2) + unit;
-    }
+      // if (this.dashChart.aggregated.highest) {
+      this.high = (this.dashChart.chart_id === GA_CHART.BOUNCE_RATE ? this.dashChart.aggregated.highest.toFixed(2) : this.dashChart.aggregated.highest) + unit;
+      // }
 
-    //this.interval = 'BASE INTERVAL: ' + new Date(this.dashChart.aggregated.interval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.interval.last).toLocaleString() +
-    //' | PREVIOUS: ' + new Date(this.dashChart.aggregated.previousInterval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.previousInterval.last).toLocaleString();
+      //this.interval = 'BASE INTERVAL: ' + new Date(this.dashChart.aggregated.interval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.interval.last).toLocaleString() +
+      //' | PREVIOUS: ' + new Date(this.dashChart.aggregated.previousInterval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.previousInterval.last).toLocaleString();
+
+    }*/
   }
 
   openModal(template: TemplateRef<any>) {
@@ -159,18 +180,22 @@ export class CardComponent implements OnInit {
       .subscribe(() => {
         this.GEService.removeFromDashboard.next([chart_id, dashboard_id]);
         this.closeModal();
+        this.toastr.success('"' + this.dashChart.title + '" è stato correttamente rimosso.', 'Grafico rimosso correttamente!');
       }, error => {
+        this.toastr.error('Non è stato possibile rimuovere "' + this.dashChart.title + '" dalla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione del grafico.');
         console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
-        console.log(error);
+        console.error(error);
       });
   }
 
-  updateChart(toUpdate): void {
+  updateChart(title, toUpdate): void {
     this.dashboardService.updateChart(toUpdate)
       .subscribe(() => {
         this.GEService.updateChartInDashboard.next(toUpdate);
         this.closeModal();
+        this.toastr.success('"' + title + '" è stato correttamente rinominato in "' + toUpdate.title + '".', 'Grafico aggiornato correttamente!');
       }, error => {
+        this.toastr.error('Non è stato possibile rinominare il grafico "' + this.dashChart.title + '". Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiornamento del grafico.');
         console.log('Error updating the Chart');
         console.log(error);
       });

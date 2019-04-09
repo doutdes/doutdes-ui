@@ -393,3 +393,27 @@ ul {
 popover-container {
   float: right!important;
 }
+
+.gradient {
+  background: #fff !important;
+}
+
+.google-visualization-table-table {
+  padding:4px;
+}
+
+.headercellbg {
+  background: #fff;
+  font-size:10pt;
+  text-transform: uppercase;
+}
+
+.toast-top-right {
+  top: 71px!important;
+}
+
+@media only screen and (max-width: 767px) {
+  app-core-header > nav {
+    padding-top: 0 !important;
+  }
+}

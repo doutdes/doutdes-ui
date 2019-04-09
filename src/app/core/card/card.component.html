@@ -12,12 +12,12 @@
   </div>
 
   <!-- CARD WITH CHART -->
-  <div class="rounded-top" *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" [ngStyle]="{'backgroundColor': background, 'color': color, 'border-bottom' : '2px solid ' + color}"
-       style="padding:10px;">
+  <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" [ngStyle]="{'backgroundColor': '#fff', 'color': color, 'border-bottom' : '2px solid ' + color}"
+       style="padding:10px; border-top: 1px solid #ccc; border-right: 1px solid #ccc; border-left: 1px solid #ccc">
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
     <span style="font-size:14pt">{{dashChart.title}}</span><span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart.format}})</span>
   </div>
-  <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" style="background:#fff; min-height:351px; max-height: 351px; padding:20px; border-top: 0px !important;" class="rounded-bottom border">
+  <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
 
     <!--*ngIf="this.type == 'ga_bounce' || this.type == 'ga_impressions' || this.type == 'ga_sessions' || this.type == 'ga_avgsessionduration'"-->
     <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="areAggregatedDataAvailable(dashChart.format)">
@@ -34,8 +34,8 @@
   </div>
 
   <!-- CARD WITH ERROR -->
-  <div class="rounded-top" *ngIf="dashChart.error || dashChart.chartData.dataTable.length === 0" [ngStyle]="{'backgroundColor': background, 'color': color}"
-       style="padding:10px">
+  <div class="rounded-top" *ngIf="dashChart.error || dashChart.chartData.dataTable.length === 0" [ngStyle]="{'backgroundColor': '#fff', 'color': color, 'border-bottom' : '2px solid ' + color}"
+       style="padding:10px; border-top: 1px solid #ccc; border-right: 1px solid #ccc; border-left: 1px solid #ccc">
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
     <span style="font-size:14pt">{{dashChart.title}}</span>
   </div>
@@ -46,11 +46,11 @@
     <div class="align-middle d-table-cell">
       <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
         <h4 class="text-center mb-0" style="font-size: 17px;">
-          <i class="fas fa-exclamation-triangle text-warning mr-1"></i>
+          <i class="fas fa-exclamation-triangle text-warning mr-1 d-block"></i>
           Si è verificato un errore recuperando il grafico.
         </h4>
         <p *ngIf="dashChart.type === D_TYPE.IG" class="mt-3 text-justify">
-          Due to some Instagram limitations, different data could not be available in the selected date interval but only for the current day.
+          A causa di limitazioni di Instagram, alcuni dati non potrebbero essere disponibili nell'intervallo di dati selezionati, ma solo per il giorno corrente.
         </p>
       </div>
     </div>

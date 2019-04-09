@@ -1,8 +1,8 @@
 <div class="row rounded py-sm-4 title-header h-100">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
-    <h2 class="my-auto float-left">My dashboard</h2>
+    <h2 class="my-auto float-left">La mia dashboard</h2>
   </div> <!-- Title -->
-  <div class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
+  <div *ngIf="somethingGranted" class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
       <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
@@ -36,7 +36,11 @@
   </div>
 </div> <!-- Header -->
 
-<div class="row" style="padding-bottom: 30px">
+<div *ngIf="somethingGranted" class="row px-3 pt-3">
+  <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="mini.type"></app-minicard>
+</div> <!-- Mini cards -->
+
+<div *ngIf="somethingGranted" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
       <app-card [dashChart]="chart"></app-card>
@@ -53,4 +57,47 @@
   ></app-emptycard>
 
   <ngx-loading [show]="loading" [config]="config"></ngx-loading>
+</div>
+
+<ng-template #selectView>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>Seleziona dati da importare</h4>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
+      <div class="form-group row">
+        <p class="col-sm-12 text-justify">
+          Il tuo account Google Analytics è associato a più siti web. Quale vuoi includere in Doutdes?
+        </p>
+        <div class="col-sm-12">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="view_id" [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['view_id'].errors }">
+            <!--<option [value]="viewList[0].id" selected>{{viewList[0].name}}</option>-->
+            <option *ngFor="let view of viewList" [value]="view.id">{{view.name}}</option>
+          </select>
+
+          <div *ngIf="this.submitted && selectViewForm.controls['view_id'].errors" class="invalid-feedback">
+            <div>Devi obbligatoriamente selezionare un sito</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pr-0 pb-0">
+        <button type="submit" class="btn btn-success">Conferma</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<div *ngIf="!somethingGranted" class="row">
+  <div class="col-md-12 mt-3">
+    <div class="card-group">
+      <div class="card p-2" style="background-color: #eee;">
+        <div class="card-body">
+          <i class="fas fa-crow mr-1" style="font-size:30pt"></i><h5 class="mt-3"> Qua non c'è niente! Prima di poter visualizzare i dati, devi aggiungere almeno una <b>sorgente dati</b>.</h5><br/>
+          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys']">Aggiungi una sorgente dati</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -7,7 +7,7 @@ export const IG_CHART = {
   AUD_COUNTRY: 20,
   ACTION_PERFORMED: 21,
   ONLINE_FOLLOWERS: 22,
-  PROFILE_VIEWS: 25,
+  PROFILE_VIEWS: 23,
 };
 
 export interface IgPage {

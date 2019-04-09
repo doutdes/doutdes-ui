@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FacebookService} from './facebook.service';
 import {InstagramService} from './instagram.service';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {GoogleAnalyticsService} from './googleAnalytics.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
@@ -21,7 +21,7 @@ export class ChartsCallsService {
 
   public static cutString(str, maxLength) {
     if (str) {
-      return str.length > maxLength ? str.substr(0, 30) + '...' : str;
+      return str.length > maxLength ? str.substr(0, maxLength) + '...' : str;
     }
     return '...';
   }
@@ -80,6 +80,30 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break;  // Page Impressions
+      case FB_CHART.FANS_COUNTRY_PIE:
+        header = [['Country', 'Popularity']];
+
+        // Push data pairs in the Chart array
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
+        });
+
+        break;  // Fan Country Pie
+      case FB_CHART.PAGE_VIEWS:
+        header = [['Date', 'Views']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // Facebook Page Views
+      case FB_CHART.FANS_CITY:
+        header = [['City', 'Fans']];
+
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+        });
+        break; // Facebook Fan City
+
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Date', 'Impressions']];
 
@@ -112,6 +136,7 @@ export class ChartsCallsService {
             chartData.push([data[i][1] === '(none)' ? 'unknown' : data[i][1], parseInt(data[i][2], 10)]);
           }
         }
+
         break;  // Google Sources Pie
       case GA_CHART.MOST_VISITED_PAGES:
         /** Data array is constructed as follows:
@@ -119,7 +144,7 @@ export class ChartsCallsService {
          * 1 - page
          * 2 - value
          **/
-        header = [['Website', 'Views']];
+        header = [['Pagina', 'Visite']];
 
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
@@ -128,25 +153,19 @@ export class ChartsCallsService {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 10), parseInt(data[i][2], 10)]);
           }
         }
 
-        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
           chartData.push(['', null]);
         }
         break;  // Google List Referral
-      case FB_CHART.FANS_COUNTRY_PIE:
-        header = [['Country', 'Popularity']];
-
-        // Push data pairs in the Chart array
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [k, data[data.length - 1].value[k]];
-        });
-
-        break;  // Fan Country Pie
       case GA_CHART.SOURCES_COLUMNS:
         /** Data array is constructed as follows:
          * 0 - date
@@ -201,26 +220,82 @@ export class ChartsCallsService {
             chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
         }
-        paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
         for (let i = 0; i < paddingRows; i++) {
           chartData.push(['', null]);
         }
         break; // Google list Session per Browser
-      case FB_CHART.PAGE_VIEWS:
-        header = [['Date', 'Views']];
+      case GA_CHART.NEW_USERS:
+        header = [['Date', 'Users']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
-        break; // Facebook Page Views
-      case FB_CHART.FANS_CITY:
-        header = [['City', 'Fans']];
+        break;//GA New Users
+      case GA_CHART.MOBILE_DEVICES:
+        header = [['Dispositivo', 'Sessioni']];
 
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+        for (let i = 0; i < data.length; i++) {
+          indexFound = keys.findIndex(el => el === data[i][1]);
+
+          if (indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+          }
+        }
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-        break; // Facebook Fan City
+
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
+        }
+        break; // GA List mobile devices per sessions
+      case GA_CHART.PERCENT_NEW_SESSION:
+        header = [['Utenti di ritorno', 'Nuovi utenti']];
+        let avg = 0;
+        for (let i = 0; i < data.length; i++) {
+          avg += parseFloat(data[i][1]);
+        }
+
+        avg /= data.length;
+
+        chartData.push(['Nuovi', avg]);
+        chartData.push(['Di ritorno', 100 - avg]);
+        break;  // Google New Users vs Return users
+      case GA_CHART.PAGE_LOAD_TIME:
+        header = [['Pagina', 'Tempo Medio (s)']];
+        let tmpArray = [];
+        for (let i = 0; i < data.length; i++) {
+          indexFound = keys.findIndex(el => el === data[i][1]);
+          if (indexFound >= 0) {
+            chartData[indexFound][1] += parseFloat(data[i][2]);
+            (tmpArray[indexFound][1])++;
+          } else {
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 12), parseFloat(data[i][2])]);
+            tmpArray.push([ChartsCallsService.cutString(data[i][1], 12), 1]);
+          }
+        }
+
+        // Calculating average
+        for (let i=0; i < chartData.length; i++) {
+          chartData[i][1] /= (tmpArray[i][1] * 1000);
+        }
+
+        break;
+
       case IG_CHART.AUD_CITY:
         header = [['City', 'Fans']];
         if (data.length > 0) {
@@ -246,14 +321,11 @@ export class ChartsCallsService {
       case IG_CHART.AUD_GENDER_AGE:
         header = [['Age', 'Male', 'Female']];
 
-        if (data.length > 0) {
+        if (data[0]['value']) {
           keys = Object.keys(data[0]['value']); // getting all the gender/age data
 
-          let subIndex = 0;
-          if (keys[0].indexOf('.') !== -1)
-            subIndex = 2;
-          else
-            subIndex = 1;
+          let subIndex = (keys[0].indexOf('.') !== -1) ? 2 : 1;
+
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
             index = 0;
@@ -302,16 +374,15 @@ export class ChartsCallsService {
 
         for (let i = 0; i < 24; i += interval) {
           // MIN | AVG | MAX
-          chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, Number.MIN_SAFE_INTEGER]);
+          chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, 0]);
         }
-
         // putting a unique entry in chartData for every existent age range
         for (let day = 0; day < keys.length; day++) {
           for (let h_interval = 0; h_interval < Object.keys(keys[day]).length; h_interval += interval) {
             temp = 0;
             index = 0;
             for (let hour = h_interval; hour < (h_interval + interval); hour++) {
-              temp += parseInt(keys[day][hour], 10);
+              temp += isNaN(parseInt(keys[day][hour], 10)) ? 0 : parseInt(keys[day][hour]);
               index = (hour + 1) / interval;
             }
 
@@ -327,7 +398,9 @@ export class ChartsCallsService {
           }
         }
         for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
-          chartData[i][2] /= 30;
+          console.warn(chartData[i][2]);
+          chartData[i][2] /= keys.length;
+          chartData[i][1] = chartData[i][1] === Number.MAX_SAFE_INTEGER ? 0 : chartData[i][1];
         }
 
         break; // IG Online followers
@@ -371,9 +444,8 @@ export class ChartsCallsService {
         map.forEach((value: boolean, key: string) => {
           chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
         });
+        break;// IG composed clicks
 
-
-        break; // IG composed clicks
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -402,7 +474,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -444,7 +516,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -454,199 +526,6 @@ export class ChartsCallsService {
         };
 
         break;  // Page Impressions
-      case GA_CHART.IMPRESSIONS_DAY:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#FFA647'],
-            areaOpacity: 0.1
-          }
-        };
-        break;  // Google PageViews (impressions by day)
-      case GA_CHART.SESSION_DAY:
-
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#FFA647'],
-            areaOpacity: 0.1
-          }
-        };
-        break;  // Google Sessions
-      case GA_CHART.SOURCES_PIE:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 6,
-          options: {
-            chartArea: {left: 30, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            is3D: false,
-            pieSliceText: 'label',
-            pieSliceTextStyle: {fontSize: 16, color: '#222'},
-            colors: ['#FFAF60', '#FFBD7F', '#FFCB9B', '#FFD7B5', '#FFE2CC'],
-            areaOpacity: 0.4
-          }
-        };
-        break;  // Google Sources Pie
-      case GA_CHART.MOST_VISITED_PAGES:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 7,
-          options: {
-            alternatingRowStyle: true,
-            allowHtml: true,
-            sort: 'enable',
-            sortAscending: false,
-            sortColumn: 1,
-            pageSize: 11,
-            height: '100%',
-            width: '100%'
-          }
-        };
-        break;  // Google List Referral
-      case FB_CHART.FANS_COUNTRY_PIE:
-
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            sliceVisibilityThreshold: 0.05,
-            height: 310,
-            // is3D: true,
-            colors: ['#63c2de'],
-            pieSliceText: 'label',
-            pieSliceTextStyle: {fontSize: 13, color: 'black'},
-            pieHole: 0.1,
-            slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
-            areaOpacity: 0.4
-          }
-        };
-        break;  // Fan Country Pie
-      case GA_CHART.SOURCES_COLUMNS:
-
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#FFC993'],
-            areaOpacity: 0.4
-          }
-        };
-        break;  // Google Sources Column Chart
-      case GA_CHART.BOUNCE_RATE:
-        type = 'ga_bounce';
-
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 10,
-          options: {
-            chartArea: {left: 0, right: 0, height: 190, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#FFA647'],
-            areaOpacity: 0.1
-          }
-        };
-
-        //average = sum / data.length;
-
-        break; // Google BounceRate
-      case GA_CHART.AVG_SESS_DURATION:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#FFA647'],
-            areaOpacity: 0.1
-          }
-        };
-        break; // Google Average Session Duration
-      case GA_CHART.BROWSER_SESSION:
-
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sortColumn: 1,
-            pageSize: 11,
-            height: '100%',
-            width: '100%'
-          }
-        };
-        break; // Google list sessions per browser
       case FB_CHART.PAGE_VIEWS:
         formattedData = {
           chartType: 'AreaChart',
@@ -663,7 +542,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -687,6 +566,319 @@ export class ChartsCallsService {
           }
         };
         break; // Facebook Fan City
+      case FB_CHART.FANS_COUNTRY_PIE:
+
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 8,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            sliceVisibilityThreshold: 0.05,
+            height: 310,
+            // is3D: true,
+            colors: ['#63c2de'],
+            pieSliceText: 'label',
+            pieSliceTextStyle: {fontSize: 13, color: 'black'},
+            pieHole: 0.1,
+            slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
+            areaOpacity: 0.4
+          }
+        };
+        break;  // Fan Country Pie
+
+      case GA_CHART.IMPRESSIONS_DAY:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 230,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#FFA647'],
+            areaOpacity: 0.1
+          }
+        };
+        break;  // Google PageViews (impressions by day)
+      case GA_CHART.SESSION_DAY:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 230,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#01B8AA'],
+            areaOpacity: 0.05
+          }
+        };
+        break;  // Google Sessions
+      case GA_CHART.SOURCES_PIE:
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 6,
+          options: {
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
+            height: 310,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#A790A5', '#875C74', '#AFD0BE', '#54414E'],
+            areaOpacity: 0.2
+          }
+        };
+        break;  // Google Sources Pie
+      case GA_CHART.MOST_VISITED_PAGES:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 7,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            allowHtml: true,
+            sort: 'disable',
+            sortAscending: false,
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;  // Google List Referral
+      case GA_CHART.SOURCES_COLUMNS:
+
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 310, top: 0},
+            legend: {position: 'none'},
+            height: 330,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ffdda4'],
+            bar: {groupWidth: '70%'},
+            areaOpacity: 0.3
+          }
+        };
+        break;  // Google Sources Column Chart
+      case GA_CHART.BOUNCE_RATE:
+        type = 'ga_bounce';
+
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 10,
+          options: {
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 230,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#dd738a'],
+            areaOpacity: 0.05
+          }
+        };
+
+        //average = sum / data.length;
+
+        break; // Google BounceRate
+      case GA_CHART.AVG_SESS_DURATION:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 212, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 230,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#52b4de'],
+            areaOpacity: 0.05
+          }
+        };
+        break; // Google Average Session Duration
+      case GA_CHART.BROWSER_SESSION:
+
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; // Google list sessions per browser
+      case GA_CHART.NEW_USERS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 230,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ffc423'],
+            areaOpacity: 0.1
+          }
+        };
+        break;// GA new users
+      case GA_CHART.MOBILE_DEVICES:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 7,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            allowHtml: true,
+            sort: 'disable',
+            sortAscending: true,
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;// GA mobile devices per session
+      case GA_CHART.PERCENT_NEW_SESSION:
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 6,
+          options: {
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
+            height: 310,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#fd8f8d', '#c96565'],
+            areaOpacity: 0.2
+          }
+        };
+        break;  // Google New Users vs Returning
+      case GA_CHART.PAGE_LOAD_TIME:
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 310, top: 0},
+            legend: {position: 'none'},
+            height: 330,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#000'}
+            },
+            colors: ['#A0D8C5'],
+            bar: {groupWidth: '70%'},
+            areaOpacity: 0.3
+          }
+        };
+        break;  // Google Sources Column Chart
+
       case IG_CHART.AUD_CITY:
         formattedData = {
           chartType: 'Table',
@@ -833,26 +1025,44 @@ export class ChartsCallsService {
           }
         };
         if (data.filter(e => e[1] === true).length == 0) {
-          formattedData.options.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'],
-            formattedData.dataTable = data;
-        }
-        else {
+          formattedData.options.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'];
+          formattedData.dataTable = data;
+        } else {
           formattedData.options.colors = ['#D3D3D3'];
           formattedData.dataTable = data.slice(0, 2);
         }
-
-
         break; // IG clicks pie
     }
 
     return formattedData;
   }
 
-  public retrieveMiniChartData(serviceID: number, pageID?, intervalDate?: IntervalDate) {
-    let observables: Observable<any>[] = [];
+  private getMinChartStep(type, data, perc=0.8) {
+    let min, length;
+
+    data = data.slice(1);
+
+    switch (type) {
+      case D_TYPE.FB:
+      case D_TYPE.IG:
+        min = (data.reduce((p, c) => (p[1] < c[1] ? p[1] : c[1]))) * perc;
+        break;
+      case D_TYPE.GA:
+      case D_TYPE.YT:
+        length = data[0].length;
+        min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
+        break;
+    }
+
+    return min;
+  }
+
+  public retrieveMiniChartData(serviceID: number, pageIDs?, intervalDate?: IntervalDate, permissions?) {
+    let observables: Observable<any>[] = [], pageID;
 
     switch (serviceID) {
       case D_TYPE.FB:
+        pageID = pageIDs[D_TYPE.FB];
         observables.push(this.facebookService.getData(FB_CHART.FANS_DAY, pageID));
         observables.push(this.facebookService.fbposts(pageID));
         observables.push(this.facebookService.fbpagereactions(pageID));
@@ -865,12 +1075,18 @@ export class ChartsCallsService {
         observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION, intervalDate));
         break;
       case D_TYPE.IG:
+        pageID = pageIDs[D_TYPE.IG];
         observables.push(this.instagramService.getBusinessInfo(pageID));
         observables.push(this.instagramService.getMedia(pageID));
         observables.push(this.instagramService.getData(IG_CHART.PROFILE_VIEWS, pageID));
         observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
+        break;
+      case D_TYPE.CUSTOM:
+        observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers(intervalDate) : of({}));
+        observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
+        observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
@@ -892,6 +1108,8 @@ export class ChartsCallsService {
       case D_TYPE.IG:
         result = this.getInstagramMiniValue(measure, data, intervalDate);
         break;
+      case D_TYPE.CUSTOM:
+        result = this.getCustomMiniValue(measure, data, intervalDate);
     }
 
     return result;
@@ -945,9 +1163,6 @@ export class ChartsCallsService {
 
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
-        max = Math.max.apply(Math, data.map((o) => {
-          return o.value;
-        }));
         data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
         value = data[data.length - 1].value;
 
@@ -1009,6 +1224,34 @@ export class ChartsCallsService {
     perc = value / step * 100;
 
     return {value, perc, step};
+  }
+
+  private getCustomMiniValue(measure, data, intervalDate) {
+    let value, perc, step;
+
+    switch (measure) {
+      case 'fb-fan-count':
+        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        value = data[data.length - 1].value;
+        break;
+      case 'ig-follower':
+        value = data['followers_count'];
+        break;
+      case 'ga-tot-user':
+        value = 0;
+        for (const i in data) {
+          value += parseInt(data[i][1]);
+        }
+        break;
+      case 'yt-subscribers': // TODO edit
+        value = 30;
+        break;
+    }
+
+    step = this.searchStep(value);
+    perc = value / step * 100;
+
+    return {value, perc, step}
   }
 
   private searchStep(value, measure?) {
