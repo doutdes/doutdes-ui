@@ -306,6 +306,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           this.toastr.error('I dati disponibili per ' + dashChart.title +' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
         }
         this.filterActions.addChart(chartToPush);
+        this.filterActions.filterData(dateInterval);
       }, error1 => {
         console.log('Error querying the Chart');
         console.log(error1);

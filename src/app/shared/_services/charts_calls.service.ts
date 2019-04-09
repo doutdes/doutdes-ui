@@ -102,6 +102,11 @@ export class ChartsCallsService {
         chartData = Object.keys(data[data.length - 1].value).map(function (k) {
           return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
         });
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
         break; // Facebook Fan City
 
       case GA_CHART.IMPRESSIONS_DAY:
@@ -477,7 +482,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#63c2de'],
+            colors: ['#8cd0bd'],
             areaOpacity: 0.1
           }
         };
@@ -546,7 +551,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#63c2de'],
+            colors: ['#9c8372'],
             areaOpacity: 0.1
           }
         };
@@ -557,10 +562,21 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 14,
           options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
             alternatingRowStyle: true,
-            sortAscending: false,
+            allowHtml: true,
+            sort: 'disable',
             sortColumn: 1,
-            pageSize: 11,
+            pageSize: 9,
             height: '100%',
             width: '100%'
           }
@@ -573,17 +589,16 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 8,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            sliceVisibilityThreshold: 0.05,
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
-            // is3D: true,
-            colors: ['#63c2de'],
-            pieSliceText: 'label',
-            pieSliceTextStyle: {fontSize: 13, color: 'black'},
-            pieHole: 0.1,
-            slices: [{color: '#003f5c'}, {color: '#2f4b7c'}, {color: '#665191'}, {color: '#a05195'}],
-            areaOpacity: 0.4
+            sliceVisibilityThreshold: 0.05,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#58A5BC', '#3F9AA2', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         break;  // Fan Country Pie
