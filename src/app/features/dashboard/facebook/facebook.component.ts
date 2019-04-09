@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
@@ -22,6 +22,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 const PrimaryWhite = '#ffffff';
 
@@ -31,6 +32,8 @@ const PrimaryWhite = '#ffffff';
 })
 
 export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
+
+  @ViewChild('reportWait') reportWait;
 
   public D_TYPE = D_TYPE;
   public HARD_DASH_DATA = {
@@ -60,6 +63,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   public loading = false;
   public isApiKeySet = true;
+  modalRef: BsModalRef;
 
   @select() filter: Observable<any>;
 
@@ -80,7 +84,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions,
     private userService: UserService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private modalService: BsModalService
   ) {
 
   }
@@ -149,6 +154,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.FB);
       this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+      this.GEService.loadingScreen.next(false);
+
+      console.log(this.bsRangeValue);
       // this.datePickerEnabled = true;
     } else {
       // Retrieving dashboard charts
@@ -192,6 +200,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
           } else {
             this.filterActions.initData(currentData);
+            this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
             this.GEService.loadingScreen.next(false);
             this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
           }
@@ -350,26 +359,34 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   async htmltoPDF() {
     const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
     const cards = document.querySelectorAll('app-card');
-
     const firstCard = await html2canvas(cards[0]);
+
+    const user = await this.getUserCompany();
+
     let dimRatio = firstCard['width'] > 400 ? 3 : 2;
     let graphsRow = 2;
     let graphsPage = firstCard['width'] > 400 ? 6 : 4;
-    let x = 20, y = 40;
+    let x = 40, y = 40;
+    let offset = y - 10;
 
-    pdf.setFontSize(12);
-    pdf.text('Doutdes for ' + await this.getUserCompany(), 340, 10);
+    let dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
 
-    console.warn('Rapporto dimensioni: ' + dimRatio);
-    console.warn('Grafici per riga: ' + graphsRow);
+    this.openModal(this.reportWait, true);
 
-    pdf.setFontSize(30);
-    pdf.text('Facebook Pages', x, y);
+    pdf.setFontSize(8);
+    pdf.text(user.company_name, 320, offset);
+    pdf.text('P. IVA: ' + user.vat_number, 320, offset + 10);
+    pdf.text(user.first_name + ' ' + user.last_name, 320, offset + 20);
+    pdf.text(user.address, 320, offset + 30);
+    pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
+
+    pdf.setFontSize(18);
+    pdf.text('REPORT DASHBOARD FACEBOOK', x, y - 5);
     y += 20;
 
-    pdf.setFontSize(20);
-    pdf.text('Date interval: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y);
-    y += 20;
+    pdf.setFontSize(14);
+    pdf.text('Periodo: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y - 8);
+    y += 40;
 
     // Numero grafici per riga dipendente da dimensioni grafico
     for (let i = 0; i < cards.length; i++) {
@@ -378,12 +395,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
       if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
         y += canvas.height / dimRatio + 20;
-        x = 20;
+        x = 40;
       }
 
       if (i !== 0 && i % graphsPage === 0) {
         pdf.addPage();
-        x = 20;
+        x = 40;
         y = 20;
       }
 
@@ -391,7 +408,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       x += canvas.width / dimRatio + 10;
     }
 
-    pdf.save('fb_report.pdf');
+    pdf.save('report_fb_' + user.username + + '_' + day + '-' + month + '-' + year + '.pdf');
+
+    this.closeModal();
   }
 
   formatStringDate(date: Date) {
@@ -399,12 +418,18 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async getUserCompany() {
-    const user: User = await this.userService.get().toPromise();
-
-    return user.company_name;
+    return <User> await this.userService.get().toPromise();
   }
 
   nChartEven() {
     return this.chartArray$.length % 2 === 0;
+  }
+
+  openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered', ignoreBackdropClick: ignoreBackdrop, keyboard: !ignoreBackdrop});
+  }
+
+  closeModal() {
+    this.modalRef.hide();
   }
 }

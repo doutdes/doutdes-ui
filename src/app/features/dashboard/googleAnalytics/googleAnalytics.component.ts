@@ -125,6 +125,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         // Ci sono già dati salvati
         this.filterActions.loadStoredDashboard(D_TYPE.GA);
         this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+        this.GEService.loadingScreen.next(false);
         // this.datePickerEnabled = true;
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
@@ -385,9 +386,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     let dimRatio = firstCard['width'] > 400 ? 3 : 2;
     let graphsRow = 2;
     let graphsPage = firstCard['width'] > 400 ? 6 : 4;
-    let x = 20, y = 40;
+    let x = 40, y = 40;
 
-    this.GEService.loadingScreen.next(true);
+    this.openModal(this.selectView, true);
 
     try {
       userCompany = await this.getUserCompany();
@@ -396,11 +397,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       pdf.setFontSize(12);
       pdf.text('Doutdes per ' + userCompany, 340, 20);
 
-      pdf.setFontSize(30);
+      pdf.setFontSize(20);
       pdf.text('Google Analytics', x, y);
       y += 20;
 
-      pdf.setFontSize(20);
+      pdf.setFontSize(16);
       pdf.text('Intervallo temporale: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y);
       y += 20;
 
@@ -435,7 +436,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       // TODO show message with error on frontend
     }
 
-    this.GEService.loadingScreen.next(false);
     this.closeModal();
   }
 

@@ -22,6 +22,11 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {CustomMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
+import * as jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import {User} from '../../../shared/_models/User';
+import {UserService} from '../../../shared/_services/user.service';
+
 const PrimaryWhite = '#ffffff';
 
 @Component({
@@ -32,6 +37,7 @@ const PrimaryWhite = '#ffffff';
 export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   @ViewChild('selectView') selectView;
+  @ViewChild('reportWait') reportWait;
 
   public HARD_DASH_DATA = {
     dashboard_type: D_TYPE.CUSTOM,
@@ -90,7 +96,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private apiKeyService: ApiKeysService,
     private toastr: ToastrService,
     private modalService: BsModalService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private userService: UserService
   ) {
   }
 
@@ -214,6 +221,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         // Ci sono già dati salvati
         this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
         this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+        this.GEService.loadingScreen.next(false);
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
@@ -488,6 +496,71 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     } else {
       console.error('MANDARE ERRORE');
     }
+  }
+
+  async htmltoPDF() {
+    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
+    const cards = document.querySelectorAll('app-card');
+    const firstCard = await html2canvas(cards[0]);
+
+    const user = await this.getUserCompany();
+
+    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
+    let graphsRow = 2;
+    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
+    let x = 40, y = 40;
+    let offset = y - 10;
+
+    let dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
+
+    this.openModal(this.reportWait, true);
+
+    pdf.setFontSize(8);
+    pdf.text(user.company_name, 320, offset);
+    pdf.text('P. IVA: ' + user.vat_number, 320, offset + 10);
+    pdf.text(user.first_name + ' ' + user.last_name, 320, offset + 20);
+    pdf.text(user.address, 320, offset + 30);
+    pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
+
+    pdf.setFontSize(18);
+    pdf.text('REPORT PERSONALIZZATO', x, y - 5);
+    y += 20;
+
+    pdf.setFontSize(14);
+    pdf.text('Periodo: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y - 8);
+    y += 40;
+
+    // Numero grafici per riga dipendente da dimensioni grafico
+    for (let i = 0; i < cards.length; i++) {
+      const canvas = await html2canvas(cards[i]);
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+      if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
+        y += canvas.height / dimRatio + 20;
+        x = 40;
+      }
+
+      if (i !== 0 && i % graphsPage === 0) {
+        pdf.addPage();
+        x = 40;
+        y = 20;
+      }
+
+      pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
+      x += canvas.width / dimRatio + 10;
+    }
+
+    pdf.save('report_personalizzata_' + user.username + + '_' + day + '-' + month + '-' + year + '.pdf');
+
+    this.closeModal();
+  }
+
+  async getUserCompany() {
+    return <User> await this.userService.get().toPromise();
+  }
+
+  formatStringDate(date: Date) {
+    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
   }
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
