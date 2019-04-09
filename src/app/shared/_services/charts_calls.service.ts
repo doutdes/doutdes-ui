@@ -231,158 +231,6 @@ export class ChartsCallsService {
           chartData.push(['', null]);
         }
         break; // Google list Session per Browser
-
-      case IG_CHART.AUD_CITY:
-        header = [['City', 'Fans']];
-        if (data.length > 0) {
-          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-            return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
-          });
-
-          paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
-
-          for (let i = 0; i < paddingRows; i++) {
-            chartData.push(['', null]);
-          }
-        }
-        break; // IG Audience City
-      case IG_CHART.AUD_COUNTRY:
-        header = [['Country', 'Popularity']];
-        if (data.length > 0) {
-          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-            return [k, data[data.length - 1].value[k]];
-          });
-        }
-        break; // IG Audience Country
-      case IG_CHART.AUD_GENDER_AGE:
-        header = [['Age', 'Male', 'Female']];
-
-        if (data.length > 0) {
-          keys = Object.keys(data[0]['value']); // getting all the gender/age data
-
-          let subIndex = 0;
-          if (keys[0].indexOf('.') !== -1)
-            subIndex = 2;
-          else
-            subIndex = 1;
-          // putting a unique entry in chartArray for every existent age range
-          for (let i = 0; i < keys.length; i++) {
-            index = 0;
-            if (!(chartData.find(e => e[0] === (keys[i].substr(subIndex, keys[i].length))))) {
-              chartData.push([keys[i].substr(subIndex, keys[i].length), 0, 0]);
-              index = (chartData.length - 1);
-            } else {
-              index = chartData.findIndex(e => e[0] === (keys[i].substr(subIndex, keys[i].length)));
-            }
-            // and collecting data
-            (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
-          }
-          chartData = chartData.sort();
-        }
-        break; // IG Audience Gender/Age
-      case IG_CHART.AUD_LOCALE:
-        header = [['Country', 'Number']]; /// TODO: fix containsGeoData to use header != 'Country'
-
-        if (data.length > 0) {
-          keys = Object.keys(data[0]['value']); // getting all the gender/age data
-
-          // putting a unique entry in chartArray for every existent age range
-          for (let i = 0; i < keys.length; i++) {
-            chartData.push([keys[i], parseInt(data[0]['value'][keys[i]], 10)]);
-          }
-          chartData.sort(function (obj1, obj2) {
-            // Ascending: first age less than the previous
-            return -(obj1[1] - obj2[1]);
-          });
-
-          other = [['Other', 0]];
-          chartData.slice(4, chartData.length).forEach(el => {
-            other[0][1] += el[1];
-          });
-          chartData = chartData.slice(0, 4).concat(other);
-        }
-
-        break; // IG Audience Locale
-      case IG_CHART.ONLINE_FOLLOWERS:
-
-        interval = 3; // Interval of hours to show
-        header = [['OnlineFollowers', 'Min', 'Average', 'Max']];
-
-        for (let i = 0; i < data.length; i++)
-          keys.push(data[i]['value']);
-
-        for (let i = 0; i < 24; i += interval) {
-          // MIN | AVG | MAX
-          chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, Number.MIN_SAFE_INTEGER]);
-        }
-
-        // putting a unique entry in chartData for every existent age range
-        for (let day = 0; day < keys.length; day++) {
-          for (let h_interval = 0; h_interval < Object.keys(keys[day]).length; h_interval += interval) {
-            temp = 0;
-            index = 0;
-            for (let hour = h_interval; hour < (h_interval + interval); hour++) {
-              temp += parseInt(keys[day][hour], 10);
-              index = (hour + 1) / interval;
-            }
-
-            chartData[index - 1][2] += temp;
-
-            if (temp < chartData[index - 1][1]) {
-              chartData[index - 1][1] = temp;
-            }
-
-            if (temp > chartData[index - 1][3]) {
-              chartData[index - 1][3] = temp;
-            }
-          }
-        }
-        for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
-          chartData[i][2] /= 30;
-        }
-
-        break; // IG Online followers
-      case IG_CHART.IMPRESSIONS:
-        header = [['Date', 'Impressions']];
-
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
-        }
-        break; // IG Impressions by day
-      case IG_CHART.REACH:
-        header = [['Date', 'Reach']];
-
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
-        }
-        break; // IG Reach
-      case IG_CHART.ACTION_PERFORMED:
-        header = [['Type', 'Number']];
-        let map = new Map();
-        //group by click type
-        for (let i = 0; i < data.length; i++) {
-          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
-          //let fakeVal = 25;
-          //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(fakeVal, 10)) : map.set(data[i]['metric'], parseInt(fakeVal, 10));
-
-        }
-        let empty = true;
-        map.forEach((value: boolean, key: string) => {
-          if (parseInt(map.get(key), 10) != 0) {
-            empty = false;
-          }
-        });
-
-        if (empty) {
-          map = new Map();
-          map.set('NO DATA', 100);//parseInt(100, 10));
-          map.set('empty', true);
-
-        }
-        map.forEach((value: boolean, key: string) => {
-          chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
-        });
-        break;// IG composed clicks
       case GA_CHART.NEW_USERS:
         header = [['Date', 'Users']];
 
@@ -436,8 +284,8 @@ export class ChartsCallsService {
             (tmpArray[indexFound][1])++;
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 50), parseFloat(data[i][2])]);
-            tmpArray.push([ChartsCallsService.cutString(data[i][1], 50), 1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 12), parseFloat(data[i][2])]);
+            tmpArray.push([ChartsCallsService.cutString(data[i][1], 12), 1]);
           }
         }
 
@@ -446,8 +294,158 @@ export class ChartsCallsService {
           chartData[i][1] /= (tmpArray[i][1] * 1000);
         }
 
-        console.log(chartData);
         break;
+
+      case IG_CHART.AUD_CITY:
+        header = [['City', 'Fans']];
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+          });
+
+          paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+
+          for (let i = 0; i < paddingRows; i++) {
+            chartData.push(['', null]);
+          }
+        }
+        break; // IG Audience City
+      case IG_CHART.AUD_COUNTRY:
+        header = [['Country', 'Popularity']];
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [k, data[data.length - 1].value[k]];
+          });
+        }
+        break; // IG Audience Country
+      case IG_CHART.AUD_GENDER_AGE:
+        header = [['Age', 'Male', 'Female']];
+
+        if (data[0]['value']) {
+          keys = Object.keys(data[0]['value']); // getting all the gender/age data
+
+          let subIndex = (keys[0].indexOf('.') !== -1) ? 2 : 1;
+
+          // putting a unique entry in chartArray for every existent age range
+          for (let i = 0; i < keys.length; i++) {
+            index = 0;
+            if (!(chartData.find(e => e[0] === (keys[i].substr(subIndex, keys[i].length))))) {
+              chartData.push([keys[i].substr(subIndex, keys[i].length), 0, 0]);
+              index = (chartData.length - 1);
+            } else {
+              index = chartData.findIndex(e => e[0] === (keys[i].substr(subIndex, keys[i].length)));
+            }
+            // and collecting data
+            (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
+          }
+          chartData = chartData.sort();
+        }
+        break; // IG Audience Gender/Age
+      case IG_CHART.AUD_LOCALE:
+        header = [['Country', 'Number']]; /// TODO: fix containsGeoData to use header != 'Country'
+
+        if (data.length > 0) {
+          keys = Object.keys(data[0]['value']); // getting all the gender/age data
+
+          // putting a unique entry in chartArray for every existent age range
+          for (let i = 0; i < keys.length; i++) {
+            chartData.push([keys[i], parseInt(data[0]['value'][keys[i]], 10)]);
+          }
+          chartData.sort(function (obj1, obj2) {
+            // Ascending: first age less than the previous
+            return -(obj1[1] - obj2[1]);
+          });
+
+          other = [['Other', 0]];
+          chartData.slice(4, chartData.length).forEach(el => {
+            other[0][1] += el[1];
+          });
+          chartData = chartData.slice(0, 4).concat(other);
+        }
+
+        break; // IG Audience Locale
+      case IG_CHART.ONLINE_FOLLOWERS:
+
+        interval = 3; // Interval of hours to show
+        header = [['OnlineFollowers', 'Min', 'Average', 'Max']];
+
+        for (let i = 0; i < data.length; i++)
+          keys.push(data[i]['value']);
+
+        for (let i = 0; i < 24; i += interval) {
+          // MIN | AVG | MAX
+          chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, 0]);
+        }
+        // putting a unique entry in chartData for every existent age range
+        for (let day = 0; day < keys.length; day++) {
+          for (let h_interval = 0; h_interval < Object.keys(keys[day]).length; h_interval += interval) {
+            temp = 0;
+            index = 0;
+            for (let hour = h_interval; hour < (h_interval + interval); hour++) {
+              temp += isNaN(parseInt(keys[day][hour], 10)) ? 0 : parseInt(keys[day][hour]);
+              index = (hour + 1) / interval;
+            }
+
+            chartData[index - 1][2] += temp;
+
+            if (temp < chartData[index - 1][1]) {
+              chartData[index - 1][1] = temp;
+            }
+
+            if (temp > chartData[index - 1][3]) {
+              chartData[index - 1][3] = temp;
+            }
+          }
+        }
+        for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
+          console.warn(chartData[i][2]);
+          chartData[i][2] /= keys.length;
+          chartData[i][1] = chartData[i][1] === Number.MAX_SAFE_INTEGER ? 0 : chartData[i][1];
+        }
+
+        break; // IG Online followers
+      case IG_CHART.IMPRESSIONS:
+        header = [['Date', 'Impressions']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // IG Impressions by day
+      case IG_CHART.REACH:
+        header = [['Date', 'Reach']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // IG Reach
+      case IG_CHART.ACTION_PERFORMED:
+        header = [['Type', 'Number']];
+        let map = new Map();
+        //group by click type
+        for (let i = 0; i < data.length; i++) {
+          map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
+          //let fakeVal = 25;
+          //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(fakeVal, 10)) : map.set(data[i]['metric'], parseInt(fakeVal, 10));
+
+        }
+        let empty = true;
+        map.forEach((value: boolean, key: string) => {
+          if (parseInt(map.get(key), 10) != 0) {
+            empty = false;
+          }
+        });
+
+        if (empty) {
+          map = new Map();
+          map.set('NO DATA', 100);//parseInt(100, 10));
+          map.set('empty', true);
+
+        }
+        map.forEach((value: boolean, key: string) => {
+          chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
+        });
+        break;// IG composed clicks
+
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -476,7 +474,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -518,7 +516,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -544,7 +542,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -606,7 +604,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -616,7 +614,6 @@ export class ChartsCallsService {
         };
         break;  // Google PageViews (impressions by day)
       case GA_CHART.SESSION_DAY:
-
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -632,7 +629,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -726,7 +723,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -754,7 +751,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -790,6 +787,97 @@ export class ChartsCallsService {
           }
         };
         break; // Google list sessions per browser
+      case GA_CHART.NEW_USERS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 210, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 230,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ffc423'],
+            areaOpacity: 0.1
+          }
+        };
+        break;// GA new users
+      case GA_CHART.MOBILE_DEVICES:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 7,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            allowHtml: true,
+            sort: 'disable',
+            sortAscending: true,
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;// GA mobile devices per session
+      case GA_CHART.PERCENT_NEW_SESSION:
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 6,
+          options: {
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
+            height: 310,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#fd8f8d', '#c96565'],
+            areaOpacity: 0.2
+          }
+        };
+        break;  // Google New Users vs Returning
+      case GA_CHART.PAGE_LOAD_TIME:
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 310, top: 0},
+            legend: {position: 'none'},
+            height: 330,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#000'}
+            },
+            colors: ['#A0D8C5'],
+            bar: {groupWidth: '70%'},
+            areaOpacity: 0.3
+          }
+        };
+        break;  // Google Sources Column Chart
 
       case IG_CHART.AUD_CITY:
         formattedData = {
@@ -937,109 +1025,36 @@ export class ChartsCallsService {
           }
         };
         if (data.filter(e => e[1] === true).length == 0) {
-          formattedData.options.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'],
-            formattedData.dataTable = data;
-        }
-        else {
+          formattedData.options.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'];
+          formattedData.dataTable = data;
+        } else {
           formattedData.options.colors = ['#D3D3D3'];
           formattedData.dataTable = data.slice(0, 2);
         }
         break; // IG clicks pie
-      case GA_CHART.NEW_USERS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 210, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 230,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#ffc423'],
-            areaOpacity: 0.1
-          }
-        };
-        break;// GA new users
-      case GA_CHART.MOBILE_DEVICES:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 7,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            allowHtml: true,
-            sort: 'disable',
-            sortAscending: true,
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
-        break;// GA mobile devices per session
-      case GA_CHART.PERCENT_NEW_SESSION:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 6,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#fd8f8d', '#c96565'],
-            areaOpacity: 0.2
-          }
-        };
-        break;  // Google New Users vs Returning
-      case GA_CHART.PAGE_LOAD_TIME:
-        console.warn(data);
-        formattedData = {
-          chartType: 'BarChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 310, top: 0},
-            legend: {position: 'none'},
-            height: 330,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#A0D8C5'],
-            bar: {groupWidth: '70%'},
-            areaOpacity: 0.3
-          }
-        };
-        break;  // Google Sources Column Chart
     }
 
     return formattedData;
+  }
+
+  private getMinChartStep(type, data, perc=0.8) {
+    let min, length;
+
+    data = data.slice(1);
+
+    switch (type) {
+      case D_TYPE.FB:
+      case D_TYPE.IG:
+        min = (data.reduce((p, c) => (p[1] < c[1] ? p[1] : c[1]))) * perc;
+        break;
+      case D_TYPE.GA:
+      case D_TYPE.YT:
+        length = data[0].length;
+        min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
+        break;
+    }
+
+    return min;
   }
 
   public retrieveMiniChartData(serviceID: number, pageIDs?, intervalDate?: IntervalDate, permissions?) {

@@ -46,11 +46,11 @@
     <div class="align-middle d-table-cell">
       <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
         <h4 class="text-center mb-0" style="font-size: 17px;">
-          <i class="fas fa-exclamation-triangle text-warning mr-1"></i>
+          <i class="fas fa-exclamation-triangle text-warning mr-1 d-block"></i>
           Si è verificato un errore recuperando il grafico.
         </h4>
         <p *ngIf="dashChart.type === D_TYPE.IG" class="mt-3 text-justify">
-          Due to some Instagram limitations, different data could not be available in the selected date interval but only for the current day.
+          A causa di limitazioni di Instagram, alcuni dati non potrebbero essere disponibili nell'intervallo di dati selezionati, ma solo per il giorno corrente.
         </p>
       </div>
     </div>

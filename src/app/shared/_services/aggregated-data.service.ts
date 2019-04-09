@@ -45,14 +45,6 @@ export class AggregatedDataService {
         break;
     }
 
-    console.warn({
-      average: sum / filteredData.length,
-      highest: highest,
-      lowest: lowest,
-      interval: dateInterval,
-      previousInterval: this.getPrevious(dateInterval)
-    });
-
     return {
       average: sum / filteredData.length,
       highest: highest,

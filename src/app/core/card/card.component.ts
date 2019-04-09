@@ -124,33 +124,46 @@ export class CardComponent implements OnInit {
 
     let unit = '';
 
-    switch (this.dashChart.chart_id) {
-      case GA_CHART.BOUNCE_RATE    :
-        unit = ' %';
-        break;
-      case GA_CHART.AVG_SESS_DURATION :
-        unit = ' s';
-        break;
+    if (this.aggregated) {
+      switch (this.dashChart.chart_id) {
+        case GA_CHART.BOUNCE_RATE    :
+          unit = ' %';
+          this.low = this.dashChart.aggregated.lowest.toFixed(2);
+          this.high = this.dashChart.aggregated.highest.toFixed(2);
+          break;
+        case GA_CHART.AVG_SESS_DURATION :
+          unit = ' s';
+          this.low = this.dashChart.aggregated.lowest.toFixed(2);
+          this.high = this.dashChart.aggregated.highest.toFixed(2);
+          break;
+        default:
+          this.low = this.dashChart.aggregated.lowest;
+          this.high = this.dashChart.aggregated.highest;
+          break;
+      }
+
+      this.low += unit;
+      this.high += unit;
     }
 
-    if(this.aggregated) {
+/*    if(this.aggregated) {
 
       // if (this.dashChart.aggregated.average) {
       this.avg = this.dashChart.aggregated.average.toFixed(2) + unit;
       // }
 
       // if (this.dashChart.aggregated.lowest) {
-      this.low = this.dashChart.aggregated.lowest + unit;
+      this.low = (this.dashChart.chart_id === GA_CHART.BOUNCE_RATE ? this.dashChart.aggregated.lowest.toFixed(2) : this.dashChart.aggregated.lowest) + unit;
       // }
 
       // if (this.dashChart.aggregated.highest) {
-      this.high = this.dashChart.aggregated.highest + unit;
+      this.high = (this.dashChart.chart_id === GA_CHART.BOUNCE_RATE ? this.dashChart.aggregated.highest.toFixed(2) : this.dashChart.aggregated.highest) + unit;
       // }
 
       //this.interval = 'BASE INTERVAL: ' + new Date(this.dashChart.aggregated.interval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.interval.last).toLocaleString() +
       //' | PREVIOUS: ' + new Date(this.dashChart.aggregated.previousInterval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.previousInterval.last).toLocaleString();
 
-    }
+    }*/
   }
 
   openModal(template: TemplateRef<any>) {

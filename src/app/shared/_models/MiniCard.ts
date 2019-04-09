@@ -79,13 +79,13 @@ export let IgMiniCards: MiniCard[] = [
     value: '-',
     measure: 'post-sum'
   }, {
-    name: 'Visual. profilo',
+    name: 'Visite profilo',
     icon: 'icon-eye',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
     measure: 'prof-views'
   }, {
-    name: 'Visite',
+    name: 'Visual. post',
     icon: 'icon-screen-smartphone',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     value: '-',
