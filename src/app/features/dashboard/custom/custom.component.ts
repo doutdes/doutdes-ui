@@ -550,7 +550,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       x += canvas.width / dimRatio + 10;
     }
 
-    pdf.save('report_personalizzata_' + user.username + + '_' + day + '-' + month + '-' + year + '.pdf');
+    pdf.save('report_personalizzata_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
 
     this.closeModal();
   }
