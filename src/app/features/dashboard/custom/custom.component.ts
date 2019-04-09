@@ -209,9 +209,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     try {
       // Retrieving dashboard ID
       dash = await this.DService.getDashboardByType(D_TYPE.CUSTOM).toPromise(); // Custom dashboard type
+      console.log(JSON.parse(JSON.stringify(dash)));
 
-      if (dash.id) {
-        this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
+      if (dash['id']) {
+        this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
       } else {
         this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
         return;
