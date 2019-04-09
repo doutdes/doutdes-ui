@@ -144,6 +144,7 @@ export class CardComponent implements OnInit {
 
       this.low += unit;
       this.high += unit;
+      this.avg = this.dashChart.aggregated.average.toFixed(2) + unit;
     }
 
 /*    if(this.aggregated) {

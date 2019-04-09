@@ -398,7 +398,6 @@ export class ChartsCallsService {
           }
         }
         for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
-          console.warn(chartData[i][2]);
           chartData[i][2] /= keys.length;
           chartData[i][1] = chartData[i][1] === Number.MAX_SAFE_INTEGER ? 0 : chartData[i][1];
         }
@@ -517,6 +516,7 @@ export class ChartsCallsService {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+
               textPosition: 'in',
               textStyle: {color: '#999'}
             },

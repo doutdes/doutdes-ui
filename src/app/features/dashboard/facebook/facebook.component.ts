@@ -104,7 +104,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
-        this.miniCards[i].step = undefined;
+        this.miniCards[i].step = results['step'];
       }
     });
   }
