@@ -397,6 +397,8 @@ export class ChartsCallsService {
             }
           }
         }
+
+
         for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
           console.warn(chartData[i][2]);
           chartData[i][2] /= keys.length;
