@@ -12,10 +12,15 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
-import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstrap';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {NgxLoadingModule} from 'ngx-loading';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
+
+import {defineLocale} from 'ngx-bootstrap';
+import {itLocale} from 'ngx-bootstrap/locale';
+
+defineLocale('it', itLocale);
 
 
 @NgModule({
@@ -41,7 +46,8 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
     ChartsCallsService,
     BreadcrumbActions,
     FilterActions,
-    GlobalEventsManagerService
+    GlobalEventsManagerService,
+    BsLocaleService
   ],
   exports: [
     FeatureDashboardInstagramComponent

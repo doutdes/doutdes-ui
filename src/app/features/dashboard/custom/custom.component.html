@@ -11,7 +11,7 @@
 
       <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-export">
-        <li class="dropdown-item cursor-pointer"><i class="fas fa-file-pdf mr-2"></i>Esporta in PDF</li> <!-- TODO add function -->
+        <li (click)="htmltoPDF()" class="dropdown-item cursor-pointer"><i class="fas fa-file-pdf mr-2"></i>Esporta in PDF</li>
       </ul>
     </div> <!-- PDF export -->
     <div class="btn-group float-right d-md-block d-none" dropdown>
@@ -21,9 +21,9 @@
 
       <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-date-filter">
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Last 7 days</li>
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Last 30 days</li>
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Last 90 days</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Ultimi 7 giorni</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Ultimi 30 giorni</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Ultimi 90 giorni</li>
       </ul>
     </div> <!-- TODO Create a component custom like card -->
     <input type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker"
@@ -101,3 +101,13 @@
     </div>
   </div>
 </div>
+
+<ng-template #reportWait>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-hourglass-half"></i> Esporta il report</h4>
+  </div>
+
+  <div class="modal-body">
+    Stiamo creando il tuo report, attendi...
+  </div>
+</ng-template>

@@ -9,10 +9,15 @@ import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstrap';
 import {NgxLoadingModule} from 'ngx-loading';
 import {FeatureDashboardCustomComponent} from './custom.component';
 import {FacebookService} from '../../../shared/_services/facebook.service';
+
+import {defineLocale} from 'ngx-bootstrap';
+import {itLocale} from 'ngx-bootstrap/locale';
+
+defineLocale('it', itLocale);
 
 @NgModule({
   declarations: [
@@ -34,7 +39,8 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
     GoogleAnalyticsService,
     FacebookService,
     BreadcrumbActions,
-    FilterActions
+    FilterActions,
+    BsLocaleService
   ],
   exports: [
     FeatureDashboardCustomComponent

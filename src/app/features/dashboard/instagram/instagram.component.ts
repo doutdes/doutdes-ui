@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {InstagramService} from '../../../shared/_services/instagram.service';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
@@ -17,6 +17,12 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
+import {User} from '../../../shared/_models/User';
+import {UserService} from '../../../shared/_services/user.service';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
+
+import * as jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const PrimaryWhite = '#ffffff';
 
@@ -26,6 +32,8 @@ const PrimaryWhite = '#ffffff';
 })
 
 export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
+
+  @ViewChild('reportWait') reportWait;
 
   public D_TYPE = D_TYPE;
 
@@ -63,8 +71,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   minDate: Date = subDays(new Date(), this.FILTER_DAYS.thirty);
   maxDate: Date = new Date();
   bsRangeValue: Date[];
-  dateChoice: String = 'Preset';
+  dateChoice: String = 'Ultimi 30 giorni';
   datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
+
+  modalRef: BsModalRef;
 
   constructor(
     private IGService: InstagramService,
@@ -74,7 +84,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
     private filterActions: FilterActions,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private userService: UserService,
+    private modalService: BsModalService,
+    private localeService: BsLocaleService
   ) {
   }
 
@@ -143,6 +156,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.filterActions.loadStoredDashboard(D_TYPE.IG);
       this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
       this.datePickerEnabled = true;
+
+      if (this.chartArray$.length === 0) {
+        this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+      }
+
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
@@ -243,7 +261,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
       }
     }
   }
@@ -253,16 +271,16 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     switch (days) {
       case this.FILTER_DAYS.seven:
-        this.dateChoice = 'Last 7 days';
+        this.dateChoice = 'Ultimi 7 giorni';
         break;
       case this.FILTER_DAYS.thirty:
-        this.dateChoice = 'Last 30 days';
+        this.dateChoice = 'Ultimi 30 giorni';
         break;
       case this.FILTER_DAYS.ninety:
-        this.dateChoice = 'Last 90 days';
+        this.dateChoice = 'Ultimi 90 giorni';
         break;
       default:
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
         break;
     }
   }
@@ -294,7 +312,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.firstDateRange = this.minDate;
     this.lastDateRange = this.maxDate;
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -330,7 +348,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.GEService.addSubscriber(dash_type);
     }
 
-    this.loadDashboard();
+    this.localeService.use('it');
+    await this.loadDashboard();
     this.addBreadcrumb();
   }
 
@@ -339,7 +358,81 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.filterActions.removeCurrent();
   }
 
+  async htmltoPDF() {
+    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
+    const cards = document.querySelectorAll('app-card');
+    const firstCard = await html2canvas(cards[0]);
+
+    const user = await this.getUserCompany();
+
+    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
+    let graphsRow = 2;
+    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
+    let x = 40, y = 40;
+    let offset = y - 10;
+
+    let dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
+
+    this.openModal(this.reportWait, true);
+
+    pdf.setFontSize(8);
+    pdf.text(user.company_name, 320, offset);
+    pdf.text('P. IVA: ' + user.vat_number, 320, offset + 10);
+    pdf.text(user.first_name + ' ' + user.last_name, 320, offset + 20);
+    pdf.text(user.address, 320, offset + 30);
+    pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
+
+    pdf.setFontSize(18);
+    pdf.text('REPORT DASHBOARD INSTAGRAM', x, y - 5);
+    y += 20;
+
+    pdf.setFontSize(14);
+    pdf.text('Periodo: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y - 8);
+    y += 40;
+
+    // Numero grafici per riga dipendente da dimensioni grafico
+    for (let i = 0; i < cards.length; i++) {
+      const canvas = await html2canvas(cards[i]);
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+      if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
+        y += canvas.height / dimRatio + 20;
+        x = 40;
+      }
+
+      if (i !== 0 && i % graphsPage === 0) {
+        pdf.addPage();
+        x = 40;
+        y = 20;
+      }
+
+      pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
+      x += canvas.width / dimRatio + 10;
+    }
+
+    pdf.save('report_ig_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
+
+    this.closeModal();
+  }
+
+  formatStringDate(date: Date) {
+    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+  }
+
+  async getUserCompany() {
+    return <User> await this.userService.get().toPromise();
+  }
+
   nChartEven() {
     return this.chartArray$.length % 2 === 0;
   }
+
+  openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered', ignoreBackdropClick: ignoreBackdrop, keyboard: !ignoreBackdrop});
+  }
+
+  closeModal() {
+    this.modalRef.hide();
+  }
+
 }

@@ -13,13 +13,13 @@
         [view]="view"
         [(viewDate)]="viewDate"
         (viewDateChange)="activeDayIsOpen = false">
-        Previous
+        Precedente
       </div>
       <div
         class="btn btn-light"
         mwlCalendarToday
         [(viewDate)]="viewDate">
-        Today
+        Oggi
       </div>
       <div
         class="btn btn-outline-light"
@@ -27,12 +27,12 @@
         [view]="view"
         [(viewDate)]="viewDate"
         (viewDateChange)="activeDayIsOpen = false">
-        Next
+        Successivo
       </div>
     </div>
   </div>
   <div class="col-md-4">
-    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
+    <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'it':weekStartsOn }}</h3>
   </div>
   <div class="col-md-4">
     <div class="btn-group">
@@ -40,19 +40,19 @@
         class="btn btn-primary"
         (click)="changeView(CalendarView.Month)"
         [class.active]="view === CalendarView.Month">
-        Month
+        Mensile
       </div>
       <div
         class="btn btn-primary"
         (click)="changeView(CalendarView.Week)"
         [class.active]="view === CalendarView.Week">
-        Week
+        Settimanale
       </div>
       <div
         class="btn btn-primary"
         (click)="changeView(CalendarView.Day)"
         [class.active]="view === CalendarView.Day">
-        Day
+        Giornaliero
       </div>
     </div>
   </div>
@@ -61,6 +61,7 @@
 <div [ngSwitch]="view" class="bg-white" >
   <mwl-calendar-month-view
     *ngSwitchCase="CalendarView.Month"
+    [locale]="locale"
     [viewDate]="viewDate"
     [weekStartsOn]="weekStartsOn"
     [events]="events"
@@ -72,6 +73,7 @@
   </mwl-calendar-month-view>
   <mwl-calendar-week-view
     *ngSwitchCase="CalendarView.Week"
+    [locale]="locale"
     [viewDate]="viewDate"
     [weekStartsOn]="weekStartsOn"
     [events]="events"
@@ -81,6 +83,7 @@
   </mwl-calendar-week-view>
   <mwl-calendar-day-view
     *ngSwitchCase="CalendarView.Day"
+    [locale]="locale"
     [viewDate]="viewDate"
     [events]="events"
     [refresh]="refresh"
@@ -90,11 +93,11 @@
 </div>
 
 <div class="row my-4">
-  <div class="col-md-2">
-    <h3 *ngIf="events.length > 0">Edit events</h3>
+  <div class="col-md-4">
+    <h3 *ngIf="events.length > 0">Modifica eventi</h3>
   </div>
-  <div class="offset-md-8 col-md-2">
-    <button class="btn btn-primary float-right" (click)="addEvent()">Add new</button>
+  <div class="offset-md-6 col-md-2">
+    <button class="btn btn-primary float-right" (click)="addEvent()">Aggiungi nuovo</button>
   </div>
 </div>
 
@@ -102,12 +105,12 @@
 
   <thead>
   <tr>
-    <th>Title</th>
-    <th>Primary color</th>
-    <th>Secondary color</th>
-    <th>Starts at</th>
-    <th>Ends at</th>
-    <th>Actions</th>
+    <th>Titolo</th>
+    <th>Colore n. 1</th>
+    <th>Colore n. 2</th>
+    <th>Inizia </th>
+    <th>Finisce</th>
+    <th>Azioni</th>
   </tr>
   </thead>
   <tbody>
@@ -134,31 +137,29 @@
         <input
           class="form-control bg-light"
           type="text"
-          mwlFlatpickr
           [(ngModel)]="event.start"
+          [altFormat]="event.start.toLocaleDateString('it-IT')"
           [altInput]="true"
           [convertModelValue]="true"
           [enableTime]="true"
-          dateFormat="Y-m-dTH:i"
-          altFormat="F j, Y H:i"
-          placeholder="Not set">
+          placeholder="Not set"
+          mwlFlatpickr> <!--altFormat="F j, Y H:i"-->
       </td>
       <td>
         <input
           class="form-control bg-light"
           type="text"
-          mwlFlatpickr
           [(ngModel)]="event.end"
+          [altFormat]="event.start.toLocaleDateString('it-IT')"
           [altInput]="true"
           [convertModelValue]="true"
           [enableTime]="true"
-          dateFormat="Y-m-dTH:i"
-          altFormat="F j, Y H:i"
-          placeholder="Not set">
+          placeholder="Not set"
+          mwlFlatpickr><!--altFormat="F j, Y H:i"-->
       </td>
       <td>
-        <button class="btn btn-info" (click)="eventUpdated(event); refresh.next()">Update</button>
-        <button class="btn btn-danger ml-4" (click)="deleteEvent(event, index); refresh.next()">Delete</button>
+        <button class="btn btn-info text-white" (click)="eventUpdated(event); refresh.next()">Aggiorna</button>
+        <button class="btn btn-danger ml-1" (click)="deleteEvent(event, index); refresh.next()">Elimina</button>
       </td>
     </tr>
   </tbody>
@@ -177,18 +178,18 @@
 
     <div class="container" style="padding-bottom: 16px;">
       <div class="row">
-        <div class="col-md-3 font-weight-bold">Data start</div>
+        <div class="col-md-3 font-weight-bold">Inizia</div>
         <div class="col-md-9">{{formatData(modalData.event.start)}}</div>
       </div>
       <div class="row">
-        <div class="col-md-3 font-weight-bold">Data end</div>
+        <div class="col-md-3 font-weight-bold">Finisce</div>
         <div class="col-md-9">{{formatData(modalData.event.end)}}</div>
       </div>
     </div>
 
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-danger" (click)="closeModal()">Close</button>
+      <button type="button" class="btn btn-danger" (click)="closeModal()">Chiudi</button>
     </div>
   </div>
 

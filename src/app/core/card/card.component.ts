@@ -144,6 +144,7 @@ export class CardComponent implements OnInit {
 
       this.low += unit;
       this.high += unit;
+      this.avg = this.dashChart.aggregated.average.toFixed(2) + unit;
     }
 
 /*    if(this.aggregated) {
@@ -180,7 +181,7 @@ export class CardComponent implements OnInit {
       .subscribe(() => {
         this.GEService.removeFromDashboard.next([chart_id, dashboard_id]);
         this.closeModal();
-        this.toastr.success('"' + this.dashChart.title + '" è stato correttamente rimosso.', 'Grafico rimosso correttamente!');
+        // this.toastr.success('"' + this.dashChart.title + '" è stato correttamente rimosso.', 'Grafico rimosso correttamente!');
       }, error => {
         this.toastr.error('Non è stato possibile rimuovere "' + this.dashChart.title + '" dalla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione del grafico.');
         console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');

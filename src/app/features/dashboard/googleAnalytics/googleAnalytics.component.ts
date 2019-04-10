@@ -19,7 +19,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
@@ -35,6 +35,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   // @ViewChild(ToastContainerDirective) toastContainer: ToastContainerDirective;
   @ViewChild('selectView') selectView;
+  @ViewChild('reportWait') reportWait;
 
   public D_TYPE = D_TYPE;
   public HARD_DASH_DATA = {
@@ -87,7 +88,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private ADService: AggregatedDataService,
     private modalService: BsModalService,
     private apiKeyService: ApiKeysService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private localeService: BsLocaleService
   ) {
   }
 
@@ -125,7 +127,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         // Ci sono già dati salvati
         this.filterActions.loadStoredDashboard(D_TYPE.GA);
         this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
-        // this.datePickerEnabled = true;
+        this.GEService.loadingScreen.next(false);
+
+        if (this.chartArray$.length === 0) {
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+        }
+
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
@@ -300,8 +307,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
-      view_id = await this.getViewID();
-
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if(!view_id) {
 
@@ -360,6 +365,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.GEService.addSubscriber(dash_type);
       }
 
+      this.localeService.use('it');
+
       await this.loadDashboard();
 
     } catch (e) {
@@ -375,67 +382,57 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   async htmltoPDF() {
     const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
     const cards = document.querySelectorAll('app-card');
-    let fileName, userCompany;
-
-    let month = (new Date()).getMonth() + 1;
-    let day = (new Date()).getDate();
-    let year = (new Date()).getFullYear();
-
     const firstCard = await html2canvas(cards[0]);
+
+    const user = await this.getUserCompany();
+
     let dimRatio = firstCard['width'] > 400 ? 3 : 2;
     let graphsRow = 2;
     let graphsPage = firstCard['width'] > 400 ? 6 : 4;
-    let x = 20, y = 40;
+    let x = 40, y = 40;
+    let offset = y - 10;
 
-    this.GEService.loadingScreen.next(true);
+    let dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
 
-    try {
-      userCompany = await this.getUserCompany();
-      fileName = 'report_website_' + userCompany + '_' + day + '_' + month + '_' + year + '.pdf';
+    this.openModal(this.reportWait, true);
 
-      pdf.setFontSize(12);
-      pdf.text('Doutdes per ' + userCompany, 340, 20);
+    pdf.setFontSize(8);
+    pdf.text(user.company_name, 320, offset);
+    pdf.text('P. IVA: ' + user.vat_number, 320, offset + 10);
+    pdf.text(user.first_name + ' ' + user.last_name, 320, offset + 20);
+    pdf.text(user.address, 320, offset + 30);
+    pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
 
-      pdf.setFontSize(30);
-      pdf.text('Google Analytics', x, y);
-      y += 20;
+    pdf.setFontSize(18);
+    pdf.text('REPORT DASHBOARD SITO', x, y - 5);
+    y += 20;
 
-      pdf.setFontSize(20);
-      pdf.text('Intervallo temporale: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y);
-      y += 20;
+    pdf.setFontSize(14);
+    pdf.text('Periodo: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y - 8);
+    y += 40;
 
-      // Numero grafici per riga dipendente da dimensioni grafico
-      // width > 400: 2 per riga, dimensione / 3
-      // 200 <= width <= 400: 3 per riga, dimensione / 2
+    // Numero grafici per riga dipendente da dimensioni grafico
+    for (let i = 0; i < cards.length; i++) {
+      const canvas = await html2canvas(cards[i]);
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-      for (let i = 0; i < cards.length; i++) {
-        const canvas = await html2canvas(cards[i]);
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-
-        if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
-          y += canvas.height / dimRatio + 20;
-          x = 20;
-        }
-
-        if (i !== 0 && i % graphsPage === 0) {
-          pdf.addPage();
-          x = 20;
-          y = 20;
-        }
-
-        pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
-        x += canvas.width / dimRatio + 10;
+      if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
+        y += canvas.height / dimRatio + 20;
+        x = 40;
       }
 
+      if (i !== 0 && i % graphsPage === 0) {
+        pdf.addPage();
+        x = 40;
+        y = 20;
+      }
 
-      pdf.save(fileName);
-
-    } catch (e) {
-      console.error(e);
-      // TODO show message with error on frontend
+      pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
+      x += canvas.width / dimRatio + 10;
     }
 
-    this.GEService.loadingScreen.next(false);
+    pdf.save('report_sito_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
+
     this.closeModal();
   }
 
@@ -444,14 +441,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   async getUserCompany() {
-    let user: User;
-    try {
-      user = await this.userService.get().toPromise();
-    } catch (e) {
-      console.error(e);
-    }
-
-    return user.company_name;
+    return <User> await this.userService.get().toPromise();
   }
 
   nChartEven() {

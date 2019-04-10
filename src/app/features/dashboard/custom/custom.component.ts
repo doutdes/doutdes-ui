@@ -19,8 +19,13 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {ToastrService} from 'ngx-toastr';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {CustomMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+
+import * as jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import {User} from '../../../shared/_models/User';
+import {UserService} from '../../../shared/_services/user.service';
 
 const PrimaryWhite = '#ffffff';
 
@@ -32,6 +37,7 @@ const PrimaryWhite = '#ffffff';
 export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   @ViewChild('selectView') selectView;
+  @ViewChild('reportWait') reportWait;
 
   public HARD_DASH_DATA = {
     dashboard_type: D_TYPE.CUSTOM,
@@ -69,7 +75,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   minDate: Date = new Date('2018-01-01');
   maxDate: Date = new Date();
   bsRangeValue: Date[];
-  dateChoice: String = 'Preset';
+  dateChoice: String = 'Ultimi 30 giorni';
   modalRef: BsModalRef;
 
   // Form for init
@@ -90,7 +96,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private apiKeyService: ApiKeysService,
     private toastr: ToastrService,
     private modalService: BsModalService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private userService: UserService,
+    private localeService: BsLocaleService
   ) {
   }
 
@@ -113,26 +121,30 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       }
 
       this.HARD_DASH_DATA.permissions = (await this.checkExistence()).permissions;
-      view_id = await this.getViewID();
 
-      // We check if the user has already set a preferred GOOGLE page if there is more than one in his permissions.
-      if(!view_id) {
-        await this.getViewList();
+      if (this.HARD_DASH_DATA.permissions[D_TYPE.GA]) {
 
-        if(this.viewList.length === 1) {
-          key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
-          await this.apiKeyService.updateKey(key).toPromise();
+        view_id = await this.getViewID();
 
-        } else {
-          this.selectViewForm = this.formBuilder.group({
-            view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
-          });
+        // We check if the user has already set a preferred GOOGLE page if there is more than one in his permissions.
+        if (!view_id) {
+          await this.getViewList();
 
-          this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
-          this.GEService.loadingScreen.next(false);
-          this.openModal(this.selectView, true);
+          if (this.viewList.length === 1) {
+            key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
+            await this.apiKeyService.updateKey(key).toPromise();
 
-          return;
+          } else {
+            this.selectViewForm = this.formBuilder.group({
+              view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
+            });
+
+            this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
+            this.GEService.loadingScreen.next(false);
+            this.openModal(this.selectView, true);
+
+            return;
+          }
         }
       }
 
@@ -173,6 +185,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.GEService.addSubscriber(dash_type);
       }
 
+      this.localeService.use('it');
       await this.loadMiniCards();
       await this.loadDashboard();
       this.GEService.loadingScreen.next(false);
@@ -203,8 +216,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       // Retrieving dashboard ID
       dash = await this.DService.getDashboardByType(D_TYPE.CUSTOM).toPromise(); // Custom dashboard type
 
-      if (dash.id) {
-        this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
+      if (dash['id']) {
+        this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
       } else {
         this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
         return;
@@ -214,6 +227,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         // Ci sono già dati salvati
         this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
         this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+        this.GEService.loadingScreen.next(false);
+
+        if (this.chartArray$.length === 0) {
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+        }
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
@@ -298,6 +316,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           this.toastr.error('I dati disponibili per ' + dashChart.title +' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
         }
         this.filterActions.addChart(chartToPush);
+        this.filterActions.filterData(dateInterval);
       }, error1 => {
         console.log('Error querying the Chart');
         console.log(error1);
@@ -318,7 +337,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
       }
     }
   }
@@ -328,16 +347,16 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     switch (days) {
       case this.FILTER_DAYS.seven:
-        this.dateChoice = 'Last 7 days';
+        this.dateChoice = 'Ultimi 7 giorni';
         break;
       case this.FILTER_DAYS.thirty:
-        this.dateChoice = 'Last 30 days';
+        this.dateChoice = 'Ultimi 30 giorni';
         break;
       case this.FILTER_DAYS.ninety:
-        this.dateChoice = 'Last 90 days';
+        this.dateChoice = 'Ultimi 90 giorni';
         break;
       default:
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
         break;
     }
   }
@@ -488,6 +507,71 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     } else {
       console.error('MANDARE ERRORE');
     }
+  }
+
+  async htmltoPDF() {
+    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
+    const cards = document.querySelectorAll('app-card');
+    const firstCard = await html2canvas(cards[0]);
+
+    const user = await this.getUserCompany();
+
+    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
+    let graphsRow = 2;
+    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
+    let x = 40, y = 40;
+    let offset = y - 10;
+
+    let dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
+
+    this.openModal(this.reportWait, true);
+
+    pdf.setFontSize(8);
+    pdf.text(user.company_name, 320, offset);
+    pdf.text('P. IVA: ' + user.vat_number, 320, offset + 10);
+    pdf.text(user.first_name + ' ' + user.last_name, 320, offset + 20);
+    pdf.text(user.address, 320, offset + 30);
+    pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
+
+    pdf.setFontSize(18);
+    pdf.text('REPORT PERSONALIZZATO', x, y - 5);
+    y += 20;
+
+    pdf.setFontSize(14);
+    pdf.text('Periodo: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y - 8);
+    y += 40;
+
+    // Numero grafici per riga dipendente da dimensioni grafico
+    for (let i = 0; i < cards.length; i++) {
+      const canvas = await html2canvas(cards[i]);
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+      if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
+        y += canvas.height / dimRatio + 20;
+        x = 40;
+      }
+
+      if (i !== 0 && i % graphsPage === 0) {
+        pdf.addPage();
+        x = 40;
+        y = 20;
+      }
+
+      pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
+      x += canvas.width / dimRatio + 10;
+    }
+
+    pdf.save('report_personalizzato_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
+
+    this.closeModal();
+  }
+
+  async getUserCompany() {
+    return <User> await this.userService.get().toPromise();
+  }
+
+  formatStringDate(date: Date) {
+    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
   }
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
