@@ -19,7 +19,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
@@ -88,7 +88,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private ADService: AggregatedDataService,
     private modalService: BsModalService,
     private apiKeyService: ApiKeysService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private localeService: BsLocaleService
   ) {
   }
 
@@ -361,6 +362,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
         this.GEService.addSubscriber(dash_type);
       }
+
+      this.localeService.use('it');
 
       await this.loadDashboard();
 

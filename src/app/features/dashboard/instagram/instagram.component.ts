@@ -19,7 +19,7 @@ import {IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -71,7 +71,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   minDate: Date = subDays(new Date(), this.FILTER_DAYS.thirty);
   maxDate: Date = new Date();
   bsRangeValue: Date[];
-  dateChoice: String = 'Preset';
+  dateChoice: String = 'Ultimi 30 giorni';
   datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
   modalRef: BsModalRef;
@@ -86,7 +86,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     private filterActions: FilterActions,
     private toastr: ToastrService,
     private userService: UserService,
-    private modalService: BsModalService
+    private modalService: BsModalService,
+    private localeService: BsLocaleService
   ) {
   }
 
@@ -255,7 +256,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
       }
     }
   }
@@ -265,16 +266,16 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     switch (days) {
       case this.FILTER_DAYS.seven:
-        this.dateChoice = 'Last 7 days';
+        this.dateChoice = 'Ultimi 7 giorni';
         break;
       case this.FILTER_DAYS.thirty:
-        this.dateChoice = 'Last 30 days';
+        this.dateChoice = 'Ultimi 30 giorni';
         break;
       case this.FILTER_DAYS.ninety:
-        this.dateChoice = 'Last 90 days';
+        this.dateChoice = 'Ultimi 90 giorni';
         break;
       default:
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
         break;
     }
   }
@@ -306,7 +307,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.firstDateRange = this.minDate;
     this.lastDateRange = this.maxDate;
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -342,7 +343,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.GEService.addSubscriber(dash_type);
     }
 
-    this.loadDashboard();
+    this.localeService.use('it');
+    await this.loadDashboard();
     this.addBreadcrumb();
   }
 

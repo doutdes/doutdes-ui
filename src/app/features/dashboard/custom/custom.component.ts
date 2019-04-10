@@ -19,7 +19,7 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {ToastrService} from 'ngx-toastr';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {CustomMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 import * as jsPDF from 'jspdf';
@@ -75,7 +75,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   minDate: Date = new Date('2018-01-01');
   maxDate: Date = new Date();
   bsRangeValue: Date[];
-  dateChoice: String = 'Preset';
+  dateChoice: String = 'Ultimi 30 giorni';
   modalRef: BsModalRef;
 
   // Form for init
@@ -97,7 +97,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private modalService: BsModalService,
     private formBuilder: FormBuilder,
-    private userService: UserService
+    private userService: UserService,
+    private localeService: BsLocaleService
   ) {
   }
 
@@ -180,6 +181,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.GEService.addSubscriber(dash_type);
       }
 
+      this.localeService.use('it');
       await this.loadMiniCards();
       await this.loadDashboard();
       this.GEService.loadingScreen.next(false);
@@ -209,7 +211,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     try {
       // Retrieving dashboard ID
       dash = await this.DService.getDashboardByType(D_TYPE.CUSTOM).toPromise(); // Custom dashboard type
-      console.log(JSON.parse(JSON.stringify(dash)));
 
       if (dash['id']) {
         this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
@@ -328,7 +329,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
       }
     }
   }
@@ -338,16 +339,16 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     switch (days) {
       case this.FILTER_DAYS.seven:
-        this.dateChoice = 'Last 7 days';
+        this.dateChoice = 'Ultimi 7 giorni';
         break;
       case this.FILTER_DAYS.thirty:
-        this.dateChoice = 'Last 30 days';
+        this.dateChoice = 'Ultimi 30 giorni';
         break;
       case this.FILTER_DAYS.ninety:
-        this.dateChoice = 'Last 90 days';
+        this.dateChoice = 'Ultimi 90 giorni';
         break;
       default:
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
         break;
     }
   }

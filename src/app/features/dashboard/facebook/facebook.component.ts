@@ -22,7 +22,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 const PrimaryWhite = '#ffffff';
 
@@ -72,7 +72,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   minDate: Date = new Date('2018-01-01');
   maxDate: Date = new Date();
   bsRangeValue: Date[];
-  dateChoice: String = 'Preset';
+  dateChoice: String = 'Ultimi 30 giorni';
   // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
   constructor(
@@ -85,7 +85,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private filterActions: FilterActions,
     private userService: UserService,
     private toastr: ToastrService,
-    private modalService: BsModalService
+    private modalService: BsModalService,
+    private localeService: BsLocaleService
   ) {
 
   }
@@ -260,7 +261,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
       }
     }
   }
@@ -270,16 +271,16 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     switch (days) {
       case this.FILTER_DAYS.seven:
-        this.dateChoice = 'Last 7 days';
+        this.dateChoice = 'Ultimi 7 giorni';
         break;
       case this.FILTER_DAYS.thirty:
-        this.dateChoice = 'Last 30 days';
+        this.dateChoice = 'Ultimi 30 giorni';
         break;
       case this.FILTER_DAYS.ninety:
-        this.dateChoice = 'Last 90 days';
+        this.dateChoice = 'Ultimi 90 giorni';
         break;
       default:
-        this.dateChoice = 'Custom';
+        this.dateChoice = 'Personalizzato';
         break;
     }
   }
@@ -347,6 +348,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       this.GEService.addSubscriber(dash_type);
     }
 
+    this.localeService.use('it');
     this.loadDashboard();
     this.addBreadcrumb();
   }

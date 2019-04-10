@@ -11,7 +11,7 @@
 
       <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-export">
-        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Export as PDF</li>
+        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()"><i class="fas fa-file-pdf mr-2"></i>Esporta in PDF</li>
       </ul>
     </div> <!-- PDF export -->
     <div class="btn-group float-right d-md-block d-none" dropdown>
@@ -21,10 +21,10 @@
 
       <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-date-filter">
-        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.seven)">Last 7 days</li>
-        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.thirty)">Last 30 days</li>
+        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.seven)">Ultimi 7 giorni</li>
+        <li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.thirty)">Ultimi 30 giorni</li>
         <!--<li class="dropdown-item" (click)="changeDateFilter(FILTER_DAYS.ninety)">Last 90 days</li>-->
-        <li class="dropdown-item">Custom</li>
+        <!--<li class="dropdown-item">Personalizzato</li>-->
       </ul>
     </div> <!-- TODO Create a component custom like card -->
     <input type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
