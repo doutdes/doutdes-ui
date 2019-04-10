@@ -307,6 +307,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
+      view_id = await this.getViewID();
+
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if(!view_id) {
 
