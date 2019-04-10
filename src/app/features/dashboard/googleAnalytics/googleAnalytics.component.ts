@@ -128,7 +128,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.filterActions.loadStoredDashboard(D_TYPE.GA);
         this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
         this.GEService.loadingScreen.next(false);
-        // this.datePickerEnabled = true;
+
+        if (this.chartArray$.length === 0) {
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+        }
+
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
@@ -302,8 +306,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.isApiKeySet = false;
         return;
       }
-
-      view_id = await this.getViewID();
 
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if(!view_id) {

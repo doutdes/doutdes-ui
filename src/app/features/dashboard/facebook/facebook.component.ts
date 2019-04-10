@@ -157,8 +157,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
       this.GEService.loadingScreen.next(false);
 
-      console.log(this.bsRangeValue);
-      // this.datePickerEnabled = true;
+      if (this.chartArray$.length === 0) {
+        this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+      }
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)

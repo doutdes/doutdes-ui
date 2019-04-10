@@ -121,26 +121,30 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       }
 
       this.HARD_DASH_DATA.permissions = (await this.checkExistence()).permissions;
-      view_id = await this.getViewID();
 
-      // We check if the user has already set a preferred GOOGLE page if there is more than one in his permissions.
-      if(!view_id) {
-        await this.getViewList();
+      if (this.HARD_DASH_DATA.permissions[D_TYPE.GA]) {
 
-        if(this.viewList.length === 1) {
-          key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
-          await this.apiKeyService.updateKey(key).toPromise();
+        view_id = await this.getViewID();
 
-        } else {
-          this.selectViewForm = this.formBuilder.group({
-            view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
-          });
+        // We check if the user has already set a preferred GOOGLE page if there is more than one in his permissions.
+        if (!view_id) {
+          await this.getViewList();
 
-          this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
-          this.GEService.loadingScreen.next(false);
-          this.openModal(this.selectView, true);
+          if (this.viewList.length === 1) {
+            key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
+            await this.apiKeyService.updateKey(key).toPromise();
 
-          return;
+          } else {
+            this.selectViewForm = this.formBuilder.group({
+              view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
+            });
+
+            this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
+            this.GEService.loadingScreen.next(false);
+            this.openModal(this.selectView, true);
+
+            return;
+          }
         }
       }
 
@@ -224,6 +228,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
         this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
         this.GEService.loadingScreen.next(false);
+
+        if (this.chartArray$.length === 0) {
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+        }
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 

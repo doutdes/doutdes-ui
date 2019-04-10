@@ -156,6 +156,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.filterActions.loadStoredDashboard(D_TYPE.IG);
       this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
       this.datePickerEnabled = true;
+
+      if (this.chartArray$.length === 0) {
+        this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+      }
+
     } else {
       // Retrieving dashboard charts
       this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {

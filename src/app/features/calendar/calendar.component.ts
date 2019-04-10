@@ -13,7 +13,6 @@ import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarView, DAYS_OF_WEE
 import {endOfDay, isSameDay, isSameMonth, startOfDay} from 'date-fns';
 import {CalendarService} from '../../shared/_services/calendar.service';
 import {NewCalendar} from '../../shared/_models/Calendar';
-import {e} from '@angular/core/src/render3';
 
 const colors: any = {
   red: {
@@ -53,6 +52,7 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   refresh: Subject<any> = new Subject();
 
   events: CalendarEvent[] = [];
+  public locale: 'it';
 
   constructor(
     private breadcrumbActions: BreadcrumbActions,
@@ -101,12 +101,7 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
 
     if (isSameMonth(date, this.viewDate)) {
       this.viewDate = date;
-
-      if ((isSameDay(this.viewDate, date) && this.activeDayIsOpen === true) || events.length === 0) {
-        this.activeDayIsOpen = false;
-      } else {
-        this.activeDayIsOpen = true;
-      }
+      this.activeDayIsOpen = (isSameDay(this.viewDate, date) && this.activeDayIsOpen === true) || events.length === 0;
       this.refresh.next();
     }
   }
@@ -127,7 +122,7 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   addEvent(): void {
 
     let event: CalendarEvent = {
-      title: 'New event',
+      title: 'Nuovo evento',
       start: startOfDay(new Date()),
       end: endOfDay(new Date()),
       color: colors.red,
@@ -167,32 +162,33 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   loadEvents() {
     this.calendarService.getEvents()
       .subscribe(eventsToLoad => {
+        if(eventsToLoad) {
+          eventsToLoad.forEach(async el => {
+            const colors = {
+              primary: el.primaryColor,
+              secondary: el.secondaryColor
+            };
 
-        eventsToLoad.forEach(el => {
-          const colors = {
-            primary: el.primaryColor,
-            secondary: el.secondaryColor
-          };
+            const toAdd: CalendarEvent = {
+              title: el.title,
+              start: new Date(el.dataStart),
+              end: new Date(el.dataEnd),
+              color: colors,
+              draggable: true,
+              resizable: {
+                beforeStart: true,
+                afterEnd: true
+              },
+              meta: {
+                id: el.id,
+                user_id: el.user_id
+              }
+            };
 
-          const toAdd: CalendarEvent = {
-            title: el.title,
-            start: new Date(el.dataStart),
-            end: new Date(el.dataEnd),
-            color: colors,
-            draggable: true,
-            resizable: {
-              beforeStart: true,
-              afterEnd: true
-            },
-            meta: {
-              id: el.id,
-              user_id: el.user_id
-            }
-          };
-
-          this.events.push(toAdd);
-          this.refresh.next();
-        });
+            this.events.push(toAdd);
+            this.refresh.next();
+          });
+        }
       }, err => {
         console.log(err);
       });
@@ -218,6 +214,6 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   }
 
   formatData(data: Date) {
-    return data.toDateString() + ' - ' + data.toLocaleTimeString();
+    return data.toLocaleDateString('it-IT') + ' - ' + data.toLocaleTimeString('it-IT');
   }
 }
