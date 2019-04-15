@@ -10,9 +10,14 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
 import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics.component';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstrap';
 import {ngxLoadingAnimationTypes, NgxLoadingModule} from 'ngx-loading';
 import {UserService} from '../../../shared/_services/user.service';
+
+import {defineLocale} from 'ngx-bootstrap';
+import {itLocale} from 'ngx-bootstrap/locale';
+
+defineLocale('it', itLocale);
 
 @NgModule({
   declarations: [
@@ -41,7 +46,8 @@ import {UserService} from '../../../shared/_services/user.service';
     GoogleAnalyticsService,
     BreadcrumbActions,
     UserService,
-    FilterActions
+    FilterActions,
+    BsLocaleService
   ],
   exports: [
     FeatureDashboardGoogleAnalyticsComponent

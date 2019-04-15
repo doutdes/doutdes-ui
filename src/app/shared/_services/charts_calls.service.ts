@@ -1259,7 +1259,7 @@ export class ChartsCallsService {
         }
         break;
       case 'yt-subscribers': // TODO edit
-        value = 30;
+        value = 0;
         break;
     }
 
