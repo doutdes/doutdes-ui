@@ -287,6 +287,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       }
 
     } catch (e) {
+      console.error(e);
       this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
     }
   }
