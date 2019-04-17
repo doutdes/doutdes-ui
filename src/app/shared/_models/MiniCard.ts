@@ -120,7 +120,7 @@ export let CustomMiniCards: MiniCard[] = [
     icon: 'fab fa-youtube',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     measure: 'yt-subscribers',
-    value: '30',
+    value: '-',
     type: D_TYPE.YT
   }
 ];

@@ -458,9 +458,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     // TODO Remove YT simulation card
     results = this.CCService.formatMiniChartData(null, D_TYPE.CUSTOM, this.miniCards[3].measure);
-    this.miniCards[3].value = results['value'];
+    this.miniCards[3].value = '-';
     this.miniCards[3].progress = results['perc'] + '%';
-    this.miniCards[3].step = results['step'];
+    this.miniCards[3].step = undefined;
   }
 
   async getViewID()  {
