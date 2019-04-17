@@ -168,10 +168,11 @@ export class FilterActions {
       }
 
       dashToFilter.data = filtered;
-    } else {
-      console.warn('Error in FILTER_ACTIONS. No unfiltered data found.');
-      console.warn(dashToFilter);
     }
+    // else {
+      // console.warn('Error in FILTER_ACTIONS. No unfiltered data found.');
+      // console.warn(dashToFilter);
+    // }
 
     return dashToFilter;
   }
@@ -196,7 +197,7 @@ export class FilterActions {
 
     this.storedDashboards = this.storedDashboards.filter((el: DashboardData) => el.type === dashboard_type);
 
-    if(index >= 0) {
+    if(index >= 0 && this.storedDashboards[index]) {
       this.storedDashboards[index].data = this.storedDashboards[index].data.filter(chart => chart.type === dashboard_type);
     }
   }
