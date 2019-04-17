@@ -374,6 +374,8 @@ export class ChartsCallsService {
         interval = 3; // Interval of hours to show
         header = [['OnlineFollowers', 'Min', 'Average', 'Max']];
 
+        console.log(data);
+
         for (let i = 0; i < data.length; i++)
           keys.push(data[i]['value']);
 
