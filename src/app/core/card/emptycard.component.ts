@@ -4,12 +4,10 @@ import {Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild}
 /* External Libraries */
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
-import * as _ from 'lodash';
 /* Local Services */
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
-import {Chart} from '../../shared/_models/Chart';
 import {D_TYPE, DS_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 
@@ -113,14 +111,18 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     try {
       await this.updateDropdownOptions();
-      this.modalService.onHide.subscribe(() => {
-        this.closeModal();
-      });
-      this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
+
+      if(this.metrics.length === 0) {
+        this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
+      } else {
+        this.modalService.onHide.subscribe(() => {
+          this.closeModal();
+        });
+        this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
+      }
 
     } catch (err) {
       console.error(err);
-      this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
     }
   }
 
