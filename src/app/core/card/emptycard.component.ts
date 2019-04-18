@@ -4,12 +4,10 @@ import {Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild}
 /* External Libraries */
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
-import * as _ from 'lodash';
 /* Local Services */
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
-import {Chart} from '../../shared/_models/Chart';
 import {D_TYPE, DS_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 
