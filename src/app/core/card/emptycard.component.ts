@@ -111,14 +111,18 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     try {
       await this.updateDropdownOptions();
-      this.modalService.onHide.subscribe(() => {
-        this.closeModal();
-      });
-      this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
+
+      if(this.metrics.length === 0) {
+        this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
+      } else {
+        this.modalService.onHide.subscribe(() => {
+          this.closeModal();
+        });
+        this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
+      }
 
     } catch (err) {
       console.error(err);
-      this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
     }
   }
 
