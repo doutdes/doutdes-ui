@@ -1133,8 +1133,16 @@ export class ChartsCallsService {
   }
 
   private getGoogleMiniValue(measure, data) {
-    let date = new Date(null);
+    //let date = new Date(null);
     let value, sum = 0, avg, perc, step;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+    };
+
+    data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
 
     for (const i in data) {
       sum += parseInt(data[i][1]);
@@ -1150,6 +1158,7 @@ export class ChartsCallsService {
         break;
 
       case 'time':
+        date = new Date(null);
         date.setSeconds(parseInt(avg)); // specify value for SECONDS here
         value = date.toISOString().substr(11, 8);
         step = this.searchStep(avg, measure);
