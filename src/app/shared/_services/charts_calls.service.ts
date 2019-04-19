@@ -295,7 +295,7 @@ export class ChartsCallsService {
         }
 
         // Calculating average
-        for (let i=0; i < chartData.length; i++) {
+        for (let i = 0; i < chartData.length; i++) {
           chartData[i][1] /= (tmpArray[i][1] * 1000);
         }
 
@@ -1054,7 +1054,7 @@ export class ChartsCallsService {
     return formattedData;
   }
 
-  private getMinChartStep(type, data, perc=0.8) {
+  private getMinChartStep(type, data, perc = 0.8) {
     let min, length;
 
     data = data.slice(1);
@@ -1190,13 +1190,14 @@ export class ChartsCallsService {
 
         for (const i in data) {
           aux = 0;
-          aux += data[i]['value']['like'] || 0;
-          aux += data[i]['value']['love'] || 0;
-          aux += data[i]['value']['haha'] || 0;
-          aux += data[i]['value']['wow'] || 0;
-          aux += data[i]['value']['sorry'] || 0;
-          aux += data[i]['value']['anger'] || 0;
-
+          if (data[i]['value']) {
+            aux += data[i]['value']['like'] || 0;
+            aux += data[i]['value']['love'] || 0;
+            aux += data[i]['value']['haha'] || 0;
+            aux += data[i]['value']['wow'] || 0;
+            aux += data[i]['value']['sorry'] || 0;
+            aux += data[i]['value']['anger'] || 0;
+          }
           sum += aux;
           max.push(aux);
         }
@@ -1268,7 +1269,7 @@ export class ChartsCallsService {
     step = this.searchStep(value);
     perc = value / step * 100;
 
-    return {value, perc, step}
+    return {value, perc, step};
   }
 
   private searchStep(value, measure?) {
