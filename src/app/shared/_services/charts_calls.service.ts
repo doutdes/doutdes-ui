@@ -1266,6 +1266,7 @@ export class ChartsCallsService {
         break;
       case 'ga-tot-user':
         value = 0;
+        data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
         for (const i in data) {
           value += parseInt(data[i][1]);
         }
