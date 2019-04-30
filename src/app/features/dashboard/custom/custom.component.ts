@@ -50,6 +50,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   public somethingGranted = true;
 
   public FILTER_DAYS = {
+    yesterday: 1,
     seven: 6,
     thirty: 29,
     ninety: 89
@@ -72,8 +73,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   firstDateRange: Date;
   lastDateRange: Date;
-  minDate: Date = new Date('2018-01-01');
-  maxDate: Date = new Date();
+  maxDate: Date = subDays(new Date(),this.FILTER_DAYS.yesterday);
+  minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
   modalRef: BsModalRef;
@@ -226,7 +227,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       if (this.dashStored) {
         // Ci sono già dati salvati
         this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
-        this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+        this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
         this.GEService.loadingScreen.next(false);
 
         if (this.chartArray$.length === 0) {
@@ -275,7 +276,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             this.GEService.updateChartList.next(true);
 
             // Shows last 30 days
-            this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+            this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
 
             this.GEService.loadingScreen.next(false);
           }
@@ -344,7 +345,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   changeData(days: number) {
-    this.bsRangeValue = [subDays(new Date(), days), this.lastDateRange];
+    this.bsRangeValue = [subDays(this.maxDate, days), this.lastDateRange];
 
     switch (days) {
       case this.FILTER_DAYS.seven:
