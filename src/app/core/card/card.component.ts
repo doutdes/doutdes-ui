@@ -170,6 +170,9 @@ export class CardComponent implements OnInit {
       this.avgShift = this.dashChart.aggregated.avgShift.toFixed(2) + unit;
       this.highShift = this.dashChart.aggregated.highShift.toFixed(2) + unit;
       this.lowShift = this.dashChart.aggregated.lowShift.toFixed(2) + unit;
+      (this.dashChart.aggregated.highShift > 0) ? this.highShift = '+' + this.highShift : null;
+      (this.dashChart.aggregated.lowShift > 0) ? this.lowShift = '+' + this.lowShift : null;
+
     }
 
 /*    if(this.aggregated) {
