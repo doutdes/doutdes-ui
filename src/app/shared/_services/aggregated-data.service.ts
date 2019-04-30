@@ -18,9 +18,22 @@ export class AggregatedDataService {
     let highest = Number.MIN_SAFE_INTEGER;
     let lowest = Number.MAX_SAFE_INTEGER;
 
+    let prevSum = 0;
+    let prevHighest = Number.MIN_SAFE_INTEGER;
+    let prevLowest = Number.MAX_SAFE_INTEGER;
+
+    let avgShift = 0;
+    let highShift = 0;
+    let lowShift = 0;
+
     let filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
       ? chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last)
       : chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+
+    let prevDate = this.getPrevious(dateInterval);
+    let prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+      ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
+      : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
 
 
     switch (chart.type) {
@@ -32,6 +45,14 @@ export class AggregatedDataService {
           sum += value;
           highest = value > highest ? value : highest;
           lowest = value < lowest ? value : lowest;
+        }
+
+        ///WORKING ON GETTING JSON FOR PREVIOUS PERIOD
+        for (let i = 0; i < prevFilteredData.length; i++) {
+          const value = parseFloat(prevFilteredData[i][prevFilteredData[i].length - 1]);
+          prevSum += value;
+          prevHighest = value > prevHighest ? value : prevHighest;
+          prevLowest = value < prevLowest ? value : prevLowest;
         }
         break;
       case D_TYPE.FB:
@@ -45,13 +66,24 @@ export class AggregatedDataService {
         break;
     }
 
-    return {
-      average: sum / filteredData.length,
+    let prevAverage =  prevSum / prevFilteredData.length;
+    let average = sum / filteredData.length;
+    let result = {
+      average: average,
+      prevAverage : prevAverage,
       highest: highest,
+      prevHighest : prevHighest,
       lowest: lowest,
+      prevLowest : prevLowest,
+      avgShift :  average - prevAverage,
+      highShift :  highest - prevHighest,
+      lowShift : lowest - prevLowest,
       interval: dateInterval,
-      previousInterval: this.getPrevious(dateInterval)
+      prevInterval: this.getPrevious(dateInterval),
     };
+
+    console.log(JSON.parse(JSON.stringify(result)));
+    return result;
   }
 
   // Returns the corresponding previous interval (eg: for 30 days, returns the previous 30 days)

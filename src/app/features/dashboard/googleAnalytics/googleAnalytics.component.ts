@@ -310,11 +310,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       view_id = await this.getViewID();
 
       // We check if the user has already set a preferred page if there is more than one in his permissions.
-      if(!view_id) {
-
+      if (!view_id) {
         await this.getViewList();
 
-        if(this.viewList.length === 1) {
+        if (this.viewList.length === 1) {
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
           update = await this.apiKeyService.updateKey(key).toPromise();
 

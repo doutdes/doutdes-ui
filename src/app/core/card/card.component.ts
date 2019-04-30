@@ -27,7 +27,14 @@ export class CardComponent implements OnInit {
   avg: string;
   high: string;
   low: string;
-
+  //aggregated data regarding the previous period
+  prevAvg: string;
+  prevHigh: string;
+  prevLow: string;
+  //variation (incr/decr) in the given previous-actual interval
+  avgShift: string;
+  highShift: string;
+  lowShift: string;
   icon: string;
   background = '#000';
   color = '#fff';
@@ -121,6 +128,12 @@ export class CardComponent implements OnInit {
     this.avg = '';
     this.low = '';
     this.high = '';
+    this.prevAvg = '';
+    this.prevHigh = '';
+    this.prevLow = '';
+    this.avgShift = '';
+    this.highShift = '';
+    this.lowShift = '';
 
     let unit = '';
 
@@ -130,21 +143,33 @@ export class CardComponent implements OnInit {
           unit = ' %';
           this.low = this.dashChart.aggregated.lowest.toFixed(2);
           this.high = this.dashChart.aggregated.highest.toFixed(2);
+          this.prevLow = this.dashChart.aggregated.prevLowest.toFixed(2);
+          this.prevHigh = this.dashChart.aggregated.prevHighest.toFixed(2);
           break;
         case GA_CHART.AVG_SESS_DURATION :
           unit = ' s';
           this.low = this.dashChart.aggregated.lowest.toFixed(2);
           this.high = this.dashChart.aggregated.highest.toFixed(2);
+          this.prevLow = this.dashChart.aggregated.prevLowest.toFixed(2);
+          this.prevHigh = this.dashChart.aggregated.prevHighest.toFixed(2);
           break;
         default:
           this.low = this.dashChart.aggregated.lowest;
           this.high = this.dashChart.aggregated.highest;
+          this.prevLow = this.dashChart.aggregated.prevLowest;
+          this.prevHigh = this.dashChart.aggregated.prevHighest;
           break;
       }
 
       this.low += unit;
       this.high += unit;
       this.avg = this.dashChart.aggregated.average.toFixed(2) + unit;
+      this.prevLow += unit;
+      this.prevHigh += unit;
+      this.prevAvg = this.dashChart.aggregated.prevAverage.toFixed(2) + unit;
+      this.avgShift = this.dashChart.aggregated.avgShift.toFixed(2) + unit;
+      this.highShift = this.dashChart.aggregated.highShift.toFixed(2) + unit;
+      this.lowShift = this.dashChart.aggregated.lowShift.toFixed(2) + unit;
     }
 
 /*    if(this.aggregated) {

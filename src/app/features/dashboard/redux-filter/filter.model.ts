@@ -7,14 +7,14 @@ export interface IntervalDate {
 
 export interface DashboardData {
   data: DashboardCharts[];
-  interval: IntervalDate,
-  type: number
+  interval: IntervalDate;
+  type: number;
 }
 
 export interface FilterState {
-  currentDashboard: DashboardData,
-  filteredDashboard: DashboardData,
-  storedDashboards: DashboardData[]
+  currentDashboard: DashboardData;
+  filteredDashboard: DashboardData;
+  storedDashboards: DashboardData[];
 }
 
 export const FILTER_INITIAL_STATE: FilterState = {
