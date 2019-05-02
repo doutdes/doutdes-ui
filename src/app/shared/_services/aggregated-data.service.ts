@@ -22,9 +22,6 @@ export class AggregatedDataService {
     let prevHighest = Number.MIN_SAFE_INTEGER;
     let prevLowest = Number.MAX_SAFE_INTEGER;
 
-    let avgShift = 0;
-    let highShift = 0;
-    let lowShift = 0;
 
     let filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
       ? chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last)
@@ -75,13 +72,12 @@ export class AggregatedDataService {
       prevHighest : prevHighest,
       lowest: lowest,
       prevLowest : prevLowest,
-      avgShift :  average - prevAverage,
-      highShift :  highest - prevHighest,
-      lowShift : lowest - prevLowest,
+      avgShift :  average / prevAverage,
+      highShift :  highest / prevHighest,
+      lowShift : lowest / prevLowest,
       interval: dateInterval,
       prevInterval: this.getPrevious(dateInterval),
     };
-
     console.log(JSON.parse(JSON.stringify(result)));
     return result;
   }

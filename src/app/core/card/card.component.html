@@ -21,11 +21,64 @@
 
     <!--*ngIf="this.type == 'ga_bounce' || this.type == 'ga_impressions' || this.type == 'ga_sessions' || this.type == 'ga_avgsessionduration'"-->
     <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="areAggregatedDataAvailable(dashChart.format)">
-      <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>(<b style="color:#bbb">{{this.avgShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#bbb"></span><br />
-      <div style="font-size:12px; margin-top:10px">
-        <i class="fas fa-arrow-down" style="margin-right: 9px; color:#168aad"></i> Min: <b>{{this.low}}</b>(<b style="color:#267 F00">{{this.lowShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#bbb"></span><br />
+<!--
+      <ng-container *ngIf="this.avgTrend > 0">
+        <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>(<b style="color:#267F00">{{this.avgShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#bbb"></span><br />
+      </ng-container>
+      <ng-container *ngIf="this.avgTrend < 0">
+        <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>(<b style="color:#7F0200">{{this.avgShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#7F0200"></span>)<span style="color:#bbb"></span><br />
+      </ng-container>
+      <ng-container *ngIf="this.avgTrend === 0">
+        <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>(<b style="color:#000000">{{this.avgShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#000000"></span>)<span style="color:#bbb"></span><br />
+      </ng-container>
+
+!-->
+
+      <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>
+      <ng-container *ngIf="this.avgTrend > 0">
+        (<b style="color:#267F00">{{this.avgShift}}</b>
+        <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+      </ng-container>
+      <ng-container *ngIf="this.avgTrend < 0">
+        (<b style="color:#7F0200">{{this.avgShift}}</b>
+        <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+      </ng-container>
+      <ng-container *ngIf="this.avgTrend === 0">
+        (<b style="color:#979896">{{this.avgShift}}</b>
+        <span class="fas fa-equals ml-1" style="color:#979896"></span>)<span style="color:#979896"></span><br />
+      </ng-container>
+
+      <i class="fas fa-arrow-up" style="margin-right: 9px; color:#168aad"></i> Max: <b>{{this.high}}</b>
+      <ng-container *ngIf="this.highTrend > 0">
+        (<b style="color:#267F00">{{this.highShift}}</b>
+        <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+      </ng-container>
+      <ng-container *ngIf="this.highTrend < 0">
+        (<b style="color:#7F0200">{{this.highShift}}</b>
+        <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+      </ng-container>
+      <ng-container *ngIf="this.highTrend === 0">
+        (<b style="color:#979896">{{this.highShift}}</b>
+        <span class="fas fa-equals ml-1" style="color:#979896"></span>)<span style="color:#979896"></span><br />
+      </ng-container>
+
+        <i class="fas fa-arrow-down" style="margin-right: 9px; color:#168aad"></i> Min: <b>{{this.low}}</b>
+        <ng-container *ngIf="this.lowTrend > 0">
+          (<b style="color:#267F00">{{this.lowShift}}</b>
+          <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+        </ng-container>
+        <ng-container *ngIf="this.lowTrend < 0">
+          (<b style="color:#7F0200">{{this.lowShift}}</b>
+          <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+        </ng-container>
+       <ng-container *ngIf="this.lowTrend === 0">
+         (<b style="color:#979896">{{this.lowShift}}</b>
+         <span class="fas fa-equals ml-1" style="color:#979896"></span>)<span style="color:#979896"></span><br />
+        </ng-container>
+
+        <!--
         <i class="fas fa-arrow-up" style="margin-right: 9px; color:#9f2548"></i> Max: <b>{{this.high}}</b>(<b style="color:#267F00">{{this.highShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#bbb"></span><br />
-      </div>
+      !-->
       <!--<div style="font-size:11px; font-variant:none; color:#bbb">{{this.interval}}</div>-->
     </div>
 

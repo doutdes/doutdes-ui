@@ -36,6 +36,11 @@ export class CardComponent implements OnInit {
   highShift: string;
   lowShift: string;
   icon: string;
+  //define if there's a incr/decr/stasis in the value: ==1 if its increasing, ==-1 if it's decreasing, ==0 if there's a stasis
+  lowTrend: number;
+  highTrend: number;
+  avgTrend: number;
+
   background = '#000';
   color = '#fff';
   modalRef: BsModalRef;
@@ -134,6 +139,9 @@ export class CardComponent implements OnInit {
     this.avgShift = '';
     this.highShift = '';
     this.lowShift = '';
+    this.lowTrend = 0;
+    this.highTrend = 0;
+    this.avgTrend = 0;
 
     let unit = '';
 
@@ -167,32 +175,57 @@ export class CardComponent implements OnInit {
       this.prevLow += unit;
       this.prevHigh += unit;
       this.prevAvg = this.dashChart.aggregated.prevAverage.toFixed(2) + unit;
-      this.avgShift = this.dashChart.aggregated.avgShift.toFixed(2) + unit;
-      this.highShift = this.dashChart.aggregated.highShift.toFixed(2) + unit;
-      this.lowShift = this.dashChart.aggregated.lowShift.toFixed(2) + unit;
-      (this.dashChart.aggregated.highShift > 0) ? this.highShift = '+' + this.highShift : null;
-      (this.dashChart.aggregated.lowShift > 0) ? this.lowShift = '+' + this.lowShift : null;
+
+      this.avgShift = (this.dashChart.aggregated.avgShift > 1) ?
+        ((this.dashChart.aggregated.avgShift - 1) * 100).toFixed(2) + '%'
+        :
+        (this.dashChart.aggregated.avgShift * 100).toFixed(2) + '%';
+
+      this.highShift = (this.dashChart.aggregated.highShift > 1) ?
+        ((this.dashChart.aggregated.highShift - 1) * 100).toFixed(2) + '%'
+        :
+        (this.dashChart.aggregated.highShift * 100).toFixed(2) + '%';
+
+      this.lowShift = (this.dashChart.aggregated.lowShift > 1) ?
+        ((this.dashChart.aggregated.lowShift - 1) * 100).toFixed(2) + '%'
+        :
+        (this.dashChart.aggregated.lowShift * 100).toFixed(2) + '%';
+      /*
+            this.avgShift = this.dashChart.aggregated.avgShift.toFixed(2) + unit;
+            this.highShift = this.dashChart.aggregated.highShift.toFixed(2) + unit;
+            this.lowShift = this.dashChart.aggregated.lowShift.toFixed(2) + unit;*/
+      if (this.dashChart.aggregated.avgShift >= 1) {
+        this.avgShift = '+ ' + this.avgShift;
+        this.avgTrend = 1;
+      } else if (this.dashChart.aggregated.avgShift < 1 && this.dashChart.aggregated.avgShift !== 0) {
+        this.avgShift = '- ' + this.avgShift;
+        this.avgTrend = -1;
+      } else {
+        this.avgTrend = 0;
+      }
+
+      if (this.dashChart.aggregated.highShift >= 1) {
+        this.highShift = '+ ' + this.highShift;
+        this.highTrend = 1;
+      } else if (this.dashChart.aggregated.highShift < 1 && this.dashChart.aggregated.highShift !== 0) {
+        this.highShift = '- ' + this.highShift;
+        this.highTrend = -1;
+      } else {
+        this.highTrend = 0;
+      }
+
+      if (this.dashChart.aggregated.lowShift >= 1) {
+        this.lowShift = '+ ' + this.lowShift;
+        this.lowTrend = 1;
+      } else if (this.dashChart.aggregated.lowShift < 1 && this.dashChart.aggregated.lowShift !== 0) {
+        this.lowShift = '- ' + this.lowShift;
+        this.lowTrend = -1;
+      } else {
+        this.lowTrend = 0;
+      }
+
 
     }
-
-/*    if(this.aggregated) {
-
-      // if (this.dashChart.aggregated.average) {
-      this.avg = this.dashChart.aggregated.average.toFixed(2) + unit;
-      // }
-
-      // if (this.dashChart.aggregated.lowest) {
-      this.low = (this.dashChart.chart_id === GA_CHART.BOUNCE_RATE ? this.dashChart.aggregated.lowest.toFixed(2) : this.dashChart.aggregated.lowest) + unit;
-      // }
-
-      // if (this.dashChart.aggregated.highest) {
-      this.high = (this.dashChart.chart_id === GA_CHART.BOUNCE_RATE ? this.dashChart.aggregated.highest.toFixed(2) : this.dashChart.aggregated.highest) + unit;
-      // }
-
-      //this.interval = 'BASE INTERVAL: ' + new Date(this.dashChart.aggregated.interval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.interval.last).toLocaleString() +
-      //' | PREVIOUS: ' + new Date(this.dashChart.aggregated.previousInterval.first).toLocaleString() + ' -- ' + new Date(this.dashChart.aggregated.previousInterval.last).toLocaleString();
-
-    }*/
   }
 
   openModal(template: TemplateRef<any>) {
