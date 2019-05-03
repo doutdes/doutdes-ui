@@ -14,13 +14,16 @@ export class AggregatedDataService {
 
   getAggregatedData(chart: DashboardCharts, dateInterval: IntervalDate) {
 
-    let sum = 0.;
+    let sum = 0;
     let highest = Number.MIN_SAFE_INTEGER;
     let lowest = Number.MAX_SAFE_INTEGER;
 
     let prevSum = 0;
     let prevHighest = Number.MIN_SAFE_INTEGER;
     let prevLowest = Number.MAX_SAFE_INTEGER;
+
+    let nValues = 0;
+    let prevNValues = 0;
 
 
     let filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
@@ -39,7 +42,11 @@ export class AggregatedDataService {
       case D_TYPE.YT:
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i][filteredData[i].length - 1]);
-          sum += value;
+          if(value)
+          {
+            sum +=  value;
+            nValues++;
+          }
           highest = value > highest ? value : highest;
           lowest = value < lowest ? value : lowest;
         }
@@ -47,8 +54,11 @@ export class AggregatedDataService {
         ///WORKING ON GETTING JSON FOR PREVIOUS PERIOD
         for (let i = 0; i < prevFilteredData.length; i++) {
           const value = parseFloat(prevFilteredData[i][prevFilteredData[i].length - 1]);
-          prevSum += value;
-          prevHighest = value > prevHighest ? value : prevHighest;
+          if(value)
+          {
+            prevSum +=  value;
+            prevNValues++;
+          }          prevHighest = value > prevHighest ? value : prevHighest;
           prevLowest = value < prevLowest ? value : prevLowest;
         }
         break;
@@ -56,15 +66,41 @@ export class AggregatedDataService {
       case D_TYPE.IG:
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i]['value']);
-          sum += value;
+          if(value)
+          {
+            sum +=  value;
+            nValues++;
+          }
           highest = value > highest ? value : highest;
           lowest = value < lowest ? value : lowest;
+        }
+
+        ///WORKING ON GETTING JSON FOR PREVIOUS PERIOD
+        for (let i = 0; i < prevFilteredData.length; i++) {
+          const value = parseFloat(prevFilteredData[i][prevFilteredData[i].length - 1]);
+          if(value)
+          {
+            prevSum +=  value;
+            prevNValues++;
+          }
+          prevHighest = value > prevHighest ? value : prevHighest;
+          prevLowest = value < prevLowest ? value : prevLowest;
         }
         break;
     }
 
-    let prevAverage =  prevSum / prevFilteredData.length;
-    let average = sum / filteredData.length;
+    if(highest === Number.MIN_SAFE_INTEGER)
+      highest = 0;
+    if(lowest === Number.MAX_SAFE_INTEGER)
+      lowest = 0;
+    if(prevHighest === Number.MIN_SAFE_INTEGER)
+      prevHighest = 0;
+    if(prevLowest === Number.MAX_SAFE_INTEGER)
+      prevLowest = 0;
+
+
+    let prevAverage = (prevNValues === 0) ? 0 : (prevSum / prevNValues);
+    let average = (nValues === 0 ) ? 0 : (sum / nValues);
     let result = {
       average: average,
       prevAverage : prevAverage,
@@ -72,9 +108,9 @@ export class AggregatedDataService {
       prevHighest : prevHighest,
       lowest: lowest,
       prevLowest : prevLowest,
-      avgShift :  average / prevAverage,
-      highShift :  highest / prevHighest,
-      lowShift : lowest / prevLowest,
+      avgShift : (prevAverage === 0) ? 1 : (average / prevAverage),
+      highShift :  (prevHighest === 0) ? 1 :  (highest / prevHighest),
+      lowShift :  (prevLowest === 0) ? 1 : (lowest / prevLowest),
       interval: dateInterval,
       prevInterval: this.getPrevious(dateInterval),
     };
