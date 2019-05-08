@@ -19,7 +19,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
-import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
@@ -94,6 +94,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   async loadDashboard() {
+    console.log('initial MINDATE '+this.minDate);
     let dash, charts, dataArray;
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
@@ -144,6 +145,21 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           for (let i = 0; i < dataArray.length; i++) {
             chart = charts[i];
 
+            for (let element of charts) {
+              //console.log(element);
+              //console.log('SEEING '+ element['chartData'].slice(0, 8));
+              for ( let data in element['chartData']) {
+                let date = new Date(parseInt(data.slice(0, 4),10), parseInt(data.slice(4, 6), 10), parseInt(data.slice(6, 8), 10));
+               // console.log('PARSED: '+data[0].slice(0, 4)+data[0].slice(4, 6)+data[0].slice(6, 8));
+                //console.log(new Date(data[0].slice(0, 4),data[0].slice(4, 6),data[0].slice(6, 8)));
+                if(date < this.minDate) {
+                  //console.log('DATE OVERRIDED WITH '+ date);
+                  this.minDate = date;
+                }
+              }
+            }
+
+
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
               chart.error = false;
@@ -157,6 +173,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           }
 
           currentData.data = chartsToShow;
+
+          console.log('FINAL MINDATE '+this.minDate);
 
           this.filterActions.initData(currentData);
           this.GEService.updateChartList.next(true);
