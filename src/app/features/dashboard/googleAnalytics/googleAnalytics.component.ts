@@ -150,8 +150,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
               //console.log('SEEING '+ element['chartData'].slice(0, 8));
               for ( let index in element['chartData']) {
                 let data = element['chartData'][index];
-                //console.log(data);
-                let date = new Date(parseInt(data[0].slice(0, 4),10), parseInt(data[0].slice(4, 6), 10), parseInt(data[0].slice(6, 8), 10));
+                //console.log(data[0]);
+                let date = parseDate(data[0]);
                 //console.log('DATE: '+ date);
                 //console.log(new Date(data[0].slice(0, 4),data[0].slice(4, 6),data[0].slice(6, 8)));
                 if(date < this.minDate) {
