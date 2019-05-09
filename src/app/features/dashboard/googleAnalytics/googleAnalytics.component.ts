@@ -101,7 +101,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
-      last: this.maxDate.setDate(this.maxDate.getDate() - 1)
+      last: this.maxDate
     };
     let currentData: DashboardData = {
       data: chartsToShow,

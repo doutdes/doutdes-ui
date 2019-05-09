@@ -98,7 +98,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
-      last: this.maxDate.setDate(this.maxDate.getDate() - 1)
+      last: this.maxDate
      };
     let pageIDs = {};
 
