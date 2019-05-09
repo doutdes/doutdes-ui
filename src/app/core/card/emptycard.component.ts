@@ -1,18 +1,13 @@
 /* Angular components */
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
-
 /* External Libraries */
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
-import {first} from 'rxjs/operators';
-import * as _ from 'lodash';
-
 /* Local Services */
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
-import {Chart} from '../../shared/_models/Chart';
 import {D_TYPE, DS_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 
@@ -32,7 +27,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   @ViewChild('noChartsAvailable') noChartsAvailable: ElementRef;
 
   modalRef: BsModalRef;
-  chartSelected: any;
+  chartRemaining;
+
+  D_TYPE = D_TYPE;
 
   config = {
     displayKey: 'global', // if objects array passed which key to be displayed defaults to description,
@@ -41,11 +38,21 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   };
 
   dropdownOptions = [];
+  charts = [];
 
   insertChartForm: FormGroup;
   loading = false;
   submitted = false;
   chartRequired = false;
+
+  /** Dropdown menus on adding new empty card **/
+  channels = [];
+  metrics = [];
+  styles = [];
+  type = [];
+
+  description: string; // Description of the metric shown
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -53,38 +60,45 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
     private toastr: ToastrService
-  ) {}
+  ) {
+  }
 
-  ngOnInit() {
-
+  async ngOnInit() {
     const dashData = this.dashboard_data;
 
     this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
 
     this.insertChartForm = this.formBuilder.group({
-      chartTitle: ['', Validators.compose([Validators.maxLength(30), Validators.required])],
+      channel: [this.dashboard_data.dashboard_type],
+      metric: [[], Validators.required],
+      style: [null, Validators.required],
+      title: [null, Validators.compose([Validators.maxLength(30), Validators.required])],
     });
 
     if (!dashData) {
       console.error('ERROR in EMPTY-CARD. Cannot get retrieve dashboard data.');
     } else {
-
       let dummy_dashType = -1; // A dummy dash_type for the emptycard, as event subscriber
 
-      if (!this.GEService.isSubscriber(dummy_dashType)) {
-        this.GEService.removeFromDashboard.subscribe(values => {
-          if (values[0] !== 0 || values[1] !== 0) {
-            this.updateDropdownOptions().then().catch(() => console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.'));
-          }
-        });
+      try {
+        if (!this.GEService.isSubscriber(dummy_dashType)) {
 
-        this.GEService.updateChartList.subscribe(value => {
-          if (value) {
-            this.updateDropdownOptions().then().catch(() => console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.'));;
-          }
-        });
+          this.GEService.removeFromDashboard.subscribe(async values => {
+            if (values[0] !== 0 || values[1] !== 0) {
+              await this.updateDropdownOptions();
+            }
+          });
 
-        this.GEService.addSubscriber(dummy_dashType);
+          this.GEService.updateChartList.subscribe(async value => {
+            if (value) {
+              await this.updateDropdownOptions();
+            }
+          });
+
+          this.GEService.addSubscriber(dummy_dashType);
+        }
+      } catch (e) {
+        console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.', e);
       }
     }
   }
@@ -97,162 +111,158 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     try {
       await this.updateDropdownOptions();
-      this.chartSelected = this.dropdownOptions[0];
-      this.insertChartForm.controls['chartTitle'].setValue(this.chartSelected.title);
 
-      this.modalService.onHide.subscribe(() => {
-        this.closeModal();
-      });
-
-      this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
+      if(this.metrics.length === 0) {
+        this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
+      } else {
+        this.modalService.onHide.subscribe(() => {
+          this.closeModal();
+        });
+        this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
+      }
 
     } catch (err) {
-      this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
-      // this.modalRef = this.modalService.show(this.noChartsAvailable, {class: 'modal-md modal-dialog-centered'});
+      console.error(err);
     }
   }
 
   closeModal(): void {
-    this.chartSelected = false;
-    this.insertChartForm.controls['chartTitle'].reset();
+    this.insertChartForm.controls['title'].reset();
     this.submitted = false;
     this.modalRef.hide();
   }
 
-  onSubmit() {
+  async onSubmit() {
+    let selected, dashChart: DashboardCharts;
     this.submitted = true;
     this.chartRequired = false;
 
-    if (!this.chartSelected) {
-      this.chartRequired = true;
+    selected = this.chartRemaining.find(chart =>
+      chart.Type == this.insertChartForm.value.channel &&
+      chart.Title == this.insertChartForm.value.title &&
+      chart.format == this.insertChartForm.value.style
+    );
+
+    if (!selected) {
       this.loading = false;
       return;
-    } // If no Chart has been selected, then it shows an error
+    }
 
     if (this.insertChartForm.invalid) {
       this.loading = false;
       return;
     }
 
-    const dashChart: DashboardCharts = {
-      dashboard_id: this.dashboard_data.dashboard_id,
-      chart_id: this.chartSelected.id,
-      title: this.insertChartForm.value.chartTitle,
-      format: this.chartSelected.format
-    };
-
     this.loading = true;
 
-    this.dashboardService.addChartToDashboard(dashChart)
-      .pipe(first())
-      .subscribe(() => {
-        dashChart.type = this.chartSelected.type;
+    dashChart = {
+      chart_id: selected.ID,
+      dashboard_id: this.dashboard_data.dashboard_id,
+      title: selected.Title,
+      type: selected.Type,
+      format: selected.format
+    };
 
-        this.GEService.showChartInDashboard.next(dashChart);
-        this.insertChartForm.reset();
-        this.chartSelected = null;
+    try {
+      await this.dashboardService.addChartToDashboard(dashChart).toPromise();
 
-        this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
+      this.GEService.showChartInDashboard.next(dashChart);
+      this.insertChartForm.reset();
 
-        this.updateDropdownOptions()
-          .then(() => {}) // No charts available
-          .catch(() => {
-            console.error('ERROR in EMPTY-CARD. Cannot update dropdown options after adding a chart in the dashboard.');
-          });
+      this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
 
-        this.closeModal();
+      await this.updateDropdownOptions();
 
-      }, error => {
-        this.toastr.error('Non è stato possibile aggiungere "' + dashChart.title + '" alla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico.');
-        console.error('Error inserting the Chart in the dashboard');
-        console.error(error);
-      });
+      this.closeModal();
 
-  }
-
-  updateDropdownOptions(): Promise<boolean> {
-
-    if (!this.dashboard_data) {
-
-      console.error('ERROR in EMPTY-CARD. Cannot retrieve dashboard data.');
-      return new Promise( (resolve, reject) => { reject(false); });
+    } catch (error) {
+      this.toastr.error('Non è stato possibile aggiungere "' + dashChart.title + '" alla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico.');
+      console.error('Error inserting the Chart in the dashboard');
+      console.error(error);
     }
-
-    return new Promise((resolve, reject) => {
-      if (this.dashboard_data.dashboard_type !== 0) {
-
-        this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
-          .subscribe(chartRemaining => {
-            if (chartRemaining && chartRemaining.length > 0) { // Checking for array size > 0
-              this.dropdownOptions = this.populateDropdown(chartRemaining);
-              return resolve(true);
-            }
-            else {
-              return resolve(false); //no charts
-            }
-          }, err => {
-            console.error('ERROR in EMPTY-CARD. Cannot get the list of not added charts - getChartsNotAddedByDashboardType().');
-            console.log(err);
-            reject(false);
-          });
-      } else {
-        this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id)
-          .subscribe(chartRemaining => {
-
-              if (chartRemaining && chartRemaining.length > 0) {
-                this.dropdownOptions = this.populateDropdown(chartRemaining,true);
-                return resolve(true);
-              }
-              else {
-                return reject(false);
-              }
-            }, err => {
-              console.error('ERROR in EMPTY-CARD. Cannot get the list of not added charts - getChartsNotAdded().');
-              console.log(err);
-              return reject(false);
-          });
-      }
-    });
   }
 
-  selectionChanged(optionID) {
-    this.chartSelected = this.dropdownOptions.find(opt => opt.id == optionID);
-    this.insertChartForm.controls['chartTitle'].setValue(this.chartSelected.title);
-  }
+  async updateDropdownOptions() {
+    let result = false;
+    this.channels = [];
 
-  populateDropdown(charts : Chart[], writeType = false) {
+    if (this.dashboard_data) {
+      this.chartRemaining = this.dashboard_data.dashboard_type !== 0
+        ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type).toPromise()
+        : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
 
-    let global, newDropdown = [];
+      if (this.chartRemaining && this.chartRemaining.length > 0) {
 
-    if (charts) {
-      charts.forEach(el => {
-
-        if((this.dashboard_data.permissions && this.dashboard_data.permissions[el.Type]) || (this.dashboard_data.dashboard_type !== D_TYPE.CUSTOM)) {
-          global = writeType ? this.getStringType(el.Type) + el.Title + ' (' + el.format + ')' : el.Title + ' (' + el.format + ')';
-          newDropdown.push({
-            id: el.ID,
-            title: el.Title,
-            format: el.format,
-            type: el.Type,
-            global: global
-          });
+        // Update channels
+        if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
+          for (const i in this.dashboard_data.permissions) {
+            if (this.dashboard_data.permissions[i]) this.channels.push({name: DS_TYPE[i], value: i});
+          }
+        } else {
+          this.channels.push({name: DS_TYPE[this.dashboard_data.dashboard_type], value: this.dashboard_data.dashboard_type});
         }
-      });
 
-      return _.orderBy(newDropdown, ['global', 'title', 'id']);
+        this.insertChartForm.controls['channel'].setValue(this.channels[0].value);
+
+        this.filterDropdown(true);
+
+        result = true;
+      }
+    } else {
+      console.error('ERROR in EMPTY-CARD. Cannot retrieve dashboard data.');
     }
+
+    return result;
   }
 
-  getStringType(type: number){
-    switch (type) {
-      case D_TYPE.FB:
-        return 'FACEBOOK - ';
-      case D_TYPE.GA:
-        return 'GOOGLE - ';
-      case D_TYPE.IG:
-        return 'INSTAGRAM - ';
-      case D_TYPE.YT:
-        return 'YOUTUBE - ';
+  filterDropdown(updateChannel = false) {
+    if (updateChannel) {
+      this.metrics = this.getUnique(this.chartRemaining.filter(chart => chart.Type == this.insertChartForm.value.channel), 'Title');
+      this.insertChartForm.controls['metric'].setValue(this.metrics[0].Title);
+    }
+
+    this.setDescription(this.insertChartForm.value.metric); // Set the description of the metric
+
+    // Update styles
+    this.styles = this.chartRemaining.filter(chart => chart.Title == this.insertChartForm.value.metric && chart.Type == this.insertChartForm.value.channel).map(item => item.format);
+    this.insertChartForm.controls['style'].setValue(this.styles[0]);
+
+    // Update title
+    this.insertChartForm.controls['title'].setValue(this.insertChartForm.value.metric);
+
+    // Set the description of the metric
+  }
+
+  getUnique(arr, comp) {
+    const unique = arr
+      .map(e => e[comp])
+
+      // store the keys of the unique objects
+      .map((e, i, final) => final.indexOf(e) === i && i)
+
+      // eliminate the dead keys & store unique objects
+      .filter(e => arr[e]).map(e => arr[e]);
+
+    return unique;
+
+  }
+
+  setDescription(metricTitle){
+    switch (metricTitle) {
+      case 'Fan per giorno':
+        this.description = 'Mostra il numero totale giornaliero dei fan della pagina';
+        break;
+      case 'Fan per Paese':
+        this.description = 'Mostra la provenienza geografica dei fan della pagina';
+        break;
+      case 'Visualizzazioni pagina':
+        this.description = 'Numero di visualizzazioni giornaliere della pagina da parte degli utenti';
+        break;
+      case 'Visualizzazioni post':
+        this.description = 'Numero di visualizzazioni giornaliere totali dei post da parte degli utenti';
+        break;
+      default:
+        this.description = null;
     }
   }
 

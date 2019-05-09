@@ -36,7 +36,7 @@ export class DashboardService {
   getChartsNotAddedByDashboardType(dashboard_id, dashboard_type) {
     const headers = this.getAuthorization();
     return this.http.get<Chart[]>(environment.protocol + environment.host + ':' + environment.port + '/dashboards/getChartsNotAddedByDashboardAndType/'
-      + dashboard_id + '/' + dashboard_type, {headers});
+      + dashboard_id + (dashboard_type ? '/' + dashboard_type : ''), {headers});
   }
 
   getChartsNotAdded(dashboard_id) {

@@ -44,6 +44,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   };
 
   public FILTER_DAYS = { // Deve avere un valore in meno per avere un intervallo corretto
+    yesterday: 1,
     seven: 6,
     thirty: 29,
     ninety: 89
@@ -61,8 +62,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   // Date variables
   firstDateRange: Date;
   lastDateRange: Date;
-  minDate: Date = subDays(new Date(), this.FILTER_DAYS.ninety + 1);
-  maxDate: Date = new Date();
+  maxDate: Date = subDays(new Date(),this.FILTER_DAYS.yesterday);
+  minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
   // datePickerEnabled = false;
@@ -127,7 +128,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       if (this.dashStored) {
         // Ci sono già dati salvati
         this.filterActions.loadStoredDashboard(D_TYPE.GA);
-        this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+        this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
         this.GEService.loadingScreen.next(false);
 
         if (this.chartArray$.length === 0) {
@@ -175,7 +176,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
           // Shows last 30 days
           // this.datePickerEnabled = true;
-          this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+          this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
 
           this.GEService.loadingScreen.next(false);
 
@@ -271,7 +272,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   changeData(days: number) {
-    this.bsRangeValue = [subDays(new Date(), days), this.lastDateRange];
+    this.bsRangeValue = [subDays(this.maxDate, days), this.lastDateRange];
 
     switch (days) {
       case this.FILTER_DAYS.seven:
@@ -345,10 +346,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         }
       }
 
-      this.firstDateRange = subDays(new Date(), 30); //this.minDate;
+      this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); //this.minDate;
       this.lastDateRange = this.maxDate;
       //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-      this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
+      this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange]; // Starts with Last 30 days
 
       this.filter.subscribe(elements => {
         this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];

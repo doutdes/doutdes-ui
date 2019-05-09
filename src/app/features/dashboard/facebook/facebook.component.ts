@@ -44,6 +44,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   private pageID = null;
 
   public FILTER_DAYS = {
+    yesterday: 1,
     seven: 6,
     thirty: 29,
     ninety: 89
@@ -69,8 +70,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   firstDateRange: Date;
   lastDateRange: Date;
-  minDate: Date = new Date('2018-01-01');
-  maxDate: Date = new Date();
+  maxDate: Date = subDays(new Date(),this.FILTER_DAYS.yesterday);
+  minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
   // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
@@ -154,7 +155,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     if (this.dashStored) {
       // Ci sono già dati salvati
       this.filterActions.loadStoredDashboard(D_TYPE.FB);
-      this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+      this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
       this.GEService.loadingScreen.next(false);
 
       if (this.chartArray$.length === 0) {
@@ -198,14 +199,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
                 // Shows last 30 days
                 // this.datePickerEnabled = true;
-                this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+                this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
 
                 this.GEService.loadingScreen.next(false);
               });
 
           } else {
             this.filterActions.initData(currentData);
-            this.bsRangeValue = [subDays(new Date(), this.FILTER_DAYS.thirty), this.lastDateRange];
+            this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
             this.GEService.loadingScreen.next(false);
             this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
           }
@@ -271,8 +272,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   changeDateFilter(days: number) {
-    this.bsRangeValue = [subDays(new Date(), days), this.lastDateRange];
-
+    this.bsRangeValue = [subDays(this.maxDate, days), this.lastDateRange];
     switch (days) {
       case this.FILTER_DAYS.seven:
         this.dateChoice = 'Ultimi 7 giorni';

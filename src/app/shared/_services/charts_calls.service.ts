@@ -295,7 +295,7 @@ export class ChartsCallsService {
         }
 
         // Calculating average
-        for (let i=0; i < chartData.length; i++) {
+        for (let i = 0; i < chartData.length; i++) {
           chartData[i][1] /= (tmpArray[i][1] * 1000);
         }
 
@@ -373,6 +373,8 @@ export class ChartsCallsService {
 
         interval = 3; // Interval of hours to show
         header = [['OnlineFollowers', 'Min', 'Average', 'Max']];
+
+        console.log(data);
 
         for (let i = 0; i < data.length; i++)
           keys.push(data[i]['value']);
@@ -1054,7 +1056,7 @@ export class ChartsCallsService {
     return formattedData;
   }
 
-  private getMinChartStep(type, data, perc=0.8) {
+  private getMinChartStep(type, data, perc = 0.8) {
     let min, length;
 
     data = data.slice(1);
@@ -1133,8 +1135,16 @@ export class ChartsCallsService {
   }
 
   private getGoogleMiniValue(measure, data) {
-    let date = new Date(null);
+    //let date = new Date(null);
     let value, sum = 0, avg, perc, step;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+    };
+
+    data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
 
     for (const i in data) {
       sum += parseInt(data[i][1]);
@@ -1150,6 +1160,7 @@ export class ChartsCallsService {
         break;
 
       case 'time':
+        date = new Date(null);
         date.setSeconds(parseInt(avg)); // specify value for SECONDS here
         value = date.toISOString().substr(11, 8);
         step = this.searchStep(avg, measure);
@@ -1190,13 +1201,14 @@ export class ChartsCallsService {
 
         for (const i in data) {
           aux = 0;
-          aux += data[i]['value']['like'] || 0;
-          aux += data[i]['value']['love'] || 0;
-          aux += data[i]['value']['haha'] || 0;
-          aux += data[i]['value']['wow'] || 0;
-          aux += data[i]['value']['sorry'] || 0;
-          aux += data[i]['value']['anger'] || 0;
-
+          if (data[i]['value']) {
+            aux += data[i]['value']['like'] || 0;
+            aux += data[i]['value']['love'] || 0;
+            aux += data[i]['value']['haha'] || 0;
+            aux += data[i]['value']['wow'] || 0;
+            aux += data[i]['value']['sorry'] || 0;
+            aux += data[i]['value']['anger'] || 0;
+          }
           sum += aux;
           max.push(aux);
         }
@@ -1256,6 +1268,7 @@ export class ChartsCallsService {
         break;
       case 'ga-tot-user':
         value = 0;
+        data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
         for (const i in data) {
           value += parseInt(data[i][1]);
         }
@@ -1268,7 +1281,7 @@ export class ChartsCallsService {
     step = this.searchStep(value);
     perc = value / step * 100;
 
-    return {value, perc, step}
+    return {value, perc, step};
   }
 
   private searchStep(value, measure?) {

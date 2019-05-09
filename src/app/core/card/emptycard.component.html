@@ -13,38 +13,55 @@
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
-
   <div class="modal-body">
     <form [formGroup]="insertChartForm" (ngSubmit)="onSubmit()">
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Tipo:</label>
-        <div class="col-sm-10">
-          <select class="form-control" (change)="selectionChanged($event.target.value)">
-            <option *ngFor="let opt of dropdownOptions" [value]="opt.id">{{opt.global}}</option>
-          </select>
-
-          <div *ngIf="submitted" class="invalid-feedback" [style.display]="chartRequired ? 'block' : 'none'">
-            <div>Il tipo del grafico è obbligatorio.</div>
+      <div class="form-group">
+        <div *ngIf="dashboard_data.dashboard_type === D_TYPE.CUSTOM" class="mb-2 row">
+          <label class="col-sm-2 col-form-label">Canale:</label>
+          <div class="col-sm-10">
+            <select class="form-control" formControlName="channel" (change)="filterDropdown(true)">
+              <option *ngFor="let service of channels" [value]="service.value">{{service.name}}</option>
+            </select>
           </div>
+        </div>
 
+        <div class="row mb-2">
+          <label class="col-sm-2 col-form-label">Metrica:</label>
+          <div class="col-sm-10">
+            <select class="form-control" formControlName="metric" (change)="filterDropdown()">
+              <option *ngFor="let metric of metrics" [value]="metric.Title">{{metric.Title}}</option>
+            </select>
+
+            <div class="mt-1" style="color: #aaa" *ngIf="description"><span class="fa fa-info-circle mr-1"></span>{{description}}</div>
+
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <label class="col-sm-2 col-form-label">Stile:</label>
+          <div class="col-sm-10">
+            <select class="form-control" formControlName="style">
+              <option *ngFor="let style of styles" [value]="style">{{style}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row mb-2">
+          <label class="col-sm-2 col-form-label">Title:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control pl-3" formControlName="title" placeholder="Titolo del grafico"
+                   [ngClass]="{ 'is-invalid': submitted && form.title.errors }">
+
+            <div *ngIf="submitted && form['title'].errors" class="invalid-feedback">
+              <div *ngIf="form['title'].errors['required']">Il titolo del grafico è obbligatorio.</div>
+              <div *ngIf="form['title'].errors['maxlength']">Il titolo non può contenere più di 30 caratteri.</div>
+            </div>
+
+          </div>
         </div>
       </div>
 
-      <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Title:</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control pl-3" formControlName="chartTitle" placeholder="Titolo del grafico"
-                 [ngClass]="{ 'is-invalid': submitted && form.chartTitle.errors }">
-
-          <div *ngIf="submitted && form['chartTitle'].errors" class="invalid-feedback">
-            <div *ngIf="form['chartTitle'].errors['required']">Il titolo del grafico è obbligatorio.</div>
-            <div *ngIf="form['chartTitle'].errors['maxlength']">Il titolo non può contenere più di 30 caratteri.</div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="modal-footer">
+      <div class="modal-footer pr-0">
         <button type="submit" class="btn btn-success">Aggiungi</button>
         <button type="button" class="btn btn-danger" (click)="closeModal();">Annulla</button>
       </div>
