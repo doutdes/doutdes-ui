@@ -144,26 +144,17 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
           for (let i = 0; i < dataArray.length; i++) {
             chart = charts[i];
-
-            for (let element of charts) {
-              //console.log(element['chartData']);
-              //console.log('SEEING '+ element['chartData'].slice(0, 8));
-              for ( let index in element['chartData']) {
-                let data = element['chartData'][index];
-                //console.log(data[0]);
+/*
                 let date = parseDate(data[0]);
-                //console.log('DATE: '+ date);
-                //console.log(new Date(data[0].slice(0, 4),data[0].slice(4, 6),data[0].slice(6, 8)));
                 if(date < this.minDate) {
-                  //console.log('DATE OVERRIDED WITH '+ date);
                   this.minDate = date;
                 }
-              }
-            }
-
-
+*/
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
+              let date = parseDate(chart['chartData'][0][0]);
+              this.minDate = (date < this.minDate) ? date : null;
+
               chart.error = false;
             } else {
               chart.error = true;
