@@ -69,7 +69,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   firstDateRange: Date;
   lastDateRange: Date;
-  minDate: Date = new Date('2018-01-01');
+  minDate: Date = subDays(new Date(), this.FILTER_DAYS.ninety + 1);
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
@@ -176,8 +176,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                     chart.chartData = dataArray[i];
-                    chart.chartData = dataArray[i];
-                    let date = parseDate(chart['chartData'][0][0]);
+                    //console.log(chart.chartData);
+                    let date = chart.chartData[0]['end_time'];
                     this.minDate = (date < this.minDate) ? date : this.minDate;
                     // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
                     chart.error = false;

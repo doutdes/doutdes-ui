@@ -19,7 +19,7 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {ToastrService} from 'ngx-toastr';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
 import {CustomMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 
 import * as jsPDF from 'jspdf';
@@ -254,6 +254,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
               if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
                 chart.chartData = dataArray[i];
+                let date = parseDate(chart['chartData'][0][0]);
+                this.minDate = (date < this.minDate) ? date : this.minDate;
                 chart.error = false;
               } else {
                 chart.error = true;
