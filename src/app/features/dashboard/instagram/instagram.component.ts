@@ -19,7 +19,7 @@ import {IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
-import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
 
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -178,6 +178,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                   chart.chartData = dataArray[i];
+                  chart.chartData = dataArray[i];
+                  let date = parseDate(chart['chartData'][0][0]);
+                  this.minDate = (date < this.minDate) ? date : this.minDate;
                   // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
                 } else {

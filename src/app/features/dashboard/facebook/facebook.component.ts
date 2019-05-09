@@ -22,7 +22,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
-import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
 
 const PrimaryWhite = '#ffffff';
 
@@ -176,6 +176,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                     chart.chartData = dataArray[i];
+                    chart.chartData = dataArray[i];
+                    let date = parseDate(chart['chartData'][0][0]);
+                    this.minDate = (date < this.minDate) ? date : this.minDate;
                     // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
                     chart.error = false;
                   } else {
