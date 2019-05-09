@@ -178,7 +178,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                   chart.chartData = dataArray[i];
-                  let date = chart.chartData[0]['end_time'];
+                  let date = new Date(chart.chartData[0]['end_time']);
                   this.minDate = (date < this.minDate) ? date : this.minDate;
                   // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;

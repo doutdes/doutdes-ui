@@ -98,7 +98,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
       last: this.maxDate.setDate(this.maxDate.getDate() - 1)
-    };
+     };
     let pageIDs = {};
 
     pageIDs[D_TYPE.FB] = pageID;
@@ -177,7 +177,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
                     chart.chartData = dataArray[i];
                     //console.log(chart.chartData);
-                    let date = chart.chartData[0]['end_time'];
+                    let date = new Date(chart.chartData[0]['end_time']);
                     this.minDate = (date < this.minDate) ? date : this.minDate;
                     // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
                     chart.error = false;
