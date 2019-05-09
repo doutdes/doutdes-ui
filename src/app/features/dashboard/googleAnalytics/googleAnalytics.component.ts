@@ -100,7 +100,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
-      last: this.maxDate
+      last: this.maxDate.setDate(this.maxDate.getDate() - 1)
     };
     let currentData: DashboardData = {
       data: chartsToShow,
@@ -153,7 +153,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
               let date = parseDate(chart['chartData'][0][0]);
-              console.log(date);
+
               this.minDate = (date < this.minDate) ? date : this.minDate;
 
               chart.error = false;

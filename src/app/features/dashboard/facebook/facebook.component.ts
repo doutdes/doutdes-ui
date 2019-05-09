@@ -69,7 +69,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   firstDateRange: Date;
   lastDateRange: Date;
-  minDate: Date = subDays(new Date(), this.FILTER_DAYS.ninety + 1);
+  minDate: Date = new Date('2018-01-01');
   maxDate: Date = new Date();
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
@@ -97,7 +97,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      last: this.maxDate.setDate(this.maxDate.getDate() - 1)
     };
     let pageIDs = {};
 

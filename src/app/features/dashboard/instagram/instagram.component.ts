@@ -121,7 +121,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
-      last: this.maxDate
+      last: this.maxDate.setDate(this.maxDate.getDate() - 1)
     };
     let currentData: DashboardData = {
       data: chartsToShow,
