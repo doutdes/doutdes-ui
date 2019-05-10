@@ -110,6 +110,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     let key: ApiKey;
 
     this.GEService.loadingScreen.subscribe(value => {this.loading = value; });
+    this.minSet = [];
     this.minSet.push(
       {id: -1,
        minDate: subDays(this.maxDate, this.FILTER_DAYS.ninety)
