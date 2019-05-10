@@ -177,9 +177,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                     chart.chartData = dataArray[i];
-                    //console.log(chart.chartData);
                     let date = new Date(chart.chartData[0]['end_time']);
-                    this.minDate = (date < this.minDate) ? date : this.minDate;
+                    //this.minDate = (date < this.minDate) ? date : this.minDate;
+                    if(date < this.minDate)
+                      this.minDate = date;
                     // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
                     chart.error = false;
                   } else {
