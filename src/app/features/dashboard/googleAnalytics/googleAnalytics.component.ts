@@ -157,7 +157,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
               if(date < this.minDate)
                 this.minDate = date;
-              //this.minDate = (date < this.minDate) ? date : this.minDate;
 
               chart.error = false;
             } else {

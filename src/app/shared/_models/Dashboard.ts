@@ -1,7 +1,7 @@
 export interface Dashboard {
   id: number,
   name: string,
-  category: number
+  category: number,
 }
 
 export const D_TYPE = {

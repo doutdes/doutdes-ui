@@ -26,6 +26,7 @@ import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 const PrimaryWhite = '#ffffff';
 
@@ -73,8 +74,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   firstDateRange: Date;
   lastDateRange: Date;
-  maxDate: Date = subDays(new Date(),this.FILTER_DAYS.yesterday);
+  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
+  minSet: Array<{id: number; minDate: Date}>;   // contains the minimum Date for every chart, used to refresh datepicker on the fly
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
   modalRef: BsModalRef;
@@ -107,15 +109,19 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     let existence, view_id;
     let key: ApiKey;
 
-    this.GEService.loadingScreen.subscribe(value => {this.loading = value});
-
+    this.GEService.loadingScreen.subscribe(value => {this.loading = value; });
+    this.minSet.push(
+      {id: -1,
+       minDate: subDays(this.maxDate, this.FILTER_DAYS.ninety)
+      }
+      );
     this.addBreadcrumb();
     this.GEService.loadingScreen.next(true);
 
     try {
       existence = await this.checkExistence();
 
-      if(!existence.somethingGranted) {
+      if (!existence.somethingGranted) {
         this.somethingGranted = false;
         this.GEService.loadingScreen.next(false);
         return;
@@ -153,9 +159,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
       this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
 
-      this.firstDateRange = subDays(new Date(), 30); //this.minDate;
+      this.firstDateRange = subDays(new Date(), 30); // this.minDate;
       this.lastDateRange = this.maxDate;
-      //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+      // this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
       this.bsRangeValue = [subDays(new Date(), 30), this.lastDateRange]; // Starts with Last 30 days
 
       this.filter.subscribe(elements => {
@@ -164,11 +170,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
       });
 
-      let dash_type = this.HARD_DASH_DATA.dashboard_type;
+      const dash_type = this.HARD_DASH_DATA.dashboard_type;
 
       if (!this.GEService.isSubscriber(dash_type)) {
         this.GEService.removeFromDashboard.subscribe(values => {
           if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+
+            this.minSet = this.minSet.filter(el => el.id !== values[0]);
             this.filterActions.removeChart(values[0]);
           }
         });
@@ -231,7 +239,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.GEService.loadingScreen.next(false);
 
         if (this.chartArray$.length === 0) {
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
@@ -251,14 +259,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           if (dataArray) {
             for (let i = 0; i < dataArray.length; i++) {
 
-              let chart: DashboardCharts = charts[i];
+              const chart: DashboardCharts = charts[i];
 
               if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+
                 chart.chartData = dataArray[i];
-                let date = parseDate(chart['chartData'][0][0]);
-                if(date < this.minDate)
-                  this.minDate = date;
-                //this.minDate = (date < this.minDate) ? date : this.minDate;
+                this.minDate = new Date(Math.min.apply(null, this.minSet));
+
                 chart.error = false;
               } else {
                 chart.error = true;
@@ -287,7 +294,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         } else {
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
       }
 
@@ -312,14 +319,44 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       .subscribe(chartData => {
         if (!chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;
+
+          // getting the minDate of the chart, depending on its type
+          switch (dashChart.type) {
+            case D_TYPE.FB :
+            case D_TYPE.IG:
+              this.minSet.push(
+                {id: dashChart.chart_id,
+                 minDate: new Date(dashChart.chartData[0]['end_time'])
+                }
+                );
+              break;
+            case D_TYPE.GA:
+              this.minSet.push(
+                {id: dashChart.chart_id,
+                  minDate: (parseDate(dashChart['chartData'][0][0]))
+                }
+              );
+
+            break;
+          }
+          this.minSet.forEach(el => {
+            if (el.minDate < this.minDate)
+              this.minDate = el.minDate;
+          });
+
           chartToPush.error = false;
+
+          const date = parseDate(chartToPush['chartData'][0][0]);
+          if (date < this.minDate) {
+            this.minDate = date;
+          }
 
           this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
 
-          this.toastr.error('I dati disponibili per ' + dashChart.title +' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
+          this.toastr.error('I dati disponibili per ' + dashChart.title + ' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
         }
         this.filterActions.addChart(chartToPush);
         this.filterActions.filterData(dateInterval);
@@ -339,8 +376,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       };
       this.filterActions.filterData(dateInterval);
 
-      let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
-      let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
+      const diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
+      const diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
         this.dateChoice = 'Personalizzato';
@@ -409,8 +446,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async checkExistence() {
-    let permissions = {};
-    let keys = Object.keys(D_TYPE);
+    const permissions = {};
+    const keys = Object.keys(D_TYPE);
     let response, somethingGranted = false;
 
     try {
@@ -434,8 +471,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   async loadMiniCards() {
     // 1. Init intervalData (retrieve data of previous month)
     let results, pageIDs = {};
-    let permissions = this.HARD_DASH_DATA.permissions;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    const permissions = this.HARD_DASH_DATA.permissions;
+    const date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
@@ -449,7 +486,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
-        if(Object.entries(miniDatas[i]).length !== 0) {
+        if (Object.entries(miniDatas[i]).length !== 0) {
           results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
           this.miniCards[i].value = results['value'];
           this.miniCards[i].progress = results['perc'] + '%';
@@ -489,7 +526,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     }
   }
 
-  async selectViewSubmit(){
+  async selectViewSubmit() {
     let update;
     this.submitted = true;
 
@@ -507,7 +544,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     update = await this.apiKeyService.updateKey(key).toPromise();
 
-    if(update) {
+    if (update) {
       this.closeModal();
       await this.ngOnInit();
     } else {
@@ -516,19 +553,19 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async htmltoPDF() {
-    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
+    const pdf = new jsPDF('p', 'px', 'a4'); // 595w x 842h
     const cards = document.querySelectorAll('app-card');
     const firstCard = await html2canvas(cards[0]);
 
     const user = await this.getUserCompany();
 
-    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
-    let graphsRow = 2;
-    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
+    const dimRatio = firstCard['width'] > 400 ? 3 : 2;
+    const graphsRow = 2;
+    const graphsPage = firstCard['width'] > 400 ? 6 : 4;
     let x = 40, y = 40;
-    let offset = y - 10;
+    const offset = y - 10;
 
-    let dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
+    const dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
 
     this.openModal(this.reportWait, true);
 
