@@ -256,7 +256,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
               if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
                 chart.chartData = dataArray[i];
                 let date = parseDate(chart['chartData'][0][0]);
-                this.minDate = (date < this.minDate) ? date : this.minDate;
+                if(date < this.minDate)
+                  this.minDate = date;
+                //this.minDate = (date < this.minDate) ? date : this.minDate;
                 chart.error = false;
               } else {
                 chart.error = true;
