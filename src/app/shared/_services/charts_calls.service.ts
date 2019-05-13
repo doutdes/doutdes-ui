@@ -326,7 +326,9 @@ export class ChartsCallsService {
       case IG_CHART.AUD_GENDER_AGE:
         header = [['Age', 'Male', 'Female']];
 
-        if (Object.keys(data[0]['value']).length > 0) {
+        let gender_data = data[0] ? Object.keys(data[0]['value']) : null;
+
+        if (gender_data && gender_data.length > 0) {
           keys = Object.keys(data[0]['value']); // getting all the gender/age data
 
           let subIndex = (keys[0].indexOf('.') !== -1) ? 2 : 1;
