@@ -114,7 +114,15 @@ export class AggregatedDataService {
       interval: dateInterval,
       prevInterval: this.getPrevious(dateInterval),
     };
-    console.log(JSON.parse(JSON.stringify(result)));
+
+    if(result.lowest === result.prevLowest)
+      result.lowShift = 0;
+    if(result.highest === result.prevHighest)
+      result.highShift = 0;
+    if(result.average === result.prevAverage)
+      result.avgShift = 0;
+
+    //console.log(JSON.parse(JSON.stringify(result)));
     return result;
   }
 
