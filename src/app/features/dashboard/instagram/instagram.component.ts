@@ -355,8 +355,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     }
 
     this.localeService.use('it');
-    await this.loadDashboard();
     this.addBreadcrumb();
+    await this.loadDashboard();
   }
 
   ngOnDestroy() {
