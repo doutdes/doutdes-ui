@@ -8,6 +8,7 @@ import {GoogleChartComponent} from 'ng2-google-charts';
 import {GA_CHART} from '../../shared/_models/GoogleData';
 import {D_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
+import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
 
 @Component({
   selector: 'app-card',
@@ -27,19 +28,21 @@ export class CardComponent implements OnInit {
   avg: string;
   high: string;
   low: string;
-  //aggregated data regarding the previous period
+  // aggregated data regarding the previous period
   prevAvg: string;
   prevHigh: string;
   prevLow: string;
-  //variation (incr/decr) in the given previous-actual interval
+  // variation (incr/decr) in the given previous-actual interval
   avgShift: string;
   highShift: string;
   lowShift: string;
   icon: string;
-  //define if there's a incr/decr/stasis in the value: ==1 if its increasing, ==-1 if it's decreasing, ==0 if there's a stasis
+  // define if there's a incr/decr/stasis in the value: ==1 if its increasing, ==-1 if it's decreasing, ==0 if there's a stasis
   lowTrend: number;
   highTrend: number;
   avgTrend: number;
+
+  percentual: Boolean;
 
   background = '#000';
   color = '#fff';
@@ -149,6 +152,7 @@ export class CardComponent implements OnInit {
       switch (this.dashChart.chart_id) {
         case GA_CHART.BOUNCE_RATE    :
           unit = ' %';
+          this.percentual = true;
           this.low = this.dashChart.aggregated.lowest.toFixed(2);
           this.high = this.dashChart.aggregated.highest.toFixed(2);
           this.prevLow = this.dashChart.aggregated.prevLowest.toFixed(2);
@@ -156,6 +160,7 @@ export class CardComponent implements OnInit {
           break;
         case GA_CHART.AVG_SESS_DURATION :
           unit = ' s';
+          this.percentual = false;
           this.low = this.dashChart.aggregated.lowest.toFixed(2);
           this.high = this.dashChart.aggregated.highest.toFixed(2);
           this.prevLow = this.dashChart.aggregated.prevLowest.toFixed(2);
@@ -168,62 +173,80 @@ export class CardComponent implements OnInit {
           this.prevHigh = this.dashChart.aggregated.prevHighest;
           break;
       }
+      this.avg = this.dashChart.aggregated.average.toFixed(2);
+      this.prevAvg = this.dashChart.aggregated.prevAverage.toFixed(2);
+
+      let previous: Array<Number>;
+      let actual: Array<Number>;
+
+      previous = [];
+      actual = [];
+
+      previous.push(parseInt(this.prevHigh, 10));
+      previous.push(parseInt(this.prevLow, 10));
+      previous.push(parseInt(this.prevAvg, 10));
+
+      actual.push(parseInt(this.high, 10));
+      actual.push(parseInt(this.low, 10));
+      actual.push(parseInt(this.avg, 10));
 
       this.low += unit;
       this.high += unit;
-      this.avg = this.dashChart.aggregated.average.toFixed(2) + unit;
+      this.avg += unit;
       this.prevLow += unit;
       this.prevHigh += unit;
-      this.prevAvg = this.dashChart.aggregated.prevAverage.toFixed(2) + unit;
+      this.prevAvg += unit;
 
-      this.avgShift = (this.dashChart.aggregated.avgShift > 1) ?
-        ((this.dashChart.aggregated.avgShift - 1) * 100).toFixed(2) + '%'
-        :
-        (this.dashChart.aggregated.avgShift * 100).toFixed(2) + '%';
+      const shift = AggregatedDataService.prototype.calculateShift(actual, previous, this.percentual);
 
-      this.highShift = (this.dashChart.aggregated.highShift > 1) ?
-        ((this.dashChart.aggregated.highShift - 1) * 100).toFixed(2) + '%'
-        :
-        (this.dashChart.aggregated.highShift * 100).toFixed(2) + '%';
+      // console.log('SHIFT', shift);
 
-      this.lowShift = (this.dashChart.aggregated.lowShift > 1) ?
-        ((this.dashChart.aggregated.lowShift - 1) * 100).toFixed(2) + '%'
+      let factor = 1;
+      if (!this.percentual)
+        factor = 100;
+
+      this.avgShift = (shift.avgShift > 1) ?
+        ((shift.avgShift.valueOf() - 1) * factor).toFixed(2) + '%'
         :
-        (this.dashChart.aggregated.lowShift * 100).toFixed(2) + '%';
-      /*
-            this.avgShift = this.dashChart.aggregated.avgShift.toFixed(2) + unit;
-            this.highShift = this.dashChart.aggregated.highShift.toFixed(2) + unit;
-            this.lowShift = this.dashChart.aggregated.lowShift.toFixed(2) + unit;*/
-      if (this.dashChart.aggregated.avgShift >= 1) {
+        (shift.avgShift.valueOf() * factor).toFixed(2) + '%';
+
+      this.highShift = (shift.highShift > 1) ?
+        ((shift.highShift.valueOf() - 1) * factor).toFixed(2) + '%'
+        :
+        (shift.highShift.valueOf() * factor).toFixed(2) + '%';
+
+      this.lowShift = (shift.lowShift > 1) ?
+        ((shift.lowShift.valueOf() - 1) * factor).toFixed(2) + '%'
+        :
+        (shift.lowShift.valueOf() * factor).toFixed(2) + '%';
+
+      if (parseInt(this.avgShift, 10) >= 1) {
         this.avgShift = '+ ' + this.avgShift;
         this.avgTrend = 1;
-      } else if (this.dashChart.aggregated.avgShift < 1 && this.dashChart.aggregated.avgShift !== 0) {
-        this.avgShift = '- ' + this.avgShift;
+      } else if (parseInt(this.avgShift, 10) < 1 && parseInt(this.avgShift, 10) !== 0) {
+        this.avgShift = '- ' + this.avgShift.replace('-', '');
         this.avgTrend = -1;
       } else {
-        this.avgShift = this.avgShift + ' =';
         this.avgTrend = 0;
       }
 
-      if (this.dashChart.aggregated.highShift >= 1) {
+      if (parseInt(this.highShift, 10) >= 1) {
         this.highShift = '+ ' + this.highShift;
         this.highTrend = 1;
-      } else if (this.dashChart.aggregated.highShift < 1 && this.dashChart.aggregated.highShift !== 0) {
-        this.highShift = '- ' + this.highShift;
+      } else if (parseInt(this.highShift, 10) < 1 && parseInt(this.highShift, 10) !== 0) {
+        this.highShift = '- ' + this.highShift.replace('-', '');
         this.highTrend = -1;
       } else {
-        this.highShift = this.avgShift + ' =';
         this.highTrend = 0;
       }
 
-      if (this.dashChart.aggregated.lowShift >= 1) {
+      if (parseInt(this.lowShift, 10) >= 1) {
         this.lowShift = '+ ' + this.lowShift;
         this.lowTrend = 1;
-      } else if (this.dashChart.aggregated.lowShift < 1 && this.dashChart.aggregated.lowShift !== 0) {
-        this.lowShift = '- ' + this.lowShift;
+      } else if (parseInt(this.lowShift, 10) < 1 && parseInt(this.lowShift, 10) !== 0) {
+        this.lowShift = '- ' + this.lowShift.replace('-', '');
         this.lowTrend = -1;
       } else {
-        this.lowShift = this.lowShift + ' =';
         this.lowTrend = 0;
       }
 

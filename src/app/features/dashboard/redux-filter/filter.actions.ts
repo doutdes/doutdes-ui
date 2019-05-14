@@ -157,7 +157,6 @@ export class FilterActions {
 
             chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
             chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i], filterInterval);
-
           }
           filtered.push(chart);
         } else {
