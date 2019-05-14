@@ -5,12 +5,15 @@ import {D_TYPE} from '../_models/Dashboard';
 import {GA_CHART} from '../_models/GoogleData';
 import {parseDate} from 'ngx-bootstrap';
 import {DashboardCharts} from '../_models/DashboardCharts';
+import {calculateBytes} from '@angular/cli/utilities/bundle-calculator';
 
 @Injectable()
 export class AggregatedDataService {
 
   constructor() {
+
   }
+
 
   getAggregatedData(chart: DashboardCharts, dateInterval: IntervalDate) {
 
@@ -54,11 +57,12 @@ export class AggregatedDataService {
         ///WORKING ON GETTING JSON FOR PREVIOUS PERIOD
         for (let i = 0; i < prevFilteredData.length; i++) {
           const value = parseFloat(prevFilteredData[i][prevFilteredData[i].length - 1]);
-          if(value)
+          if (value)
           {
             prevSum +=  value;
             prevNValues++;
-          }          prevHighest = value > prevHighest ? value : prevHighest;
+          }
+          prevHighest = value > prevHighest ? value : prevHighest;
           prevLowest = value < prevLowest ? value : prevLowest;
         }
         break;
@@ -108,21 +112,11 @@ export class AggregatedDataService {
       prevHighest : prevHighest,
       lowest: lowest,
       prevLowest : prevLowest,
-      avgShift : (prevAverage === 0) ? 1 : (average / prevAverage),
-      highShift :  (prevHighest === 0) ? 1 :  (highest / prevHighest),
-      lowShift :  (prevLowest === 0) ? 1 : (lowest / prevLowest),
       interval: dateInterval,
       prevInterval: this.getPrevious(dateInterval),
     };
 
-    if(result.lowest === result.prevLowest)
-      result.lowShift = 0;
-    if(result.highest === result.prevHighest)
-      result.highShift = 0;
-    if(result.average === result.prevAverage)
-      result.avgShift = 0;
-
-    //console.log(JSON.parse(JSON.stringify(result)));
+    console.log(JSON.parse(JSON.stringify(result)));
     return result;
   }
 
@@ -138,6 +132,37 @@ export class AggregatedDataService {
     };
 
     return newPreviousInterval;
+  }
+
+  // calculates the % variation between the current and previous period
+  calculateShift(actual: Array<Number>, previous: Array<Number>, percentual: Boolean) {
+    let shift: {
+      highShift: Number,
+      lowShift: Number,
+      avgShift: Number,
+      percentual: Boolean,
+    };
+    shift = {highShift: 0, lowShift: 0, avgShift: 0, percentual: true};
+    shift.percentual = percentual;
+
+    if (percentual) {
+        shift.highShift =  (previous[0] === 0) ? 1 :  (actual[0].valueOf() - previous[0].valueOf());
+        shift.lowShift =  (previous[1] === 0) ? 1 : (actual[1].valueOf() - previous[1].valueOf());
+        shift.avgShift = (previous[2] === 0) ? 1 : (actual[2].valueOf() - previous[2].valueOf());
+    } else {
+      shift.highShift =  (previous[0] === 0) ? 1 :  (actual[0].valueOf() / previous[0].valueOf());
+      shift.lowShift =  (previous[1] === 0) ? 1 : (actual[1].valueOf() / previous[1].valueOf());
+      shift.avgShift = (previous[2] === 0) ? 1 : (actual[2].valueOf() / previous[2].valueOf());
+    }
+
+    if(previous[0] === actual[0])
+      shift.highShift = 0;
+    if(previous[1] === actual[1])
+      shift.lowShift = 0;
+    if( previous[2] === actual[2])
+      shift.avgShift = 0;
+
+    return shift;
   }
 
   updateAggregatedIntervals(newInterval: IntervalDate, aggregatedData) {
