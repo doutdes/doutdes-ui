@@ -227,6 +227,7 @@ export class CardComponent implements OnInit {
         this.avgShift = '- ' + this.avgShift.replace('-', '');
         this.avgTrend = -1;
       } else {
+        this.avgShift = this.avgShift + ' =';
         this.avgTrend = 0;
       }
 
@@ -237,6 +238,7 @@ export class CardComponent implements OnInit {
         this.highShift = '- ' + this.highShift.replace('-', '');
         this.highTrend = -1;
       } else {
+        this.highShift = this.highShift + ' =';
         this.highTrend = 0;
       }
 
@@ -247,6 +249,7 @@ export class CardComponent implements OnInit {
         this.lowShift = '- ' + this.lowShift.replace('-', '');
         this.lowTrend = -1;
       } else {
+        this.lowShift = this.lowShift + ' =';
         this.lowTrend = 0;
       }
 
