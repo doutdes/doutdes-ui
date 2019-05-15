@@ -165,6 +165,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     try {
       await this.dashboardService.addChartToDashboard(dashChart).toPromise();
+      this.closeModal();
 
       this.GEService.showChartInDashboard.next(dashChart);
       this.insertChartForm.reset();
@@ -173,7 +174,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
       await this.updateDropdownOptions();
 
-      this.closeModal();
 
     } catch (error) {
       this.toastr.error('Non è stato possibile aggiungere "' + dashChart.title + '" alla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico.');
