@@ -145,6 +145,7 @@ export class CardComponent implements OnInit {
     this.lowTrend = 0;
     this.highTrend = 0;
     this.avgTrend = 0;
+    this.percentual = false;
 
     let unit = '';
 
@@ -198,8 +199,7 @@ export class CardComponent implements OnInit {
       this.prevAvg += unit;
 
       const shift = AggregatedDataService.prototype.calculateShift(actual, previous, this.percentual);
-
-      // console.log('SHIFT', shift);
+       console.log('SHIFT', shift);
 
       let factor = 1;
       if (!this.percentual)
@@ -220,10 +220,10 @@ export class CardComponent implements OnInit {
         :
         (shift.lowShift.valueOf() * factor).toFixed(2) + '%';
 
-      if (parseInt(this.avgShift, 10) >= 1) {
+      if (shift.avgShift >= 1) {
         this.avgShift = '+ ' + this.avgShift;
         this.avgTrend = 1;
-      } else if (parseInt(this.avgShift, 10) < 1 && parseInt(this.avgShift, 10) !== 0) {
+      } else if (shift.avgShift < 1 && shift.avgShift !== 0) {
         this.avgShift = '- ' + this.avgShift.replace('-', '');
         this.avgTrend = -1;
       } else {
@@ -231,10 +231,10 @@ export class CardComponent implements OnInit {
         this.avgTrend = 0;
       }
 
-      if (parseInt(this.highShift, 10) >= 1) {
+      if (shift.highShift >= 1) {
         this.highShift = '+ ' + this.highShift;
         this.highTrend = 1;
-      } else if (parseInt(this.highShift, 10) < 1 && parseInt(this.highShift, 10) !== 0) {
+      } else if (shift.highShift < 1 && shift.highShift !== 0) {
         this.highShift = '- ' + this.highShift.replace('-', '');
         this.highTrend = -1;
       } else {
@@ -242,10 +242,10 @@ export class CardComponent implements OnInit {
         this.highTrend = 0;
       }
 
-      if (parseInt(this.lowShift, 10) >= 1) {
+      if (shift.lowShift >= 1) {
         this.lowShift = '+ ' + this.lowShift;
         this.lowTrend = 1;
-      } else if (parseInt(this.lowShift, 10) < 1 && parseInt(this.lowShift, 10) !== 0) {
+      } else if (shift.lowShift < 1 && shift.lowShift !== 0) {
         this.lowShift = '- ' + this.lowShift.replace('-', '');
         this.lowTrend = -1;
       } else {
