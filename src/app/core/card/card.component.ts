@@ -221,13 +221,13 @@ export class CardComponent implements OnInit {
         :
         (factor - (shift.lowShift.valueOf()) * factor).toFixed(2);
 
-      if(shift.avgShift === 1) {
+      if (shift.avgShift === 1) {
         this.avgShift = '100';
       }
-      if(shift.highShift === 1) {
+      if (shift.highShift === 1) {
         this.highShift = '100';
       }
-      if(shift.lowShift === 1) {
+      if (shift.lowShift === 1) {
         this.lowShift = '100';
       }
 
@@ -238,32 +238,35 @@ export class CardComponent implements OnInit {
         this.avgShift = '- ' + this.avgShift + '%';
         this.avgTrend = -1;
       } else {
-        this.avgShift = shift.avgShift + '% =';
+        this.avgShift = this.avgShift + '% =';
         this.avgTrend = 0;
       }
 
       if (shift.highShift >= 1) {
-        this.highShift = '+ ' + shift.highShift + '%';
+        this.highShift = '+ ' + this.highShift + '%';
         this.highTrend = 1;
       } else if (shift.highShift < 1 && shift.highShift !== 0) {
-        this.highShift = '- ' + Math.abs(shift.highShift).toFixed(2) + '%';
+        this.highShift = '- ' + this.highShift + '%';
         this.highTrend = -1;
       } else {
-        this.highShift = shift.highShift + '% =';
+        this.highShift = this.highShift + '% =';
         this.highTrend = 0;
       }
 
       if (shift.lowShift >= 1) {
-        this.lowShift = '+ ' + shift.lowShift + '%';
+        this.lowShift = '+ ' + this.lowShift + '%';
         this.lowTrend = 1;
       } else if (shift.lowShift < 1 && shift.lowShift !== 0) {
-        this.lowShift = '- ' + Math.abs(shift.lowShift).toFixed(2) + '%';
+        this.lowShift = '- ' + this.lowShift + '%';
         this.lowTrend = -1;
       } else {
-        this.lowShift = shift.lowShift + '% =';
+        this.lowShift = this.lowShift + '% =';
         this.lowTrend = 0;
       }
 
+      console.log('high',this.highShift);
+      console.log('low',this.lowShift);
+      console.log('avg',this.avgShift);
     }
   }
 
