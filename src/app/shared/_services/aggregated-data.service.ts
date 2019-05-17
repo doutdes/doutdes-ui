@@ -133,9 +133,9 @@ export class AggregatedDataService {
   // calculates the % variation between the current and previous period
   calculateShift(actual: Array<Number>, previous: Array<Number>, percentual: Boolean) {
     let shift: {
-      highShift: Number,
-      lowShift: Number,
-      avgShift: Number,
+      highShift: number,
+      lowShift: number,
+      avgShift: number,
       percentual: Boolean,
     };
     shift = {highShift: 0, lowShift: 0, avgShift: 0, percentual: true};

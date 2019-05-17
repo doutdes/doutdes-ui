@@ -202,57 +202,61 @@ export class CardComponent implements OnInit {
        console.log('SHIFT', shift);
 
       let factor = 1;
-      if (!this.percentual)
+      if (!this.percentual) {
         factor = 100;
+      }
 
       this.avgShift = (shift.avgShift > 1) ?
-        ((shift.avgShift.valueOf() - 1) * factor).toFixed(2) + '%'
+        ((shift.avgShift.valueOf() - 1) * factor).toFixed(2)
         :
-        (shift.avgShift.valueOf() * factor).toFixed(2) + '%';
+        (shift.avgShift.valueOf() * factor).toFixed(2);
 
       this.highShift = (shift.highShift > 1) ?
-        ((shift.highShift.valueOf() - 1) * factor).toFixed(2) + '%'
+        ((shift.highShift.valueOf() - 1) * factor).toFixed(2)
         :
-        (shift.highShift.valueOf() * factor).toFixed(2) + '%';
+        (shift.highShift.valueOf() * factor).toFixed(2);
 
       this.lowShift = (shift.lowShift > 1) ?
-        ((shift.lowShift.valueOf() - 1) * factor).toFixed(2) + '%'
+        ((shift.lowShift.valueOf() - 1) * factor).toFixed(2)
         :
-        (shift.lowShift.valueOf() * factor).toFixed(2) + '%';
+        (shift.lowShift.valueOf() * factor).toFixed(2);
 
       if (shift.avgShift >= 1) {
-        this.avgShift = '+ ' + this.avgShift;
+        this.avgShift = '+ ' + shift.avgShift;
         this.avgTrend = 1;
       } else if (shift.avgShift < 1 && shift.avgShift !== 0) {
-        this.avgShift = '- ' + this.avgShift.replace('-', '');
+        this.avgShift = '- ' + Math.abs(shift.avgShift).toFixed(2);
         this.avgTrend = -1;
       } else {
-        this.avgShift = this.avgShift + ' =';
+        this.avgShift = shift.avgShift + ' =';
         this.avgTrend = 0;
       }
 
       if (shift.highShift >= 1) {
-        this.highShift = '+ ' + this.highShift;
+        this.highShift = '+ ' + shift.highShift;
         this.highTrend = 1;
       } else if (shift.highShift < 1 && shift.highShift !== 0) {
-        this.highShift = '- ' + this.highShift.replace('-', '');
+        this.highShift = '- ' + Math.abs(shift.highShift).toFixed(2);
         this.highTrend = -1;
       } else {
-        this.highShift = this.highShift + ' =';
+        this.highShift = shift.highShift + ' =';
         this.highTrend = 0;
       }
 
       if (shift.lowShift >= 1) {
-        this.lowShift = '+ ' + this.lowShift;
+        this.lowShift = '+ ' + shift.lowShift;
         this.lowTrend = 1;
       } else if (shift.lowShift < 1 && shift.lowShift !== 0) {
-        this.lowShift = '- ' + this.lowShift.replace('-', '');
+        this.lowShift = '- ' + Math.abs(shift.lowShift).toFixed(2);
         this.lowTrend = -1;
       } else {
-        this.lowShift = this.lowShift + ' =';
+        this.lowShift = shift.lowShift + ' =';
         this.lowTrend = 0;
       }
 
+      this.highShift = this.highShift + '%';
+      this.lowShift = this.lowShift + '%';
+      this.avgShift = this.avgShift + '%';
 
     }
   }
