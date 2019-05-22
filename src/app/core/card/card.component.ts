@@ -145,6 +145,7 @@ export class CardComponent implements OnInit {
     this.lowTrend = 0;
     this.highTrend = 0;
     this.avgTrend = 0;
+    this.percentual = false;
 
     let unit = '';
 
@@ -198,62 +199,74 @@ export class CardComponent implements OnInit {
       this.prevAvg += unit;
 
       const shift = AggregatedDataService.prototype.calculateShift(actual, previous, this.percentual);
-
-      // console.log('SHIFT', shift);
+       console.log('SHIFT', shift);
 
       let factor = 1;
-      if (!this.percentual)
+      if (!this.percentual) {
         factor = 100;
+      }
 
       this.avgShift = (shift.avgShift > 1) ?
-        ((shift.avgShift.valueOf() - 1) * factor).toFixed(2) + '%'
+        ((shift.avgShift.valueOf() - 1) * factor).toFixed(2)
         :
-        (shift.avgShift.valueOf() * factor).toFixed(2) + '%';
+        (factor - (shift.avgShift.valueOf()) * factor).toFixed(2);
 
       this.highShift = (shift.highShift > 1) ?
-        ((shift.highShift.valueOf() - 1) * factor).toFixed(2) + '%'
+        ((shift.highShift.valueOf() - 1) * factor).toFixed(2)
         :
-        (shift.highShift.valueOf() * factor).toFixed(2) + '%';
+        (factor - (shift.highShift.valueOf()) * factor).toFixed(2);
 
       this.lowShift = (shift.lowShift > 1) ?
-        ((shift.lowShift.valueOf() - 1) * factor).toFixed(2) + '%'
+        ((shift.lowShift.valueOf() - 1) * factor).toFixed(2)
         :
-        (shift.lowShift.valueOf() * factor).toFixed(2) + '%';
+        (factor - (shift.lowShift.valueOf()) * factor).toFixed(2);
 
-      if (parseInt(this.avgShift, 10) >= 1) {
-        this.avgShift = '+ ' + this.avgShift;
+      if (shift.avgShift === 1) {
+        this.avgShift = '100';
+      }
+      if (shift.highShift === 1) {
+        this.highShift = '100';
+      }
+      if (shift.lowShift === 1) {
+        this.lowShift = '100';
+      }
+
+      if (shift.avgShift >= 1) {
+        this.avgShift = '+ ' + this.avgShift + '%';
         this.avgTrend = 1;
-      } else if (parseInt(this.avgShift, 10) < 1 && parseInt(this.avgShift, 10) !== 0) {
-        this.avgShift = '- ' + this.avgShift.replace('-', '');
+      } else if (shift.avgShift < 1 && shift.avgShift !== 0) {
+        this.avgShift = '- ' + this.avgShift + '%';
         this.avgTrend = -1;
       } else {
-        this.avgShift = this.avgShift + ' =';
+        this.avgShift = '0% =';
         this.avgTrend = 0;
       }
 
-      if (parseInt(this.highShift, 10) >= 1) {
-        this.highShift = '+ ' + this.highShift;
+      if (shift.highShift >= 1) {
+        this.highShift = '+ ' + this.highShift + '%';
         this.highTrend = 1;
-      } else if (parseInt(this.highShift, 10) < 1 && parseInt(this.highShift, 10) !== 0) {
-        this.highShift = '- ' + this.highShift.replace('-', '');
+      } else if (shift.highShift < 1 && shift.highShift !== 0) {
+        this.highShift = '- ' + this.highShift + '%';
         this.highTrend = -1;
       } else {
-        this.highShift = this.highShift + ' =';
+        this.highShift =  '0% =';
         this.highTrend = 0;
       }
 
-      if (parseInt(this.lowShift, 10) >= 1) {
-        this.lowShift = '+ ' + this.lowShift;
+      if (shift.lowShift >= 1) {
+        this.lowShift = '+ ' + this.lowShift + '%';
         this.lowTrend = 1;
-      } else if (parseInt(this.lowShift, 10) < 1 && parseInt(this.lowShift, 10) !== 0) {
-        this.lowShift = '- ' + this.lowShift.replace('-', '');
+      } else if (shift.lowShift < 1 && shift.lowShift !== 0) {
+        this.lowShift = '- ' + this.lowShift + '%';
         this.lowTrend = -1;
       } else {
-        this.lowShift = this.lowShift + ' =';
+        this.lowShift =  '0% =';
         this.lowTrend = 0;
       }
 
-
+      console.log('high',this.highShift);
+      console.log('low',this.lowShift);
+      console.log('avg',this.avgShift);
     }
   }
 

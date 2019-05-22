@@ -38,16 +38,36 @@
     </a>
     <!-- Submenu content -->
     <div id="submenu2" class="collapse sidebar-submenu">
-<!--      <a class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Account settings</span>
-      </a>-->
+      <a [routerLink]="['/preferences/profile']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed">Profilo</span>
+      </a>
       <a [routerLink]="['/preferences/api-keys']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Configura sorgenti dati</span>
       </a>
+      <a *ngIf="userType === 0" [routerLink]="['/authentication/register']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed">Crea account</span>
+      </a>
     </div>
+
+    <a *ngIf="userType === 0" href="#submenu4" data-toggle="collapse" aria-expanded="false"
+       class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fas fa-star fa-fw mr-3"></span>
+        <span class="menu-collapsed">Super admin</span>
+        <span class="fas fa-plus ml-auto"></span>
+      </div>
+    </a>
+
+    <!-- Submenu content -->
+    <div *ngIf="userType === 0" id="submenu4" class="collapse sidebar-submenu">
+      <a [routerLink]="['/authentication/register']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed">Crea account</span>
+      </a>
+    </div>
+
     <a class="list-group-item list-group-item-action"> <!-- [routerLink]="['/report']" -->
       <div class="d-flex w-100 justify-content-start align-items-center" style="color: #777">
-        <span class="fa fa-tasks fa-fw mr-3"></span>
+        <span class="fa fa-tasks fa-fs mr-3"></span>
         <span class="menu-collapsed">Report</span>
       </div>
     </a>
