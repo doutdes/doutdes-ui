@@ -38,15 +38,15 @@
     </a>
     <!-- Submenu content -->
     <div id="submenu2" class="collapse sidebar-submenu">
-<!--      <a [routerLink]="['/preferences/profile']" class="list-group-item list-group-item-action">
+      <a [routerLink]="['/preferences/profile']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Profilo</span>
-      </a>-->
+      </a>
       <a [routerLink]="['/preferences/api-keys']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Configura sorgenti dati</span>
       </a>
-      <a *ngIf="userType === 0" [routerLink]="['/authentication/register']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Crea account</span>
-      </a>
+      <!--<a *ngIf="userType === 0" [routerLink]="['/authentication/register']" class="list-group-item list-group-item-action">-->
+        <!--<span class="menu-collapsed">Crea account</span>-->
+      <!--</a>-->
     </div>
 
     <a *ngIf="userType === 0" href="#submenu4" data-toggle="collapse" aria-expanded="false"

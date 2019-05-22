@@ -51,6 +51,7 @@ export class LoginActions {
 
     this.eventManager.isUserLoggedIn.next(false);
 
-    this.router.navigate(['/authentication/login']);
+    window.location.reload();
+    //this.router.navigate(['/authentication/login']);
   }
 }

@@ -8,6 +8,7 @@ import {SharedModule} from '../../../shared/shared.module';
 import {RouterModule} from '@angular/router';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {ToastrService} from 'ngx-toastr';
+import {StoreService} from '../../../shared/_services/store.service';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import {ToastrService} from 'ngx-toastr';
     UserService,
     AuthenticationService,
     BreadcrumbActions,
-    ToastrService
+    ToastrService,
+    StoreService
   ]
 })
 export class RegisterModule {}

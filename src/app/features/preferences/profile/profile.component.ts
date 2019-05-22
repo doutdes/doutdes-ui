@@ -12,6 +12,7 @@ import {PasswordValidation} from '../../authentication/validators/password-valid
 import {FiscalCodeValidation} from '../../authentication/validators/fiscal-code-validator.directive';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {LoginActions} from '../../authentication/login/login.actions';
+import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 
 @Component({
   selector: 'app-feature-preferences-profile',
@@ -40,6 +41,7 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private loginActions: LoginActions,
     private breadcrumbActions: BreadcrumbActions,
+    private eventManager: GlobalEventsManagerService
   ) {
   }
 
@@ -54,7 +56,6 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
         birth_place: [this.user.birth_place, Validators.compose([Validators.maxLength(50), Validators.required])],
         birth_date: [this.user.birth_date, Validators.required],
         fiscal_code: [this.user.fiscal_code, Validators.compose([Validators.maxLength(16), Validators.required])],
-        email_paypal: [this.user.email_paypal, Validators.compose([Validators.maxLength(50)])],
         address: [this.user.address, Validators.compose([Validators.maxLength(100), Validators.required])],
         city: [this.user.city, Validators.compose([Validators.maxLength(50), Validators.required])],
         zip: [this.user.zip, Validators.compose([Validators.maxLength(5), Validators.required])],
@@ -83,7 +84,7 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
   selectChangeHandler(user_type) {
     this.selectedUser = Number(user_type);
 
-    if (this.selectedUser !== 2) {
+    if (this.selectedUser === 1) {
       this.updateRegistration.controls['company_name'].setValidators(Validators.required);
       this.updateRegistration.controls['company_name'].updateValueAndValidity();
 
@@ -111,7 +112,7 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
     this.updateRegistration.value.user_type = this.selectedUser;
 
     // If the user is not a company, put the fanValues to null
-    if (this.selectedUser === 2) {
+    if (this.selectedUser !== 1) {
       this.updateRegistration.value.company_name = null;
       this.updateRegistration.value.vat_number = null;
     }
@@ -125,9 +126,8 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
 
   updateUser() {
     const user = <User> this.updateRegistration.value;
-/*
 
-    this.userService.update(user) //TODO aggiungere update nel service
+    this.userService.update(user)
       .subscribe(
         data => {
           if (data['status']) {
@@ -141,7 +141,6 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
           this.toastr.error('Si è verificato un errore durante l\'aggiornamento delle informazioni del profilo', 'Errore di aggiornamento');
         }
       );
-*/
 
     this.loading = false;
     this.closeModal();

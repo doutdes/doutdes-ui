@@ -1,9 +1,9 @@
 <div class="form-inline mb-2">
-  <label class="my-1 mr-2" for="userType">Type of user</label>
+  <label class="my-1 mr-2" for="userType">Tipo di account</label>
   <select (change)="selectChangeHandler($event)" class="custom-select my-1 mr-sm-2" id="userType">
-    <option value="company">Company</option>
+    <option value="company">Azienda</option>
     <option value="editor" selected>Editor</option>
-    <option value="analyst">Analyst</option>
+    <option value="analyst">Analista</option>
   </select>
 </div>
 
@@ -15,22 +15,22 @@
         <div class="input-group-prepend">
           <span class="input-group-text"><i class="icon-briefcase"></i></span>
         </div>
-        <input type="text" formControlName="company_name" class="form-control" placeholder="Company Name"
+        <input type="text" formControlName="company_name" class="form-control" placeholder="Nome Azienda"
                [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
 
         <div *ngIf="this.submitted && f.company_name.errors" class="invalid-feedback">
-          <div *ngIf="f.company_name.errors.required">Company Name is required</div>
+          <div *ngIf="f.company_name.errors.required">Nome dell'azienza obbligatorio</div>
         </div>
       </div>
       <div class="input-group mb-3 col-md-6">
         <div class="input-group-prepend">
           <span class="input-group-text"><i class="icon-chart"></i></span>
         </div>
-        <input type="text" formControlName="vat_number" class="form-control" placeholder="Vat Number" required
+        <input type="text" formControlName="vat_number" class="form-control" placeholder="Partita IVA" required
                [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
 
         <div *ngIf="this.submitted && f.vat_number.errors" class="invalid-feedback">
-          <div *ngIf="f.vat_number.errors.required">Vat Number is required</div>
+          <div *ngIf="f.vat_number.errors.required">Partita IVA obbligatoria</div>
         </div>
       </div>
     </div>
@@ -41,24 +41,24 @@
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="icon-user"></i></span>
       </div>
-      <input type="text" formControlName="first_name" class="form-control" placeholder="First Name"
+      <input type="text" formControlName="first_name" class="form-control" placeholder="Nome"
              [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
 
       <div *ngIf="submitted && f.first_name.errors" class="invalid-feedback">
-        <div *ngIf="f.first_name.errors.required">First Name is required</div>
-        <div *ngIf="f.first_name.errors.maxlength">First name must be long at max 40 characters</div>
+        <div *ngIf="f.first_name.errors.required">Nome obbligatorio</div>
+        <div *ngIf="f.first_name.errors.maxlength">Il nome deve essere di massimo 40 caratteri</div>
       </div>
     </div>
     <div class="input-group mb-4 ml-auto col-md-6">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="icon-user"></i></span>
       </div>
-      <input type="text" formControlName="last_name" class="form-control" placeholder="Last Name"
+      <input type="text" formControlName="last_name" class="form-control" placeholder="Cognome"
              [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
 
       <div *ngIf="this.submitted && f.last_name.errors" class="invalid-feedback">
-        <div *ngIf="f.last_name.errors.required">Last Name is required</div>
-        <div *ngIf="f.last_name.errors.maxlength">Last name must be long at max 40 characters</div>
+        <div *ngIf="f.last_name.errors.required">Cognome obbligatorio</div>
+        <div *ngIf="f.last_name.errors.maxlength">Il cognome deve essere di massimo 40 caratteri</div>
       </div>
     </div>
 
@@ -68,23 +68,23 @@
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="icon-location-pin"></i></span>
       </div>
-      <input type="text" formControlName="birth_place" class="form-control" placeholder="Birth Place"
+      <input type="text" formControlName="birth_place" class="form-control" placeholder="Luogo di Nascita"
              [ngClass]="{ 'is-invalid': submitted && f.birth_place.errors }"/>
 
       <div *ngIf="submitted && f.birth_place.errors" class="invalid-feedback">
-        <div *ngIf="f.birth_place.errors.required">Birth place is required</div>
-        <div *ngIf="f.birth_place.errors.maxlength">Birth place must be long at max 50 characters</div>
+        <div *ngIf="f.birth_place.errors.required">Luogo di Nascita</div>
+        <div *ngIf="f.birth_place.errors.maxlength">Il luogo di nascita deve essere di massimo 50 caratteri</div>
       </div>
     </div>
     <div class="input-group mb-3 col-md-6">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="icon-calendar"></i></span>
       </div>
-      <input type="date" formControlName="birth_date" class="form-control" placeholder="Birth Date"
+      <input type="date" formControlName="birth_date" class="form-control" placeholder="Data di nascita"
              [ngClass]="{ 'is-invalid': submitted && f.birth_date.errors }"/>
 
       <div *ngIf="submitted && f.birth_date.errors" class="invalid-feedback">
-        <div *ngIf="f.birth_date.errors.required">Birth date is required</div>
+        <div *ngIf="f.birth_date.errors.required">Data di nascita obbligatoria</div>
       </div>
     </div>
   </div> <!-- Birth place and birth date -->
@@ -93,13 +93,13 @@
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fas fa-barcode"></i></span>
       </div>
-      <input type="text" formControlName="fiscal_code" class="form-control" placeholder="Fiscal Code"
+      <input type="text" formControlName="fiscal_code" class="form-control" placeholder="Codice Fiscale"
              [ngClass]="{ 'is-invalid': submitted && f.fiscal_code.errors }"/>
 
       <div *ngIf="submitted && f.fiscal_code.errors" class="invalid-feedback">
-        <div *ngIf="f.fiscal_code.errors.required">Fiscal code is required</div>
-        <div *ngIf="f.fiscal_code.errors.maxlength">Fiscal code must be long at max 16 characters</div>
-        <div *ngIf="f.fiscal_code.errors.InvalidFiscalCode">Please insert a valid fiscal code</div>
+        <div *ngIf="f.fiscal_code.errors.required">Codice Fiscale obbligatorio</div>
+        <div *ngIf="f.fiscal_code.errors.maxlength">Il codice fiscale è di massimo 16 caratteri</div>
+        <div *ngIf="f.fiscal_code.errors.InvalidFiscalCode">Inserisci un codice fiscale valido</div>
       </div>
 
     </div> <!-- Fiscal code -->
@@ -109,24 +109,24 @@
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
       </div>
-      <input type="text" formControlName="address" class="form-control" placeholder="Address"
+      <input type="text" formControlName="address" class="form-control" placeholder="Indirizzo"
              [ngClass]="{ 'is-invalid': submitted && f.address.errors }"/>
 
       <div *ngIf="submitted && f.address.errors" class="invalid-feedback">
-        <div *ngIf="f.address.errors.required">Address is required</div>
-        <div *ngIf="f.address.errors.maxlength">Address must be long at max 100 characters</div>
+        <div *ngIf="f.address.errors.required">Indirizzo obbligatorio</div>
+        <div *ngIf="f.address.errors.maxlength">L'indirizzo deve essere di massimo 100 catatteri</div>
       </div>
     </div>
     <div class="input-group mb-3 col-md-6">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fas fa-globe"></i></span>
       </div>
-      <input type="text" formControlName="city" class="form-control" placeholder="Residence City"
+      <input type="text" formControlName="city" class="form-control" placeholder="Città di residenza"
              [ngClass]="{ 'is-invalid': submitted && f.city.errors }"/>
 
       <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
-        <div *ngIf="f.city.errors.required">City is required</div>
-        <div *ngIf="f.city.errors.maxlength">Birth place must be long at max 50 characters</div>
+        <div *ngIf="f.city.errors.required">Città richiesta</div>
+        <div *ngIf="f.city.errors.maxlength">Il nome della città deve essere di massimo 50 caratteru</div>
       </div>
     </div>
   </div> <!-- Address and Residence City -->
@@ -135,24 +135,24 @@
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fas fa-map"></i></span>
       </div>
-      <input type="text" formControlName="province" class="form-control" placeholder="Province"
+      <input type="text" formControlName="province" class="form-control" placeholder="Provincia"
              [ngClass]="{ 'is-invalid': submitted && f.province.errors }" maxlength="2"/>
 
       <div *ngIf="submitted && f.province.errors" class="invalid-feedback">
-        <div *ngIf="f.province.errors.required">Province is required</div>
-        <div *ngIf="f.province.errors.maxlength">Province must be long at max 2 characters</div>
+        <div *ngIf="f.province.errors.required">Sigla della provincia obbligatoria</div>
+        <div *ngIf="f.province.errors.maxlength">La sigla della provincia deve essere di massimo 2 caratteri</div>
       </div>
     </div>
     <div class="input-group mb-3 col-md-6">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fas fa-code"></i></span>
       </div>
-      <input type="text" formControlName="zip" class="form-control" placeholder="Zip Code"
+      <input type="text" formControlName="zip" class="form-control" placeholder="CAP"
              [ngClass]="{ 'is-invalid': submitted && f.zip.errors }" maxlength="5"/>
 
       <div *ngIf="submitted && f.zip.errors" class="invalid-feedback">
-        <div *ngIf="f.zip.errors.required">Zip Code is required</div>
-        <div *ngIf="f.zip.errors.maxlength">Zip Code must be long at max 5 numbers</div>
+        <div *ngIf="f.zip.errors.required">CAP obbligatorio</div>
+        <div *ngIf="f.zip.errors.maxlength">Il CAP deve essere di massimo 5 caratteri</div>
       </div>
     </div>
   </div> <!-- Province and Zip Code-->
@@ -165,8 +165,8 @@
              [ngClass]="{ 'is-invalid': submitted && f.username.errors }"/>
 
       <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
-        <div *ngIf="f.username.errors.required">Username is required</div>
-        <div *ngIf="f.username.errors.maxlength">Username must be long at max 20 characters</div>
+        <div *ngIf="f.username.errors.required">Username obbligatorio</div>
+        <div *ngIf="f.username.errors.maxlength">L'username deve essere di massimo 40 caratteri</div>
       </div>
     </div>
     <div class="input-group mb-3 col-md-6">
@@ -177,8 +177,8 @@
              [ngClass]="{ 'is-invalid': submitted && f.email.errors }"/>
 
       <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
-        <div *ngIf="f.email.errors.required">Email is required</div>
-        <div *ngIf="f.email.errors.email">Please insert a valid email</div>
+        <div *ngIf="f.email.errors.required">Email obbligatoria</div>
+        <div *ngIf="f.email.errors.email">Inserisci una email valida</div>
       </div>
 
     </div>
@@ -192,22 +192,22 @@
              [ngClass]="{ 'is-invalid': submitted && f.password.errors }"/>
 
       <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
-        <div *ngIf="f.password.errors.required">Password is required</div>
-        <div *ngIf="f.password.errors.minlength">Password must be long at least 10 characters</div>
+        <div *ngIf="f.password.errors.required">Password obbligatoria</div>
+        <div *ngIf="f.password.errors.minlength">La password deve contenere almeno 10 caratteri</div>
       </div>
     </div>
     <div class="input-group mb-4 col-md-6">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="icon-lock"></i></span>
       </div>
-      <input type="password" formControlName="r_password" class="form-control" placeholder="Repeat password"
+      <input type="password" formControlName="r_password" class="form-control" placeholder="Ripeti password"
              minlength="10">
     </div>
 
     <div class="alert alert-danger col-md-12"
-         *ngIf="submitted && f.r_password.errors?.MatchPassword">Password not match
+         *ngIf="submitted && f.r_password.errors?.MatchPassword">Le password non coincidono
     </div>
 
-    <button [disabled]="loading" class="btn btn-block btn-success">Create Account</button>
+    <button [disabled]="loading" class="btn btn-block btn-success">Crea Account</button>
   </div> <!-- Password and repeated password -->
 </form>
