@@ -127,7 +127,7 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
     const user = <User> this.updateRegistration.value;
 /*
 
-    this.userService.update(user)
+    this.userService.update(user) //TODO aggiungere update nel service
       .subscribe(
         data => {
           if (data['status']) {

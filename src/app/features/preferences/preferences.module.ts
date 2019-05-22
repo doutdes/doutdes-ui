@@ -5,6 +5,7 @@ import {FeaturePreferencesRoutingModule} from './preferences.routing';
 import {FeaturePreferencesApiKeysModule} from './api-keys/api-keys.module';
 import {FeaturePreferencesComponent} from './preferences.component';
 import {FeaturePreferencesProfileComponent} from './profile/profile.component';
+import {UserService} from '../../shared/_services/user.service';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,7 @@ import {FeaturePreferencesProfileComponent} from './profile/profile.component';
     FeaturePreferencesRoutingModule,
   ],
   providers: [
-
+    UserService
   ],
   exports: [
     FeaturePreferencesComponent,

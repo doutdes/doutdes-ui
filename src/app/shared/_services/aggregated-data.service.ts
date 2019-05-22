@@ -45,8 +45,7 @@ export class AggregatedDataService {
       case D_TYPE.YT:
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i][filteredData[i].length - 1]);
-          if(value)
-          {
+          if (value) {
             sum +=  value;
             nValues++;
           }
@@ -57,8 +56,7 @@ export class AggregatedDataService {
         ///WORKING ON GETTING JSON FOR PREVIOUS PERIOD
         for (let i = 0; i < prevFilteredData.length; i++) {
           const value = parseFloat(prevFilteredData[i][prevFilteredData[i].length - 1]);
-          if (value)
-          {
+          if (value) {
             prevSum +=  value;
             prevNValues++;
           }
@@ -70,8 +68,7 @@ export class AggregatedDataService {
       case D_TYPE.IG:
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i]['value']);
-          if(value)
-          {
+          if (value) {
             sum +=  value;
             nValues++;
           }
@@ -79,11 +76,10 @@ export class AggregatedDataService {
           lowest = value < lowest ? value : lowest;
         }
 
-        ///WORKING ON GETTING JSON FOR PREVIOUS PERIOD
+        // WORKING ON GETTING JSON FOR PREVIOUS PERIOD
         for (let i = 0; i < prevFilteredData.length; i++) {
-          const value = parseFloat(prevFilteredData[i][prevFilteredData[i].length - 1]);
-          if(value)
-          {
+          const value = parseFloat(prevFilteredData[i]['value']);
+          if (value) {
             prevSum +=  value;
             prevNValues++;
           }
@@ -137,9 +133,9 @@ export class AggregatedDataService {
   // calculates the % variation between the current and previous period
   calculateShift(actual: Array<Number>, previous: Array<Number>, percentual: Boolean) {
     let shift: {
-      highShift: Number,
-      lowShift: Number,
-      avgShift: Number,
+      highShift: number,
+      lowShift: number,
+      avgShift: number,
       percentual: Boolean,
     };
     shift = {highShift: 0, lowShift: 0, avgShift: 0, percentual: true};
