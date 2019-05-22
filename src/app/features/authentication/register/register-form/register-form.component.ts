@@ -41,7 +41,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       city:        ['', Validators.compose([Validators.maxLength(50), Validators.required])],
       zip:         ['', Validators.compose([Validators.maxLength(5), Validators.required])],
       province:    ['', Validators.compose([Validators.maxLength(2), Validators.required])],
-      username:    ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+      username:    ['', Validators.compose([Validators.maxLength(40), Validators.required])],
       email:       ['', Validators.required],
       password:    ['', Validators.compose([Validators.minLength(10), Validators.required])],
       r_password:  ['', Validators.compose([Validators.minLength(10), Validators.required])],
