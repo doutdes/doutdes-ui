@@ -1,7 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
-import {AuthenticationService} from '../../features/authentication/authentication.service';
-import {LoginActions} from '../../features/authentication/login/login.actions';
 import {StoreService} from '../../shared/_services/store.service';
 
 @Component({
@@ -11,10 +9,12 @@ import {StoreService} from '../../shared/_services/store.service';
 
 export class SidebarComponent {
   isUserLoggedIn: boolean;
+  userType: number;
 
-  constructor(private globalEventService: GlobalEventsManagerService) {
+  constructor(private globalEventService: GlobalEventsManagerService, private storeService: StoreService) {
     this.globalEventService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value;
+      this.userType = parseInt(this.storeService.getType());
     });
   }
 }

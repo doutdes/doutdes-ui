@@ -8,6 +8,7 @@ import {first} from 'rxjs/internal/operators';
 import {Router} from '@angular/router';
 import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../../shared/store/model';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-feature-authentication-register-form',
@@ -27,7 +28,8 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
     private formBuilder: FormBuilder,
     private userService: UserService,
     private router: Router,
-    private ngRedux: NgRedux<IAppState>
+    private ngRedux: NgRedux<IAppState>,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -101,7 +103,8 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       .subscribe(
         data => {
           // this.setSignedUp(this.registrationForm.value.username);
-          this.router.navigate(['authentication/login']);
+          // this.router.navigate(['authentication/login']);
+          this.toastr.success('Hai creato ' + this.registrationForm.value.username, 'Account creato!')
         }, error => {
           this.loading = false;
           console.log(error);

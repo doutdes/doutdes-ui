@@ -1,11 +1,13 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 
 import {UserService} from '../../../shared/_services/user.service';
 import {AuthenticationService} from '../authentication.service';
 import {FeatureAuthenticationRegisterFormComponent} from './register-form/register-form.component';
 import {FeatureAuthenticationRegisterComponent} from './register.component';
 import {SharedModule} from '../../../shared/shared.module';
-import {RouterLinkActive, RouterModule} from '@angular/router';
+import {RouterModule} from '@angular/router';
+import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
+import {ToastrService} from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import {RouterLinkActive, RouterModule} from '@angular/router';
   ],
   providers: [
     UserService,
-    AuthenticationService
+    AuthenticationService,
+    BreadcrumbActions,
+    ToastrService
   ]
 })
 export class RegisterModule {}
