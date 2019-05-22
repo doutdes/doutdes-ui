@@ -125,6 +125,7 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
 
   updateUser() {
     const user = <User> this.updateRegistration.value;
+/*
 
     this.userService.update(user)
       .subscribe(
@@ -140,6 +141,7 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
           this.toastr.error('Si è verificato un errore durante l\'aggiornamento delle informazioni del profilo', 'Errore di aggiornamento');
         }
       );
+*/
 
     this.loading = false;
     this.closeModal();
