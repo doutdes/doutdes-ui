@@ -4,10 +4,12 @@ import {CoreModule} from '../../core/core.module';
 import {FeaturePreferencesRoutingModule} from './preferences.routing';
 import {FeaturePreferencesApiKeysModule} from './api-keys/api-keys.module';
 import {FeaturePreferencesComponent} from './preferences.component';
+import {FeaturePreferencesProfileComponent} from './profile/profile.component';
 
 @NgModule({
   declarations: [
-    FeaturePreferencesComponent
+    FeaturePreferencesComponent,
+    FeaturePreferencesProfileComponent
   ],
   imports: [
     SharedModule,
@@ -19,7 +21,8 @@ import {FeaturePreferencesComponent} from './preferences.component';
 
   ],
   exports: [
-    FeaturePreferencesComponent
+    FeaturePreferencesComponent,
+    FeaturePreferencesProfileComponent
   ]
 })
 
