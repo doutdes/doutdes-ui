@@ -59,14 +59,14 @@ export class ChartsCallsService {
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
-        header = [['Date', 'Number of fans']];
+        header = [['Data', 'Numero fan']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break;  // FB Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
-        header = [['Country', 'Popularity']];
+        header = [['Paese', 'Numero fan']];
 
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
@@ -75,13 +75,13 @@ export class ChartsCallsService {
         }
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
-        header = [['Date', 'Impressions']];
+        header = [['Data', 'Visualizzazioni']];
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break;  // Page Impressions
       case FB_CHART.FANS_COUNTRY_PIE:
-        header = [['Country', 'Popularity']];
+        header = [['Paese', 'Numero fan']];
 
         // Push data pairs in the Chart array
         chartData = Object.keys(data[data.length - 1].value).map(function (k) {
@@ -90,14 +90,14 @@ export class ChartsCallsService {
 
         break;  // Fan Country Pie
       case FB_CHART.PAGE_VIEWS:
-        header = [['Date', 'Views']];
+        header = [['Data', 'Visualizzazioni']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // Facebook Page Views
       case FB_CHART.FANS_CITY:
-        header = [['City', 'Fans']];
+        header = [['Città', 'Numero fan']];
 
         chartData = Object.keys(data[data.length - 1].value).map(function (k) {
           return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
@@ -110,14 +110,14 @@ export class ChartsCallsService {
         break; // Facebook Fan City
 
       case GA_CHART.IMPRESSIONS_DAY:
-        header = [['Date', 'Impressions']];
+        header = [['Data', 'Visualizzazioni']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
         break;  // Google PageViews (impressions by day)
       case GA_CHART.SESSION_DAY:
-        header = [['Date', 'Sessions']];
+        header = [['Data', 'Sessioni']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
@@ -129,7 +129,7 @@ export class ChartsCallsService {
          * 1 - page
          * 2 - value
          **/
-        header = [['Type', 'Number']];
+        header = [['Sorgente', 'Numero']];
 
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
@@ -178,7 +178,7 @@ export class ChartsCallsService {
          * 2 - value
          **/
 
-        header = [['Type', 'Number']];
+        header = [['Tipo', 'Numero']];
 
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
@@ -200,7 +200,7 @@ export class ChartsCallsService {
         }
         break; // Google Bounce Rate
       case GA_CHART.AVG_SESS_DURATION:
-        header = [['Date', 'Time (s)']];
+        header = [['Data', 'Durata (s)']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
@@ -237,7 +237,7 @@ export class ChartsCallsService {
         }
         break; // Google list Session per Browser
       case GA_CHART.NEW_USERS:
-        header = [['Date', 'Users']];
+        header = [['Data', 'Nuovi utenti']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
@@ -280,7 +280,7 @@ export class ChartsCallsService {
         chartData.push(['Di ritorno', 100 - avg]);
         break;  // Google New Users vs Return users
       case GA_CHART.PAGE_LOAD_TIME:
-        header = [['Pagina', 'Tempo Medio (s)']];
+        header = [['Pagina', 'Tempo medio (s)']];
         let tmpArray = [];
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
@@ -302,7 +302,7 @@ export class ChartsCallsService {
         break;
 
       case IG_CHART.AUD_CITY:
-        header = [['City', 'Fans']];
+        header = [['Città', 'Popolarità']];
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
@@ -316,7 +316,7 @@ export class ChartsCallsService {
         }
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
-        header = [['Country', 'Popularity']];
+        header = [['Paese', 'Popolarità']];
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [k, data[data.length - 1].value[k]];
@@ -324,7 +324,7 @@ export class ChartsCallsService {
         }
         break; // IG Audience Country
       case IG_CHART.AUD_GENDER_AGE:
-        header = [['Age', 'Male', 'Female']];
+        header = [['Età', 'Maschio', 'Femmina']];
 
         let gender_data = data[0] ? Object.keys(data[0]['value']) : null;
 
@@ -349,7 +349,7 @@ export class ChartsCallsService {
         }
         break; // IG Audience Gender/Age
       case IG_CHART.AUD_LOCALE:
-        header = [['Country', 'Number']]; /// TODO: fix containsGeoData to use header != 'Country'
+        header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
 
         if (data.length > 0) {
           keys = Object.keys(data[0]['value']); // getting all the gender/age data
@@ -363,7 +363,7 @@ export class ChartsCallsService {
             return -(obj1[1] - obj2[1]);
           });
 
-          other = [['Other', 0]];
+          other = [['Altro', 0]];
           chartData.slice(4, chartData.length).forEach(el => {
             other[0][1] += el[1];
           });
@@ -374,7 +374,7 @@ export class ChartsCallsService {
       case IG_CHART.ONLINE_FOLLOWERS:
 
         interval = 3; // Interval of hours to show
-        header = [['OnlineFollowers', 'Min', 'Average', 'Max']];
+        header = [['Follower online', 'Min', 'Media', 'Max']];
 
         console.log(data);
 
@@ -417,21 +417,21 @@ export class ChartsCallsService {
 
         break; // IG Online followers
       case IG_CHART.IMPRESSIONS:
-        header = [['Date', 'Impressions']];
+        header = [['Data', 'Visualizzazioni']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Impressions by day
       case IG_CHART.REACH:
-        header = [['Date', 'Reach']];
+        header = [['Data', 'Utenti raggiunti']];
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG Reach
       case IG_CHART.ACTION_PERFORMED:
-        header = [['Type', 'Number']];
+        header = [['Tipo', 'Numero']];
         let map = new Map();
         //group by click type
         for (let i = 0; i < data.length; i++) {
@@ -449,7 +449,7 @@ export class ChartsCallsService {
 
         if (empty) {
           map = new Map();
-          map.set('NO DATA', 100);//parseInt(100, 10));
+          map.set('Nessun dato', 100);//parseInt(100, 10));
           map.set('empty', true);
 
         }
@@ -908,10 +908,22 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 15,
           options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
             alternatingRowStyle: true,
-            sortAscending: false,
+            allowHtml: true,
+            sort: 'disable',
+            sortAscending: true,
             sortColumn: 1,
-            pageSize: 11,
+            pageSize: 9,
             height: '100%',
             width: '100%'
           }
@@ -1037,14 +1049,16 @@ export class ChartsCallsService {
           dataTable: data,
           chartClass: 6,
           options: {
-            chartArea: {left: 30, right: 0, height: 290, top: 0},
-            //legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
+            sliceVisibilityThreshold: 0.05,
             is3D: false,
-            pieHole: 0.5,
-            //pieSliceText: 'label',
-            pieSliceTextStyle: {fontSize: 11, color: '#ffffff'},
-            areaOpacity: 0.4
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#58A5BC', '#3F9AA2', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         if (data.filter(e => e[1] === true).length == 0) {
