@@ -199,7 +199,6 @@ export class CardComponent implements OnInit {
       this.prevAvg += unit;
 
       const shift = AggregatedDataService.prototype.calculateShift(actual, previous, this.percentual);
-       console.log('SHIFT', shift);
 
       let factor = 1;
       if (!this.percentual) {
@@ -263,10 +262,6 @@ export class CardComponent implements OnInit {
         this.lowShift =  '0% =';
         this.lowTrend = 0;
       }
-
-      console.log('high',this.highShift);
-      console.log('low',this.lowShift);
-      console.log('avg',this.avgShift);
     }
   }
 

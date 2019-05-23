@@ -112,7 +112,6 @@ export class AggregatedDataService {
       prevInterval: this.getPrevious(dateInterval),
     };
 
-    console.log(JSON.parse(JSON.stringify(result)));
     return result;
   }
 

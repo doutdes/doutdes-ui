@@ -95,7 +95,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   async loadDashboard() {
-    console.log('initial MINDATE '+this.minDate);
     let dash, charts, dataArray;
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
@@ -169,8 +168,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           }
 
           currentData.data = chartsToShow;
-
-          console.log('FINAL MINDATE '+this.minDate);
 
           this.filterActions.initData(currentData);
           this.GEService.updateChartList.next(true);
