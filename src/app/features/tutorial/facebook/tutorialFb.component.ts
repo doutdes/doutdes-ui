@@ -15,8 +15,9 @@ export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
   modalRef: BsModalRef;
   imgSrc: string;
 
-  constructor(private breadcrumbActions: BreadcrumbActions,
-              private modalService: BsModalService) {
+  constructor(
+    private breadcrumbActions: BreadcrumbActions,
+    private modalService: BsModalService) {
   }
 
   ngOnInit(): void {
@@ -41,22 +42,9 @@ export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
-  openModal(template: TemplateRef<any>, imgNumber) {
+  openModal(template: TemplateRef<any>, imgName) {
+    this.imgSrc = imgName;
     this.modalRef = this.modalService.show(template, {class: 'modal-xl modal-dialog-centered'});
-
-    switch (imgNumber) {
-      case 0:
-        this.imgSrc = 'chooseService.PNG';
-        break;
-      case 1:
-        this.imgSrc = 'auth.PNG';
-        break;
-      case 2:
-        this.imgSrc = 'auth2.PNG';
-        break;
-      case 3:
-        this.imgSrc = 'fbDashboard';
-    }
   }
 
   closeModal(): void {
