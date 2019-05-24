@@ -21,7 +21,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
   @select() just_signed;
 
   registrationForm: FormGroup;
-  selectedUser = 'editor';
+  selectedUser = 'company';
   loading = false;
   submitted = false;
 

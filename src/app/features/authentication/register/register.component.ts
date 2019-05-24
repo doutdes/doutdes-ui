@@ -16,7 +16,7 @@ export class FeatureAuthenticationRegisterComponent implements OnInit, OnDestroy
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Registrazione', '/authentication/register'));
+    bread.push(new Breadcrumb('Crea un account', '/authentication/register'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
