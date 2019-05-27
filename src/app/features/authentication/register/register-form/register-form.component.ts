@@ -155,7 +155,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
           this.registrationForm.controls.first_name.setValue("");
           this.registrationForm.controls.last_name.setValue("");
           this.registrationForm.controls.birth_place.setValue("");
-          this.registrationForm.controls.birth_date.setValue("");
+          this.registrationForm.controls.birth_date.setValue(null);
           this.registrationForm.controls.fiscal_code.setValue("");
           this.registrationForm.controls.address.setValue("");
           this.registrationForm.controls.city.setValue("");
@@ -165,7 +165,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
           this.registrationForm.controls.email.setValue("");
           this.registrationForm.controls.password.setValue("");
           this.registrationForm.controls.r_password.setValue("");
-          
+
           this.submitted = false;
           this.loading = false;
         }, error => {
