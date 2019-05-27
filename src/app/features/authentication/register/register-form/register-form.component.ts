@@ -150,8 +150,23 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
             this.router.navigate(['authentication/login']);
           }
 
-          // TODO: fix field clearing
-
+          this.registrationForm.controls.company_name.setValue("");
+          this.registrationForm.controls.vat_number.setValue("");
+          this.registrationForm.controls.first_name.setValue("");
+          this.registrationForm.controls.last_name.setValue("");
+          this.registrationForm.controls.birth_place.setValue("");
+          this.registrationForm.controls.birth_date.setValue("");
+          this.registrationForm.controls.fiscal_code.setValue("");
+          this.registrationForm.controls.address.setValue("");
+          this.registrationForm.controls.city.setValue("");
+          this.registrationForm.controls.zip.setValue("");
+          this.registrationForm.controls.province.setValue("");
+          this.registrationForm.controls.username.setValue("");
+          this.registrationForm.controls.email.setValue("");
+          this.registrationForm.controls.password.setValue("");
+          this.registrationForm.controls.r_password.setValue("");
+          
+          this.submitted = false;
           this.loading = false;
         }, error => {
           this.loading = false;
