@@ -316,7 +316,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     pageID = this.getPageID(dashChart.type);
 
-    this.CCService.retrieveChartData(dashChart.chart_id, pageID, dateInterval)
+    this.CCService.retrieveChartData(dashChart.chart_id, pageID)
       .subscribe(chartData => {
         if (!chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;

@@ -95,6 +95,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   async loadDashboard() {
+
     let dash, charts, dataArray;
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];

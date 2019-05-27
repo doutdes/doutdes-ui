@@ -24,10 +24,9 @@ export class GoogleAnalyticsService {
     return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/ga/getViewList', {headers});
   }
 
-  getData(ID, intervalDate: IntervalDate): Observable<any> {
+  getData(ID): Observable<any> {
     const headers = this.getAuthorization();
     let call;
-    let withDate = true;
 
     switch (ID) {
       case GA_CHART.IMPRESSIONS_DAY:
@@ -39,11 +38,9 @@ export class GoogleAnalyticsService {
       case GA_CHART.SOURCES_COLUMNS:
       case GA_CHART.SOURCES_PIE:
         call = 'sources/';
-        // withDate = false;
         break;
       case GA_CHART.MOST_VISITED_PAGES:
         call = 'mostviews/';
-        // withDate = false;/
         break;
       case GA_CHART.BOUNCE_RATE:
         call = 'bouncerate/';
@@ -53,7 +50,6 @@ export class GoogleAnalyticsService {
         break;
       case GA_CHART.BROWSER_SESSION:
         call = 'browsers/';
-        // withDate = false;
         break;
       case GA_CHART.NEW_USERS:
         call = 'newusers/';
@@ -69,7 +65,7 @@ export class GoogleAnalyticsService {
         break;
     }
 
-    return this.http.get<GoogleData[]>(this.formatURL(intervalDate, call), {headers})
+    return this.http.get<GoogleData[]>(this.formatURL(call), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
@@ -78,40 +74,29 @@ export class GoogleAnalyticsService {
     return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/getScopes/', {headers});
   }
 
-  gaViewsByCountry(intervalDate: IntervalDate): Observable<any> {
+  gaViewsByCountry(): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleData[]>(this.formatURL(intervalDate, 'viewsbycountry/'), {headers})
+    return this.http.get<GoogleData[]>(this.formatURL('viewsbycountry/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
-  gaUsers(intervalDate: IntervalDate): Observable<any> {
+  gaUsers(): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleData[]>(this.formatURL(intervalDate, 'users/'), {headers})
+    return this.http.get<GoogleData[]>(this.formatURL('users/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
-  gaNewUsers(intervalDate: IntervalDate): Observable<any> {
+  gaNewUsers(): Observable<any> {
     const headers = this.getAuthorization();
 
-    return this.http.get<GoogleData[]>(this.formatURL(intervalDate, 'newusers/'), {headers})
+    return this.http.get<GoogleData[]>(this.formatURL('newusers/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
-  private formatURL(intervalDate: IntervalDate, urlCall: string) {
-    const startDate = (intervalDate == undefined || intervalDate.first == undefined || intervalDate.last == null)
-      ? '90daysAgo'
-      : this.formatDate(intervalDate.first);
-    const endDate = (intervalDate == undefined || intervalDate.last == undefined || intervalDate.last == null)
-      ? 'today'
-      : this.formatDate(intervalDate.last);
-
-    return environment.protocol + environment.host + ':' + environment.port + '/ga/' + urlCall + startDate + '/' + endDate + '/';
-  }
-
-  private formatDate(date: Date) {
-    return moment(date).format('YYYY-MM-DD');
+  private formatURL( urlCall: string) {
+    return environment.protocol + environment.host + ':' + environment.port + '/ga/' + urlCall;
   }
 
   private getAuthorization() {
