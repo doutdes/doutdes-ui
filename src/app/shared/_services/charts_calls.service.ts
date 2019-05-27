@@ -26,7 +26,7 @@ export class ChartsCallsService {
     return '...';
   }
 
-  public retrieveChartData(ID, pageID?, intervalDate?: IntervalDate): Observable<any> {
+  public retrieveChartData(ID, pageID?): Observable<any> {
 
     if (Object.values(FB_CHART).includes(ID)) {
       return this.facebookService.getData(ID, pageID);
@@ -37,7 +37,7 @@ export class ChartsCallsService {
     }
 
     else if (Object.values(GA_CHART).includes(ID)) {
-      return this.googleAnalyticsService.getData(ID, intervalDate);
+      return this.googleAnalyticsService.getData(ID);
     }
 
     else {
@@ -1106,10 +1106,10 @@ export class ChartsCallsService {
         observables.push(this.facebookService.getData(FB_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.GA:
-        observables.push(this.googleAnalyticsService.gaUsers(intervalDate));
-        observables.push(this.googleAnalyticsService.getData(GA_CHART.SESSION_DAY, intervalDate));
-        observables.push(this.googleAnalyticsService.getData(GA_CHART.BOUNCE_RATE, intervalDate));
-        observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION, intervalDate));
+        observables.push(this.googleAnalyticsService.gaUsers());
+        observables.push(this.googleAnalyticsService.getData(GA_CHART.SESSION_DAY));
+        observables.push(this.googleAnalyticsService.getData(GA_CHART.BOUNCE_RATE));
+        observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION));
         break;
       case D_TYPE.IG:
         pageID = pageIDs[D_TYPE.IG];
@@ -1121,7 +1121,7 @@ export class ChartsCallsService {
       case D_TYPE.YT:
         break;
       case D_TYPE.CUSTOM:
-        observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers(intervalDate) : of({}));
+        observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
         break;
