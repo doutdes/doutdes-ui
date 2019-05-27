@@ -52,8 +52,32 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       company_name: [],
       vat_number: []
     }, {
-      validator: Validators.compose([PasswordValidation.MatchPassword, FiscalCodeValidation.CheckFiscalCode])
+      validator: Validators.compose([PasswordValidation.MatchPassword]) // FiscalCodeValidation.CheckFiscalCode]) TODO: fix fiscal code check
     });
+
+    if (this.selectedUser === 'company') {
+      this.registrationForm.controls['company_name'].setValidators(Validators.required);
+      this.registrationForm.controls['company_name'].updateValueAndValidity();
+
+      this.registrationForm.controls['vat_number'].setValidators(Validators.required);
+      this.registrationForm.controls['vat_number'].updateValueAndValidity();
+
+      this.registrationForm.controls['birth_place'].setValidators(null);
+      this.registrationForm.controls['birth_place'].updateValueAndValidity();
+
+      this.registrationForm.controls['birth_date'].setValidators(null);
+      this.registrationForm.controls['birth_date'].updateValueAndValidity();
+
+      this.registrationForm.controls['fiscal_code'].setValidators(null);
+      this.registrationForm.controls['fiscal_code'].updateValueAndValidity();
+
+    } else {
+      this.registrationForm.controls['company_name'].setValidators(null);
+      this.registrationForm.controls['company_name'].updateValueAndValidity();
+
+      this.registrationForm.controls['vat_number'].setValidators(null);
+      this.registrationForm.controls['vat_number'].updateValueAndValidity();
+    }
   }
 
   get f() { return this.registrationForm.controls; }
@@ -67,6 +91,15 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
 
       this.registrationForm.controls['vat_number'].setValidators(Validators.required);
       this.registrationForm.controls['vat_number'].updateValueAndValidity();
+
+      this.registrationForm.controls['birth_place'].setValidators(null);
+      this.registrationForm.controls['birth_place'].updateValueAndValidity();
+
+      this.registrationForm.controls['birth_date'].setValidators(null);
+      this.registrationForm.controls['birth_date'].updateValueAndValidity();
+
+      this.registrationForm.controls['fiscal_code'].setValidators(null);
+      this.registrationForm.controls['fiscal_code'].updateValueAndValidity();
     } else {
       this.registrationForm.controls['company_name'].setValidators(null);
       this.registrationForm.controls['company_name'].updateValueAndValidity();
@@ -77,10 +110,13 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
   }
 
   onSubmit() {
+
     this.submitted = true;
 
     // If the registration form is invalid, return
     if (this.registrationForm.invalid) {
+
+      console.log('Some fields are invalid!');
       this.loading = false;
       return;
     }
@@ -107,16 +143,21 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
           // this.setSignedUp(this.registrationForm.value.username);
           //
           if (parseInt(this.storeService.getType()) === 0){
-            this.toastr.success('Hai creato ' + this.registrationForm.value.username, 'Account creato!');
+            this.toastr.success('L\'account \'' + this.registrationForm.value.username + '\' è stato creato con successo.', 'Account creato!');
           }
           else {
             this.toastr.success('Complimenti, hai creato l\'account ' + this.registrationForm.value.username, 'Account creato!');
             this.router.navigate(['authentication/login']);
           }
 
+          // TODO: fix field clearing
+
           this.loading = false;
         }, error => {
           this.loading = false;
+
+          this.toastr.error('L\'email o l\'username di \'' + this.registrationForm.value.username + '\' esistono già.', 'Creazione fallita!');
+
           console.log(error);
           console.log('User or email already exists');
         }

@@ -7,29 +7,29 @@
   </select>
 </div>
 
-<form [formGroup]="registrationForm" class="massiform" (ngSubmit)="onSubmit()">
+<form [formGroup]="registrationForm" class="" (ngSubmit)="onSubmit()">
 
   <div *ngIf="this.selectedUser === 'company'">
 
     <h5 class="py-3">Dati impresa:</h5>
     <div class="form-row">
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="icon-briefcase"></i></span>
+          <span class="input-group-text"><i class="mx-auto mx-auto icon-briefcase"></i></span>
         </div>
         <input type="text" formControlName="company_name" class="form-control" placeholder="Ragione sociale"
-               [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
+               [ngClass]="{ 'is-invalid': submitted && f.company_name.errors }"/>
 
         <div *ngIf="this.submitted && f.company_name.errors" class="invalid-feedback">
           <div *ngIf="f.company_name.errors.required">Ragione sociale obbligatoria</div>
         </div>
       </div>
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="icon-chart"></i></span>
+          <span class="input-group-text"><i class="mx-auto icon-chart"></i></span>
         </div>
         <input type="text" formControlName="vat_number" class="form-control" placeholder="Partita IVA" required
-               [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
+               [ngClass]="{ 'is-invalid': submitted && f.vat_number.errors }"/>
 
         <div *ngIf="this.submitted && f.vat_number.errors" class="invalid-feedback">
           <div *ngIf="f.vat_number.errors.required">Partita IVA obbligatoria</div>
@@ -38,16 +38,22 @@
     </div>
 
     <div class="form-row">
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
+          <span class="input-group-text"><i class="mx-auto fas fa-map-marker"></i></span>
         </div>
         <input type="text" formControlName="address" class="form-control" placeholder="Indirizzo della sede"
                [ngClass]="{ 'is-invalid': submitted && f.address.errors }"/>
+
+        <div *ngIf="this.submitted && f.address.errors" class="invalid-feedback">
+          <div *ngIf="f.address.errors.required">Indirizzo sociale obbligatorio</div>
+        </div>
       </div>
-      <div class="input-group mb-3 col-md-6">
+
+
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="fas fa-globe"></i></span>
+          <span class="input-group-text"><i class="mx-auto fas fa-globe"></i></span>
         </div>
         <input type="text" formControlName="city" class="form-control" placeholder="Città"
                [ngClass]="{ 'is-invalid': submitted && f.city.errors }"/>
@@ -59,9 +65,9 @@
       </div>
     </div> <!-- Address and Residence City -->
     <div class="form-row mb-4">
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="fas fa-map"></i></span>
+          <span class="input-group-text"><i class="mx-auto fas fa-map"></i></span>
         </div>
         <input type="text" formControlName="province" class="form-control" placeholder="Provincia"
                [ngClass]="{ 'is-invalid': submitted && f.province.errors }" maxlength="2"/>
@@ -71,9 +77,9 @@
           <div *ngIf="f.province.errors.maxlength">La sigla della provincia deve essere di massimo 2 caratteri</div>
         </div>
       </div>
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="fas fa-code"></i></span>
+          <span class="input-group-text"><i class="mx-auto fas fa-code"></i></span>
         </div>
         <input type="text" formControlName="zip" class="form-control" placeholder="CAP"
                [ngClass]="{ 'is-invalid': submitted && f.zip.errors }" maxlength="5"/>
@@ -87,10 +93,10 @@
 
     <h5 class="pb-3">Dati account:</h5>
 
-    <div class="form-row">
+    <div class="form-row mb-3">
       <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="icon-user"></i></span>
+          <span class="input-group-text"><i class="mx-auto icon-user"></i></span>
         </div>
         <input type="text" formControlName="first_name" class="form-control" placeholder="Nome del titolare"
                [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
@@ -102,7 +108,7 @@
       </div>
       <div class="input-group mb-4 ml-auto col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="icon-user"></i></span>
+          <span class="input-group-text"><i class="mx-auto icon-user"></i></span>
         </div>
         <input type="text" formControlName="last_name" class="form-control" placeholder="Cognome del titolare"
                [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
@@ -115,9 +121,9 @@
 
     </div> <!-- First and last name
     <div class="form-row">
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="icon-location-pin"></i></span>
+          <span class="input-group-text"><i class="mx-auto icon-location-pin"></i></span>
         </div>
         <input type="text" formControlName="birth_place" class="form-control" placeholder="Luogo di Nascita"
                [ngClass]="{ 'is-invalid': submitted && f.birth_place.errors }"/>
@@ -127,9 +133,9 @@
           <div *ngIf="f.birth_place.errors.maxlength">Il luogo di nascita deve essere di massimo 50 caratteri</div>
         </div>
       </div>
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="icon-calendar"></i></span>
+          <span class="input-group-text"><i class="mx-auto icon-calendar"></i></span>
         </div>
         <input type="date" formControlName="birth_date" class="form-control" placeholder="Data di nascita"
                [ngClass]="{ 'is-invalid': submitted && f.birth_date.errors }"/>
@@ -140,9 +146,9 @@
       </div>
     </div> <!-- Birth place and birth date --
     <div class="form-row">
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+          <span class="input-group-text"><i class="mx-auto fas fa-barcode"></i></span>
         </div>
         <input type="text" formControlName="fiscal_code" class="form-control" placeholder="Codice Fiscale"
                [ngClass]="{ 'is-invalid': submitted && f.fiscal_code.errors }"/>
@@ -157,9 +163,9 @@
     </div> <!-- Fiscal Code -->
 
     <div class="form-row">
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+          <span class="input-group-text"><i class="mx-auto fas fa-user-tie"></i></span>
         </div>
         <input type="text" formControlName="username" class="form-control" placeholder="Username"
                [ngClass]="{ 'is-invalid': submitted && f.username.errors }"/>
@@ -169,9 +175,9 @@
           <div *ngIf="f.username.errors.maxlength">L'username deve essere di massimo 40 caratteri</div>
         </div>
       </div>
-      <div class="input-group mb-3 col-md-6">
+      <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text">@</span>
+          <span class="input-group-text"><i class="mx-auto fas fa-at"></i></span>
         </div>
         <input type="email" formControlName="email" class="form-control" placeholder="Email" [email]="true"
                [ngClass]="{ 'is-invalid': submitted && f.email.errors }"/>
@@ -186,7 +192,7 @@
     <div class="form-row">
       <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="icon-lock"></i></span>
+          <span class="input-group-text"><i class="mx-auto icon-lock"></i></span>
         </div>
         <input type="password" formControlName="password" class="form-control" placeholder="Password" minlength="10"
                [ngClass]="{ 'is-invalid': submitted && f.password.errors }"/>
@@ -198,7 +204,7 @@
       </div>
       <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="icon-lock"></i></span>
+          <span class="input-group-text"><i class="mx-auto icon-lock"></i></span>
         </div>
         <input type="password" formControlName="r_password" class="form-control" placeholder="Ripeti password"
                minlength="10">
@@ -211,6 +217,6 @@
 
 
 
-    <button [disabled]="loading" type="submit" class="btn btn-block btn-success mx-auto" style="width:40%">Crea account</button>
+    <button [disabled]="loading" class="btn btn-block btn-success mx-auto" style="width:40%">Crea account</button>
   </div> <!-- Password and repeated password -->
 </form>
