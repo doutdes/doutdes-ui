@@ -8,7 +8,7 @@ import {IAppState} from '../store/model';
 
 @Injectable()
 
-export class IsAuthenticatedGuard implements CanActivate {
+export class IsNotAuthenticatedGuard implements CanActivate {
   @select('login') loginState;
 
   constructor(private router: Router, private authService: AuthenticationService, private store: NgRedux<IAppState>) {

@@ -33,4 +33,5 @@ export class GlobalEventsManagerService {
   public showChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);
   public updateChartList: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public loadingScreen: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
 }
