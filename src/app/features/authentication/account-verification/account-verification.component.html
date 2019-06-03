@@ -1,1 +1,50 @@
-<h1>Hello verification</h1>
+<div class="container h-100">
+  <div class="row h-100 align-items-center">
+    <div class="col-lg-10 col-md-8 mx-auto">
+      <div class="card-group">
+        <div class="card p-4">
+          <div class="card-body p-0">
+             <h1>Verifica registrazione manuale</h1>
+
+              <form [formGroup]="verificationForm" (ngSubmit)="onSubmit()">
+                <p class="text-muted">Verifica il tuo Account</p>
+
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="icon-user"></i></span>
+                  </div>
+                  <input type="email" class="form-control" placeholder="Email" formControlName="email"
+                         [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+
+                  <div *ngIf="f.email.errors" class="invalid-feedback" >
+                    <div *ngIf="f.email.errors.required">L'email è obbligatoria</div>
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="icon-lock"></i></span>
+                  </div>
+                  <input type="text" class="form-control" placeholder="Token" formControlName="token"
+                         [ngClass]="{ 'is-invalid': submitted && f.token.errors}"/>
+
+                  <div *ngIf="f.token.errors" class="invalid-feedback" >
+                    <div *ngIf="f.token.errors.required">Il token è obbligatorio</div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="mx-auto mt-3">
+                    <button [disabled]="loading" class="btn btn-primary px-4">Verifica</button>
+                  </div>
+                </div>
+
+
+              </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -8,6 +8,7 @@ import {FeatureAuthenticationComponent} from './authentication.component';
 import {SharedModule} from '../../shared/shared.module';
 import {FeatureAuthenticationAccountVerificationComponent} from './account-verification/account-verification.component';
 import {IsNotAuthenticatedGuard} from '../../shared/_guards/is-not-authenticated.guard';
+import {BsDropdownModule} from 'ngx-bootstrap';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {IsNotAuthenticatedGuard} from '../../shared/_guards/is-not-authenticated
     FeatureAuthenticationRoutingModule,
     LoginModule,
     RegisterModule,
-    SharedModule
+    SharedModule,
+    BsDropdownModule
   ],
   providers: [
     AuthenticationService,
