@@ -1,6 +1,6 @@
 <div class="container h-100">
   <div class="row h-100 align-items-center">
-    <div class="col-lg-10 col-md-8 mx-auto">
+    <div class="col-lg-8 col-md-8 mx-auto">
       <div class="card-group">
         <div class="card p-4">
           <div class="card-body p-0">
@@ -9,19 +9,20 @@
               <form [formGroup]="verificationForm" (ngSubmit)="onSubmit()">
                 <p class="text-muted">Verifica il tuo Account</p>
 
-                <div class="input-group mb-3">
+                <div class="input-group mb-4">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="icon-user"></i></span>
                   </div>
-                  <input type="email" class="form-control" placeholder="Email" formControlName="email"
+                  <input type="email" class="form-control" placeholder="Email" formControlName="email" [email]="true"
                          [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
 
                   <div *ngIf="f.email.errors" class="invalid-feedback" >
                     <div *ngIf="f.email.errors.required">L'email è obbligatoria</div>
+                    <div *ngIf="f.email.errors.email">Inserisci una email valida</div>
                   </div>
                 </div>
 
-                <div class="input-group">
+                <div class="input-group mb-4">
                   <div class="input-group-prepend">
                     <span class="input-group-text"><i class="icon-lock"></i></span>
                   </div>

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Credentials} from './login/login.model';
-import {CredentialsVerification} from './account-verification/account-verification.model';
 import {NgRedux} from '@angular-redux/store';
 import {IAppState} from '../../shared/store/model';
 import {LoginActions} from './login/login.actions';
