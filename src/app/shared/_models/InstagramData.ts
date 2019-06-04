@@ -1,4 +1,4 @@
-export const IG_CHART = {
+export const IG_CHART = { // ID charts in the database
   IMPRESSIONS: 15,
   AUD_GENDER_AGE: 16,
   AUD_LOCALE: 17,
