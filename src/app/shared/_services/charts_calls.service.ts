@@ -457,7 +457,13 @@ export class ChartsCallsService {
           chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
         });
         break;// IG composed clicks
+      case IG_CHART.FOLLOWER_COUNT:
+        header = [['Data','Utenti raggiunti']];
 
+        for (let i = 0; i< data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // IG FollowerCount
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -1069,6 +1075,31 @@ export class ChartsCallsService {
           formattedData.dataTable = data.slice(0, 2);
         }
         break; // IG clicks pie
+      case IG_CHART.FOLLOWER_COUNT:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: { gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ff96bd'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // IG Follower count
     }
 
     return formattedData;

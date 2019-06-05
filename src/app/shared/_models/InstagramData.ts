@@ -8,6 +8,7 @@ export const IG_CHART = { // ID charts in the database
   ACTION_PERFORMED: 21,
   ONLINE_FOLLOWERS: 22,
   PROFILE_VIEWS: 23,
+  FOLLOWER_COUNT: 28,
 };
 
 export interface IgPage {
