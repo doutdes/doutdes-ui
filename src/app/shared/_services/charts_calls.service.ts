@@ -376,7 +376,6 @@ export class ChartsCallsService {
         interval = 3; // Interval of hours to show
         header = [['Follower online', 'Min', 'Media', 'Max']];
 
-        console.log(data);
 
         for (let i = 0; i < data.length; i++)
           keys.push(data[i]['value']);
@@ -458,7 +457,7 @@ export class ChartsCallsService {
         });
         break;// IG composed clicks
       case IG_CHART.FOLLOWER_COUNT:
-        header = [['Data','Utenti raggiunti']];
+        header = [['Data','Nuovi utenti']];
 
         for (let i = 0; i< data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
