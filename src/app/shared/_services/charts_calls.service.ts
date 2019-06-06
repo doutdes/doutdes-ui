@@ -121,6 +121,13 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // Facebook Click sui contenuti
+      case FB_CHART.PAGE_PLACES_CHECKIN:
+        header = [['Data', 'Condivisioni']];
+
+        for(let i=0; i< data.length; i++){
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // Facebook Condivisione del luogo
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -658,7 +665,6 @@ export class ChartsCallsService {
 
         break;  // Fb Interazioni Totali
       case FB_CHART.PAGE_CONSUMPTION:
-        console.log(data);
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -683,6 +689,31 @@ export class ChartsCallsService {
           }
         };
         break; // Fb Click sui contenuti
+      case FB_CHART.PAGE_PLACES_CHECKIN:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['f26767'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Condivisione del luogo
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {

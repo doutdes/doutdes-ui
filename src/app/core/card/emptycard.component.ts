@@ -264,6 +264,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Click sui contenuti':
         this.description = 'Mostra il numero totale di click degli utenti sui contenuti della pagina';
         break;
+      case 'Condivisione del luogo':
+        this.description = 'Mostra il numero totale di condivisioni del luogo da parte degli utenti della pagina';
+        break;
       default:
         this.description = null;
     }
