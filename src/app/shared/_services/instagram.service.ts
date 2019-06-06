@@ -58,6 +58,10 @@ export class InstagramService {
         call = 'actionsperformed';
         anyType = false;
         break;
+      case IG_CHART.FOLLOWER_COUNT:
+        call = 'followercount';
+        anyType = false;
+        break;
     }
 
     return anyType

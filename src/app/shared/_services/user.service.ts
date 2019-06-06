@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 
-import { User } from '../_models/User';
+import {User, VerifyResponse} from '../_models/User';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
 
@@ -10,7 +10,7 @@ export class UserService {
   constructor(private http: HttpClient, private storeService: StoreService) { }
 
   register(user: User) {
-    return this.http.post(this.formatUrl('create'), user)
+    return this.http.post(this.formatUrl('create'), user);
   }
 
   get() {
@@ -25,6 +25,10 @@ export class UserService {
 
   private formatUrl(methodName) {
     return environment.protocol + environment.host + ':' + environment.port + '/users/' + methodName;
+  }
+
+  verifyEmail(token, email) {
+    return this.http.get<VerifyResponse>(this.formatUrl('verifyEmail') + '?email=' + email + '&token=' + token);
   }
 
 

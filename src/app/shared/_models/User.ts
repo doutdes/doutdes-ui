@@ -16,4 +16,10 @@ export interface User {
   password?: string;
   user_type?: string;
   checksum?: string;
+  token?: string;
 }
+export interface VerifyResponse {
+  verified: boolean;
+  message: string;
+}
+
