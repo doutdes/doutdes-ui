@@ -385,10 +385,12 @@ export class ChartsCallsService {
           // MIN | AVG | MAX
           chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, 0]);
         }
+
         // putting a unique entry in chartData for every existent age range
         for (let day = 0; day < keys.length; day++) {
 
           let limit = keys[day] ? Object.keys(keys[day]).length : 0;
+
           for (let h_interval = 0; h_interval < limit; h_interval += interval) {
             temp = 0;
             index = 0;
