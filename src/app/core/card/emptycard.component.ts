@@ -270,6 +270,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Feedback negativi':
         this.description = 'Mostra il numero totale dei feedback negativi degli utenti della pagina';
         break;
+      case 'Fan Online giornalieri':
+        this.description = 'Mostra il numero dei fan online giornalieri che sono utenti della pagina';
+         break;
       default:
         this.description = null;
     }
