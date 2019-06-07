@@ -267,6 +267,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Condivisione del luogo':
         this.description = 'Mostra il numero totale di condivisioni del luogo da parte degli utenti della pagina';
         break;
+      case 'Feedback negativi':
+        this.description = 'Mostra il numero totale dei feedback negativi degli utenti della pagina';
+        break;
       default:
         this.description = null;
     }
