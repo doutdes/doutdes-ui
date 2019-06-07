@@ -261,6 +261,15 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Visualizzazioni post':
         this.description = 'Numero di visualizzazioni giornaliere totali dei post da parte degli utenti';
         break;
+      case 'Click sui contenuti':
+        this.description = 'Mostra il numero totale di click degli utenti sui contenuti della pagina';
+        break;
+      case 'Condivisione del luogo':
+        this.description = 'Mostra il numero totale di condivisioni del luogo da parte degli utenti della pagina';
+        break;
+      case 'Feedback negativi':
+        this.description = 'Mostra il numero totale dei feedback negativi degli utenti della pagina';
+        break;
       default:
         this.description = null;
     }
