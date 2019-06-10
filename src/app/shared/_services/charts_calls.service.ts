@@ -119,73 +119,73 @@ export class ChartsCallsService {
       case FB_CHART.PAGE_CONSUMPTION:
         header = [['Data', 'Click']];
 
-        for (let i = 0; i< data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // Facebook Click sui contenuti
       case FB_CHART.PAGE_PLACES_CHECKIN:
         header = [['Data', 'Condivisioni']];
 
-        for(let i=0; i< data.length; i++){
+        for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // Facebook Condivisione del luogo
       case FB_CHART.NEGATIVE_FEEDBACK:
         header = [['Data', 'Feedback negativi']];
 
-        for(let i=0; i< data.length; i++){
+        for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // Facebook Feedback negativi
       case FB_CHART.ONLINE_FANS:
         header = [['Data', 'Fans online']];
 
-        for (let i=0; i<data.length; i++){
+        for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
 
         break; // Facebook Fan online giornalieri
       case FB_CHART.FANS_ADD:
-        header = [['Data','Nuovi fan']];
+        header = [['Data', 'Nuovi fan']];
 
-        for(let i=0; i < data.length; i++){
-          chartData.push([new Date (data[i].end_time), data[i].value]);
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
         }
 
         break; // Facebook Nuovi fan
       case FB_CHART.FANS_REMOVES:
-        header = [['Data','Fans persi']];
+        header = [['Data', 'Fans persi']];
 
-        for(let i=0; i<data.length; i++) {
-          chartData.push([new Date (data[i].end_time), data[i].value]);
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // Facebook Fans cancellati
       case FB_CHART.IMPRESSIONS_PAID:
-        header = [['Data','Visualizzazioni di inserzioni']];
+        header = [['Data', 'Visualizzazioni di inserzioni']];
 
-        for(let i=0; i<data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
 
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // Facebbok Visualizzazioni di inserzioni
       case FB_CHART.VIDEO_VIEWS:
-          header = [['Data','Riproduzioni di video']];
+        header = [['Data', 'Riproduzioni di video']];
 
-          for(let i=0; i<data.length; i++) {
-            chartData.push([new Date(data[i].end_time), data[i].value]);
-          }
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
         break; // Facebook Riproduzioni di video
       case FB_CHART.POST_IMPRESSIONS:
-        header = [['Data','Post visualizzati']];
+        header = [['Data', 'Post visualizzati']];
 
-        for (let i=0; i<data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // Facebook Post visualizzati
       case FB_CHART.VIDEO_ADS:
-        header = [['Data','Annunci pub. visti']];
+        header = [['Data', 'Annunci pub. visti']];
 
-        for(let i=0; i<data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
 
@@ -541,9 +541,9 @@ export class ChartsCallsService {
         });
         break;// IG composed clicks
       case IG_CHART.FOLLOWER_COUNT:
-        header = [['Data','Nuovi utenti']];
+        header = [['Data', 'Nuovi utenti']];
 
-        for (let i = 0; i< data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG FollowerCount
@@ -1449,7 +1449,7 @@ export class ChartsCallsService {
             height: 210,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
-            hAxis: { gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
@@ -1475,7 +1475,10 @@ export class ChartsCallsService {
     switch (type) {
       case D_TYPE.FB:
       case D_TYPE.IG:
-        min = (data.reduce((p, c) => (p[1] < c[1] ? p[1] : c[1]))) * perc;
+        if (data.length > 0) {
+          min = (data.reduce((p, c) => (p[1] < c[1] ? p[1] : c[1]))) * perc;
+          break;
+        }
         break;
       case D_TYPE.GA:
       case D_TYPE.YT:
