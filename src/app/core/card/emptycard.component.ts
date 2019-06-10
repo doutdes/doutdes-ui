@@ -261,6 +261,37 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Visualizzazioni post':
         this.description = 'Numero di visualizzazioni giornaliere totali dei post da parte degli utenti';
         break;
+      case 'Click sui contenuti':
+        this.description = 'Mostra il numero totale di click degli utenti sui contenuti della pagina';
+        break;
+      case 'Condivisione del luogo':
+        this.description = 'Mostra il numero totale di condivisioni del luogo da parte degli utenti della pagina';
+        break;
+      case 'Feedback negativi':
+        this.description = 'Mostra il numero totale dei feedback negativi degli utenti della pagina';
+        break;
+      case 'Fan Online giornalieri':
+        this.description = 'Mostra il numero dei fan online giornalieri che sono utenti della pagina';
+         break;
+      case 'Nuovi fan':
+        this.description = 'Mostra il numero dei nuovi fan che si uniti alla pagina';
+        break;
+      case 'Fan cancellati':
+        this.description = 'Mostra il numero dei fan che si sono cancellati dalla pagina';
+        break;
+      case 'Visualizzazioni di inserzioni':
+        this.description = 'Mostra il numero di visualizzazioni alle inserzioni della pagina';
+        break;
+      case 'Riproduzioni di video':
+        this.description = 'Mostra il numero di riproduzioni dei video presenti nella pagina';
+        break;
+      case 'Post visualizzati':
+        this.description = "Mostra il nuemro di post della pagina visualizzati dagli utenti della pagina";
+        break;
+      case 'Annunci pub. visualizzati':
+        this.description = "Mostra il numero di annunci pubblicitari visualizzati dagli utenti della pagina";
+        break;
+
       default:
         this.description = null;
     }

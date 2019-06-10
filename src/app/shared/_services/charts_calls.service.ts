@@ -9,6 +9,8 @@ import {D_TYPE} from '../_models/Dashboard';
 import {GA_CHART} from '../_models/GoogleData';
 import {FB_CHART} from '../_models/FacebookData';
 import {IG_CHART} from '../_models/InstagramData';
+import * as moment from 'moment';
+import _date = moment.unitOfTime._date;
 
 @Injectable()
 export class ChartsCallsService {
@@ -108,11 +110,87 @@ export class ChartsCallsService {
         });
         paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
         break; // Facebook Fan City
-      case FB_CHART.ENGAGED_USERS: header = [['Data', 'Interazioni']];
+      case FB_CHART.ENGAGED_USERS:
+        header = [['Data', 'Interazioni']];
         for (let i = 0; i < data.length; i++) {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // Facebook Interazioni Totali
+      case FB_CHART.PAGE_CONSUMPTION:
+        header = [['Data', 'Click']];
+
+        for (let i = 0; i< data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // Facebook Click sui contenuti
+      case FB_CHART.PAGE_PLACES_CHECKIN:
+        header = [['Data', 'Condivisioni']];
+
+        for(let i=0; i< data.length; i++){
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // Facebook Condivisione del luogo
+      case FB_CHART.NEGATIVE_FEEDBACK:
+        header = [['Data', 'Feedback negativi']];
+
+        for(let i=0; i< data.length; i++){
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // Facebook Feedback negativi
+      case FB_CHART.ONLINE_FANS:
+        header = [['Data', 'Fans online']];
+
+        for (let i=0; i<data.length; i++){
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+
+        break; // Facebook Fan online giornalieri
+      case FB_CHART.FANS_ADD:
+        header = [['Data','Nuovi fan']];
+
+        for(let i=0; i < data.length; i++){
+          chartData.push([new Date (data[i].end_time), data[i].value]);
+        }
+
+        break; // Facebook Nuovi fan
+      case FB_CHART.FANS_REMOVES:
+        header = [['Data','Fans persi']];
+
+        for(let i=0; i<data.length; i++) {
+          chartData.push([new Date (data[i].end_time), data[i].value]);
+        }
+        break; // Facebook Fans cancellati
+      case FB_CHART.IMPRESSIONS_PAID:
+        header = [['Data','Visualizzazioni di inserzioni']];
+
+        for(let i=0; i<data.length; i++) {
+
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // Facebbok Visualizzazioni di inserzioni
+      case FB_CHART.VIDEO_VIEWS:
+          header = [['Data','Riproduzioni di video']];
+
+          for(let i=0; i<data.length; i++) {
+            chartData.push([new Date(data[i].end_time), data[i].value]);
+          }
+        break; // Facebook Riproduzioni di video
+      case FB_CHART.POST_IMPRESSIONS:
+        header = [['Data','Post visualizzati']];
+
+        for (let i=0; i<data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // Facebook Post visualizzati
+      case FB_CHART.VIDEO_ADS:
+        header = [['Data','Annunci pub. visti']];
+
+        for(let i=0; i<data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+
+        break; // Facebook Annunci pub. visualizzati
+
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
 
@@ -126,7 +204,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
-        break;  // Google Sessions
+        break;  // Google Sessionsd
       case GA_CHART.SOURCES_PIE:
         /** Data array is constructed as follows:
          * 0 - date
@@ -380,7 +458,6 @@ export class ChartsCallsService {
         interval = 3; // Interval of hours to show
         header = [['Follower online', 'Min', 'Media', 'Max']];
 
-        console.log(data);
 
         for (let i = 0; i < data.length; i++)
           keys.push(data[i]['value']);
@@ -389,10 +466,12 @@ export class ChartsCallsService {
           // MIN | AVG | MAX
           chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, 0]);
         }
+
         // putting a unique entry in chartData for every existent age range
         for (let day = 0; day < keys.length; day++) {
 
           let limit = keys[day] ? Object.keys(keys[day]).length : 0;
+
           for (let h_interval = 0; h_interval < limit; h_interval += interval) {
             temp = 0;
             index = 0;
@@ -461,7 +540,13 @@ export class ChartsCallsService {
           chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
         });
         break;// IG composed clicks
+      case IG_CHART.FOLLOWER_COUNT:
+        header = [['Data','Nuovi utenti']];
 
+        for (let i = 0; i< data.length; i++) {
+          chartData.push([new Date(data[i].end_time), data[i].value]);
+        }
+        break; // IG FollowerCount
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -640,6 +725,259 @@ export class ChartsCallsService {
         };
 
         break;  // Fb Interazioni Totali
+      case FB_CHART.PAGE_CONSUMPTION:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#8a74e1'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Click sui contenuti
+      case FB_CHART.PAGE_PLACES_CHECKIN:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['f26767'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Condivisione del luogo
+      case FB_CHART.NEGATIVE_FEEDBACK:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#f998e3'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Feedback negativi
+      case FB_CHART.ONLINE_FANS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#259526'],
+            areaOpacity: 0.1
+          }
+        };
+
+        break; // Fb Fan online giornalieri
+      case FB_CHART.FANS_ADD:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#5befeb'],
+            areaOpacity: 0.1
+          }
+        };
+
+        break; // Fb Nuovi fan
+      case FB_CHART.FANS_REMOVES:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#443fe9'],
+            areaOpacity: 0.1
+          }
+        };
+
+        break; //Fb Fan cancellati
+      case FB_CHART.IMPRESSIONS_PAID:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#1ee503'],
+            areaOpacity: 0.1
+          }
+        };
+        break;  // Fb Visualizzazioni di inserzioni
+      case FB_CHART.VIDEO_VIEWS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#f36424'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Riproduzioni di video
+      case FB_CHART.POST_IMPRESSIONS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#075eee'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Post visualizzati
+      case FB_CHART.VIDEO_ADS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#027500'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Annunci pub. visualizzati
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
@@ -1099,6 +1437,31 @@ export class ChartsCallsService {
           formattedData.dataTable = data.slice(0, 2);
         }
         break; // IG clicks pie
+      case IG_CHART.FOLLOWER_COUNT:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: { gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ff96bd'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // IG Follower count
     }
 
     return formattedData;

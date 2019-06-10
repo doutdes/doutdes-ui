@@ -41,6 +41,32 @@ export class AuthenticationService {
         }
       }));
   }
+/*
+  verification(credentialsVerification: CredentialsVerification) {
+
+    let headers = new HttpHeaders();
+    headers = headers.set('Authorization', 'Basic' + btoa(credentialsVerification.email + ':' + credentialsVerification.token));
+
+    const httpOptions = {
+      headers: headers
+    };
+
+    console.warn( environment.protocol + environment.host + ':' + environment.port + '/account-verification');
+
+    return this.http.post<any>(environment.protocol + environment.host + ':' + environment.port + '/account-verification', {}, httpOptions)
+      .pipe(map(response => {
+
+        if (response['User'] && response['token']) {
+
+          // this.
+
+          return response;
+        } else {
+          // this.
+        }
+      }));
+
+  }*/
 
   logout() {
   }

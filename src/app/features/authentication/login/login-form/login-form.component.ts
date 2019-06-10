@@ -4,6 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from '../../authentication.service';
 import {Credentials} from '../login.model';
 import {first} from 'rxjs/internal/operators';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-feature-authentication-login-form',
@@ -23,7 +24,9 @@ export class FeatureAuthenticationLoginFormComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authenticationService: AuthenticationService,
-  ) { }
+    private toastr: ToastrService
+  ) {
+  }
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
@@ -34,9 +37,11 @@ export class FeatureAuthenticationLoginFormComponent implements OnInit {
     this.returnUrl = '';
   }
 
-  get f() { return this.loginForm.controls; }
+  get f() {
+    return this.loginForm.controls;
+  }
 
-  onSubmit () {
+  onSubmit() {
 
     // If submitted, the validators start
     this.submitted = true;
@@ -63,8 +68,17 @@ export class FeatureAuthenticationLoginFormComponent implements OnInit {
           },
           500);
       }, error => {
+        if (error.status === 403) {
+          // tslint:disable-next-line:max-line-length
+          this.toastr.error('Il tuo account non è stato ancora autenticato. Provedi a verificarlo prima del login.', 'Account non verificato');
+          this.router.navigate([], {replaceUrl: true});
+        }
+
+        if (error.status === 401) {
+          this.failed = true;
+        }
+
         this.loading = false;
-        this.failed = true;
       });
 
   }
