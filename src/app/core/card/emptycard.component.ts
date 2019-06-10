@@ -285,6 +285,12 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Riproduzioni di video':
         this.description = 'Mostra il numero di riproduzioni dei video presenti nella pagina';
         break;
+      case 'Post visualizzati':
+        this.description = "Mostra il nuemro di post della pagina visualizzati dagli utenti della pagina";
+        break;
+      case 'Annunci pub. visualizzati':
+        this.description = "Mostra il numero di annunci pubblicitari visualizzati dagli utenti della pagina";
+        break;
 
       default:
         this.description = null;
