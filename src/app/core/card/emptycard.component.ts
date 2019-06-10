@@ -279,6 +279,10 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Fan cancellati':
         this.description = 'Mostra il numero dei fan che si sono cancellati dalla pagina';
         break;
+      case 'Visualizzazioni di inserzioni':
+        this.description = 'Mostra il numero di visualizzazioni alle inserzioni della pagina';
+        break;
+
 
       default:
         this.description = null;
