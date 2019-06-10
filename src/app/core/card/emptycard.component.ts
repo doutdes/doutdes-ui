@@ -273,6 +273,10 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Fan Online giornalieri':
         this.description = 'Mostra il numero dei fan online giornalieri che sono utenti della pagina';
          break;
+      case 'Nuovi fan':
+        this.description = 'Mostra il numero dei nuovi fan che si uniti alla pagina';
+        break;
+
       default:
         this.description = null;
     }
