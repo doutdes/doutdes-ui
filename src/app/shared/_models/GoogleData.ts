@@ -15,6 +15,6 @@ export const GA_CHART = {
 
 export interface GoogleData {
   date: string;
-  value: string,
+  value: string;
   opt_value?: number;
 }
