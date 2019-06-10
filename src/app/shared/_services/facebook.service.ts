@@ -78,6 +78,9 @@ export class FacebookService {
       case FB_CHART.VIDEO_ADS:
         call = 'videoads';
         break;
+      case FB_CHART.VIDEO_VIEWS:
+        call = 'videoviews';
+        break;
     }
 
     return anyType
