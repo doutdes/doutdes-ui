@@ -2,8 +2,8 @@
 <div class="row">
   <div class="col-12">
     <div class="card">
-      <div class="card-body p-4 b-b-1" style="background:#e0e0e0">
-        <h6 class="display-4" style="float:left; font-size:30pt;">Aggiorna le informazioni personali</h6>
+      <div class="card-body ">
+        <h1 class="text-center mb-0 mt-3">Aggiorna le informazioni personali</h1>
       </div>
       <div class="p-4" *ngIf="user !== null">
         <form [formGroup]="updateRegistration" (ngSubmit)="onSubmit()">
@@ -42,7 +42,7 @@
             </div>
           </div> <!-- Vat Number and Company Name only for companies users -->
           <div class="form-row">
-            <div class="input-group mb-4 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="first_name" class="label-tiny">Nome</label>
               </div>
@@ -58,7 +58,7 @@
                 <div *ngIf="f.first_name.errors.maxlength">Il nome deve essere lungo al massimo 40 caratteri</div>
               </div>
             </div>
-            <div class="input-group mb-4 ml-auto col-md-6">
+            <div class="input-group mb-5 ml-auto col-md-6">
               <div class="d-block w-100">
                 <label for="last_name" class="label-tiny">Cognome</label>
               </div>
@@ -77,7 +77,7 @@
 
           </div> <!-- First and last name -->
           <div class="form-row">
-            <div class="input-group mb-3 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="birth_place" class="label-tiny">Luogo di Nascita</label>
               </div>
@@ -93,7 +93,7 @@
                 <div *ngIf="f.birth_place.errors.maxlength">Il luogo di nascita non deve superare 50 caratteri</div>
               </div>
             </div>
-            <div class="input-group mb-3 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="birth_date" class="label-tiny">Data di Nascita</label>
               </div>
@@ -110,7 +110,7 @@
             </div>
           </div> <!-- Birth place and birth date -->
           <div class="form-row">
-            <div class="input-group mb-3 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="fiscal_code" class="label-tiny">Codice fiscale</label>
               </div>
@@ -130,7 +130,7 @@
             </div>
           </div> <!-- Fiscal code and Paypal mail -->
           <div class="form-row">
-            <div class="input-group mb-3 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="address" class="label-tiny">Indirizzo</label>
               </div>
@@ -145,7 +145,7 @@
                 <div *ngIf="f.address.errors.maxlength">L'indirizzo non deve superare i 50 caratteri</div>
               </div>
             </div>
-            <div class="input-group mb-3 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="city" class="label-tiny">Città</label>
               </div>
@@ -162,7 +162,7 @@
             </div>
           </div> <!-- Address and Residence City -->
           <div class="form-row">
-            <div class="input-group mb-3 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="province" class="label-tiny">Provincia</label>
               </div>
@@ -177,7 +177,7 @@
                 <div *ngIf="f.province.errors.maxlength">La provincia non deve superare i 2 caratteri</div>
               </div>
             </div>
-            <div class="input-group mb-3 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="zip_code" class="label-tiny">Cap</label>
               </div>
@@ -194,7 +194,7 @@
             </div>
           </div> <!-- Province and Zip Code-->
           <div class="form-row">
-            <div class="input-group mb-4 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="password" class="label-tiny">Password</label>
               </div>
@@ -209,7 +209,7 @@
                 <div *ngIf="f.password.errors.minlength">La password deve avere almeno 10 caratteri</div>
               </div>
             </div>
-            <div class="input-group mb-4 col-md-6">
+            <div class="input-group mb-5 col-md-6">
               <div class="d-block w-100">
                 <label for="r_password" class="label-tiny">Conferma Password</label>
               </div>
