@@ -70,10 +70,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   firstDateRange: Date;
   lastDateRange: Date;
-  maxDate: Date = subDays(new Date(),this.FILTER_DAYS.yesterday);
+  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
+
   // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
   constructor(
@@ -99,7 +100,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
       last: this.maxDate
-     };
+    };
     let pageIDs = {};
 
     pageIDs[D_TYPE.FB] = pageID;
@@ -107,7 +108,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
 
     forkJoin(observables).subscribe(miniDatas => {
-      for(const i in miniDatas) {
+      for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
@@ -159,7 +160,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       this.GEService.loadingScreen.next(false);
 
       if (this.chartArray$.length === 0) {
-        this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+        this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
       }
     } else {
       // Retrieving dashboard charts
@@ -176,14 +177,17 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   let chart: DashboardCharts = charts[i];
                   if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
-                    chart.chartData = dataArray[i];
-                    let date = new Date(chart.chartData[0]['end_time']);
-                    ;
-
-                    if(date < this.minDate)
-                      this.minDate = date;
-                    // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
-                    chart.error = false;
+                    if (dataArray[i].length === 0) { //if there is no data avaiable
+                      chart.error = true;
+                    }
+                    else {
+                      chart.chartData = dataArray[i];
+                      let date = new Date(chart.chartData[0]['end_time']);
+                      if (date < this.minDate)
+                        this.minDate = date;
+                      // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
+                      chart.error = false;
+                    }
                   } else {
                     chart.error = true;
 
@@ -210,7 +214,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
             this.filterActions.initData(currentData);
             this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
             this.GEService.loadingScreen.next(false);
-            this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+            this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
           }
         }, err => {
           console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
@@ -324,7 +328,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.lastDateRange = this.maxDate;
     this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
-    this.GEService.loadingScreen.subscribe(value => {this.loading = value});
+    this.GEService.loadingScreen.subscribe(value => {
+      this.loading = value;
+    });
 
     this.filter.subscribe(elements => {
       this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
@@ -434,7 +440,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
-    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered', ignoreBackdropClick: ignoreBackdrop, keyboard: !ignoreBackdrop});
+    this.modalRef = this.modalService.show(template, {
+      class: 'modal-md modal-dialog-centered',
+      ignoreBackdropClick: ignoreBackdrop,
+      keyboard: !ignoreBackdrop
+    });
   }
 
   closeModal() {
