@@ -4,8 +4,6 @@ import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
 import {GA_CHART, GoogleData} from '../_models/GoogleData';
 
-import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
-import * as moment from 'moment';
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 

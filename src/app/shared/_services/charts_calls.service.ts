@@ -3,14 +3,14 @@ import {FacebookService} from './facebook.service';
 import {InstagramService} from './instagram.service';
 import {Observable, of} from 'rxjs';
 import {GoogleAnalyticsService} from './googleAnalytics.service';
+import {YoutubeService} from './youtube.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {D_TYPE} from '../_models/Dashboard';
 import {GA_CHART} from '../_models/GoogleData';
 import {FB_CHART} from '../_models/FacebookData';
 import {IG_CHART} from '../_models/InstagramData';
-import * as moment from 'moment';
-import _date = moment.unitOfTime._date;
+import {YT_CHART} from '../_models/YoutubeData';
 
 @Injectable()
 export class ChartsCallsService {
@@ -18,7 +18,8 @@ export class ChartsCallsService {
   constructor(
     private facebookService: FacebookService,
     private googleAnalyticsService: GoogleAnalyticsService,
-    private instagramService: InstagramService) {
+    private instagramService: InstagramService,
+    private youtubeService: YoutubeService) {
   }
 
   public static cutString(str, maxLength) {
@@ -32,17 +33,13 @@ export class ChartsCallsService {
 
     if (Object.values(FB_CHART).includes(ID)) {
       return this.facebookService.getData(ID, pageID);
-    }
-
-    else if (Object.values(IG_CHART).includes(ID)) {
+    } else if (Object.values(IG_CHART).includes(ID)) {
       return this.instagramService.getData(ID, pageID);
-    }
-
-    else if (Object.values(GA_CHART).includes(ID)) {
+    } else if (Object.values(GA_CHART).includes(ID)) {
       return this.googleAnalyticsService.getData(ID);
-    }
-
-    else {
+    } else if (Object.values(YT_CHART).includes(ID)) {
+      return this.youtubeService.getData(ID, pageID);
+    } else {
       throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
     }
   }
@@ -547,6 +544,11 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG FollowerCount
+      case YT_CHART.LIKES:
+        header = [['Tipo', 'Numero']];
+        for(let i in data) {
+          //chartData.push(data[i].)
+        }
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -1512,6 +1514,7 @@ export class ChartsCallsService {
         observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
+        pageID = pageIDs[D_TYPE.YT];
         break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));

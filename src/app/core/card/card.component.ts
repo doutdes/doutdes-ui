@@ -88,6 +88,11 @@ export class CardComponent implements OnInit {
         this.color = '#e7008a';
         break;
       }
+      case D_TYPE.YT: {
+        this.icon = 'fa-youtube';
+        this.background = '#c44e4e';
+        this.color = '#bf0000';
+      }
       default: {
         break;
       }

@@ -6,6 +6,7 @@ import {FeatureDashboardComponent} from './dashboard.component';
 import {FeatureDashboardRoutingModule} from './dashboard.routing';
 import {FeatureDashboardFacebookModule} from './facebook/facebook.module';
 import {FeatureDashboardGoogleAnalyticsModule} from './googleAnalytics/googleAnalytics.module';
+import {FeatureDashboardYoutubeAnalyticsModule} from './youtube/youtube.module';
 import {FeatureDashboardCustomModule} from './custom/custom.module';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
 import {FeatureDashboardInstagramModule} from './instagram/instagram.module';
@@ -21,6 +22,7 @@ import {FeatureDashboardInstagramModule} from './instagram/instagram.module';
     FeatureDashboardFacebookModule,
     FeatureDashboardInstagramModule,
     FeatureDashboardGoogleAnalyticsModule,
+    FeatureDashboardYoutubeAnalyticsModule,
     FeatureDashboardCustomModule,
     FeatureDashboardRoutingModule
   ],

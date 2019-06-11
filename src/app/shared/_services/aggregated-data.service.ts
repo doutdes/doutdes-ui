@@ -2,10 +2,8 @@ import {Injectable} from '@angular/core';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {subDays} from 'date-fns';
 import {D_TYPE} from '../_models/Dashboard';
-import {GA_CHART} from '../_models/GoogleData';
 import {parseDate} from 'ngx-bootstrap';
 import {DashboardCharts} from '../_models/DashboardCharts';
-import {calculateBytes} from '@angular/cli/utilities/bundle-calculator';
 
 @Injectable()
 export class AggregatedDataService {
