@@ -11,6 +11,8 @@ import {FB_CHART} from '../_models/FacebookData';
 import {IG_CHART} from '../_models/InstagramData';
 import * as moment from 'moment';
 import _date = moment.unitOfTime._date;
+import * as _ from 'lodash';
+
 
 @Injectable()
 export class ChartsCallsService {
@@ -56,6 +58,7 @@ export class ChartsCallsService {
     let paddingRows = 0;
     let interval;
     let temp, index;
+    let myMap;
 
     // console.warn('ID: ' + ID + ' - ', data);
 
@@ -89,6 +92,9 @@ export class ChartsCallsService {
         chartData = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
+
+        //console.log(chartData);
+        //console.log(Object.keys(data[data.length - 1].value));
 
         break;  // Fan Country Pie
       case FB_CHART.PAGE_VIEWS:
@@ -190,6 +196,36 @@ export class ChartsCallsService {
         }
 
         break; // Facebook Annunci pub. visualizzati
+      case FB_CHART.REACTIONS:
+        header = [['Reazione', 'numero reaz.']];
+        myMap = new Map();
+        for (let el of data) {
+           if(el['value']) {
+               let reacts = el['value'];
+
+               for(let i in reacts) {
+                 let value = parseInt(reacts[i], 10);
+
+                 if (myMap.has(i)) {
+                   myMap.set(i, myMap.get(i) + value);
+                 } else {
+                   myMap.set(i, value);
+                 }
+               }
+           }
+        }
+
+        var key = myMap.keys();
+        var values = myMap.values();
+
+        let n = 0;
+        do {
+          chartData.push([key.next().value, values.next().value]);
+          n++;
+        } while (n<myMap.size);
+        //console.log(chartData);
+
+        break; // Facebook Reazioni
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -458,7 +494,7 @@ export class ChartsCallsService {
         interval = 3; // Interval of hours to show
         header = [['Follower online', 'Min', 'Media', 'Max']];
 
-        console.log(data);
+        //console.log(data);
 
         for (let i = 0; i < data.length; i++)
           keys.push(data[i]['value']);
@@ -979,6 +1015,26 @@ export class ChartsCallsService {
           }
         };
         break; // Fb Annunci pub. visualizzati
+      case FB_CHART.REACTIONS:
+        //console.log('ok', data);
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 8,
+          options: {
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
+            height: 310,
+
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#06f312', '#0670f3', '#f31900', '#a4958a'],
+            areaOpacity: 0.2
+          }
+        };
+        break; // Fb Reazioni
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {

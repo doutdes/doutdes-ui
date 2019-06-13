@@ -72,9 +72,6 @@ export class FacebookService {
       case FB_CHART.PAGE_VIEWS:
         call = 'videoviews';
         break;
-      case FB_CHART.POST_IMPRESSIONS:
-        call = 'postimpressionspaid';
-        break;
       case FB_CHART.VIDEO_ADS:
         call = 'videoads';
         break;
@@ -83,6 +80,9 @@ export class FacebookService {
         break;
       case FB_CHART.POST_IMPRESSIONS:
         call = 'postimpressions';
+        break;
+      case FB_CHART.REACTIONS:
+        call = 'pagereactions';
         break;
     }
 
