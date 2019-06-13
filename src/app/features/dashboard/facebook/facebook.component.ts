@@ -142,7 +142,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const dash = await this.DService.getDashboardByType(D_TYPE.FB).toPromise(); // Facebook type
 
     // Retrieving the page ID // TODO to move into onInit and its init on a dropdown
-    this.pageID = (await this.FBService.getPages().toPromise())[1].id;
+    this.pageID = (await this.FBService.getPages().toPromise())[0].id;
 
     await this.loadMiniCards(this.pageID);
 
