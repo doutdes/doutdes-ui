@@ -218,12 +218,9 @@ export class ChartsCallsService {
         var key = myMap.keys();
         var values = myMap.values();
 
-        let n = 0;
-        do {
+        for (let i = 0; i < myMap.size; i++) {
           chartData.push([key.next().value, values.next().value]);
-          n++;
-        } while (n<myMap.size);
-        //console.log(chartData);
+        }
 
         break; // Facebook Reazioni
 
