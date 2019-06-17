@@ -82,6 +82,7 @@ export class FacebookService {
         call = 'postimpressions';
         break;
       case FB_CHART.REACTIONS_LINEA:
+      case FB_CHART.REACTIONS_COLUMN_CHART:
       case FB_CHART.REACTIONS:
         call = 'pagereactions';
         break;

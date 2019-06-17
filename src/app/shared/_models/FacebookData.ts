@@ -18,6 +18,7 @@ export const FB_CHART = {
   POST_IMPRESSIONS: 39,
   VIDEO_ADS: 40,
   REACTIONS_LINEA: 41,
+  REACTIONS_COLUMN_CHART: 42
 };
 
 export interface FbPage {
