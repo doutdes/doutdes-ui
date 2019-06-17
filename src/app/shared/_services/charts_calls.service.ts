@@ -59,6 +59,9 @@ export class ChartsCallsService {
     let interval;
     let temp, index;
     let myMap;
+    let tmp = [];
+    let parsed = JSON.parse(JSON.stringify(data));
+    let FBReaction = [];
 
     // console.warn('ID: ' + ID + ' - ', data);
 
@@ -202,10 +205,10 @@ export class ChartsCallsService {
         for (let el of data) {
            if(el['value']) {
                let reacts = el['value'];
-
+                //console.log(reacts);
                for(let i in reacts) {
                  let value = parseInt(reacts[i], 10);
-
+                 //console.log(value = parseInt(reacts[i], 10));
                  if (myMap.has(i)) {
                    myMap.set(i, myMap.get(i) + value);
                  } else {
@@ -222,7 +225,50 @@ export class ChartsCallsService {
           chartData.push([key.next().value, values.next().value]);
         }
 
-        break; // Facebook Reazioni
+        break; // Facebook Reazioni torta
+      case FB_CHART.REACTIONS_LINEA:
+        header = [['Data','Reazioni']];
+
+        myMap = new Map();
+        for (let el of data) {
+          if(el['value']) {
+            let reacts = el['value'];
+            for( let i in reacts) {
+              if (myMap.has(i)) {
+                myMap.set(i, 0);
+              } else {
+                myMap.set(i, 0);
+              }
+            }
+          }
+        }
+
+        var key = myMap.keys();
+
+        for (let i = 0; i < myMap.size; i++) {
+          FBReaction.push([key.next().value]);
+        }
+
+        for (let i = 0; i < parsed.length; i++) {
+
+          if (!parsed[i].value) {
+            tmp.push([0]);
+          } else {
+            let count = 0;
+            for(let react of FBReaction) {
+              if(parsed[i].value[react]) {
+                count+=parsed[i].value[react];
+              }
+            }
+            tmp.push([count]);
+          }
+        }
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([new Date(data[i].end_time), tmp[i]]);
+        }
+
+        break; // Facebook Reazioni linea
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -1031,7 +1077,32 @@ export class ChartsCallsService {
             areaOpacity: 0.2
           }
         };
-        break; // Fb Reazioni
+        break; // Fb Reazioni torta
+      case FB_CHART.REACTIONS_LINEA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#81b9f6'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Reazioni linea
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {

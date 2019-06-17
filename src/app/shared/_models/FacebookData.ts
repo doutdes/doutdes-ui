@@ -16,7 +16,8 @@ export const FB_CHART = {
   IMPRESSIONS_PAID: 37,
   VIDEO_VIEWS: 38,
   POST_IMPRESSIONS: 39,
-  VIDEO_ADS: 40
+  VIDEO_ADS: 40,
+  REACTIONS_LINEA: 41,
 };
 
 export interface FbPage {
@@ -39,3 +40,5 @@ export interface FbNumberData {
   value: number;
   end_time: Date;
 }
+
+
