@@ -263,12 +263,9 @@ export class ChartsCallsService {
           }
         }
 
-          //console.log('ok');
         for (let i = 0; i < parsed.length; i++) {
           chartData.push([new Date(parsed[i].end_time), tmp[i]]);
         }
-
-        console.log(tmp);
 
         break; // Facebook Reazioni linea
       case FB_CHART.REACTIONS_COLUMN_CHART:
@@ -299,6 +296,79 @@ export class ChartsCallsService {
         }
 
         break; // Facebook Reazioni colonna
+      case FB_CHART.PAGE_VIEW_EXTERNALS:
+        header = [['Sito Web', 'Numero']];
+
+        myMap = new Map();
+        for (let el of data) {
+          if (el['value']) {
+            let web = el['value'];
+
+            for (let i in web) {
+              //i = this.getDomain(i);
+              let value = parseInt(web[i], 10);
+
+              i = this.getDomain(i);
+              if (myMap.has(i)) {
+                myMap.set(i, myMap.get(i) + value);
+              } else {
+                myMap.set(i, value);
+              }
+            }
+          }
+        }
+
+        var key = myMap.keys();
+        var values = myMap.values();
+
+        for (let i = 0; i < myMap.size; i++) {
+          chartData.push([key.next().value, values.next().value]);
+        }
+
+        break; // Facebook Domini dei referenti esterni (elenco)
+      case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
+        header = [['Sito Web', 'Numero']];
+
+        myMap = new Map();
+
+        for (let el of data) {
+          if(el['value']) {
+            let web = el['value'];
+            for( let i in web) {
+              if (myMap.has(i)) {
+                myMap.set(i, 0);
+              } else {
+                myMap.set(i, 0);
+              }
+            }
+          }
+        }
+
+        var key = myMap.keys();
+
+        for (let i = 0; i < myMap.size; i++) {
+         keys.push([key.next().value]);
+        }
+
+        for (let i = 0; i < parsed.length; i++) {
+          if (!parsed[i].value) {
+            tmp.push(0);
+          } else {
+            let count = 0;
+            for(let web of keys) {
+              if(parsed[i].value[web]) {
+                count+=parsed[i].value[web];
+              }
+            }
+            tmp.push(count);
+          }
+        }
+
+        for (let i = 0; i < parsed.length; i++) {
+          chartData.push([new Date(parsed[i].end_time), tmp[i]]);
+        }
+
+        break; // Facebook Domini dei referenti esterni (linea)
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -1148,6 +1218,57 @@ export class ChartsCallsService {
           }
         };
         break; // Fb Reazioni colonna
+      case FB_CHART.PAGE_VIEW_EXTERNALS:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; //Fb Domini dei referenti esterni (elenco)
+      case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#5befeb'],
+            areaOpacity: 0.1
+          }
+        };
+        break; //Fb Domini dei referenti esterni (linea)
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
@@ -1900,5 +2021,20 @@ export class ChartsCallsService {
     }
 
     return step;
+  }
+
+  private getDomain(arg: string) {
+    let domain;
+
+    if (arg.indexOf("://") > -1) {
+      domain = arg.split('/')[2];
+    } else {
+      domain = arg.split('/')[0];
+    }
+
+    //trova e rimuovi eventuale porta
+    domain = domain.split(':')[0];
+
+    return domain;
   }
 }

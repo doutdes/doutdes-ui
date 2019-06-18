@@ -294,6 +294,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Reazioni':
         this.description = "Mostra il numero totale di reazioni che la pagina ha ottenuto";
         break;
+      case 'Domini dei referenti esterni ':
+        this.description = "Mostra il numero totale delle visite dei principali domini dei referenti esterni che generano traffico sulla pagina.";
+        break;
       default:
         this.description = null;
     }

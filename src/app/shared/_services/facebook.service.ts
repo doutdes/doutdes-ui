@@ -86,6 +86,10 @@ export class FacebookService {
       case FB_CHART.REACTIONS:
         call = 'pagereactions';
         break;
+      case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
+      case FB_CHART.PAGE_VIEW_EXTERNALS:
+        call = 'pageviewsexternals';
+        break;
     }
 
     return anyType
