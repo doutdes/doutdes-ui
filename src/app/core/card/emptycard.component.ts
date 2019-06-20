@@ -297,6 +297,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Domini dei referenti esterni ':
         this.description = "Mostra il numero totale delle visite dei principali domini dei referenti esterni che generano traffico sulla pagina.";
         break;
+      case 'Visualiz. contenuti per città':
+        this.description = "Mostra il numero di persone che hanno visto qualsiasi contenuto associato alla pagina, per città.";
+        break;
       default:
         this.description = null;
     }

@@ -90,6 +90,9 @@ export class FacebookService {
       case FB_CHART.PAGE_VIEW_EXTERNALS:
         call = 'pageviewsexternals';
         break;
+      case FB_CHART.PAGE_IMPRESSIONS_CITY:
+        call = 'pageimpressionscity';
+        break;
     }
 
     return anyType

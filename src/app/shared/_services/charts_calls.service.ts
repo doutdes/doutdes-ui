@@ -161,6 +161,7 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
 
+        //console.log('FAN',chartData);
         break; // Facebook Nuovi fan
       case FB_CHART.FANS_REMOVES:
         header = [['Data', 'Fans persi']];
@@ -251,7 +252,8 @@ export class ChartsCallsService {
 
         for (let i = 0; i < parsed.length; i++) {
           if (!parsed[i].value) {
-            tmp.push(0);
+            //tmp.push(0);
+            tmp.push([new Date (parsed[i].end_time), 0]);
           } else {
             let count = 0;
             for(let react of FBReaction) {
@@ -259,13 +261,19 @@ export class ChartsCallsService {
                 count+=parsed[i].value[react];
               }
             }
-            tmp.push(count);
+            //tmp.push(count);
+            tmp.push([new Date(parsed[i].end_time), count]);
           }
         }
 
+        /*
         for (let i = 0; i < parsed.length; i++) {
           chartData.push([new Date(parsed[i].end_time), tmp[i]]);
         }
+         */
+
+        //console.log('REAC',tmp);
+        chartData = tmp;
 
         break; // Facebook Reazioni linea
       case FB_CHART.REACTIONS_COLUMN_CHART:
@@ -369,6 +377,16 @@ export class ChartsCallsService {
         }
 
         break; // Facebook Domini dei referenti esterni (linea)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY:
+        header = [['Città', 'numero views']];
+
+        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          return [k, data[data.length - 1].value[k]];
+        });
+
+        //sort ordinare
+
+        break; // Facebook Vista contenuti per città
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -1264,11 +1282,37 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#5befeb'],
+            colors: ['#2224ef'],
             areaOpacity: 0.1
           }
         };
         break; //Fb Domini dei referenti esterni (linea)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; //Fb Vista contenuti per città (elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
