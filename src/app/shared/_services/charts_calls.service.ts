@@ -96,9 +96,6 @@ export class ChartsCallsService {
           return [k, data[data.length - 1].value[k]];
         });
 
-        //console.log(chartData);
-        //console.log(Object.keys(data[data.length - 1].value));
-
         break;  // Fan Country Pie
       case FB_CHART.PAGE_VIEWS:
         header = [['Data', 'Visualizzazioni']];
@@ -161,7 +158,6 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
 
-        //console.log('FAN',chartData);
         break; // Facebook Nuovi fan
       case FB_CHART.FANS_REMOVES:
         header = [['Data', 'Fans persi']];
@@ -206,10 +202,8 @@ export class ChartsCallsService {
         for (let el of data) {
            if(el['value']) {
                let reacts = el['value'];
-                //console.log(reacts);
                for(let i in reacts) {
                  let value = parseInt(reacts[i], 10);
-                 //console.log(value = parseInt(reacts[i], 10));
                  if (myMap.has(i)) {
                    myMap.set(i, myMap.get(i) + value);
                  } else {
@@ -265,14 +259,6 @@ export class ChartsCallsService {
             tmp.push([new Date(parsed[i].end_time), count]);
           }
         }
-
-        /*
-        for (let i = 0; i < parsed.length; i++) {
-          chartData.push([new Date(parsed[i].end_time), tmp[i]]);
-        }
-         */
-
-        //console.log('REAC',tmp);
         chartData = tmp;
 
         break; // Facebook Reazioni linea
@@ -283,10 +269,8 @@ export class ChartsCallsService {
         for (let el of data) {
           if(el['value']) {
             let reacts = el['value'];
-            //console.log(reacts);
             for(let i in reacts) {
               let value = parseInt(reacts[i], 10);
-              //console.log(value = parseInt(reacts[i], 10));
               if (myMap.has(i)) {
                 myMap.set(i, myMap.get(i) + value);
               } else {
@@ -332,6 +316,10 @@ export class ChartsCallsService {
         for (let i = 0; i < myMap.size; i++) {
           chartData.push([key.next().value, values.next().value]);
         }
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
 
         break; // Facebook Domini dei referenti esterni (elenco)
       case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
@@ -384,9 +372,64 @@ export class ChartsCallsService {
           return [k, data[data.length - 1].value[k]];
         });
 
-        //sort ordinare
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
 
         break; // Facebook Vista contenuti per città
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_LINEA:
+        header = [['Data', 'Numero utenti raggiunti']];
+
+        myMap = new Map();
+
+        for (let el of data) {
+          if(el['value']) {
+            let web = el['value'];
+            for( let i in web) {
+              if (myMap.has(i)) {
+                myMap.set(i, 0);
+              } else {
+                myMap.set(i, 0);
+              }
+            }
+          }
+        }
+
+        var key = myMap.keys();
+
+        for (let i = 0; i < myMap.size; i++) {
+          keys.push([key.next().value]);
+        }
+
+        for (let i = 0; i < parsed.length; i++) {
+          if (!parsed[i].value) {
+            tmp.push(0);
+          } else {
+            let count = 0;
+            for(let web of keys) {
+              if(parsed[i].value[web]) {
+                count+=parsed[i].value[web];
+              }
+            }
+            tmp.push(count);
+          }
+        }
+
+        for (let i = 0; i < parsed.length; i++) {
+          chartData.push([new Date(parsed[i].end_time), tmp[i]]);
+        }
+
+        break; // Facebook Vista contenuti per città (linea)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
+        header = [['Città', 'Numero fan']];
+
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [k, data[data.length - 1].value[k]];
+          });
+        }
+
+        break; // Facebook Vista contenuti per città (geomappa)
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -654,8 +697,6 @@ export class ChartsCallsService {
 
         interval = 3; // Interval of hours to show
         header = [['Follower online', 'Min', 'Media', 'Max']];
-
-        //console.log(data);
 
         for (let i = 0; i < data.length; i++)
           keys.push(data[i]['value']);
@@ -1177,7 +1218,6 @@ export class ChartsCallsService {
         };
         break; // Fb Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
-        //console.log('ok', data);
         formattedData = {
           chartType: 'PieChart',
           dataTable: data,
@@ -1313,6 +1353,50 @@ export class ChartsCallsService {
           }
         };
         break; //Fb Vista contenuti per città (elenco)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_LINEA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#efdc92'],
+            areaOpacity: 0.1
+          }
+        };
+
+        break; //Fb Vista contenuti per città (linea)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
+        formattedData = {
+          chartType: 'GeoChart',
+          dataTable: data,
+          chartClass: 2,
+          options: {
+            region: 'IT',
+            //displayMode: 'markers',
+            colors: ['#63c2de'],
+            colorAxis: {colors: ['#9EDEEF', '#63c2de']},
+            backgroundColor: '#fff',
+            datalessRegionColor: '#eee',
+            defaultColor: '#333',
+            height: '300'
+          }
+        };
+
+        break; // //Fb Vista contenuti per città (geomappa)
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {

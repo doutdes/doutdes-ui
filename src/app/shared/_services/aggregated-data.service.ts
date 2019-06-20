@@ -40,7 +40,8 @@ export class AggregatedDataService {
 
     if ((chart.type === D_TYPE.FB) &&
         ((chart.chart_id === FB_CHART.REACTIONS_LINEA) ||
-         (chart.chart_id === FB_CHART.PAGE_VIEW_EXTERNALS_LINEA)) ) {
+         (chart.chart_id === FB_CHART.PAGE_VIEW_EXTERNALS_LINEA) ||
+         (chart.chart_id === FB_CHART.PAGE_IMPRESSIONS_CITY_LINEA) )) {
 
       myMap = new Map();
 
