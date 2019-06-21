@@ -1750,7 +1750,6 @@ export class ChartsCallsService {
         observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
-        console.log('pageID: ',pageIDs);
         observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
         break;
       case D_TYPE.CUSTOM:
@@ -1762,7 +1761,6 @@ export class ChartsCallsService {
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
     }
 
-    console.log(observables);
     return observables;
   }
 
@@ -1787,7 +1785,6 @@ export class ChartsCallsService {
         break;
     }
 
-    console.log(result);
     return result;
   }
 
@@ -1839,7 +1836,6 @@ export class ChartsCallsService {
   }
 
   private getYTMiniValue(measure, data) {
-    console.log(measure);
     let value, sum = 0, avg, perc, step;
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
