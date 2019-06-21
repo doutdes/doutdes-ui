@@ -91,9 +91,11 @@ export class FacebookService {
         call = 'pageviewsexternals';
         break;
       case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
-      case FB_CHART.PAGE_IMPRESSIONS_CITY_LINEA:
       case FB_CHART.PAGE_IMPRESSIONS_CITY:
         call = 'pageimpressionscity';
+        break;
+      case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
+        call = 'pageimpressionscountry';
         break;
     }
 

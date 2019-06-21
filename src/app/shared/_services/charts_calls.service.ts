@@ -81,6 +81,8 @@ export class ChartsCallsService {
             return [k, data[data.length - 1].value[k]];
           });
         }
+
+        chartData = this.addPaddindRows(chartData);
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
@@ -291,35 +293,13 @@ export class ChartsCallsService {
       case FB_CHART.PAGE_VIEW_EXTERNALS:
         header = [['Sito Web', 'Numero']];
 
-        myMap = new Map();
-        for (let el of data) {
-          if (el['value']) {
-            let web = el['value'];
-
-            for (let i in web) {
-              //i = this.getDomain(i);
-              let value = parseInt(web[i], 10);
-
-              i = this.getDomain(i);
-              if (myMap.has(i)) {
-                myMap.set(i, myMap.get(i) + value);
-              } else {
-                myMap.set(i, value);
-              }
-            }
-          }
-        }
-
-        var key = myMap.keys();
-        var values = myMap.values();
-
-        for (let i = 0; i < myMap.size; i++) {
-          chartData.push([key.next().value, values.next().value]);
-        }
+        chartData = this.mapChartData(data);
 
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
+
+        chartData = this.addPaddindRows(chartData);
 
         break; // Facebook Domini dei referenti esterni (elenco)
       case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
@@ -368,58 +348,14 @@ export class ChartsCallsService {
       case FB_CHART.PAGE_IMPRESSIONS_CITY:
         header = [['Città', 'numero views']];
 
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [k, data[data.length - 1].value[k]];
-        });
+        chartData = this.mapChartData(data);
 
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
 
-        break; // Facebook Vista contenuti per città
-      case FB_CHART.PAGE_IMPRESSIONS_CITY_LINEA:
-        header = [['Data', 'Numero utenti raggiunti']];
-
-        myMap = new Map();
-
-        for (let el of data) {
-          if(el['value']) {
-            let web = el['value'];
-            for( let i in web) {
-              if (myMap.has(i)) {
-                myMap.set(i, 0);
-              } else {
-                myMap.set(i, 0);
-              }
-            }
-          }
-        }
-
-        var key = myMap.keys();
-
-        for (let i = 0; i < myMap.size; i++) {
-          keys.push([key.next().value]);
-        }
-
-        for (let i = 0; i < parsed.length; i++) {
-          if (!parsed[i].value) {
-            tmp.push(0);
-          } else {
-            let count = 0;
-            for(let web of keys) {
-              if(parsed[i].value[web]) {
-                count+=parsed[i].value[web];
-              }
-            }
-            tmp.push(count);
-          }
-        }
-
-        for (let i = 0; i < parsed.length; i++) {
-          chartData.push([new Date(parsed[i].end_time), tmp[i]]);
-        }
-
-        break; // Facebook Vista contenuti per città (linea)
+        chartData = this.addPaddindRows(chartData);
+        break; // Facebook Vista contenuti per città (elenco)
       case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
         header = [['Città', 'Numero fan']];
 
@@ -429,7 +365,24 @@ export class ChartsCallsService {
           });
         }
 
+        chartData = chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = chartData.slice(0,15);
+
         break; // Facebook Vista contenuti per città (geomappa)
+      case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
+        header = [['Paese', 'numero views']];
+
+        chartData = this.mapChartData(data);
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddindRows(chartData);
+        break; // Facebook Vista contenuti per Paese (elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -487,11 +440,7 @@ export class ChartsCallsService {
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
-
-        for (let i = 0; i < paddingRows; i++) {
-          chartData.push(['', null]);
-        }
+        chartData = this.addPaddindRows(chartData);
         break;  // Google List Referral
       case GA_CHART.SOURCES_COLUMNS:
         /** Data array is constructed as follows:
@@ -1353,32 +1302,6 @@ export class ChartsCallsService {
           }
         };
         break; //Fb Vista contenuti per città (elenco)
-      case FB_CHART.PAGE_IMPRESSIONS_CITY_LINEA:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#efdc92'],
-            areaOpacity: 0.1
-          }
-        };
-
-        break; //Fb Vista contenuti per città (linea)
       case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
         formattedData = {
           chartType: 'GeoChart',
@@ -1386,7 +1309,7 @@ export class ChartsCallsService {
           chartClass: 2,
           options: {
             region: 'IT',
-            //displayMode: 'markers',
+            displayMode: 'markers',
             colors: ['#63c2de'],
             colorAxis: {colors: ['#9EDEEF', '#63c2de']},
             backgroundColor: '#fff',
@@ -1397,6 +1320,34 @@ export class ChartsCallsService {
         };
 
         break; // //Fb Vista contenuti per città (geomappa)
+      case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
+
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+
+        break; //Fb Vista contenuti per Paese (elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
@@ -1886,6 +1837,17 @@ export class ChartsCallsService {
     return formattedData;
   }
 
+  public addPaddindRows (chartData) {
+
+    let paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+    for (let i = 0; i < paddingRows; i++) {
+      chartData.push(['', null]);
+    }
+
+    return chartData;
+  }
+
   private getMinChartStep(type, data, perc = 0.8) {
     let min, length;
 
@@ -2164,5 +2126,38 @@ export class ChartsCallsService {
     domain = domain.split(':')[0];
 
     return domain;
+  }
+
+  public mapChartData (data) {
+
+    let myMap = new Map();
+    let chartData = [];
+
+    for (let el of data) {
+      if (el['value']) {
+        let web = el['value'];
+
+        for (let i in web) {
+          //i = this.getDomain(i);
+          let value = parseInt(web[i], 10);
+
+          i = this.getDomain(i);
+          if (myMap.has(i)) {
+            myMap.set(i, myMap.get(i) + value);
+          } else {
+            myMap.set(i, value);
+          }
+        }
+      }
+    }
+
+    var key = myMap.keys();
+    var values = myMap.values();
+
+    for (let i = 0; i < myMap.size; i++) {
+      chartData.push([key.next().value, values.next().value]);
+    }
+
+    return chartData;
   }
 }
