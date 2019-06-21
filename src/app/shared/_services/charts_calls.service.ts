@@ -29,8 +29,7 @@ export class ChartsCallsService {
     return '...';
   }
 
-  public retrieveChartData(ID, pageID?): Observable<any> {
-
+  public retrieveChartData(ID, intervalDate?, pageID?): Observable<any> {
     if (Object.values(FB_CHART).includes(ID)) {
       return this.facebookService.getData(ID, pageID);
     } else if (Object.values(IG_CHART).includes(ID)) {
@@ -38,7 +37,7 @@ export class ChartsCallsService {
     } else if (Object.values(GA_CHART).includes(ID)) {
       return this.googleAnalyticsService.getData(ID);
     } else if (Object.values(YT_CHART).includes(ID)) {
-      return this.youtubeService.getData(ID, pageID);
+      return this.youtubeService.getData(ID, intervalDate, pageID);
     } else {
       throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
     }
@@ -544,11 +543,49 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG FollowerCount
-      case YT_CHART.LIKES:
-        header = [['Tipo', 'Numero']];
-        for(let i in data) {
-          //chartData.push(data[i].)
+      case YT_CHART.VIEWS:
+        header = [['Data', 'Visualizzazioni']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
         }
+        break;
+      case YT_CHART.COMMENTS:
+        header = [['Data', 'Commenti']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
+      case YT_CHART.LIKES:
+        header = [['Data', 'Mi Piace']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+
+        }
+        break; // YT Likes
+      case YT_CHART.DISLIKES:
+        header = [['Data', 'Non Mi Piace']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
+      case YT_CHART.SHARES:
+        header = [['Data', 'Condivisioni']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
+      case YT_CHART.AVGVIEW:
+        header = [['Data', 'Tempo medio di riproduzione']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
+      case YT_CHART.ESTWATCH:
+        header = [['Data', 'Riproduzione stimata']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -1464,14 +1501,212 @@ export class ChartsCallsService {
           }
         };
         break; // IG Follower count
+      case IG_CHART.FOLLOWER_COUNT:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ff96bd'],
+            areaOpacity: 0.1
+          }
+        };
+      break;
+      case YT_CHART.VIEWS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ffbe5b'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.COMMENTS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#61b4ff'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.LIKES:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#33b362'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.DISLIKES:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#88372b'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.SHARES:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#dc852b'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.AVGVIEW:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#a195cc'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.ESTWATCH:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#a195cc'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
     }
-
     return formattedData;
   }
 
   private getMinChartStep(type, data, perc = 0.8) {
     let min, length;
-
     data = data.slice(1);
 
     switch (type) {
@@ -1483,7 +1718,6 @@ export class ChartsCallsService {
         }
         break;
       case D_TYPE.GA:
-      case D_TYPE.YT:
         length = data[0].length;
         min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
         break;
@@ -1510,14 +1744,14 @@ export class ChartsCallsService {
         observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION));
         break;
       case D_TYPE.IG:
-        pageID = pageIDs[D_TYPE.IG];
         observables.push(this.instagramService.getBusinessInfo(pageID));
         observables.push(this.instagramService.getMedia(pageID));
         observables.push(this.instagramService.getData(IG_CHART.PROFILE_VIEWS, pageID));
         observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
-        pageID = pageIDs[D_TYPE.YT];
+        console.log('pageID: ',pageIDs);
+        observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
         break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
@@ -1528,6 +1762,7 @@ export class ChartsCallsService {
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
     }
 
+    console.log(observables);
     return observables;
   }
 
@@ -1544,10 +1779,15 @@ export class ChartsCallsService {
       case D_TYPE.IG:
         result = this.getInstagramMiniValue(measure, data, intervalDate);
         break;
+      case D_TYPE.YT :
+        result = this.getYTMiniValue(measure, data);
+        break
       case D_TYPE.CUSTOM:
         result = this.getCustomMiniValue(measure, data, intervalDate);
+        break;
     }
 
+    console.log(result);
     return result;
   }
 
@@ -1595,6 +1835,46 @@ export class ChartsCallsService {
         break;
     }
 
+    return {value, perc, step};
+  }
+
+  private getYTMiniValue(measure, data) {
+    console.log(measure);
+    let value, sum = 0, avg, perc, step;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+    };
+
+    data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
+
+    for (const i in data) {
+      sum += parseInt(data[i].value);
+    }
+
+    avg = (sum / data.length).toFixed(2);
+
+    switch (measure) {
+      case 'subs':
+        value = avg;
+        step = this.searchStep(value, measure);
+        perc = value;
+        break;
+
+      case 'avg-v':
+        value = avg;
+        step = this.searchStep(value, measure);
+        perc = value / step * 100;
+        break;
+
+      default:
+        value = sum;
+        step = this.searchStep(value);
+        perc = value / step * 100;
+        break;
+    }
     return {value, perc, step};
   }
 

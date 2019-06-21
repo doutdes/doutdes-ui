@@ -14,6 +14,7 @@ import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
+import {YoutubeService} from '../../../shared/_services/youtube.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {ToastrService} from 'ngx-toastr';
@@ -48,6 +49,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   private fbPageID = null;
   private igPageID = null;
+  private ytPageID = null;
   public somethingGranted = true;
 
   public FILTER_DAYS = {
@@ -91,6 +93,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private GAService: GoogleAnalyticsService,
     private FBService: FacebookService,
     private IGService: InstagramService,
+    private YTService: YoutubeService,
     private breadcrumbActions: BreadcrumbActions,
     private DService: DashboardService,
     private CCService: ChartsCallsService,
@@ -159,7 +162,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
       this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
       this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
-
+      this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] ? (await this.YTService.getChannels().toPromise())[0].id : null;
+      let a = await this.YTService.getChannels().toPromise();
       this.firstDateRange = subDays(new Date(), 30); // this.minDate;
       this.lastDateRange = this.maxDate;
       // this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -250,7 +254,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             // If the permission for the service is granted
             if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
               pageID = this.getPageID(chart.type);
-              observables.push(this.CCService.retrieveChartData(chart.chart_id, pageID));
+              observables.push(this.CCService.retrieveChartData(chart.chart_id, dateInterval, pageID));
             }
           }); // Retrieves data for each chart
 
@@ -438,6 +442,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       case D_TYPE.IG:
         pageID = this.igPageID;
         break;
+      case D_TYPE.YT:
+        pageID = this.ytPageID;
       default:
         pageID = null;
         break;
@@ -487,6 +493,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
+        console.log('aaaaa: '+this.miniCards[i].measure);
         if (Object.entries(miniDatas[i]).length !== 0) {
           results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
           this.miniCards[i].value = results['value'];

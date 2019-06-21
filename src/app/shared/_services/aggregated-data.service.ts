@@ -15,6 +15,7 @@ export class AggregatedDataService {
 
   getAggregatedData(chart: DashboardCharts, dateInterval: IntervalDate) {
 
+    ///TODO really ugly handling of filtered data: basically a copy-paste  of filter.actions -> better call the method
     let sum = 0;
     let highest = Number.MIN_SAFE_INTEGER;
     let lowest = Number.MAX_SAFE_INTEGER;
@@ -26,21 +27,48 @@ export class AggregatedDataService {
     let nValues = 0;
     let prevNValues = 0;
 
+    let filteredData;
+    switch (chart.type) {
+      case D_TYPE.GA:
+        filteredData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= dateInterval.first.getTime() && parseDate(el[0]).getTime() <= dateInterval.last.getTime());
+        break;
+      case D_TYPE.YT:
+        filteredData = chart.chartData.filter(el => parseDate(el.date).getTime() >= dateInterval.first.getTime() && parseDate(el.date).getTime() <= dateInterval.last.getTime());
+        break;
+      default:
+        filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+        break;
+    }
 
+    /*
     let filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
       ? chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last)
       : chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
-
+*/
     let prevDate = this.getPrevious(dateInterval);
+    /*
     let prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
       ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
       : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+*/
+    let prevFilteredData;
+    switch (chart.type) {
+      case D_TYPE.GA:
+        prevFilteredData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= prevDate.first.getTime() && parseDate(el[0]).getTime() <= prevDate.last.getTime());
+        break;
+      case D_TYPE.YT:
+        prevFilteredData = chart.chartData.filter(el => parseDate(el.date).getTime() >= prevDate.first.getTime() && parseDate(el.date).getTime() <= prevDate.last.getTime());
+        break;
+      default:
+        prevFilteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+        break;
+    }
 
 
     switch (chart.type) {
 
       case D_TYPE.GA:
-      case D_TYPE.YT:
+      //case D_TYPE.YT:
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i][filteredData[i].length - 1]);
           if (value) {
@@ -64,6 +92,7 @@ export class AggregatedDataService {
         break;
       case D_TYPE.FB:
       case D_TYPE.IG:
+      case D_TYPE.YT:
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i]['value']);
           if (value) {
