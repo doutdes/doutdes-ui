@@ -1750,7 +1750,12 @@ export class ChartsCallsService {
         observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
+        observables.push(this.youtubeService.getData(YT_CHART.SUBS, intervalDate, pageIDs))
+        observables.push(this.youtubeService.getData(YT_CHART.VIEWS, intervalDate, pageIDs));
         observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
+        observables.push(this.youtubeService.getData(YT_CHART.VIDEOS, intervalDate, pageIDs));
+
+
         break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
@@ -1844,7 +1849,8 @@ export class ChartsCallsService {
       last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
     };
 
-    data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
+    if(measure!='subs') //used to avoid date parsing in YT subscribers (that doesn't contain such infos). Expect more elegant sol. in future
+      data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
 
     for (const i in data) {
       sum += parseInt(data[i].value);
@@ -1859,11 +1865,24 @@ export class ChartsCallsService {
         perc = value;
         break;
 
-      case 'avg-v':
+      case 'views':
+        value = sum;
+        step = this.searchStep(value, measure);
+        perc = value / step * 100;
+        break;
+
+      case 'avg-v-time':
         value = avg;
         step = this.searchStep(value, measure);
         perc = value / step * 100;
         break;
+
+      case 'vids':
+        value = sum;
+        step = this.searchStep(value, measure);
+        perc = value / step * 100;
+        break;
+
 
       default:
         value = sum;

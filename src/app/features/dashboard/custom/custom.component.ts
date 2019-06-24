@@ -493,7 +493,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
-        console.log('aaaaa: '+this.miniCards[i].measure);
         if (Object.entries(miniDatas[i]).length !== 0) {
           results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
           this.miniCards[i].value = results['value'];

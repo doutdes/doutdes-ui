@@ -94,7 +94,7 @@ export let IgMiniCards: MiniCard[] = [
 ];
 
 export let YtMiniCards: MiniCard[] = [
-  /*{
+  {
 
     name: 'Iscritti',
     icon: 'icon-people',
@@ -102,27 +102,27 @@ export let YtMiniCards: MiniCard[] = [
     measure: 'subs',
     value: '-',
     type: D_TYPE.YT
-  },*/ {
-    name: 'Visual. medie',
+  }, {
+    name: 'Visualizzazioni',
     icon: 'icon-screen-desktop',
     padding: 'pl-2 pr-sm-2 pr-0',
-    measure: 'avg-v',
+    measure: 'views',
     value: '-',
     type: D_TYPE.YT
 
   }, {
-    name: 'Tempo medio visual.',
+    name: 'Media durata vis.',
     icon: 'icon-action-undo',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
-    measure: '',
+    measure: 'avg-v-time',
     value: '-',
     type: D_TYPE.YT
 
   }, {
-    name: 'Deciso',
+    name: 'Video caricati',
     icon: 'icon-hourglass',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
-    measure: '',
+    measure: 'vids',
     value: '-',
     type: D_TYPE.YT
 
