@@ -23,6 +23,7 @@ import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
 import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
+import {int} from 'flatpickr/dist/utils';
 
 const PrimaryWhite = '#ffffff';
 
@@ -104,7 +105,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     let pageIDs = {};
 
     pageIDs[D_TYPE.FB] = pageID;
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs);
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs, null);
 
 
     forkJoin(observables).subscribe(miniDatas => {
@@ -142,7 +143,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     const dash = await this.DService.getDashboardByType(D_TYPE.FB).toPromise(); // Facebook type
 
     // Retrieving the page ID // TODO to move into onInit and its init on a dropdown
-    this.pageID = (await this.FBService.getPages().toPromise())[1].id;
+    this.pageID = (await this.FBService.getPages().toPromise())[0].id;
+    console.log(this.pageID);
 
     await this.loadMiniCards(this.pageID);
 
@@ -169,7 +171,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
           if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
-            charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
+            charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, null, this.pageID))); // Retrieves data for each chart
             forkJoin(observables)
               .subscribe(dataArray => {
                 for (let i = 0; i < dataArray.length; i++) {
@@ -231,7 +233,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       last: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
+    this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
       .subscribe(data => {
 
         this.GEService.loadingScreen.next(true);

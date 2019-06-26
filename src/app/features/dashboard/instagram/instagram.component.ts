@@ -104,8 +104,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     pageIDs[D_TYPE.IG] = pageID;
 
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageIDs);
-
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageIDs, null);
     forkJoin(observables).subscribe(miniDatas => {
       for(const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
@@ -168,7 +167,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
           // Retrieves data for each chart
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID)));
+          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, null, this.pageID)));
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -227,7 +226,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       last: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id, this.pageID)
+    this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
       .subscribe(data => {
 
         this.GEService.loadingScreen.next(true);
