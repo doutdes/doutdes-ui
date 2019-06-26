@@ -63,6 +63,7 @@ export class ChartsCallsService {
     let parsed = JSON.parse(JSON.stringify(data));
     let FBReaction = [];
 
+
     // console.warn('ID: ' + ID + ' - ', data);
 
     switch (ID) {
@@ -226,42 +227,20 @@ export class ChartsCallsService {
       case FB_CHART.REACTIONS_LINEA:
         header = [['Data','Reazioni']];
 
-        myMap = new Map();
-        for (let el of data) {
-          if(el['value']) {
-            let reacts = el['value'];
-            for( let i in reacts) {
-              if (myMap.has(i)) {
-                myMap.set(i, 0);
-              } else {
-                myMap.set(i, 0);
-              }
-            }
+        if (this.lengthKeys(data) != 0) {
+          let sum = 0;
+          for (let el of data) {
+            sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
+              // @ts-ignore
+              return a + b
+            }, 0);
+            chartData.push([new Date(el.end_time), sum]);
+          }
+        } else {
+          for (let i = 0; i < data.length; i++) {
+            chartData.push([new Date(data[i].end_time), data[i].value]);
           }
         }
-
-        var key = myMap.keys();
-
-        for (let i = 0; i < myMap.size; i++) {
-          FBReaction.push([key.next().value]);
-        }
-
-        for (let i = 0; i < parsed.length; i++) {
-          if (!parsed[i].value) {
-            //tmp.push(0);
-            tmp.push([new Date (parsed[i].end_time), 0]);
-          } else {
-            let count = 0;
-            for(let react of FBReaction) {
-              if(parsed[i].value[react]) {
-                count+=parsed[i].value[react];
-              }
-            }
-            //tmp.push(count);
-            tmp.push([new Date(parsed[i].end_time), count]);
-          }
-        }
-        chartData = tmp;
 
         break; // Facebook Reazioni linea
       case FB_CHART.REACTIONS_COLUMN_CHART:
@@ -305,43 +284,19 @@ export class ChartsCallsService {
       case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
         header = [['Sito Web', 'Numero']];
 
-        myMap = new Map();
-
-        for (let el of data) {
-          if(el['value']) {
-            let web = el['value'];
-            for( let i in web) {
-              if (myMap.has(i)) {
-                myMap.set(i, 0);
-              } else {
-                myMap.set(i, 0);
-              }
-            }
+        if (this.lengthKeys(data) != 0) {
+          let sum = 0;
+          for (let el of data) {
+            sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
+              // @ts-ignore
+              return a + b
+            }, 0);
+            chartData.push([new Date(el.end_time), sum]);
           }
-        }
-
-        var key = myMap.keys();
-
-        for (let i = 0; i < myMap.size; i++) {
-         keys.push([key.next().value]);
-        }
-
-        for (let i = 0; i < parsed.length; i++) {
-          if (!parsed[i].value) {
-            tmp.push(0);
-          } else {
-            let count = 0;
-            for(let web of keys) {
-              if(parsed[i].value[web]) {
-                count+=parsed[i].value[web];
-              }
-            }
-            tmp.push(count);
+        } else {
+          for (let i = 0; i < data.length; i++) {
+            chartData.push([new Date(data[i].end_time), data[i].value]);
           }
-        }
-
-        for (let i = 0; i < parsed.length; i++) {
-          chartData.push([new Date(parsed[i].end_time), tmp[i]]);
         }
 
         break; // Facebook Domini dei referenti esterni (linea)
@@ -2159,5 +2114,30 @@ export class ChartsCallsService {
     }
 
     return chartData;
+  }
+
+  public lengthKeys (data) {
+    let myMap;
+    myMap = new Map();
+    let keys = [];
+
+    for (let el of data) {
+      let n = el['value'];
+      for (let key in n) {
+        if (myMap.has(key)) {
+          myMap.set(key, 0);
+        } else {
+          myMap.set(key, 0);
+        }
+      }
+    }
+
+    var key = myMap.keys();
+
+    for (let i = 0; i < myMap.size; i++) {
+      keys.push([key.next().value]);
+    }
+
+    return keys.length;
   }
 }

@@ -42,6 +42,7 @@ export class AggregatedDataService {
         ((chart.chart_id === FB_CHART.REACTIONS_LINEA) ||
          (chart.chart_id === FB_CHART.PAGE_VIEW_EXTERNALS_LINEA))) {
 
+
       myMap = new Map();
 
       for (let el of chart.chartData) {
@@ -54,31 +55,36 @@ export class AggregatedDataService {
           }
         }
       }
+
       var key = myMap.keys();
 
       for (let i = 0; i < myMap.size; i++) {
         keys.push([key.next().value]);
       }
 
-      for (let i = 0; i < chart.chartData.length; i++) {
-        if (!chart.chartData[i].value) {
-          tmp.push({"end_time":chart.chartData[i].end_time, "value": 0});
-        } else {
-          let count = 0;
-          for(let web of keys) {
-            if(chart.chartData[i].value[web]) {
-              count+=chart.chartData[i].value[web];
+      if (keys.length != 0) {
+
+        for (let i = 0; i < chart.chartData.length; i++) {
+          if (!chart.chartData[i].value) {
+            tmp.push({"end_time": chart.chartData[i].end_time, "value": 0});
+          } else {
+            let count = 0;
+            for (let web of keys) {
+              if (chart.chartData[i].value[web]) {
+                count += chart.chartData[i].value[web];
+              }
             }
+            tmp.push({"end_time": chart.chartData[i].end_time, "value": count});
           }
-          tmp.push({"end_time":chart.chartData[i].end_time, "value": count});
         }
+
+        chart.chartData = tmp;
       }
-      chart.chartData = tmp;
 
       filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
 
       let prevDate = this.getPrevious(dateInterval);
-      prevFilteredData =chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+      prevFilteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
 
     } else {
       filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
@@ -89,6 +95,7 @@ export class AggregatedDataService {
       prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
         ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
         : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+
     }
 
     switch (chart.type) {
@@ -164,7 +171,6 @@ export class AggregatedDataService {
       prevInterval: this.getPrevious(dateInterval),
     };
 
-    //console.log(result);
     return result;
   }
 
