@@ -4,6 +4,11 @@ import {subDays} from 'date-fns';
 import {D_TYPE} from '../_models/Dashboard';
 import {parseDate} from 'ngx-bootstrap';
 import {DashboardCharts} from '../_models/DashboardCharts';
+import {calculateBytes} from '@angular/cli/utilities/bundle-calculator';
+import {FB_CHART} from '../_models/FacebookData';
+import get = Reflect.get;
+import {getValueFromObject} from 'ngx-bootstrap/typeahead';
+import {count} from 'rxjs/operators';
 
 @Injectable()
 export class AggregatedDataService {
@@ -26,8 +31,8 @@ export class AggregatedDataService {
 
     let nValues = 0;
     let prevNValues = 0;
-
     let filteredData;
+
     switch (chart.type) {
       case D_TYPE.GA:
         filteredData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= dateInterval.first.getTime() && parseDate(el[0]).getTime() <= dateInterval.last.getTime());
@@ -38,6 +43,70 @@ export class AggregatedDataService {
       default:
         filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
         break;
+    }
+    let prevFilteredData;
+    let myMap;
+    let keys = [];
+    let tmp = [];
+
+    if ((chart.type === D_TYPE.FB) &&
+        ((chart.chart_id === FB_CHART.REACTIONS_LINEA) ||
+         (chart.chart_id === FB_CHART.PAGE_VIEW_EXTERNALS_LINEA))) {
+
+
+      myMap = new Map();
+
+      for (let el of chart.chartData) {
+        let n = el['value'];
+        for (let key in n) {
+          if (myMap.has(key)) {
+            myMap.set(key, 0);
+          } else {
+            myMap.set(key, 0);
+          }
+        }
+      }
+
+      var key = myMap.keys();
+
+      for (let i = 0; i < myMap.size; i++) {
+        keys.push([key.next().value]);
+      }
+
+      if (keys.length != 0) {
+
+        for (let i = 0; i < chart.chartData.length; i++) {
+          if (!chart.chartData[i].value) {
+            tmp.push({"end_time": chart.chartData[i].end_time, "value": 0});
+          } else {
+            let count = 0;
+            for (let web of keys) {
+              if (chart.chartData[i].value[web]) {
+                count += chart.chartData[i].value[web];
+              }
+            }
+            tmp.push({"end_time": chart.chartData[i].end_time, "value": count});
+          }
+        }
+
+        chart.chartData = tmp;
+      }
+
+      filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+
+      let prevDate = this.getPrevious(dateInterval);
+      prevFilteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+
+    } else {
+      filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+        ? chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last)
+        : chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+
+      let prevDate = this.getPrevious(dateInterval);
+      prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+        ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
+        : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+
     }
 
     /*
@@ -51,7 +120,6 @@ export class AggregatedDataService {
       ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
       : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
 */
-    let prevFilteredData;
     switch (chart.type) {
       case D_TYPE.GA:
         prevFilteredData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= prevDate.first.getTime() && parseDate(el[0]).getTime() <= prevDate.last.getTime());

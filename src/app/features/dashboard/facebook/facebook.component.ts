@@ -144,7 +144,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     // Retrieving the page ID // TODO to move into onInit and its init on a dropdown
     this.pageID = (await this.FBService.getPages().toPromise())[0].id;
-    console.log(this.pageID);
 
     await this.loadMiniCards(this.pageID);
 

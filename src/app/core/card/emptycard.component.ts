@@ -291,7 +291,15 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       case 'Annunci pub. visualizzati':
         this.description = "Mostra il numero di annunci pubblicitari visualizzati dagli utenti della pagina";
         break;
-
+      case 'Reazioni':
+        this.description = "Mostra il numero totale di reazioni che la pagina ha ottenuto";
+        break;
+      case 'Domini dei referenti esterni ':
+        this.description = "Mostra il numero totale delle visite dei principali domini dei referenti esterni che generano traffico sulla pagina.";
+        break;
+      case 'Visualiz. contenuti per città':
+        this.description = "Mostra il numero di persone che hanno visto qualsiasi contenuto associato alla pagina, per città.";
+        break;
       default:
         this.description = null;
     }

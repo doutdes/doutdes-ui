@@ -57,6 +57,10 @@ export class ChartsCallsService {
     let interval;
     let temp, index;
     let myMap;
+    let tmp = [];
+    let parsed = JSON.parse(JSON.stringify(data));
+    let FBReaction = [];
+
 
     // console.warn('ID: ' + ID + ' - ', data);
 
@@ -76,6 +80,8 @@ export class ChartsCallsService {
             return [k, data[data.length - 1].value[k]];
           });
         }
+
+        chartData = this.addPaddindRows(chartData);
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
@@ -197,10 +203,8 @@ export class ChartsCallsService {
         for (let el of data) {
            if(el['value']) {
                let reacts = el['value'];
-
                for(let i in reacts) {
                  let value = parseInt(reacts[i], 10);
-
                  if (myMap.has(i)) {
                    myMap.set(i, myMap.get(i) + value);
                  } else {
@@ -217,7 +221,121 @@ export class ChartsCallsService {
           chartData.push([key.next().value, values.next().value]);
         }
 
-        break; // Facebook Reazioni
+        break; // Facebook Reazioni torta
+      case FB_CHART.REACTIONS_LINEA:
+        header = [['Data','Reazioni']];
+
+        if (this.lengthKeys(data) != 0) {
+          let sum = 0;
+          for (let el of data) {
+            sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
+              // @ts-ignore
+              return a + b
+            }, 0);
+            chartData.push([new Date(el.end_time), sum]);
+          }
+        } else {
+          for (let i = 0; i < data.length; i++) {
+            chartData.push([new Date(data[i].end_time), data[i].value]);
+          }
+        }
+
+        break; // Facebook Reazioni linea
+      case FB_CHART.REACTIONS_COLUMN_CHART:
+        header = [['Reazione', 'Numero']];
+
+        myMap = new Map();
+        for (let el of data) {
+          if(el['value']) {
+            let reacts = el['value'];
+            for(let i in reacts) {
+              let value = parseInt(reacts[i], 10);
+              if (myMap.has(i)) {
+                myMap.set(i, myMap.get(i) + value);
+              } else {
+                myMap.set(i, value);
+              }
+            }
+          }
+        }
+
+        var key = myMap.keys();
+        var values = myMap.values();
+
+        for (let i = 0; i < myMap.size; i++) {
+          chartData.push([key.next().value, values.next().value]);
+        }
+
+        break; // Facebook Reazioni colonna
+      case FB_CHART.PAGE_VIEW_EXTERNALS:
+        header = [['Sito Web', 'Numero']];
+
+        chartData = this.mapChartData(data);
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddindRows(chartData);
+
+        break; // Facebook Domini dei referenti esterni (elenco)
+      case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
+        header = [['Sito Web', 'Numero']];
+
+        if (this.lengthKeys(data) != 0) {
+          let sum = 0;
+          for (let el of data) {
+            sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
+              // @ts-ignore
+              return a + b
+            }, 0);
+            chartData.push([new Date(el.end_time), sum]);
+          }
+        } else {
+          for (let i = 0; i < data.length; i++) {
+            chartData.push([new Date(data[i].end_time), data[i].value]);
+          }
+        }
+
+        break; // Facebook Domini dei referenti esterni (linea)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY:
+        header = [['Città', 'numero views']];
+
+        chartData = this.mapChartData(data);
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddindRows(chartData);
+        break; // Facebook Vista contenuti per città (elenco)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
+        header = [['Città', 'Numero fan']];
+
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [k, data[data.length - 1].value[k]];
+          });
+        }
+
+        chartData = chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = chartData.slice(0,15);
+
+        break; // Facebook Vista contenuti per città (geomappa)
+      case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
+        header = [['Paese', 'numero views']];
+
+        chartData = this.mapChartData(data);
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddindRows(chartData);
+        break; // Facebook Vista contenuti per Paese (elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -275,11 +393,7 @@ export class ChartsCallsService {
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
-
-        for (let i = 0; i < paddingRows; i++) {
-          chartData.push(['', null]);
-        }
+        chartData = this.addPaddindRows(chartData);
         break;  // Google List Referral
       case GA_CHART.SOURCES_COLUMNS:
         /** Data array is constructed as follows:
@@ -1064,11 +1178,174 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#06f312', '#0670f3', '#f31900', '#a4958a'],
+            colors: ['#7cf3e0', '#0670f3', '#f31900', '#a4958a', '#F30DA6', '#0AA41F', '#F3ED00', '#00F3E5', '#9549F3'],
             areaOpacity: 0.2
           }
         };
-        break; // Fb Reazioni
+        break; // Fb Reazioni torta
+      case FB_CHART.REACTIONS_LINEA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#81b9f6'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Reazioni linea
+      case FB_CHART.REACTIONS_COLUMN_CHART:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break; // Fb Reazioni colonna
+      case FB_CHART.PAGE_VIEW_EXTERNALS:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; //Fb Domini dei referenti esterni (elenco)
+      case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#2224ef'],
+            areaOpacity: 0.1
+          }
+        };
+        break; //Fb Domini dei referenti esterni (linea)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; //Fb Vista contenuti per città (elenco)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
+        formattedData = {
+          chartType: 'GeoChart',
+          dataTable: data,
+          chartClass: 2,
+          options: {
+            region: 'IT',
+            displayMode: 'markers',
+            colors: ['#63c2de'],
+            colorAxis: {colors: ['#9EDEEF', '#63c2de']},
+            backgroundColor: '#fff',
+            datalessRegionColor: '#eee',
+            defaultColor: '#333',
+            height: '300'
+          }
+        };
+
+        break; // //Fb Vista contenuti per città (geomappa)
+      case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
+
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+
+        break; //Fb Vista contenuti per Paese (elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
@@ -1757,6 +2034,17 @@ export class ChartsCallsService {
     return formattedData;
   }
 
+  public addPaddindRows (chartData) {
+
+    let paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+    for (let i = 0; i < paddingRows; i++) {
+      chartData.push(['', null]);
+    }
+
+    return chartData;
+  }
+
   private getMinChartStep(type, data, perc = 0.8) {
     let min, length;
     data = data.slice(1);
@@ -2079,5 +2367,78 @@ export class ChartsCallsService {
     }
 
     return step;
+  }
+
+  private getDomain(arg: string) {
+    let domain;
+
+    if (arg.indexOf("://") > -1) {
+      domain = arg.split('/')[2];
+    } else {
+      domain = arg.split('/')[0];
+    }
+
+    //trova e rimuovi eventuale porta
+    domain = domain.split(':')[0];
+
+    return domain;
+  }
+
+  public mapChartData (data) {
+
+    let myMap = new Map();
+    let chartData = [];
+
+    for (let el of data) {
+      if (el['value']) {
+        let web = el['value'];
+
+        for (let i in web) {
+          //i = this.getDomain(i);
+          let value = parseInt(web[i], 10);
+
+          i = this.getDomain(i);
+          if (myMap.has(i)) {
+            myMap.set(i, myMap.get(i) + value);
+          } else {
+            myMap.set(i, value);
+          }
+        }
+      }
+    }
+
+    var key = myMap.keys();
+    var values = myMap.values();
+
+    for (let i = 0; i < myMap.size; i++) {
+      chartData.push([key.next().value, values.next().value]);
+    }
+
+    return chartData;
+  }
+
+  public lengthKeys (data) {
+    let myMap;
+    myMap = new Map();
+    let keys = [];
+
+    for (let el of data) {
+      let n = el['value'];
+      for (let key in n) {
+        if (myMap.has(key)) {
+          myMap.set(key, 0);
+        } else {
+          myMap.set(key, 0);
+        }
+      }
+    }
+
+    var key = myMap.keys();
+
+    for (let i = 0; i < myMap.size; i++) {
+      keys.push([key.next().value]);
+    }
+
+    return keys.length;
   }
 }

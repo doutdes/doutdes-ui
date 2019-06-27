@@ -38,7 +38,8 @@ import {MiniCardComponent} from './card/minicard.component';
     GlobalEventsManagerService,
     LoginActions,
     BsModalService,
-    DashboardService
+    DashboardService,
+    {provide: 'mapsApiKey', useValue: 'AIzaSyAjKzYOB3pXeI79ONHTp066mDb3xzTtUKc'}
   ],
   exports: [
     HeaderComponent,

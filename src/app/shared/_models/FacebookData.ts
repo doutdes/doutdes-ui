@@ -16,7 +16,14 @@ export const FB_CHART = {
   IMPRESSIONS_PAID: 37,
   VIDEO_VIEWS: 38,
   POST_IMPRESSIONS: 39,
-  VIDEO_ADS: 40
+  VIDEO_ADS: 40,
+  REACTIONS_LINEA: 41,
+  REACTIONS_COLUMN_CHART: 42,
+  PAGE_VIEW_EXTERNALS: 43,
+  PAGE_VIEW_EXTERNALS_LINEA: 44,
+  PAGE_IMPRESSIONS_CITY: 45,
+  PAGE_IMPRESSIONS_CITY_GEO: 46,
+  PAGE_IMPRESSIONS_COUNTRY_ELENCO: 47,
 };
 
 export interface FbPage {
@@ -39,3 +46,5 @@ export interface FbNumberData {
   value: number;
   end_time: Date;
 }
+
+
