@@ -180,6 +180,20 @@ export class FilterActions {
     this.Redux.dispatch({type: FILTER_CLEAR});
   }
 
+  clearDashboard(dashboard_type: number) {
+    this.removedStoredDashboard(dashboard_type);
+
+    this.currentDashboard.data = [];
+    this.filteredDashboard.data = [];
+
+    this.Redux.dispatch({
+      type: FILTER_REMOVE_CURRENT,
+      storedDashboards: this.storedDashboards,
+      currentDashboard: this.currentDashboard,
+      filteredDashboard: this.filteredDashboard,
+    })
+  }
+
   // This method is been called if and only if a dashboard was already stored on the variable model called storedDashboards
   loadStoredDashboard(dashboard_type: number) {
     const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === dashboard_type);

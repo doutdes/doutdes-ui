@@ -230,11 +230,15 @@ export class ChartsCallsService {
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
           for (let el of data) {
-            sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
-              // @ts-ignore
-              return a + b
-            }, 0);
-            chartData.push([new Date(el.end_time), sum]);
+            if (el) {
+              sum = Object.values(el.value).reduce((a: Number, b: Number) => {
+                // @ts-ignore
+                return a + b
+              }, 0);
+              chartData.push([new Date(el.end_time), sum]);
+            } else {
+              chartData.push([new Date(el.end_time), 0]);
+            }
           }
         } else {
           for (let i = 0; i < data.length; i++) {
@@ -287,11 +291,15 @@ export class ChartsCallsService {
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
           for (let el of data) {
-            sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
-              // @ts-ignore
-              return a + b
-            }, 0);
-            chartData.push([new Date(el.end_time), sum]);
+            if (el) {
+              sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
+                // @ts-ignore
+                return a + b
+              }, 0);
+              chartData.push([new Date(el.end_time), sum]);
+            } else {
+              chartData.push([new Date(el.end_time), 0]);
+            }
           }
         } else {
           for (let i = 0; i < data.length; i++) {
