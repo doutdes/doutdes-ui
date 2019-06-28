@@ -76,3 +76,31 @@
     Stiamo creando il tuo report, attendi...
   </div>
 </ng-template>
+<ng-template #selectView>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>Seleziona dati da importare</h4>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
+      <div class="form-group row">
+        <p class="col-sm-12 text-justify">
+          Il tuo account Facebook è associato a più pagine. Quale vuoi includere in Doutdes?
+        </p>
+        <div class="col-sm-12">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="fb_page_id" [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['fb_page_id'].errors }">
+            <option *ngFor="let page of pageList" [value]="page.id">{{page.name}}</option>
+          </select>
+
+          <div *ngIf="this.submitted && selectViewForm.controls['fb_page_id'].errors" class="invalid-feedback">
+            <div>Devi obbligatoriamente selezionare una pagina</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pr-0 pb-0">
+        <button type="submit" class="btn btn-success">Conferma</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
