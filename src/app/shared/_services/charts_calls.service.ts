@@ -57,9 +57,6 @@ export class ChartsCallsService {
     let interval;
     let temp, index;
     let myMap;
-    let tmp = [];
-    let parsed = JSON.parse(JSON.stringify(data));
-    let FBReaction = [];
 
 
     // console.warn('ID: ' + ID + ' - ', data);
@@ -228,11 +225,19 @@ export class ChartsCallsService {
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
           for (let el of data) {
-            sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
-              // @ts-ignore
-              return a + b
-            }, 0);
-            chartData.push([new Date(el.end_time), sum]);
+            if(el.value)
+            {
+              sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
+                // @ts-ignore
+                return a + b
+              }, 0);
+              chartData.push([new Date(el.end_time), sum]);
+            }
+            else
+            {
+              chartData.push([new Date(el.end_time), 0]);
+            }
+
           }
         } else {
           for (let i = 0; i < data.length; i++) {
@@ -1164,7 +1169,6 @@ export class ChartsCallsService {
         };
         break; // Fb Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
-        //console.log('ok', data);
         formattedData = {
           chartType: 'PieChart',
           dataTable: data,
@@ -2061,6 +2065,10 @@ export class ChartsCallsService {
         length = data[0].length;
         min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
         break;
+      case D_TYPE.YT:
+        length = data[0].length;
+        min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
+        break;
     }
 
     return min;
@@ -2091,15 +2099,16 @@ export class ChartsCallsService {
         observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
-        observables.push(this.youtubeService.getData(YT_CHART.SUBS, intervalDate, pageIDs))
+        observables.push(this.youtubeService.getSubscribers(pageIDs));
         observables.push(this.youtubeService.getData(YT_CHART.VIEWS, intervalDate, pageIDs));
         observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
-        observables.push(this.youtubeService.getData(YT_CHART.VIDEOS, intervalDate, pageIDs));
+        observables.push(this.youtubeService.getVideos(pageIDs));
         break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
+        observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs) : of({}));
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
@@ -2191,8 +2200,12 @@ export class ChartsCallsService {
     if(measure!='subs') //used to avoid date parsing in YT subscribers (that doesn't contain such infos). Expect more elegant sol. in future
       data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
 
-    for (const i in data) {
-      sum += parseInt(data[i].value);
+    if(measure=='vids')
+      sum = data.length;
+    else {
+      for (const i in data) {
+        sum += parseInt(data[i].value);
+      }
     }
 
     avg = (sum / data.length).toFixed(2);
@@ -2324,8 +2337,10 @@ export class ChartsCallsService {
           value += parseInt(data[i][1]);
         }
         break;
-      case 'yt-subscribers': // TODO edit
-        value = 0;
+      case 'subs':
+        value = data[0]['value'];
+        step = this.searchStep(value, measure);
+        perc = value;
         break;
     }
 

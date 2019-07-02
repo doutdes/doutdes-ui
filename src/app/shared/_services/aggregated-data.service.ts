@@ -98,10 +98,22 @@ export class AggregatedDataService {
       prevFilteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
 
     } else {
-      filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+      switch(chart.type) {
+        case D_TYPE.GA :
+          filteredData = chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last)
+          break;
+        case D_TYPE.YT :
+          filteredData = chart.chartData.filter(el => parseDate(el.date) >= dateInterval.first && parseDate(el.date) <= dateInterval.last)
+
+          break;
+        default:
+          filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+          break;
+      }
+     /* filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
         ? chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last)
         : chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
-
+*/
       let prevDate = this.getPrevious(dateInterval);
       prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
         ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
@@ -113,13 +125,14 @@ export class AggregatedDataService {
     let filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
       ? chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last)
       : chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
-*/
-    let prevDate = this.getPrevious(dateInterval);
+*//*
     /*
     let prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
       ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
       : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
 */
+    let prevDate = this.getPrevious(dateInterval);
+
     switch (chart.type) {
       case D_TYPE.GA:
         prevFilteredData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= prevDate.first.getTime() && parseDate(el[0]).getTime() <= prevDate.last.getTime());
@@ -136,7 +149,6 @@ export class AggregatedDataService {
     switch (chart.type) {
 
       case D_TYPE.GA:
-      //case D_TYPE.YT:
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i][filteredData[i].length - 1]);
           if (value) {
@@ -161,6 +173,7 @@ export class AggregatedDataService {
       case D_TYPE.FB:
       case D_TYPE.IG:
       case D_TYPE.YT:
+       // console.log(filteredData);
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i]['value']);
           if (value) {
@@ -206,6 +219,20 @@ export class AggregatedDataService {
       interval: dateInterval,
       prevInterval: this.getPrevious(dateInterval),
     };
+   /* console.log('----------');
+    console.log('CURRENT : ');
+    console.log('FROM: '+result.interval.first);
+    console.log('TO: '+result.interval.last);
+    console.log('PREVIOUS :');
+    console.log('FROM: '+result.prevInterval.first);
+    console.log('TO: '+result.prevInterval.last);
+    console.log('average ',result.average);
+    console.log('prevAverage ',result.prevAverage);
+    console.log('highest ',result.highest);
+    console.log('prevHighest ',result.prevHighest);
+    console.log('lowest ',result.lowest);
+    console.log('prevLowest',result.prevLowest);
+    console.log('----------');*/
 
     return result;
   }
@@ -251,7 +278,11 @@ export class AggregatedDataService {
       shift.lowShift = 0;
     if( previous[2] === actual[2])
       shift.avgShift = 0;
-
+    /*
+    console.log('highShift: '+shift.highShift);
+    console.log('avgShift: '+shift.avgShift);
+    console.log('lowShift: '+shift.lowShift);
+*/
     return shift;
   }
 

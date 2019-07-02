@@ -13,6 +13,8 @@ import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstr
 import {NgxLoadingModule} from 'ngx-loading';
 import {FeatureDashboardCustomComponent} from './custom.component';
 import {FacebookService} from '../../../shared/_services/facebook.service';
+import {InstagramService} from '../../../shared/_services/instagram.service';
+import {YoutubeService} from '../../../shared/_services/youtube.service';
 
 import {defineLocale} from 'ngx-bootstrap';
 import {itLocale} from 'ngx-bootstrap/locale';
@@ -40,7 +42,9 @@ defineLocale('it', itLocale);
     FacebookService,
     BreadcrumbActions,
     FilterActions,
-    BsLocaleService
+    BsLocaleService,
+    YoutubeService,
+    InstagramService
   ],
   exports: [
     FeatureDashboardCustomComponent
