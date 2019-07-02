@@ -1,14 +1,14 @@
 import {D_TYPE} from './Dashboard';
 
 export interface MiniCard {
-  name: string,
-  icon: string,
+  name: string;
+  icon: string;
   padding: string;
   measure?: string;
-  value?: string,
-  progress?: string,
-  step?: number,
-  type?: number
+  value?: string;
+  progress?: string;
+  step?: number;
+  type?: number;
 }
 
 export let GaMiniCards: MiniCard[] = [
@@ -92,6 +92,44 @@ export let IgMiniCards: MiniCard[] = [
     measure: ''
   }
 ];
+
+export let YtMiniCards: MiniCard[] = [
+  {
+
+    name: 'Iscritti',
+    icon: 'icon-people',
+    padding: 'pl-0 pr-2',
+    measure: 'subs',
+    value: '-',
+    type: D_TYPE.YT
+  }, {
+    name: 'Visualizzazioni',
+    icon: 'icon-screen-desktop',
+    padding: 'pl-2 pr-sm-2 pr-0',
+    measure: 'views',
+    value: '-',
+    type: D_TYPE.YT
+
+  }, {
+    name: 'Media durata vis.',
+    icon: 'icon-action-undo',
+    padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
+    measure: 'avg-v-time',
+    value: '-',
+    type: D_TYPE.YT
+
+  }, {
+    name: 'Video caricati',
+    icon: 'icon-hourglass',
+    padding: 'pl-2 pr-0 pt-sm-0 pt-3',
+    measure: 'vids',
+    value: '-',
+    type: D_TYPE.YT
+
+  },
+];
+
+
 export let CustomMiniCards: MiniCard[] = [
   {
     name: 'Utenti tot.',
@@ -119,7 +157,7 @@ export let CustomMiniCards: MiniCard[] = [
     name: 'Iscritti',
     icon: 'fab fa-youtube',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
-    measure: 'yt-subscribers',
+    measure: 'subs',
     value: '-',
     type: D_TYPE.YT
   }

@@ -1,97 +1,86 @@
 import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {FacebookService} from '../../../shared/_services/facebook.service';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
+import {YoutubeService} from '../../../shared/_services/youtube.service';
+import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
-import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
-
-import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
-import {ApiKeysService} from '../../../shared/_services/apikeys.service';
+import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
+import {addDays, subDays} from 'date-fns';
+import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
-import * as jsPDF from 'jspdf';
+import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
-import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
-import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
-import {ToastrService} from 'ngx-toastr';
+import {YtMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
-import {ApiKey} from '../../../shared/_models/ApiKeys';
+import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {int} from 'flatpickr/dist/utils';
-import {HttpErrorResponse, HttpHeaders, HttpRequest, HttpResponseBase} from '@angular/common/http';
-import {HttpJsonParseError} from '@angular/common/http/src/response';
+import {ApiKey} from '../../../shared/_models/ApiKeys';
+import {ToastContainerDirective, ToastrService} from 'ngx-toastr';
 
-const PrimaryWhite = '#ffffff';
 
 @Component({
-  selector: 'app-feature-dashboard-facebook',
-  templateUrl: './facebook.component.html'
+  selector: 'app-feature-dashboard-youtube',
+  templateUrl: './youtube.component.html'
 })
 
-export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
+export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDestroy {
 
-  @ViewChild('reportWait') reportWait;
+  // @ViewChild(ToastContainerDirective) toastContainer: ToastContainerDirective;
   @ViewChild('selectView') selectView;
+  @ViewChild('reportWait') reportWait;
 
   public D_TYPE = D_TYPE;
   public HARD_DASH_DATA = {
-    dashboard_type: D_TYPE.FB,
+    dashboard_type: D_TYPE.YT,
     dashboard_id: null
   };
 
-  private pageID = null;
-
-  public FILTER_DAYS = {
+  public FILTER_DAYS = { // Deve avere un valore in meno per avere un intervallo corretto
     yesterday: 1,
     seven: 6,
     thirty: 29,
     ninety: 89
   };
 
-  public config = {
-    animationType: ngxLoadingAnimationTypes.threeBounce,
-    backdropBackgroundColour: 'rgba(0,0,0,0.1)',
-    backdropBorderRadius: '4px',
-    primaryColour: PrimaryWhite,
-    secondaryColour: PrimaryWhite
-  };
-
   public chartArray$: Array<DashboardCharts> = [];
-  public miniCards: MiniCard[] = FbMiniCards;
-  private dashStored: Array<DashboardCharts> = [];
+  public miniCards: MiniCard[] = YtMiniCards;
+  private dashStored: DashboardData;
 
   public loading = false;
   public isApiKeySet = true;
-  modalRef: BsModalRef;
-
-  // Form for init
-  selectViewForm: FormGroup;
-  loadingForm: boolean;
-  pageList;
-  submitted: boolean;
 
   @select() filter: Observable<any>;
 
+  // Date variables
   firstDateRange: Date;
   lastDateRange: Date;
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
+  // datePickerEnabled = false;
 
-  // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
+  modalRef: BsModalRef;
+
+  // Form for init
+  selectViewForm: FormGroup;
+  loadingForm: boolean;
+  viewList;
+  submitted: boolean;
+
 
   constructor(
-    private FBService: FacebookService,
-    private apiKeyService: ApiKeysService,
+    private YTService: YoutubeService,
+    public GAService : GoogleAnalyticsService,
     private breadcrumbActions: BreadcrumbActions,
     private DService: DashboardService,
     private CCService: ChartsCallsService,
@@ -99,39 +88,16 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private filterActions: FilterActions,
     private userService: UserService,
     private toastr: ToastrService,
-    private formBuilder: FormBuilder,
+    private ADService: AggregatedDataService,
     private modalService: BsModalService,
+    private apiKeyService: ApiKeysService,
+    private formBuilder: FormBuilder,
     private localeService: BsLocaleService
-  ) {
-
+) {
   }
 
-  async loadMiniCards(pageID) {
-    // 1. Init intervalData (retrieve data of previous month)
-    let results;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
-    const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: this.maxDate
-    };
-    let pageIDs = {};
-
-    pageIDs[D_TYPE.FB] = pageID;
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs, null);
-
-
-    forkJoin(observables).subscribe(miniDatas => {
-      for (const i in miniDatas) {
-        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
-        this.miniCards[i].value = results['value'];
-        this.miniCards[i].progress = results['perc'] + '%';
-        this.miniCards[i].step = results['step'];
-      }
-    });
-  }
-
-  async loadDashboard() { // TODO get pageID and refactor
-    let dash;
+  async loadDashboard() {
+    let dash, charts, dataArray;
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
@@ -141,100 +107,85 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     let currentData: DashboardData = {
       data: chartsToShow,
       interval: dateInterval,
-      type: D_TYPE.FB,
+      type: D_TYPE.YT,
     };
-
+    let chart: DashboardCharts;
 
     this.GEService.loadingScreen.next(true);
 
     try {
       // Retrieving dashboard ID
-      dash = await this.DService.getDashboardByType(D_TYPE.FB).toPromise(); // Google type
-
+      dash = await this.DService.getDashboardByType(D_TYPE.YT).toPromise(); // Google type
       if (dash.id) {
         this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
       } else {
-        console.error('Cannot retrieve a page ID for the Facebook dashboard.');
+        console.error('Cannot retrieve a valid ID for the Website dashboard.');
         return;
       }
-
-      await this.loadMiniCards(this.pageID);
-
-      if (dash.id) {
-        this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
-      } else {
-        console.error('Cannot retrieve a page ID for the Facebook dashboard.');
-        return;
-      }
+      let  temp = await this.YTService.getChannels().toPromise();
+      let channelID = temp[0].id;
+      await this.loadMiniCards(channelID);
 
       if (this.dashStored) {
         // Ci sono già dati salvati
-        this.filterActions.loadStoredDashboard(D_TYPE.FB);
+        this.filterActions.loadStoredDashboard(D_TYPE.YT);
         this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
         this.GEService.loadingScreen.next(false);
 
         if (this.chartArray$.length === 0) {
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
+
       } else {
-        // Retrieving dashboard charts
-        this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
-          .subscribe(charts => {
+        charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
-            if (charts && charts.length > 0) { // Checking if dashboard is not empty
+        if (charts && charts.length > 0) { // Checking if dashboard is not empty
+          let  temp = await this.YTService.getChannels().toPromise();
+          let channelID = temp[0].id;
+          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, dateInterval, channelID)));// Retrieves data for each chart
+          dataArray = await forkJoin(observables).toPromise();
 
-              charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
-              forkJoin(observables)
-                .subscribe(dataArray => {
-                  for (let i = 0; i < dataArray.length; i++) {
+          for (let i = 0; i < dataArray.length; i++) {
+            chart = charts[i];
+            /*
+                            let date = parseDate(data[0]);
+                            if(date < this.minDate) {
+                              this.minDate = date;
+                            }
+            */
+            if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+              chart.chartData = dataArray[i];
+              let date = parseDate(chart['chartData'][0][0]);
 
-                    let chart: DashboardCharts = charts[i];
-                    if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+              if (date < this.minDate)
+                this.minDate = date;
 
-                      if (dataArray[i].length === 0) { //if there is no data avaiable
-                        chart.error = true;
-                      }
-                      else {
-                        chart.chartData = dataArray[i];
-                        let date = new Date(chart.chartData[0]['end_time']);
-                        if (date < this.minDate)
-                          this.minDate = date;
-                        // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
-                        chart.error = false;
-                      }
-                    } else {
-                      chart.error = true;
-
-                      console.error('ERROR in FACEBOOK COMPONENT. Cannot retrieve data from one of the charts. More info:');
-                      console.error(dataArray[i]);
-                    }
-
-                    chartsToShow.push(chart); // Original Data
-                  }
-
-                  currentData.data = chartsToShow;
-
-                  this.filterActions.initData(currentData);
-                  this.GEService.updateChartList.next(true); // TODO check to remove
-
-                  // Shows last 30 days
-                  // this.datePickerEnabled = true;
-                  this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-
-                  this.GEService.loadingScreen.next(false);
-                });
-
+              chart.error = false;
             } else {
-              this.filterActions.initData(currentData);
-              this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-              this.GEService.loadingScreen.next(false);
-              this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+              chart.error = true;
+              console.error('ERROR in Youtube Analytics COMPONENT. The chart data is undefined or it\'s not possible to retrieve data from the chart ', chart, '. More info:');
+              console.error(dataArray[i]);
             }
-          }, err => {
-            console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
-            console.warn(err);
-          });
 
+            chartsToShow.push(chart);
+           }
+
+          currentData.data = chartsToShow;
+
+          this.filterActions.initData(currentData);
+          this.GEService.updateChartList.next(true);
+
+          // Shows last 30 days
+          // this.datePickerEnabled = true;
+          this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
+
+          this.GEService.loadingScreen.next(false);
+
+        } else {
+          this.filterActions.initData(currentData);
+          this.GEService.loadingScreen.next(false);
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+        }
       }
 
     } catch (e) {
@@ -243,36 +194,60 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     }
   }
 
-  addChartToDashboard(dashChart: DashboardCharts) {
-    const chartToPush: DashboardCharts = dashChart;
+  async loadMiniCards(pageID) {
+    let results;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+
     const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+    };
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.YT, pageID, intervalDate);
+
+    forkJoin(observables).subscribe(miniDatas => {
+      for (const i in miniDatas) {
+        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.YT, this.miniCards[i].measure);
+        this.miniCards[i].value = results['value'];
+        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].step = results['step'];
+      }
+    });
+  }
+
+  async addChartToDashboard(dashChart: DashboardCharts) {
+    let chartToPush: DashboardCharts = dashChart;
+
+    const dateInterval: IntervalDate = {
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
     };
-
-    this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
-      .subscribe(data => {
+    let  temp = await this.YTService.getChannels().toPromise();
+    let channelID = temp[0].id;
+    this.CCService.retrieveChartData(dashChart.chart_id, dateInterval, channelID)
+      .subscribe(chartData => {
 
         this.GEService.loadingScreen.next(true);
 
-        if (!data['status']) { // Se la chiamata non rende errori
-          chartToPush.chartData = data;
+        if (chartData && !chartData['status']) { // Se la chiamata non rende errori
+          chartToPush.chartData = chartData;
           chartToPush.error = false;
 
           this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
-
         } else {
           chartToPush.error = true;
-          console.log('Errore recuperando dati per ' + dashChart);
+          console.error('Errore recuperando dati per ' + dashChart);
+
+          this.toastr.error('I dati disponibili per ' + dashChart.title + ' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
         }
 
         this.filterActions.addChart(chartToPush);
-        this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+        this.filterActions.filterData(dateInterval);
 
         this.GEService.loadingScreen.next(false);
       }, error1 => {
-        console.log('Error querying the chart');
-        console.log(error1);
+        console.error('Error querying the Chart');
+        console.error(error1);
+        this.toastr.error('C\'è stato un errore recuperando i dati per il grafico ' + dashChart.title + '. Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
       });
   }
 
@@ -281,7 +256,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     if (value) {// && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
-        first: new Date(value[0].setHours(0, 0, 0, 0)),
+        first: new Date(value[0].setHours(0, 0, 0, 0)), // TO REMEMBER: always set ms to 0!!!!
         last: new Date(value[1].setHours(23, 59, 59))
       };
 
@@ -296,8 +271,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeDateFilter(days: number) {
+  changeData(days: number) {
     this.bsRangeValue = [subDays(this.maxDate, days), this.lastDateRange];
+
     switch (days) {
       case this.FILTER_DAYS.seven:
         this.dateChoice = 'Ultimi 7 giorni';
@@ -319,7 +295,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
-    bread.push(new Breadcrumb('Facebook', '/dashboard/facebook/'));
+    bread.push(new Breadcrumb('Sito web', '/dashboard/youtube/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -328,27 +304,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
-  async checkExistance() {
-    let response, result;
-
-    try {
-      response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FB).toPromise();
-      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.FB).toPromise())['granted'];
-    } catch (e) {
-      console.error(e);
-      result = null;
-    }
-
-    return result;
-  }
-
   async ngOnInit() {
-
-    let existence, fb_page_id, update;
+    let existence, view_id, update;
     let key: ApiKey;
 
     this.GEService.loadingScreen.subscribe(value => {
-      this.loading = value;
+      this.loading = value
     });
 
     this.addBreadcrumb();
@@ -361,14 +322,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         return;
       }
 
-      fb_page_id = await this.getPageID();
+       view_id = await this.getViewID();
 
       // We check if the user has already set a preferred page if there is more than one in his permissions.
-      if (!fb_page_id) {
-        await this.getPagesList();
-
-        if (this.pageList.length === 1) {
-          key = {fb_page_id: this.pageList[0]['id'], service_id: D_TYPE.FB};
+      if (!view_id) {
+        await this.getViewList();
+        (this.viewList);
+        if (this.viewList.length === 1) {
+          key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.YT};
           update = await this.apiKeyService.updateKey(key).toPromise();
 
           if (!update) {
@@ -376,10 +337,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           }
         } else {
           this.selectViewForm = this.formBuilder.group({
-            fb_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+            view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
           });
 
-          this.selectViewForm.controls['fb_page_id'].setValue(this.pageList[0].id);
+          this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
 
           this.openModal(this.selectView, true);
 
@@ -387,18 +348,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         }
       }
 
-
-      this.firstDateRange = this.minDate;
+      this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); //this.minDate;
       this.lastDateRange = this.maxDate;
-      this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-
-      this.GEService.loadingScreen.subscribe(value => {
-        this.loading = value;
-      });
+      //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+      this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange]; // Starts with Last 30 days
 
       this.filter.subscribe(elements => {
         this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-        const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB) : -1;
+        const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.YT) : -1;
         this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
       });
 
@@ -425,10 +382,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       }
 
       this.localeService.use('it');
+
       await this.loadDashboard();
-    }
-    catch (e) {
-      console.error('Error on ngOnInit of Facebook', e);
+
+    } catch (e) {
+      console.error('Error on ngOnInit of Youtube Analytics', e);
     }
   }
 
@@ -441,20 +399,20 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     //console.log(charts_id);
 
     this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
-        this.filterActions.clearDashboard(D_TYPE.FB);
+      this.filterActions.clearDashboard(D_TYPE.FB);
+      this.closeModal();
+    }, error => {
+      if (error.status === 500) {
+        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
         this.closeModal();
-      }, error => {
-        if (error.status === 500) {
-          this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
-          this.closeModal();
-          console.error(error);
-        } else {
-          this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
-          //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
-          console.error(error);
-          this.closeModal();
-        }
-      });
+        console.error(error);
+      } else {
+        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
+        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+        console.error(error);
+        this.closeModal();
+      }
+    });
   }
 
   async htmltoPDF() {
@@ -482,7 +440,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
 
     pdf.setFontSize(18);
-    pdf.text('REPORT DASHBOARD FACEBOOK', x, y - 5);
+    pdf.text('REPORT DASHBOARD SITO', x, y - 5);
     y += 20;
 
     pdf.setFontSize(14);
@@ -509,7 +467,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       x += canvas.width / dimRatio + 10;
     }
 
-    pdf.save('report_fb_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
+    pdf.save('report_sito_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
 
     this.closeModal();
   }
@@ -519,11 +477,37 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async getUserCompany() {
-    return <User> await this.userService.get().toPromise();
+    return <User>await this.userService.get().toPromise();
   }
 
   nChartEven() {
     return this.chartArray$.length % 2 === 0;
+  }
+
+  async selectViewSubmit() {
+    let update;
+    this.submitted = true;
+
+    if (this.selectViewForm.invalid) {
+      this.loadingForm = false;
+      return;
+    }
+
+    const key: ApiKey = {
+      ga_view_id: this.selectViewForm.value.view_id,
+      service_id: D_TYPE.YT
+    };
+
+    this.loadingForm = true;
+
+    update = await this.apiKeyService.updateKey(key).toPromise();
+
+    if (update) {
+      this.closeModal();
+      await this.ngOnInit();
+    } else {
+      console.error('MANDARE ERRORE');
+    }
   }
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
@@ -534,51 +518,38 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     });
   }
 
-  closeModal() {
+  closeModal(): void {
     this.modalRef.hide();
   }
 
-  async selectViewSubmit(){
-    let update;
-    this.submitted = true;
-
-    if (this.selectViewForm.invalid) {
-      this.loadingForm = false;
-      return;
-    }
-
-    const key: ApiKey = {
-      fb_page_id: this.selectViewForm.value.fb_page_id,
-      service_id: D_TYPE.FB
-    };
-
-    this.loadingForm = true;
-
-    update = await this.apiKeyService.updateKey(key).toPromise();
-
-    if(update) {
-      this.closeModal();
-      await this.ngOnInit();
-    } else {
-      console.error('MANDARE ERRORE');
-    }
-  }
-
-  async getPageID() {
-    let pageID;
+  async checkExistance() {
+    let response, result = null;
 
     try {
-      pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
+      response = await this.apiKeyService.checkIfKeyExists(D_TYPE.YT).toPromise();
+      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.YT).toPromise())['granted'];
+    } catch (e) {
+      console.error(e);
+    }
+
+    return result;
+  }
+/// TODO: Verify usefulness
+  async getViewID()  {
+    let viewID;
+
+    try {
+      viewID = (await this.apiKeyService.getAllKeys().toPromise()).ga_view_id;
     } catch (e) {
       console.error('getViewID -> error doing the query', e);
     }
 
-    return pageID;
+    return viewID;
   }
 
-  async getPagesList() {
+  async getViewList() {
     try {
-      this.pageList = await this.FBService.getPages().toPromise();
+      this.viewList = await this.GAService.getViewList().toPromise();
     } catch (e) {
       console.error('getViewList -> Error doing the query');
     }

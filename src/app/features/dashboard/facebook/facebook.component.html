@@ -1,16 +1,20 @@
 <div class="row rounded py-sm-4 title-header h-100">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
-    <h2 class="my-auto float-left">Facebook</h2>
+    <h2 class="my-auto float-left">Facebook </h2>
   </div>
   <div *ngIf="isApiKeySet" class="col-xl-8 col-sm-6 col-md-8 col-12 my-md-auto">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
-      <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
-              aria-controls="button-export"><span class="caret"><i class="fas fa-download"></i></span>
+
+      <button id="button-settings" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="button-settings"><span class="caret"><i class="fas fa-cog"></i></span>
       </button>
 
-      <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
-          aria-labelledby="button-export">
+      <ul id="dropdown-settings" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-settings">
+        <li class="dropdown-item cursor-pointer" (click)="optionModal(deleteCharts)">
+          <i class="fas fa-trash-alt mr-2"></i> Pulisci la dashboard
+        </li>
         <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()">
           <i class="fas fa-file-pdf mr-2"></i>Esporta in PDF
         </li>
@@ -103,4 +107,25 @@
       </div>
     </form>
   </div>
+</ng-template>
+
+<ng-template #deleteCharts>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Eliminazione di tutti i grafici</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    Sei veramente sicuro di voler tutti i grafici?
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="clearDashboard(dashStored)">
+      Sì, rimuovili
+    </button>
+    <button type="button" class="btn btn-success" (click)="closeModal()">No, lasciali </button>
+  </div>
+
 </ng-template>

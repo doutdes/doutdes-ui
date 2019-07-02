@@ -7,14 +7,12 @@ import {HttpClientModule} from '@angular/common/http';
 import {ChartsModule} from 'ng2-charts/ng2-charts';
 import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
-import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
+import {YoutubeService} from '../../../shared/_services/youtube.service';
+import {FeatureDashboardYoutubeAnalyticsComponent} from './youtube.component';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstrap';
-import {NgxLoadingModule} from 'ngx-loading';
-import {FeatureDashboardCustomComponent} from './custom.component';
-import {FacebookService} from '../../../shared/_services/facebook.service';
-import {InstagramService} from '../../../shared/_services/instagram.service';
-import {YoutubeService} from '../../../shared/_services/youtube.service';
+import {ngxLoadingAnimationTypes, NgxLoadingModule} from 'ngx-loading';
+import {UserService} from '../../../shared/_services/user.service';
 
 import {defineLocale} from 'ngx-bootstrap';
 import {itLocale} from 'ngx-bootstrap/locale';
@@ -23,7 +21,7 @@ defineLocale('it', itLocale);
 
 @NgModule({
   declarations: [
-    FeatureDashboardCustomComponent
+    FeatureDashboardYoutubeAnalyticsComponent
   ],
   imports: [
     SharedModule,
@@ -35,20 +33,25 @@ defineLocale('it', itLocale);
     HttpClientModule,
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
-    NgxLoadingModule.forRoot({}),
+    NgxLoadingModule.forRoot({
+      animationType: ngxLoadingAnimationTypes.threeBounce,
+      backdropBackgroundColour: 'rgba(0,0,0,0.1)',
+      backdropBorderRadius: '4px',
+      primaryColour: '#FFF',
+      secondaryColour: '#FFF',
+      fullScreenBackdrop: true
+    }),
   ],
   providers: [
-    GoogleAnalyticsService,
-    FacebookService,
-    BreadcrumbActions,
-    FilterActions,
-    BsLocaleService,
     YoutubeService,
-    InstagramService
+    BreadcrumbActions,
+    UserService,
+    FilterActions,
+    BsLocaleService
   ],
   exports: [
-    FeatureDashboardCustomComponent
+    FeatureDashboardYoutubeAnalyticsComponent
   ]
 })
 
-export class FeatureDashboardCustomModule { }
+export class FeatureDashboardYoutubeAnalyticsModule { }

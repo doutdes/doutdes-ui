@@ -3,6 +3,7 @@ import {FacebookService} from './facebook.service';
 import {InstagramService} from './instagram.service';
 import {Observable, of} from 'rxjs';
 import {GoogleAnalyticsService} from './googleAnalytics.service';
+import {YoutubeService} from './youtube.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {D_TYPE} from '../_models/Dashboard';
@@ -13,6 +14,7 @@ import * as moment from 'moment';
 import _date = moment.unitOfTime._date;
 import * as _ from 'lodash';
 
+import {YT_CHART} from '../_models/YoutubeData';
 
 @Injectable()
 export class ChartsCallsService {
@@ -20,7 +22,8 @@ export class ChartsCallsService {
   constructor(
     private facebookService: FacebookService,
     private googleAnalyticsService: GoogleAnalyticsService,
-    private instagramService: InstagramService) {
+    private instagramService: InstagramService,
+    private youtubeService: YoutubeService) {
   }
 
   public static cutString(str, maxLength) {
@@ -30,21 +33,16 @@ export class ChartsCallsService {
     return '...';
   }
 
-  public retrieveChartData(ID, pageID?): Observable<any> {
-
+  public retrieveChartData(ID, intervalDate?, pageID?): Observable<any> {
     if (Object.values(FB_CHART).includes(ID)) {
       return this.facebookService.getData(ID, pageID);
-    }
-
-    else if (Object.values(IG_CHART).includes(ID)) {
+    } else if (Object.values(IG_CHART).includes(ID)) {
       return this.instagramService.getData(ID, pageID);
-    }
-
-    else if (Object.values(GA_CHART).includes(ID)) {
+    } else if (Object.values(GA_CHART).includes(ID)) {
       return this.googleAnalyticsService.getData(ID);
-    }
-
-    else {
+    } else if (Object.values(YT_CHART).includes(ID)) {
+      return this.youtubeService.getData(ID, intervalDate, pageID);
+    } else {
       throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
     }
   }
@@ -59,6 +57,7 @@ export class ChartsCallsService {
     let interval;
     let temp, index;
     let myMap;
+
 
     // console.warn('ID: ' + ID + ' - ', data);
 
@@ -78,6 +77,8 @@ export class ChartsCallsService {
             return [k, data[data.length - 1].value[k]];
           });
         }
+
+        chartData = this.addPaddindRows(chartData);
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
@@ -92,9 +93,6 @@ export class ChartsCallsService {
         chartData = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
         });
-
-        //console.log(chartData);
-        //console.log(Object.keys(data[data.length - 1].value));
 
         break;  // Fan Country Pie
       case FB_CHART.PAGE_VIEWS:
@@ -202,10 +200,8 @@ export class ChartsCallsService {
         for (let el of data) {
            if(el['value']) {
                let reacts = el['value'];
-
                for(let i in reacts) {
                  let value = parseInt(reacts[i], 10);
-
                  if (myMap.has(i)) {
                    myMap.set(i, myMap.get(i) + value);
                  } else {
@@ -222,7 +218,133 @@ export class ChartsCallsService {
           chartData.push([key.next().value, values.next().value]);
         }
 
-        break; // Facebook Reazioni
+        break; // Facebook Reazioni torta
+      case FB_CHART.REACTIONS_LINEA:
+        header = [['Data','Reazioni']];
+
+        if (this.lengthKeys(data) != 0) {
+          let sum = 0;
+          for (let el of data) {
+            if (el && (el.value != undefined)) {
+
+              sum = Object.values(el.value).reduce((a: Number, b: Number) => {
+                // @ts-ignore
+                return a + b
+              }, 0);
+
+              //console.log(el);
+
+              chartData.push([new Date(el.end_time), sum]);
+            } else {
+              chartData.push([new Date(el.end_time), 0]);
+            }
+          }
+        } else {
+          for (let i = 0; i < data.length; i++) {
+            chartData.push([new Date(data[i].end_time), data[i].value]);
+          }
+        }
+
+        break; // Facebook Reazioni linea
+      case FB_CHART.REACTIONS_COLUMN_CHART:
+        header = [['Reazione', 'Numero']];
+
+        myMap = new Map();
+        for (let el of data) {
+          if(el['value']) {
+            let reacts = el['value'];
+            for(let i in reacts) {
+              let value = parseInt(reacts[i], 10);
+              if (myMap.has(i)) {
+                myMap.set(i, myMap.get(i) + value);
+              } else {
+                myMap.set(i, value);
+              }
+            }
+          }
+        }
+
+        var key = myMap.keys();
+        var values = myMap.values();
+
+        for (let i = 0; i < myMap.size; i++) {
+          chartData.push([key.next().value, values.next().value]);
+        }
+
+        break; // Facebook Reazioni colonna
+      case FB_CHART.PAGE_VIEW_EXTERNALS:
+        header = [['Sito Web', 'Numero']];
+
+        chartData = this.mapChartData(data);
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddindRows(chartData);
+
+        break; // Facebook Domini dei referenti esterni (elenco)
+      case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
+        header = [['Sito Web', 'Numero']];
+
+        if (this.lengthKeys(data) != 0) {
+          let sum = 0;
+          for (let el of data) {
+            if (el && (el.value != undefined)) {
+              sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
+                // @ts-ignore
+                return a + b
+              }, 0);
+              chartData.push([new Date(el.end_time), sum]);
+            } else {
+              chartData.push([new Date(el.end_time), 0]);
+            }
+          }
+        } else {
+          for (let i = 0; i < data.length; i++) {
+            chartData.push([new Date(data[i].end_time), data[i].value]);
+          }
+        }
+
+        break; // Facebook Domini dei referenti esterni (linea)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY:
+        header = [['Città', 'numero views']];
+
+        chartData = this.mapChartData(data);
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddindRows(chartData);
+        break; // Facebook Vista contenuti per città (elenco)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
+        header = [['Città', 'Numero fan']];
+
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [k, data[data.length - 1].value[k]];
+          });
+        }
+
+        chartData = chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = chartData.slice(0,15);
+
+        break; // Facebook Vista contenuti per città (geomappa)
+      case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
+        header = [['Paese', 'numero views']];
+
+        chartData = this.mapChartData(data);
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddindRows(chartData);
+        break; // Facebook Vista contenuti per Paese (elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -280,11 +402,7 @@ export class ChartsCallsService {
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
-
-        for (let i = 0; i < paddingRows; i++) {
-          chartData.push(['', null]);
-        }
+        chartData = this.addPaddindRows(chartData);
         break;  // Google List Referral
       case GA_CHART.SOURCES_COLUMNS:
         /** Data array is constructed as follows:
@@ -491,8 +609,6 @@ export class ChartsCallsService {
         interval = 3; // Interval of hours to show
         header = [['Follower online', 'Min', 'Media', 'Max']];
 
-        //console.log(data);
-
         for (let i = 0; i < data.length; i++)
           keys.push(data[i]['value']);
 
@@ -581,6 +697,49 @@ export class ChartsCallsService {
           chartData.push([new Date(data[i].end_time), data[i].value]);
         }
         break; // IG FollowerCount
+      case YT_CHART.VIEWS:
+        header = [['Data', 'Visualizzazioni']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
+      case YT_CHART.COMMENTS:
+        header = [['Data', 'Commenti']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
+      case YT_CHART.LIKES:
+        header = [['Data', 'Mi Piace']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+
+        }
+        break; // YT Likes
+      case YT_CHART.DISLIKES:
+        header = [['Data', 'Non Mi Piace']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
+      case YT_CHART.SHARES:
+        header = [['Data', 'Condivisioni']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
+      case YT_CHART.AVGVIEW:
+        header = [['Data', 'Tempo medio di riproduzione']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
+      case YT_CHART.ESTWATCH:
+        header = [['Data', 'Riproduzione stimata']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
+        }
+        break;
     }
 
     return chartData.length > 0 ? header.concat(chartData) : [];
@@ -1013,7 +1172,6 @@ export class ChartsCallsService {
         };
         break; // Fb Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
-        //console.log('ok', data);
         formattedData = {
           chartType: 'PieChart',
           dataTable: data,
@@ -1027,11 +1185,174 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#06f312', '#0670f3', '#f31900', '#a4958a'],
+            colors: ['#7cf3e0', '#0670f3', '#f31900', '#a4958a', '#F30DA6', '#0AA41F', '#F3ED00', '#00F3E5', '#9549F3'],
             areaOpacity: 0.2
           }
         };
-        break; // Fb Reazioni
+        break; // Fb Reazioni torta
+      case FB_CHART.REACTIONS_LINEA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#81b9f6'],
+            areaOpacity: 0.1
+          }
+        };
+        break; // Fb Reazioni linea
+      case FB_CHART.REACTIONS_COLUMN_CHART:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break; // Fb Reazioni colonna
+      case FB_CHART.PAGE_VIEW_EXTERNALS:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; //Fb Domini dei referenti esterni (elenco)
+      case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              grindLines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#2224ef'],
+            areaOpacity: 0.1
+          }
+        };
+        break; //Fb Domini dei referenti esterni (linea)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; //Fb Vista contenuti per città (elenco)
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
+        formattedData = {
+          chartType: 'GeoChart',
+          dataTable: data,
+          chartClass: 2,
+          options: {
+            region: 'IT',
+            displayMode: 'markers',
+            colors: ['#63c2de'],
+            colorAxis: {colors: ['#9EDEEF', '#63c2de']},
+            backgroundColor: '#fff',
+            datalessRegionColor: '#eee',
+            defaultColor: '#333',
+            height: '300'
+          }
+        };
+
+        break; // //Fb Vista contenuti per città (geomappa)
+      case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
+
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+
+        break; //Fb Vista contenuti per Paese (elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
@@ -1516,14 +1837,223 @@ export class ChartsCallsService {
           }
         };
         break; // IG Follower count
+      case IG_CHART.FOLLOWER_COUNT:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ff96bd'],
+            areaOpacity: 0.1
+          }
+        };
+      break;
+      case YT_CHART.VIEWS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#ffbe5b'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.COMMENTS:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#61b4ff'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.LIKES:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#33b362'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.DISLIKES:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#88372b'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.SHARES:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#dc852b'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.AVGVIEW:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#a195cc'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+      case YT_CHART.ESTWATCH:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'}
+            },
+            colors: ['#a195cc'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+    }
+    return formattedData;
+  }
+
+  public addPaddindRows (chartData) {
+
+    let paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+    for (let i = 0; i < paddingRows; i++) {
+      chartData.push(['', null]);
     }
 
-    return formattedData;
+    return chartData;
   }
 
   private getMinChartStep(type, data, perc = 0.8) {
     let min, length;
-
     data = data.slice(1);
 
     switch (type) {
@@ -1535,6 +2065,9 @@ export class ChartsCallsService {
         }
         break;
       case D_TYPE.GA:
+        length = data[0].length;
+        min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
+        break;
       case D_TYPE.YT:
         length = data[0].length;
         min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
@@ -1569,11 +2102,16 @@ export class ChartsCallsService {
         observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
+        observables.push(this.youtubeService.getSubscribers(pageIDs));
+        observables.push(this.youtubeService.getData(YT_CHART.VIEWS, intervalDate, pageIDs));
+        observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
+        observables.push(this.youtubeService.getVideos(pageIDs));
         break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
+        observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs) : of({}));
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
@@ -1595,8 +2133,12 @@ export class ChartsCallsService {
       case D_TYPE.IG:
         result = this.getInstagramMiniValue(measure, data, intervalDate);
         break;
+      case D_TYPE.YT :
+        result = this.getYTMiniValue(measure, data);
+        break
       case D_TYPE.CUSTOM:
         result = this.getCustomMiniValue(measure, data, intervalDate);
+        break;
     }
 
     return result;
@@ -1646,6 +2188,63 @@ export class ChartsCallsService {
         break;
     }
 
+    return {value, perc, step};
+  }
+
+  private getYTMiniValue(measure, data) {
+    let value, sum = 0, avg, perc, step;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m - 1, 1),
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+    };
+
+    if(measure!='subs') //used to avoid date parsing in YT subscribers (that doesn't contain such infos). Expect more elegant sol. in future
+      data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
+
+    if(measure=='vids')
+      sum = data.length;
+    else {
+      for (const i in data) {
+        sum += parseInt(data[i].value);
+      }
+    }
+
+    avg = (sum / data.length).toFixed(2);
+
+    switch (measure) {
+      case 'subs':
+        value = avg;
+        step = this.searchStep(value, measure);
+        perc = value;
+        break;
+
+      case 'views':
+        value = sum;
+        step = this.searchStep(value, measure);
+        perc = value / step * 100;
+        break;
+
+      case 'avg-v-time':
+        value = avg;
+        step = this.searchStep(value, measure);
+        perc = value / step * 100;
+        break;
+
+      case 'vids':
+        value = sum;
+        step = this.searchStep(value, measure);
+        perc = value / step * 100;
+        break;
+
+
+      default:
+        value = sum;
+        step = this.searchStep(value);
+        perc = value / step * 100;
+        break;
+    }
     return {value, perc, step};
   }
 
@@ -1741,8 +2340,10 @@ export class ChartsCallsService {
           value += parseInt(data[i][1]);
         }
         break;
-      case 'yt-subscribers': // TODO edit
-        value = 0;
+      case 'subs':
+        value = data[0]['value'];
+        step = this.searchStep(value, measure);
+        perc = value;
         break;
     }
 
@@ -1784,5 +2385,78 @@ export class ChartsCallsService {
     }
 
     return step;
+  }
+
+  private getDomain(arg: string) {
+    let domain;
+
+    if (arg.indexOf("://") > -1) {
+      domain = arg.split('/')[2];
+    } else {
+      domain = arg.split('/')[0];
+    }
+
+    //trova e rimuovi eventuale porta
+    domain = domain.split(':')[0];
+
+    return domain;
+  }
+
+  public mapChartData (data) {
+
+    let myMap = new Map();
+    let chartData = [];
+
+    for (let el of data) {
+      if (el['value']) {
+        let web = el['value'];
+
+        for (let i in web) {
+          //i = this.getDomain(i);
+          let value = parseInt(web[i], 10);
+
+          i = this.getDomain(i);
+          if (myMap.has(i)) {
+            myMap.set(i, myMap.get(i) + value);
+          } else {
+            myMap.set(i, value);
+          }
+        }
+      }
+    }
+
+    var key = myMap.keys();
+    var values = myMap.values();
+
+    for (let i = 0; i < myMap.size; i++) {
+      chartData.push([key.next().value, values.next().value]);
+    }
+
+    return chartData;
+  }
+
+  public lengthKeys (data) {
+    let myMap;
+    myMap = new Map();
+    let keys = [];
+
+    for (let el of data) {
+      let n = el['value'];
+      for (let key in n) {
+        if (myMap.has(key)) {
+          myMap.set(key, 0);
+        } else {
+          myMap.set(key, 0);
+        }
+      }
+    }
+
+    var key = myMap.keys();
+
+    for (let i = 0; i < myMap.size; i++) {
+      keys.push([key.next().value]);
+    }
+
+    return keys.length;
   }
 }

@@ -4,8 +4,6 @@ import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
 import {GA_CHART, GoogleData} from '../_models/GoogleData';
 
-import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
-import * as moment from 'moment';
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 
@@ -20,7 +18,7 @@ export class GoogleAnalyticsService {
 
   getViewList() {
     const headers = this.getAuthorization();
-
+    console.log(headers);
     return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/ga/getViewList', {headers});
   }
 

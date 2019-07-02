@@ -8,6 +8,8 @@ import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {parseDate} from 'ngx-bootstrap';
+import {until} from 'selenium-webdriver';
+import elementIsSelected = until.elementIsSelected;
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -151,10 +153,22 @@ export class FilterActions {
         // If the type of the chart is known
         if (DS_TYPE.hasOwnProperty(chart.type)) {
           if(!chart.error) {
+            switch (chart.type) {
+              case D_TYPE.GA:
+                chart.chartData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime());
+                break;
+              case D_TYPE.YT:
+                chart.chartData = chart.chartData.filter(el => parseDate(el.date).getTime() >= filterInterval.first.getTime() && parseDate(el.date).getTime() <= filterInterval.last.getTime());
+                break;
+              default:
+                chart.chartData = chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
+                break;
+            }
+/* YT chart has "date", not [0], so a switch instead of the old method was required
             chart.chartData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
               ? chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime())
               : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
-
+*/
             chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
             chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i], filterInterval);
           }
@@ -178,6 +192,20 @@ export class FilterActions {
 
   clear() {
     this.Redux.dispatch({type: FILTER_CLEAR});
+  }
+
+  clearDashboard(dashboard_type: number) {
+    this.removedStoredDashboard(dashboard_type);
+
+    this.currentDashboard.data = [];
+    this.filteredDashboard.data = [];
+
+    this.Redux.dispatch({
+      type: FILTER_UPDATE,
+      storedDashboards: this.storedDashboards,
+      currentDashboard: this.currentDashboard,
+      filteredDashboard: this.filteredDashboard,
+    })
   }
 
   // This method is been called if and only if a dashboard was already stored on the variable model called storedDashboards

@@ -81,8 +81,21 @@ export class FacebookService {
       case FB_CHART.POST_IMPRESSIONS:
         call = 'postimpressions';
         break;
+      case FB_CHART.REACTIONS_LINEA:
+      case FB_CHART.REACTIONS_COLUMN_CHART:
       case FB_CHART.REACTIONS:
         call = 'pagereactions';
+        break;
+      case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
+      case FB_CHART.PAGE_VIEW_EXTERNALS:
+        call = 'pageviewsexternals';
+        break;
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
+      case FB_CHART.PAGE_IMPRESSIONS_CITY:
+        call = 'pageimpressionscity';
+        break;
+      case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
+        call = 'pageimpressionscountry';
         break;
     }
 

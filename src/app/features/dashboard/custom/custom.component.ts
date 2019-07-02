@@ -14,6 +14,7 @@ import {subDays} from 'date-fns';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
+import {YoutubeService} from '../../../shared/_services/youtube.service';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {ToastrService} from 'ngx-toastr';
@@ -48,6 +49,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   private fbPageID = null;
   private igPageID = null;
+  private ytPageID = null;
   public somethingGranted = true;
 
   public FILTER_DAYS = {
@@ -91,6 +93,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private GAService: GoogleAnalyticsService,
     private FBService: FacebookService,
     private IGService: InstagramService,
+    private YTService: YoutubeService,
     private breadcrumbActions: BreadcrumbActions,
     private DService: DashboardService,
     private CCService: ChartsCallsService,
@@ -159,7 +162,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
       this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
       this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
-
+      this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] ? (await this.YTService.getChannels().toPromise())[0].id : null;
       this.firstDateRange = subDays(new Date(), 30); // this.minDate;
       this.lastDateRange = this.maxDate;
       // this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -250,7 +253,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             // If the permission for the service is granted
             if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
               pageID = this.getPageID(chart.type);
-              observables.push(this.CCService.retrieveChartData(chart.chart_id, pageID));
+              observables.push(this.CCService.retrieveChartData(chart.chart_id, dateInterval, pageID));
             }
           }); // Retrieves data for each chart
 
@@ -316,7 +319,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     pageID = this.getPageID(dashChart.type);
 
-    this.CCService.retrieveChartData(dashChart.chart_id, pageID)
+    this.CCService.retrieveChartData(dashChart.chart_id, dateInterval, pageID)
       .subscribe(chartData => {
         if (!chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;
@@ -337,8 +340,15 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
                   minDate: (parseDate(dashChart['chartData'][0][0]))
                 }
               );
-
             break;
+            case D_TYPE.YT:
+              this.minSet.push(
+                {
+                  id: dashChart.chart_id,
+                  minDate: (parseDate(dashChart.chartData[0]['date']))
+                }
+              );
+              break;
           }
           this.minSet.forEach(el => {
             if (el.minDate < this.minDate)
@@ -438,6 +448,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       case D_TYPE.IG:
         pageID = this.igPageID;
         break;
+      case D_TYPE.YT:
+        pageID = this.ytPageID;
+        break;
       default:
         pageID = null;
         break;
@@ -482,6 +495,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     pageIDs[D_TYPE.FB] = this.fbPageID;
     pageIDs[D_TYPE.IG] = this.igPageID;
+    pageIDs[D_TYPE.YT] = this.ytPageID;
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
 
@@ -499,12 +513,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         }
       }
     });
-
-    // TODO Remove YT simulation card
-    results = this.CCService.formatMiniChartData(null, D_TYPE.CUSTOM, this.miniCards[3].measure);
-    this.miniCards[3].value = '-';
-    this.miniCards[3].progress = results['perc'] + '%';
-    this.miniCards[3].step = undefined;
   }
 
   async getViewID()  {
@@ -551,6 +559,26 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     } else {
       console.error('MANDARE ERRORE');
     }
+  }
+
+  clearDashboard(): void {
+    //console.log(charts_id);
+
+    this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
+      this.filterActions.clearDashboard(D_TYPE.FB);
+      this.closeModal();
+    }, error => {
+      if (error.status === 500) {
+        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
+        this.closeModal();
+        console.error(error);
+      } else {
+        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
+        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+        console.error(error);
+        this.closeModal();
+      }
+    });
   }
 
   async htmltoPDF() {
@@ -624,5 +652,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   closeModal(): void {
     this.modalRef.hide();
+  }
+
+  optionModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 }
