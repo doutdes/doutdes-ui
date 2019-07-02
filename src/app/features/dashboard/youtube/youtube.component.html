@@ -1,0 +1,114 @@
+<!--<div toastContainer></div>-->
+<div class="row rounded py-sm-4 title-header h-100">
+  <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
+    <h2 class="my-auto float-left">Youtube Analytics</h2>
+  </div> <!-- Title -->
+  <div *ngIf="isApiKeySet" class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
+    <h5 class="d-inline-block d-sm-none mt-1">Filtra:</h5>
+    <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
+      <button id="button-export" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="button-export"><span class="caret"><i class="fas fa-download"></i></span>
+      </button>
+
+      <ul id="dropdown-export" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-export">
+        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF();">
+          <i class="fas fa-file-pdf mr-2"></i>Esporta in PDF
+        </li>
+      </ul>
+    </div> <!-- PDF export -->
+    <div class="btn-group float-right d-md-block d-none" dropdown>
+      <button id="button-date-filter" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="dropdown-date-filter"><span class="caret">{{dateChoice}}</span>
+      </button>
+
+      <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-date-filter">
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Ultimi 7 giorni</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Ultimi 30 giorni</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Ultimi 90 giorni</li>
+        <!--<li class="dropdown-item">Personalizzato</li>-->
+      </ul>
+    </div> <!-- TODO Create a component custom like card -->
+    <input type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker"
+           [(ngModel)]="bsRangeValue"
+           [minDate]="minDate"
+           [maxDate]="maxDate"
+           [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-red' }"
+           (bsValueChange)="onValueChange($event)"
+           bsDaterangepicker> <!-- Date picker -->
+  </div>
+</div> <!-- Header -->
+<div *ngIf="isApiKeySet" class="row px-3 pt-3">
+  <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.YT"></app-minicard>
+</div> <!-- Mini cards -->
+<div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
+  <ng-container *ngIf="chartArray$.length > 0">
+    <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
+      <app-card [dashChart]="chart"></app-card>
+    </div>
+  </ng-container>
+
+  <ng-template *ngIf="!loading && chartArray$.length == 0 && isApiKeySet">
+    <h5 class="col-md-12 mt-3">La dashboard è vuota. Puoi iniziare inserendo il primo grafico!</h5>
+  </ng-template>
+
+  <app-emptycard
+    *ngIf="!loading && isApiKeySet" class="col-lg-6 col-xl-6" [dashboard_data]="HARD_DASH_DATA"
+    [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}">
+  </app-emptycard>
+</div> <!-- Chart cards -->
+
+<div *ngIf="!isApiKeySet" class="row">
+  <div class="col-md-12 mt-3">
+    <div class="card-group">
+      <div class="card p-2" style="background-color: #eee;">
+        <div class="card-body">
+          <i class="fas fa-crow mr-1" style="font-size:30pt"></i><h5 class="mt-3"> Qua non c'è niente! Prima di poter visualizzare i dati, devi aggiungere la <b>sorgente dati</b> "Google".</h5><br/>
+          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys']">Aggiungi una sorgente dati</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ngx-loading [show]="loading"></ngx-loading>
+
+<ng-template #reportWait>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-hourglass-half"></i> Esporta il report</h4>
+  </div>
+
+  <div class="modal-body">
+    Stiamo creando il tuo report, attendi...
+  </div>
+</ng-template>
+<ng-template #selectView>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>Seleziona dati da importare</h4>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
+      <div class="form-group row">
+        <p class="col-sm-12 text-justify">
+          Il tuo account Youtube Analytics è associato a più canali. Quale vuoi includere in Doutdes?
+        </p>
+        <div class="col-sm-12">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="view_id" [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['view_id'].errors }">
+            <!--<option [value]="viewList[0].id" selected>{{viewList[0].name}}</option>-->
+            <option *ngFor="let view of viewList" [value]="view.id">{{view.name}}</option>
+          </select>
+
+          <div *ngIf="this.submitted && selectViewForm.controls['view_id'].errors" class="invalid-feedback">
+            <div>Devi obbligatoriamente selezionare un canale</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pr-0 pb-0">
+        <button type="submit" class="btn btn-success">Conferma</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
