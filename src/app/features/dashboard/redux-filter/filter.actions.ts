@@ -187,7 +187,7 @@ export class FilterActions {
     this.filteredDashboard.data = [];
 
     this.Redux.dispatch({
-      type: FILTER_REMOVE_CURRENT,
+      type: FILTER_UPDATE,
       storedDashboards: this.storedDashboards,
       currentDashboard: this.currentDashboard,
       filteredDashboard: this.filteredDashboard,
