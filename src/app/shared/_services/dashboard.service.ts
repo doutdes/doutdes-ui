@@ -70,6 +70,19 @@ export class DashboardService {
     });
   }
 
+  clearDashboard (dashboard_id) {
+    const headers = this.getAuthorization();
+
+    const body = {
+      dashboard_id: dashboard_id
+    };
+
+    return this.http.request('delete',environment.protocol + environment.host + ':' + environment.port + '/dashboards/clearDashboard/', {
+      body,
+      headers
+    });
+  }
+
   addDashboard(dashboard_name, dashboard_category) {
 
     const headers = this.getAuthorization();
@@ -121,9 +134,6 @@ export class DashboardService {
       body
     });
   }
-
-
-
 
   getAuthorization() {
     return new HttpHeaders()

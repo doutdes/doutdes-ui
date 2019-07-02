@@ -561,6 +561,26 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     }
   }
 
+  clearDashboard(): void {
+    //console.log(charts_id);
+
+    this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
+      this.filterActions.clearDashboard(D_TYPE.FB);
+      this.closeModal();
+    }, error => {
+      if (error.status === 500) {
+        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
+        this.closeModal();
+        console.error(error);
+      } else {
+        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
+        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+        console.error(error);
+        this.closeModal();
+      }
+    });
+  }
+
   async htmltoPDF() {
     const pdf = new jsPDF('p', 'px', 'a4'); // 595w x 842h
     const cards = document.querySelectorAll('app-card');
@@ -632,5 +652,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   closeModal(): void {
     this.modalRef.hide();
+  }
+
+  optionModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 }

@@ -24,6 +24,8 @@ import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
 import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
 import {int} from 'flatpickr/dist/utils';
+import {HttpErrorResponse, HttpHeaders, HttpRequest, HttpResponseBase} from '@angular/common/http';
+import {HttpJsonParseError} from '@angular/common/http/src/response';
 
 const PrimaryWhite = '#ffffff';
 
@@ -371,6 +373,26 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.filterActions.removeCurrent();
   }
 
+  clearDashboard(): void {
+    //console.log(charts_id);
+
+    this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
+        this.filterActions.clearDashboard(D_TYPE.FB);
+        this.closeModal();
+      }, error => {
+        if (error.status === 500) {
+          this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
+          this.closeModal();
+          console.error(error);
+        } else {
+          this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
+          //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+          console.error(error);
+          this.closeModal();
+        }
+      });
+  }
+
   async htmltoPDF() {
     const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
     const cards = document.querySelectorAll('app-card');
@@ -451,4 +473,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   closeModal() {
     this.modalRef.hide();
   }
+
+  optionModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  }
+
 }

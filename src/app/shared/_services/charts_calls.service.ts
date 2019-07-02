@@ -225,19 +225,19 @@ export class ChartsCallsService {
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
           for (let el of data) {
-            if(el.value)
-            {
-              sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
+            if (el && (el.value != undefined)) {
+
+              sum = Object.values(el.value).reduce((a: Number, b: Number) => {
                 // @ts-ignore
                 return a + b
               }, 0);
+
+              //console.log(el);
+
               chartData.push([new Date(el.end_time), sum]);
-            }
-            else
-            {
+            } else {
               chartData.push([new Date(el.end_time), 0]);
             }
-
           }
         } else {
           for (let i = 0; i < data.length; i++) {
@@ -290,11 +290,15 @@ export class ChartsCallsService {
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
           for (let el of data) {
-            sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
-              // @ts-ignore
-              return a + b
-            }, 0);
-            chartData.push([new Date(el.end_time), sum]);
+            if (el && (el.value != undefined)) {
+              sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
+                // @ts-ignore
+                return a + b
+              }, 0);
+              chartData.push([new Date(el.end_time), sum]);
+            } else {
+              chartData.push([new Date(el.end_time), 0]);
+            }
           }
         } else {
           for (let i = 0; i < data.length; i++) {
@@ -604,7 +608,6 @@ export class ChartsCallsService {
 
         interval = 3; // Interval of hours to show
         header = [['Follower online', 'Min', 'Media', 'Max']];
-
 
         for (let i = 0; i < data.length; i++)
           keys.push(data[i]['value']);
