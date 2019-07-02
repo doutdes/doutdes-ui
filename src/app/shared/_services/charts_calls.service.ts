@@ -227,14 +227,20 @@ export class ChartsCallsService {
       case FB_CHART.REACTIONS_LINEA:
         header = [['Data','Reazioni']];
 
+        //console.log(data);
+
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
           for (let el of data) {
-            if (el) {
+            if (el && (el.value != undefined)) {
+
               sum = Object.values(el.value).reduce((a: Number, b: Number) => {
                 // @ts-ignore
                 return a + b
               }, 0);
+
+              //console.log(el);
+
               chartData.push([new Date(el.end_time), sum]);
             } else {
               chartData.push([new Date(el.end_time), 0]);
@@ -291,7 +297,7 @@ export class ChartsCallsService {
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
           for (let el of data) {
-            if (el) {
+            if (el && (el.value != undefined)) {
               sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
                 // @ts-ignore
                 return a + b

@@ -34,9 +34,8 @@ export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action)
 
     case FILTER_REMOVE_CURRENT:
       return Object.assign({}, state, {
-        currentDashboard:  action.currentDashboard,
-        filteredDashboard:  action.filteredDashboard,
-        storedDashboards: action.storedDashboards
+        currentDashboard:  null,
+        filteredDashboard:  null,
       });
 
     case FILTER_RESET:
