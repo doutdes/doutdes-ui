@@ -2,10 +2,13 @@ import {Injectable} from '@angular/core';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {subDays} from 'date-fns';
 import {D_TYPE} from '../_models/Dashboard';
-import {GA_CHART} from '../_models/GoogleData';
 import {parseDate} from 'ngx-bootstrap';
 import {DashboardCharts} from '../_models/DashboardCharts';
 import {calculateBytes} from '@angular/cli/utilities/bundle-calculator';
+import {FB_CHART} from '../_models/FacebookData';
+import get = Reflect.get;
+import {getValueFromObject} from 'ngx-bootstrap/typeahead';
+import {count} from 'rxjs/operators';
 
 @Injectable()
 export class AggregatedDataService {
@@ -17,6 +20,7 @@ export class AggregatedDataService {
 
   getAggregatedData(chart: DashboardCharts, dateInterval: IntervalDate) {
 
+    ///TODO really ugly handling of filtered data: basically a copy-paste  of filter.actions -> better call the method
     let sum = 0;
     let highest = Number.MIN_SAFE_INTEGER;
     let lowest = Number.MAX_SAFE_INTEGER;
@@ -27,26 +31,129 @@ export class AggregatedDataService {
 
     let nValues = 0;
     let prevNValues = 0;
+    let filteredData;
+
+    switch (chart.type) {
+      case D_TYPE.GA:
+        filteredData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= dateInterval.first.getTime() && parseDate(el[0]).getTime() <= dateInterval.last.getTime());
+        break;
+      case D_TYPE.YT:
+        filteredData = chart.chartData.filter(el => parseDate(el.date).getTime() >= dateInterval.first.getTime() && parseDate(el.date).getTime() <= dateInterval.last.getTime());
+        break;
+      default:
+        filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+        break;
+    }
+    let prevFilteredData;
+    let myMap;
+    let keys = [];
+    let tmp = [];
+
+    if ((chart.type === D_TYPE.FB) &&
+      ((chart.chart_id === FB_CHART.REACTIONS_LINEA) ||
+        (chart.chart_id === FB_CHART.PAGE_VIEW_EXTERNALS_LINEA))) {
 
 
+      myMap = new Map();
+
+      for (let el of chart.chartData) {
+        let n = el['value'];
+        for (let key in n) {
+          if (myMap.has(key)) {
+            myMap.set(key, 0);
+          } else {
+            myMap.set(key, 0);
+          }
+        }
+      }
+
+      var key = myMap.keys();
+
+      for (let i = 0; i < myMap.size; i++) {
+        keys.push([key.next().value]);
+      }
+
+      if (keys.length != 0) {
+
+        for (let i = 0; i < chart.chartData.length; i++) {
+          if (!chart.chartData[i].value) {
+            tmp.push({'end_time': chart.chartData[i].end_time, 'value': 0});
+          } else {
+            let count = 0;
+            for (let web of keys) {
+              if (chart.chartData[i].value[web]) {
+                count += chart.chartData[i].value[web];
+              }
+            }
+            tmp.push({'end_time': chart.chartData[i].end_time, 'value': count});
+          }
+        }
+
+        chart.chartData = tmp;
+      }
+
+      filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+
+      let prevDate = this.getPrevious(dateInterval);
+      prevFilteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+
+    } else {
+      switch (chart.type) {
+        case D_TYPE.GA :
+          filteredData = chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last);
+          break;
+        case D_TYPE.YT :
+          filteredData = chart.chartData.filter(el => parseDate(el.date) >= dateInterval.first && parseDate(el.date) <= dateInterval.last);
+
+          break;
+        default:
+          filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+          break;
+      }
+      /* filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+         ? chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last)
+         : chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+ */
+      let prevDate = this.getPrevious(dateInterval);
+      prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+        ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
+        : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+
+    }
+
+    /*
     let filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
       ? chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last)
       : chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
-
+*/
+    /*
+        /*
+        let prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+          ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
+          : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+    */
     let prevDate = this.getPrevious(dateInterval);
-    let prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
-      ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
-      : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+
+    switch (chart.type) {
+      case D_TYPE.GA:
+        prevFilteredData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= prevDate.first.getTime() && parseDate(el[0]).getTime() <= prevDate.last.getTime());
+        break;
+      case D_TYPE.YT:
+        prevFilteredData = chart.chartData.filter(el => parseDate(el.date).getTime() >= prevDate.first.getTime() && parseDate(el.date).getTime() <= prevDate.last.getTime());
+        break;
+      default:
+        prevFilteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+        break;
+    }
 
 
     switch (chart.type) {
 
       case D_TYPE.GA:
-      case D_TYPE.YT:
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i][filteredData[i].length - 1]);
           if (value) {
-            sum +=  value;
+            sum += value;
             nValues++;
           }
           highest = value > highest ? value : highest;
@@ -57,7 +164,7 @@ export class AggregatedDataService {
         for (let i = 0; i < prevFilteredData.length; i++) {
           const value = parseFloat(prevFilteredData[i][prevFilteredData[i].length - 1]);
           if (value) {
-            prevSum +=  value;
+            prevSum += value;
             prevNValues++;
           }
           prevHighest = value > prevHighest ? value : prevHighest;
@@ -66,10 +173,12 @@ export class AggregatedDataService {
         break;
       case D_TYPE.FB:
       case D_TYPE.IG:
+      case D_TYPE.YT:
+        // console.log(filteredData);
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i]['value']);
           if (value) {
-            sum +=  value;
+            sum += value;
             nValues++;
           }
           highest = value > highest ? value : highest;
@@ -80,7 +189,7 @@ export class AggregatedDataService {
         for (let i = 0; i < prevFilteredData.length; i++) {
           const value = parseFloat(prevFilteredData[i]['value']);
           if (value) {
-            prevSum +=  value;
+            prevSum += value;
             prevNValues++;
           }
           prevHighest = value > prevHighest ? value : prevHighest;
@@ -89,28 +198,42 @@ export class AggregatedDataService {
         break;
     }
 
-    if(highest === Number.MIN_SAFE_INTEGER)
+    if (highest === Number.MIN_SAFE_INTEGER)
       highest = 0;
-    if(lowest === Number.MAX_SAFE_INTEGER)
+    if (lowest === Number.MAX_SAFE_INTEGER)
       lowest = 0;
-    if(prevHighest === Number.MIN_SAFE_INTEGER)
+    if (prevHighest === Number.MIN_SAFE_INTEGER)
       prevHighest = 0;
-    if(prevLowest === Number.MAX_SAFE_INTEGER)
+    if (prevLowest === Number.MAX_SAFE_INTEGER)
       prevLowest = 0;
 
 
     let prevAverage = (prevNValues === 0) ? 0 : (prevSum / prevNValues);
-    let average = (nValues === 0 ) ? 0 : (sum / nValues);
+    let average = (nValues === 0) ? 0 : (sum / nValues);
     let result = {
       average: average,
-      prevAverage : prevAverage,
+      prevAverage: prevAverage,
       highest: highest,
-      prevHighest : prevHighest,
+      prevHighest: prevHighest,
       lowest: lowest,
-      prevLowest : prevLowest,
+      prevLowest: prevLowest,
       interval: dateInterval,
       prevInterval: this.getPrevious(dateInterval),
     };
+    /* console.log('----------');
+     console.log('CURRENT : ');
+     console.log('FROM: '+result.interval.first);
+     console.log('TO: '+result.interval.last);
+     console.log('PREVIOUS :');
+     console.log('FROM: '+result.prevInterval.first);
+     console.log('TO: '+result.prevInterval.last);
+     console.log('average ',result.average);
+     console.log('prevAverage ',result.prevAverage);
+     console.log('highest ',result.highest);
+     console.log('prevHighest ',result.prevHighest);
+     console.log('lowest ',result.lowest);
+     console.log('prevLowest',result.prevLowest);
+     console.log('----------');*/
 
     return result;
   }
@@ -141,22 +264,26 @@ export class AggregatedDataService {
     shift.percentual = percentual;
 
     if (percentual) {
-        shift.highShift =  (previous[0] === 0) ? 1 :  (actual[0].valueOf() - previous[0].valueOf());
-        shift.lowShift =  (previous[1] === 0) ? 1 : (actual[1].valueOf() - previous[1].valueOf());
-        shift.avgShift = (previous[2] === 0) ? 1 : (actual[2].valueOf() - previous[2].valueOf());
+      shift.highShift = (previous[0] === 0) ? 1 : (actual[0].valueOf() - previous[0].valueOf());
+      shift.lowShift = (previous[1] === 0) ? 1 : (actual[1].valueOf() - previous[1].valueOf());
+      shift.avgShift = (previous[2] === 0) ? 1 : (actual[2].valueOf() - previous[2].valueOf());
     } else {
-      shift.highShift =  (previous[0] === 0) ? 1 :  (actual[0].valueOf() / previous[0].valueOf());
-      shift.lowShift =  (previous[1] === 0) ? 1 : (actual[1].valueOf() / previous[1].valueOf());
+      shift.highShift = (previous[0] === 0) ? 1 : (actual[0].valueOf() / previous[0].valueOf());
+      shift.lowShift = (previous[1] === 0) ? 1 : (actual[1].valueOf() / previous[1].valueOf());
       shift.avgShift = (previous[2] === 0) ? 1 : (actual[2].valueOf() / previous[2].valueOf());
     }
 
-    if(previous[0] === actual[0])
+    if (previous[0] === actual[0])
       shift.highShift = 0;
-    if(previous[1] === actual[1])
+    if (previous[1] === actual[1])
       shift.lowShift = 0;
-    if( previous[2] === actual[2])
+    if (previous[2] === actual[2])
       shift.avgShift = 0;
-
+    /*
+    console.log('highShift: '+shift.highShift);
+    console.log('avgShift: '+shift.avgShift);
+    console.log('lowShift: '+shift.lowShift);
+*/
     return shift;
   }
 
