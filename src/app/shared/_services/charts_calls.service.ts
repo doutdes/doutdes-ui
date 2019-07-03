@@ -222,10 +222,12 @@ export class ChartsCallsService {
       case FB_CHART.REACTIONS_LINEA:
         header = [['Data','Reazioni']];
 
+        //console.log ("data prima length", data);
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
+          //console.log ("data prima for", data);
           for (let el of data) {
-            if (el && (el.value != undefined)) {
+            if (el.value && (el.value != undefined)) {
 
               sum = Object.values(el.value).reduce((a: Number, b: Number) => {
                 // @ts-ignore
@@ -241,7 +243,7 @@ export class ChartsCallsService {
           }
         } else {
           for (let i = 0; i < data.length; i++) {
-            chartData.push([new Date(data[i].end_time), data[i].value]);
+            chartData.push([new Date(data[i].end_time), data[i].value || 0]);
           }
         }
 
@@ -302,7 +304,7 @@ export class ChartsCallsService {
           }
         } else {
           for (let i = 0; i < data.length; i++) {
-            chartData.push([new Date(data[i].end_time), data[i].value]);
+            chartData.push([new Date(data[i].end_time), data[i].value || 0]);
           }
         }
 
@@ -2054,13 +2056,14 @@ export class ChartsCallsService {
 
   private getMinChartStep(type, data, perc = 0.8) {
     let min, length;
+
     data = data.slice(1);
 
     switch (type) {
       case D_TYPE.FB:
       case D_TYPE.IG:
         if (data.length > 0) {
-          min = (data.reduce((p, c) => (p[1] < c[1] ? p[1] : c[1]))) * perc;
+          min = data.map(x => x[1]).reduce((c,p) => c < p ? c : p);
           break;
         }
         break;
@@ -2459,4 +2462,5 @@ export class ChartsCallsService {
 
     return keys.length;
   }
+
 }
