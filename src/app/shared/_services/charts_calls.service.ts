@@ -2402,6 +2402,8 @@ export class ChartsCallsService {
     //trova e rimuovi eventuale porta
     domain = domain.split(':')[0];
 
+    domain = domain.replace(/\$/g, ".");
+
     return domain;
   }
 
