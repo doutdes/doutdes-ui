@@ -189,9 +189,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   for (let i = 0; i < dataArray.length; i++) {
 
                     let chart: DashboardCharts = charts[i];
-                    if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
-                      if (dataArray[i].length === 0) { //if there is no data avaiable
+                    if ((dataArray.length > 0 && dataArray[i] == null)) {
+                      chart.error = true;
+                      console.warn('The attached chart does not contain any data.', chart);
+                    }
+                    else if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+
+                      if (dataArray[i].length === 0) { //if there is no data available
                         chart.error = true;
                       }
                       else {
@@ -441,20 +446,20 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     //console.log(charts_id);
 
     this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
-        this.filterActions.clearDashboard(D_TYPE.FB);
+      this.filterActions.clearDashboard(D_TYPE.FB);
+      this.closeModal();
+    }, error => {
+      if (error.status === 500) {
+        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
         this.closeModal();
-      }, error => {
-        if (error.status === 500) {
-          this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
-          this.closeModal();
-          console.error(error);
-        } else {
-          this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
-          //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
-          console.error(error);
-          this.closeModal();
-        }
-      });
+        console.error(error);
+      } else {
+        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
+        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+        console.error(error);
+        this.closeModal();
+      }
+    });
   }
 
   async htmltoPDF() {
@@ -538,7 +543,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.modalRef.hide();
   }
 
-  async selectViewSubmit(){
+  async selectViewSubmit() {
     let update;
     this.submitted = true;
 
@@ -556,7 +561,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     update = await this.apiKeyService.updateKey(key).toPromise();
 
-    if(update) {
+    if (update) {
       this.closeModal();
       await this.ngOnInit();
     } else {
