@@ -2218,7 +2218,7 @@ export class ChartsCallsService {
 
     switch (measure) {
       case 'subs':
-        value = avg;
+        value = Number.parseFloat(avg);
         step = this.searchStep(value, measure);
         perc = value;
         break;
