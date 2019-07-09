@@ -14,6 +14,7 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
 import {DashboardService} from '../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../shared/_services/global-event-manager.service';
 import {MiniCardComponent} from './card/minicard.component';
+import {FilterActions} from '../features/dashboard/redux-filter/filter.actions';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import {MiniCardComponent} from './card/minicard.component';
     GlobalEventsManagerService,
     LoginActions,
     BsModalService,
-    DashboardService
+    DashboardService,
+    FilterActions
   ],
   exports: [
     HeaderComponent,
