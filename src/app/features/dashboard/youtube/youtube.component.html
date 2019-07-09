@@ -1,12 +1,11 @@
 <!--<div toastContainer></div>-->
 <div class="row rounded py-sm-4 title-header h-100">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
-    <h2 class="my-auto float-left">Google Analytics</h2>
+    <h2 class="my-auto float-left">Youtube Analytics</h2>
   </div> <!-- Title -->
   <div *ngIf="isApiKeySet" class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
     <h5 class="d-inline-block d-sm-none mt-1">Filtra:</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
-
       <button id="button-settings" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
               aria-controls="button-settings"><span class="caret"><i class="fas fa-cog"></i></span>
       </button>
@@ -44,7 +43,7 @@
   </div>
 </div> <!-- Header -->
 <div *ngIf="isApiKeySet" class="row px-3 pt-3">
-  <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.GA"></app-minicard>
+  <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.YT"></app-minicard>
 </div> <!-- Mini cards -->
 <div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
@@ -87,7 +86,6 @@
     Stiamo creando il tuo report, attendi...
   </div>
 </ng-template>
-
 <ng-template #selectView>
   <div class="modal-header">
     <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>Seleziona dati da importare</h4>
@@ -97,7 +95,7 @@
     <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
       <div class="form-group row">
         <p class="col-sm-12 text-justify">
-          Il tuo account Google Analytics è associato a più siti web. Quale vuoi includere in Doutdes?
+          Il tuo account Youtube Analytics è associato a più canali. Quale vuoi includere in Doutdes?
         </p>
         <div class="col-sm-12">
           <select class="form-control mx-auto" style="width: 70%;" formControlName="view_id" [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['view_id'].errors }">
@@ -106,7 +104,7 @@
           </select>
 
           <div *ngIf="this.submitted && selectViewForm.controls['view_id'].errors" class="invalid-feedback">
-            <div>Devi obbligatoriamente selezionare un sito</div>
+            <div>Devi obbligatoriamente selezionare un canale</div>
           </div>
         </div>
       </div>
@@ -138,4 +136,3 @@
   </div>
 
 </ng-template>
-

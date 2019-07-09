@@ -45,6 +45,58 @@ export class FacebookService {
       case FB_CHART.PAGE_VIEWS:
         call = 'pageviewstotal';
         break;
+      case FB_CHART.ENGAGED_USERS:
+        call = 'engageduser';
+        break;
+      case FB_CHART.PAGE_CONSUMPTION:
+        call = 'pageconsumptions';
+        break;
+      case FB_CHART.PAGE_PLACES_CHECKIN:
+        call = 'placescheckin';
+        break;
+      case FB_CHART.NEGATIVE_FEEDBACK:
+        call = 'negativefeedback';
+        break;
+      case FB_CHART.ONLINE_FANS:
+        call = 'fansonlineperday';
+        break;
+      case FB_CHART.FANS_ADD:
+        call = 'fansadds';
+        break;
+      case FB_CHART.FANS_REMOVES:
+        call = 'fanremoves';
+        break;
+      case FB_CHART.IMPRESSIONS_PAID:
+        call = 'pageimpressionspaid';
+        break;
+      case FB_CHART.PAGE_VIEWS:
+        call = 'videoviews';
+        break;
+      case FB_CHART.VIDEO_ADS:
+        call = 'videoads';
+        break;
+      case FB_CHART.VIDEO_VIEWS:
+        call = 'videoviews';
+        break;
+      case FB_CHART.POST_IMPRESSIONS:
+        call = 'postimpressions';
+        break;
+      case FB_CHART.REACTIONS_LINEA:
+      case FB_CHART.REACTIONS_COLUMN_CHART:
+      case FB_CHART.REACTIONS:
+        call = 'pagereactions';
+        break;
+      case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
+      case FB_CHART.PAGE_VIEW_EXTERNALS:
+        call = 'pageviewsexternals';
+        break;
+      case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
+      case FB_CHART.PAGE_IMPRESSIONS_CITY:
+        call = 'pageimpressionscity';
+        break;
+      case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
+        call = 'pageimpressionscountry';
+        break;
     }
 
     return anyType

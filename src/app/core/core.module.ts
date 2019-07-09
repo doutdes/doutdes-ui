@@ -40,7 +40,8 @@ import {FilterActions} from '../features/dashboard/redux-filter/filter.actions';
     LoginActions,
     BsModalService,
     DashboardService,
-    FilterActions
+    FilterActions,
+    {provide: 'mapsApiKey', useValue: 'AIzaSyAjKzYOB3pXeI79ONHTp066mDb3xzTtUKc'}
   ],
   exports: [
     HeaderComponent,

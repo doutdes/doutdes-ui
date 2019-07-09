@@ -7,6 +7,7 @@ import {FeaturePreferencesApiKeysRegisterFormComponent} from './register-form/re
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
+import {YoutubeService} from '../../../shared/_services/youtube.service';
 import {BsModalService} from 'ngx-bootstrap';
 import {NgxLoadingModule} from 'ngx-loading';
 import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
@@ -29,6 +30,7 @@ import {AggregatedDataService} from '../../../shared/_services/aggregated-data.s
     FacebookService,
     InstagramService,
     GoogleAnalyticsService,
+    YoutubeService,
     AggregatedDataService,
     BsModalService,
     BreadcrumbActions,

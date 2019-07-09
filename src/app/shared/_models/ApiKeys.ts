@@ -3,6 +3,7 @@ export interface ApiKey {
   api_key?: string;
   service_id?: number;
   ga_view_id?: string;
+  fb_page_id?: string;
 }
 
 export interface Service {

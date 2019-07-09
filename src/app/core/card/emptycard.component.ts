@@ -221,7 +221,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].Title);
     }
 
-    this.setDescription(this.insertChartForm.value.metric); // Set the description of the metric
+    this.description = (this.chartRemaining.find(chart => chart.Title == this.insertChartForm.value.metric && chart.Type == this.insertChartForm.value.channel)).description;
 
     // Update styles
     this.styles = this.chartRemaining.filter(chart => chart.Title == this.insertChartForm.value.metric && chart.Type == this.insertChartForm.value.channel).map(item => item.format);
@@ -245,25 +245,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     return unique;
 
-  }
-
-  setDescription(metricTitle){
-    switch (metricTitle) {
-      case 'Fan per giorno':
-        this.description = 'Mostra il numero totale giornaliero dei fan della pagina';
-        break;
-      case 'Fan per Paese':
-        this.description = 'Mostra la provenienza geografica dei fan della pagina';
-        break;
-      case 'Visualizzazioni pagina':
-        this.description = 'Numero di visualizzazioni giornaliere della pagina da parte degli utenti';
-        break;
-      case 'Visualizzazioni post':
-        this.description = 'Numero di visualizzazioni giornaliere totali dei post da parte degli utenti';
-        break;
-      default:
-        this.description = null;
-    }
   }
 
   ngOnDestroy() {

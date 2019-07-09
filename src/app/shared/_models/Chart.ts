@@ -3,4 +3,5 @@ export interface Chart {
   Type: number;
   Title: string;
   format: string;
+  description: string;
 }
