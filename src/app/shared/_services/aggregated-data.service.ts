@@ -9,6 +9,7 @@ import {FB_CHART} from '../_models/FacebookData';
 import get = Reflect.get;
 import {getValueFromObject} from 'ngx-bootstrap/typeahead';
 import {count} from 'rxjs/operators';
+import * as moment from 'moment';
 
 @Injectable()
 export class AggregatedDataService {
@@ -41,7 +42,7 @@ export class AggregatedDataService {
         filteredData = chart.chartData.filter(el => parseDate(el.date).getTime() >= dateInterval.first.getTime() && parseDate(el.date).getTime() <= dateInterval.last.getTime());
         break;
       default:
-        filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+        filteredData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= dateInterval.first && (moment(el.end_time).toDate()) <= dateInterval.last);
         break;
     }
     let prevFilteredData;
@@ -107,7 +108,7 @@ export class AggregatedDataService {
 
           break;
         default:
-          filteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
+          filteredData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= dateInterval.first && (moment(el.end_time).toDate()) <= dateInterval.last);
           break;
       }
       /* filteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
@@ -117,7 +118,7 @@ export class AggregatedDataService {
       let prevDate = this.getPrevious(dateInterval);
       prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
         ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
-        : chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+        : chart.chartData.filter(el => (moment(el.end_time).toDate()) >= prevDate.first && (moment(el.end_time).toDate()) <= prevDate.last);
 
     }
 
@@ -142,7 +143,7 @@ export class AggregatedDataService {
         prevFilteredData = chart.chartData.filter(el => parseDate(el.date).getTime() >= prevDate.first.getTime() && parseDate(el.date).getTime() <= prevDate.last.getTime());
         break;
       default:
-        prevFilteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
+        prevFilteredData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= prevDate.first && (moment(el.end_time).toDate()) <= prevDate.last);
         break;
     }
 

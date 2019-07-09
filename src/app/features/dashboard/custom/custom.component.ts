@@ -160,7 +160,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       }
 
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
-      this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
+      this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[3].id : null;
       this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
       this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] ? (await this.YTService.getChannels().toPromise())[0].id : null;
       this.firstDateRange = subDays(new Date(), 30); // this.minDate;
@@ -306,6 +306,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       console.error(e);
       this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
     }
+
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
@@ -500,6 +501,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
 
     forkJoin(observables).subscribe(miniDatas => {
+      //console.warn(JSON.parse(JSON.stringify(miniDatas)));
       for (const i in miniDatas) {
         if (Object.entries(miniDatas[i]).length !== 0) {
           results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
@@ -565,7 +567,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     //console.log(charts_id);
 
     this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
-      this.filterActions.clearDashboard(D_TYPE.FB);
+      this.filterActions.clearDashboard(D_TYPE.CUSTOM);
       this.closeModal();
     }, error => {
       if (error.status === 500) {
