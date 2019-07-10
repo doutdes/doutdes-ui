@@ -113,8 +113,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
-      last: this.maxDate
+      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
     };
+
     let pageIDs = {};
 
     pageIDs[D_TYPE.FB] = pageID;
@@ -463,7 +464,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   clearDashboard(): void {
-    //console.log(charts_id);
 
     this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
       this.filterActions.clearDashboard(D_TYPE.FB);

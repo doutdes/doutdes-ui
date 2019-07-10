@@ -10,6 +10,7 @@ import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {parseDate} from 'ngx-bootstrap';
 import {until} from 'selenium-webdriver';
 import elementIsSelected = until.elementIsSelected;
+import * as moment from 'moment';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -161,7 +162,7 @@ export class FilterActions {
                 chart.chartData = chart.chartData.filter(el => parseDate(el.date).getTime() >= filterInterval.first.getTime() && parseDate(el.date).getTime() <= filterInterval.last.getTime());
                 break;
               default:
-                chart.chartData = chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
+                chart.chartData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
                 break;
             }
 /* YT chart has "date", not [0], so a switch instead of the old method was required
@@ -195,7 +196,8 @@ export class FilterActions {
   }
 
   clearDashboard(dashboard_type: number) {
-    this.removedStoredDashboard(dashboard_type);
+
+    this.storedDashboards = this.storedDashboards.filter((el: DashboardData) => el.type !== dashboard_type);
 
     this.currentDashboard.data = [];
     this.filteredDashboard.data = [];

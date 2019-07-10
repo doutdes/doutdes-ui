@@ -66,7 +66,7 @@ export class ChartsCallsService {
         header = [['Data', 'Numero fan']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
         break;  // FB Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
@@ -82,9 +82,11 @@ export class ChartsCallsService {
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
+
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break;  // Page Impressions
       case FB_CHART.FANS_COUNTRY_PIE:
         header = [['Paese', 'Numero fan']];
@@ -99,7 +101,7 @@ export class ChartsCallsService {
         header = [['Data', 'Visualizzazioni']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
         break; // Facebook Page Views
       case FB_CHART.FANS_CITY:
@@ -116,36 +118,41 @@ export class ChartsCallsService {
         break; // Facebook Fan City
       case FB_CHART.ENGAGED_USERS:
         header = [['Data', 'Interazioni']];
+
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break; // Facebook Interazioni Totali
       case FB_CHART.PAGE_CONSUMPTION:
         header = [['Data', 'Click']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break; // Facebook Click sui contenuti
       case FB_CHART.PAGE_PLACES_CHECKIN:
         header = [['Data', 'Condivisioni']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break; // Facebook Condivisione del luogo
       case FB_CHART.NEGATIVE_FEEDBACK:
         header = [['Data', 'Feedback negativi']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break; // Facebook Feedback negativi
       case FB_CHART.ONLINE_FANS:
         header = [['Data', 'Fans online']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
 
         break; // Facebook Fan online giornalieri
@@ -153,7 +160,7 @@ export class ChartsCallsService {
         header = [['Data', 'Nuovi fan']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
 
         break; // Facebook Nuovi fan
@@ -161,36 +168,38 @@ export class ChartsCallsService {
         header = [['Data', 'Fans persi']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
         break; // Facebook Fans cancellati
       case FB_CHART.IMPRESSIONS_PAID:
         header = [['Data', 'Visualizzazioni di inserzioni']];
 
         for (let i = 0; i < data.length; i++) {
-
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break; // Facebbok Visualizzazioni di inserzioni
       case FB_CHART.VIDEO_VIEWS:
         header = [['Data', 'Riproduzioni di video']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break; // Facebook Riproduzioni di video
       case FB_CHART.POST_IMPRESSIONS:
         header = [['Data', 'Post visualizzati']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break; // Facebook Post visualizzati
       case FB_CHART.VIDEO_ADS:
         header = [['Data', 'Annunci pub. visti']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
 
         break; // Facebook Annunci pub. visualizzati
@@ -222,10 +231,8 @@ export class ChartsCallsService {
       case FB_CHART.REACTIONS_LINEA:
         header = [['Data','Reazioni']];
 
-        //console.log ("data prima length", data);
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
-          //console.log ("data prima for", data);
           for (let el of data) {
             if (el.value && (el.value != undefined)) {
 
@@ -234,16 +241,14 @@ export class ChartsCallsService {
                 return a + b
               }, 0);
 
-              //console.log(el);
-
-              chartData.push([new Date(el.end_time), sum]);
+              chartData.push([moment(el.end_time).toDate(), sum]);
             } else {
-              chartData.push([new Date(el.end_time), 0]);
+              chartData.push([moment(el.end_time).toDate(), 0]);
             }
           }
         } else {
           for (let i = 0; i < data.length; i++) {
-            chartData.push([new Date(data[i].end_time), data[i].value || 0]);
+            chartData.push([moment(data[i].end_time).toDate(), data[i].value || 0]);
           }
         }
 
@@ -297,14 +302,14 @@ export class ChartsCallsService {
                 // @ts-ignore
                 return a + b
               }, 0);
-              chartData.push([new Date(el.end_time), sum]);
+              chartData.push([moment(el.end_time).toDate(), sum]);
             } else {
-              chartData.push([new Date(el.end_time), 0]);
+              chartData.push([moment(el.end_time).toDate(), 0]);
             }
           }
         } else {
           for (let i = 0; i < data.length; i++) {
-            chartData.push([new Date(data[i].end_time), data[i].value || 0]);
+            chartData.push([moment(data[i].end_time).toDate(), data[i].value || 0]);
           }
         }
 
@@ -358,9 +363,12 @@ export class ChartsCallsService {
       case GA_CHART.SESSION_DAY:
         header = [['Data', 'Sessioni']];
 
+
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
+
+
         break;  // Google Sessionsd
       case GA_CHART.SOURCES_PIE:
         /** Data array is constructed as follows:
@@ -655,14 +663,14 @@ export class ChartsCallsService {
         header = [['Data', 'Visualizzazioni']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
         break; // IG Impressions by day
       case IG_CHART.REACH:
         header = [['Data', 'Utenti raggiunti']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
         break; // IG Reach
       case IG_CHART.ACTION_PERFORMED:
@@ -696,9 +704,10 @@ export class ChartsCallsService {
         header = [['Data', 'Nuovi utenti']];
 
         for (let i = 0; i < data.length; i++) {
-          chartData.push([new Date(data[i].end_time), data[i].value]);
+          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
         break; // IG FollowerCount
+
       case YT_CHART.VIEWS:
         header = [['Data', 'Visualizzazioni']];
         for (let i = 0; i < data.length; i++) {
@@ -1022,6 +1031,7 @@ export class ChartsCallsService {
 
         break; // Fb Fan online giornalieri
       case FB_CHART.FANS_ADD:
+
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -2111,6 +2121,8 @@ export class ChartsCallsService {
         observables.push(this.youtubeService.getVideos(pageIDs));
         break;
       case D_TYPE.CUSTOM:
+        //console.log(permissions);
+        //console.log(pageIDs);
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
@@ -2256,12 +2268,15 @@ export class ChartsCallsService {
 
     switch (measure) {
       case 'post-sum':
-        data['data'] = data['data'].filter(el => (new Date(el['created_time'])) >= intervalDate.first && (new Date(el['created_time'])) <= intervalDate.last);
+
+        //console.log('FB', data);
+        data['data'] = data['data'].filter(el => (moment(el['created_time'])) >= intervalDate.first && (moment(el['created_time'])) <= intervalDate.last);
         value = data['data'].length;
 
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
-        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        //console.log(intervalDate.last);
+        data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
         value = data[data.length - 1].value;
 
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
@@ -2288,7 +2303,7 @@ export class ChartsCallsService {
 
         break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
       default:
-        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
         value = data[data.length - 1].value;
 
         break; // default take the last value as the good one, the perc is calculated dividing the avg for the max value
@@ -2330,13 +2345,16 @@ export class ChartsCallsService {
 
     switch (measure) {
       case 'fb-fan-count':
-        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
         value = data[data.length - 1].value;
+
         break;
       case 'ig-follower':
         value = data['followers_count'];
         break;
       case 'ga-tot-user':
+
+        //console.log('GOOGLE', data);
         value = 0;
         data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
         for (const i in data) {

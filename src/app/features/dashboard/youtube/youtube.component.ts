@@ -399,7 +399,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     //console.log(charts_id);
 
     this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
-      this.filterActions.clearDashboard(D_TYPE.FB);
+      this.filterActions.clearDashboard(D_TYPE.YT);
       this.closeModal();
     }, error => {
       if (error.status === 500) {
