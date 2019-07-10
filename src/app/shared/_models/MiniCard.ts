@@ -25,13 +25,13 @@ export let GaMiniCards: MiniCard[] = [
     measure: '',
     value: '-'
   }, {
-    name: 'Freq. rimbalzo',
+    name: 'Freq. rimb.',
     icon: 'icon-action-undo',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     measure: 'bounce-rate',
     value: '-'
   }, {
-    name: 'Permanenza media',
+    name: 'Durata sess.',
     icon: 'icon-hourglass',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     measure: 'time',

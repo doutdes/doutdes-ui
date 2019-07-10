@@ -47,7 +47,7 @@ app-core-sidebar {
   border: 1px solid #c8ced3;
 }
 
-@media (min-width: 992px) and (max-width: 1300px) {
+@media (min-width: 1030px) and (max-width: 1430px) {
   #body-row, app-core-header nav > .container {
     width: 100%;
     padding-right: 0px;
@@ -72,7 +72,7 @@ app-core-sidebar {
   }
 }
 
-@media only screen and (max-width: 991px) {
+@media only screen and (max-width: 1030px) {
   #body-row, app-core-header nav > .container {
     width: 100%;
     padding-right: 15px;
@@ -126,7 +126,7 @@ app-core-footer {
   flex-direction: column;
 }
 
-@media only screen and (min-width: 992px) {
+@media only screen and (min-width: 1030px) {
   #main-content {
     padding-left: 2rem;
   }
@@ -307,13 +307,13 @@ ul {
 }
 
 /* FILTER */
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media only screen and (min-width: 820px) and (max-width: 1029px) {
   .title-header h2 {
     font-size: 25px;
   }
 }
 
-@media only screen and (min-width: 576px) and (max-width: 767px){
+@media only screen and (min-width: 576px) and (max-width: 820px){
   .title-header h2 {
     font-size: 1.5rem;
   }
@@ -371,7 +371,7 @@ ul {
   display: inline-flex;
 }
 
-@media only screen and (min-width: 992px){
+@media only screen and (min-width: 1030px){
   .card-container:nth-child(odd) {
     padding-right: 0.5rem;
   }
@@ -427,4 +427,19 @@ popover-container {
 
 .input-group {
   max-height:35px;
+}
+
+@media (min-width: 1030px) {
+  .d-lg-none-2 {
+    display: none !important;
+  }
+  .d-lg-inline-2 {
+    display: inline !important;
+  }
+  .d-lg-inline-block-2 {
+    display: inline-block !important;
+  }
+  .d-lg-block-2 {
+    display: block !important;
+  }
 }

@@ -11,7 +11,7 @@ import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
-import {forkJoin, Observable} from 'rxjs';
+import {forkJoin, Observable, Subject} from 'rxjs';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 import * as jsPDF from 'jspdf';
@@ -28,6 +28,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {int} from 'flatpickr/dist/utils';
 import {HttpErrorResponse, HttpHeaders, HttpRequest, HttpResponseBase} from '@angular/common/http';
 import {HttpJsonParseError} from '@angular/common/http/src/response';
+import {takeUntil} from 'rxjs/operators';
 
 const PrimaryWhite = '#ffffff';
 
@@ -132,7 +133,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   async loadDashboard() { // TODO get pageID and refactor
     let dash;
-    const observables: Observable<any>[] = [];
+    let observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
@@ -149,7 +150,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     try {
       // Retrieving dashboard ID
-      dash = await this.DService.getDashboardByType(D_TYPE.FB).toPromise(); // Google type
+      dash = await this.DService.getDashboardByType(D_TYPE.FB).toPromise(); // Facebook type
 
       if (dash.id) {
         this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -177,6 +178,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
       } else {
+
+        let ds : Subject<void> = new Subject<void>(); // used to force unsubscription
+
         // Retrieving dashboard charts
         this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
           .subscribe(charts => {
@@ -184,7 +188,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
             if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
               charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
+
               forkJoin(observables)
+                .pipe(takeUntil(ds))
                 .subscribe(dataArray => {
                   for (let i = 0; i < dataArray.length; i++) {
 
@@ -215,7 +221,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                     }
 
                     chartsToShow.push(chart); // Original Data
+
                   }
+
+                  ds.next();
+                  ds.complete();
 
                   currentData.data = chartsToShow;
 
@@ -248,37 +258,47 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     }
   }
 
-  addChartToDashboard(dashChart: DashboardCharts) {
+  async addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
     const intervalDate: IntervalDate = {
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
-      .subscribe(data => {
+    let dummySubj : Subject<void> = new Subject<void>(); // used to force unsubscription
 
-        this.GEService.loadingScreen.next(true);
+    try {
 
-        if (!data['status']) { // Se la chiamata non rende errori
-          chartToPush.chartData = data;
-          chartToPush.error = false;
+        this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
+          .pipe(takeUntil(dummySubj))
+          .subscribe( data => {
 
-          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
+          this.GEService.loadingScreen.next(true);
 
-        } else {
-          chartToPush.error = true;
-          console.log('Errore recuperando dati per ' + dashChart);
-        }
+          if (!data['status']) { // Se la chiamata non rende errori
+            chartToPush.chartData = data;
+            chartToPush.error = false;
 
-        this.filterActions.addChart(chartToPush);
-        this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+            this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
 
-        this.GEService.loadingScreen.next(false);
-      }, error1 => {
+          } else {
+            chartToPush.error = true;
+            console.log('Errore recuperando dati per ' + dashChart);
+          }
+
+          this.filterActions.addChart(chartToPush);
+          this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+
+          this.GEService.loadingScreen.next(false);
+
+          dummySubj.next();
+          dummySubj.complete();
+        });
+      }
+      catch (err) {
         console.log('Error querying the chart');
-        console.log(error1);
-      });
+        console.log(err);
+      };
   }
 
   onValueChange(value): void {
@@ -463,15 +483,33 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async htmltoPDF() {
-    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
+
+    let windowW;
+    let windowH;
+
+    let cardW = window.innerWidth;
+    let cardH;
+
+    if (cardW < 990) {
+      cardW /= 1.081;
+    }
+    else if (cardW > 1300) {
+      cardW /= 3.951;
+    }
+    else {
+      cardW /= 2.73;
+    }
+
+    windowW = cardW * 2.5;
+    windowH = windowW * 1.415; // a4 format
+    cardH = cardW / 1.1;
+
+    const pdf = new jsPDF('p', 'em', [windowW, windowH]);// 595w x 842h
     const cards = document.querySelectorAll('app-card');
-    const firstCard = await html2canvas(cards[0]);
 
     const user = await this.getUserCompany();
 
-    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
-    let graphsRow = 2;
-    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
+    let graphsPage = 6;
     let x = 40, y = 40;
     let offset = y - 10;
 
@@ -479,39 +517,48 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     this.openModal(this.reportWait, true);
 
-    pdf.setFontSize(8);
+    pdf.setFontSize(200);
     pdf.text(user.company_name, 320, offset);
     pdf.text('P. IVA: ' + user.vat_number, 320, offset + 10);
     pdf.text(user.first_name + ' ' + user.last_name, 320, offset + 20);
     pdf.text(user.address, 320, offset + 30);
     pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
 
-    pdf.setFontSize(18);
+    pdf.setFontSize(200);
     pdf.text('REPORT DASHBOARD FACEBOOK', x, y - 5);
     y += 20;
 
-    pdf.setFontSize(14);
+    pdf.setFontSize(200);
     pdf.text('Periodo: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y - 8);
-    y += 40;
+
+    x = 0;
+    y = cardH / 2;
 
     // Numero grafici per riga dipendente da dimensioni grafico
     for (let i = 0; i < cards.length; i++) {
-      const canvas = await html2canvas(cards[i]);
+      const canvas = await html2canvas(cards[i], { scale:1, width: cardW});
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-      if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
-        y += canvas.height / dimRatio + 20;
+      // Determines offset
+      if (i % 2) { // odd
+        x = 80 + cardW;
+      }
+      else {
         x = 40;
+
+        if (i > 0) {
+          y += cardH;
+        }
       }
 
-      if (i !== 0 && i % graphsPage === 0) {
+      // Changes page
+      if (i > 0 && i % graphsPage === 0) {
         pdf.addPage();
         x = 40;
-        y = 20;
+        y = 40;
       }
 
-      pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
-      x += canvas.width / dimRatio + 10;
+      pdf.addImage(imgData, x, y, canvas.width, canvas.height);
     }
 
     pdf.save('report_fb_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');

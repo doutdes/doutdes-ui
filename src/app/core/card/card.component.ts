@@ -1,4 +1,4 @@
-import {Component, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
@@ -9,6 +9,8 @@ import {GA_CHART} from '../../shared/_models/GoogleData';
 import {D_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-card',
@@ -280,11 +282,18 @@ export class CardComponent implements OnInit {
   }
 
   removeChart(dashboard_id, chart_id): void {
+
+    let ds : Subject<void> = new Subject<void>(); // used to force unsubscription
+
     this.dashboardService.removeChart(dashboard_id, chart_id)
+      .pipe(takeUntil(ds))
       .subscribe(() => {
         this.GEService.removeFromDashboard.next([chart_id, dashboard_id]);
         this.closeModal();
         // this.toastr.success('"' + this.dashChart.title + '" è stato correttamente rimosso.', 'Grafico rimosso correttamente!');
+
+        ds.next();
+        ds.complete();
       }, error => {
         this.toastr.error('Non è stato possibile rimuovere "' + this.dashChart.title + '" dalla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione del grafico.');
         console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');

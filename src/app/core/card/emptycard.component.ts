@@ -1,6 +1,6 @@
 /* Angular components */
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 /* External Libraries */
 import {BsModalRef} from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import {BsModalService} from 'ngx-bootstrap/modal';
@@ -10,10 +10,13 @@ import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {D_TYPE, DS_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
+import {T} from '@angular/core/src/render3';
+import {Observable, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   selector: 'app-emptycard',
-  templateUrl: './emptycard.component.html',
+  templateUrl: './emptycard.component.html'
 })
 
 export class EmptycardComponent implements OnInit, OnDestroy {
@@ -96,6 +99,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
           });
 
           this.GEService.addSubscriber(dummy_dashType);
+
         }
       } catch (e) {
         console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.', e);
@@ -103,11 +107,13 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     }
   }
 
+
   get form() {
     return this.insertChartForm.controls;
   }
 
   async openModal() {
+
 
     try {
       await this.updateDropdownOptions();
@@ -118,6 +124,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
         this.modalService.onHide.subscribe(() => {
           this.closeModal();
         });
+
         this.modalRef = this.modalService.show(this.addChart, {class: 'modal-md modal-dialog-centered'});
       }
 
@@ -163,6 +170,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       format: selected.format
     };
 
+
     try {
       await this.dashboardService.addChartToDashboard(dashChart).toPromise();
       this.closeModal();
@@ -180,6 +188,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       console.error('Error inserting the Chart in the dashboard');
       console.error(error);
     }
+
   }
 
   async updateDropdownOptions() {
@@ -187,32 +196,37 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     this.channels = [];
 
     if (this.dashboard_data) {
-      this.chartRemaining = this.dashboard_data.dashboard_type !== 0
-        ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type).toPromise()
-        : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
 
-      if (this.chartRemaining && this.chartRemaining.length > 0) {
+        this.chartRemaining = this.dashboard_data.dashboard_type !== 0
+          ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type).toPromise()
+          : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
 
-        // Update channels
-        if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
-          for (const i in this.dashboard_data.permissions) {
-            if (this.dashboard_data.permissions[i]) this.channels.push({name: DS_TYPE[i], value: i});
+
+          if (this.chartRemaining && this.chartRemaining.length > 0) {
+
+            // Update channels
+            if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
+              for (const i in this.dashboard_data.permissions) {
+                if (this.dashboard_data.permissions[i]) this.channels.push({name: DS_TYPE[i], value: i});
+              }
+            } else {
+              this.channels.push({name: DS_TYPE[this.dashboard_data.dashboard_type], value: this.dashboard_data.dashboard_type});
+            }
+
+            this.insertChartForm.controls['channel'].setValue(this.channels[0].value);
+
+            this.filterDropdown(true);
+
+            result = true;
           }
-        } else {
-          this.channels.push({name: DS_TYPE[this.dashboard_data.dashboard_type], value: this.dashboard_data.dashboard_type});
-        }
 
-        this.insertChartForm.controls['channel'].setValue(this.channels[0].value);
+          return result;
 
-        this.filterDropdown(true);
-
-        result = true;
-      }
     } else {
       console.error('ERROR in EMPTY-CARD. Cannot retrieve dashboard data.');
+      return result;
     }
 
-    return result;
   }
 
   filterDropdown(updateChannel = false) {

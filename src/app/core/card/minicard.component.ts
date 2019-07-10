@@ -1,10 +1,10 @@
-import {Component, HostBinding, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostBinding, Input, OnInit} from '@angular/core';
 import {MiniCard} from '../../shared/_models/MiniCard';
 import {D_TYPE} from '../../shared/_models/Dashboard';
 
 @Component({
   selector: 'app-minicard',
-  templateUrl: './minicard.component.html',
+  templateUrl: './minicard.component.html'
 })
 
 export class MiniCardComponent implements OnInit {

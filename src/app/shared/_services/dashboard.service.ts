@@ -5,6 +5,8 @@ import {environment} from '../../../environments/environment';
 import {DashboardCharts} from '../_models/DashboardCharts';
 import {Chart} from '../_models/Chart';
 import {Dashboard} from '../_models/Dashboard';
+import {catchError, timeout} from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
 
 @Injectable()
 

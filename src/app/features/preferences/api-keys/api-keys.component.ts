@@ -135,6 +135,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   getLogo(serviceID: number) {
     let classes = 'mr-2 mt-1 fab ';
 
+    console.log('logo');
+
     switch (serviceID) {
       case D_TYPE.FB:
         classes += 'fa-facebook-square fb-color';
