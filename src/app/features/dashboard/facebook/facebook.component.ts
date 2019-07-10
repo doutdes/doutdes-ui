@@ -622,7 +622,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     try {
       pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
     } catch (e) {
-      console.error('getViewID -> error doing the query', e);
+      console.error('getPageID -> error doing the query', e);
     }
 
     return pageID;
@@ -632,7 +632,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     try {
       this.pageList = await this.FBService.getPages().toPromise();
     } catch (e) {
-      console.error('getViewList -> Error doing the query');
+      console.error('getFbViewList -> Error doing the query');
     }
   }
 

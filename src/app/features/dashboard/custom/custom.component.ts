@@ -39,6 +39,7 @@ const PrimaryWhite = '#ffffff';
 export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   @ViewChild('selectView') selectView;
+  @ViewChild('selectViewFb') selectViewFb;
   @ViewChild('reportWait') reportWait;
 
   public HARD_DASH_DATA = {
@@ -78,16 +79,18 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   lastDateRange: Date;
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
-  minSet: Array<{id: number; minDate: Date}>;   // contains the minimum Date for every chart, used to refresh datepicker on the fly
+  minSet: Array<{ id: number; minDate: Date }>;   // contains the minimum Date for every chart, used to refresh datepicker on the fly
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
   modalRef: BsModalRef;
 
   // Form for init
   selectViewForm: FormGroup;
+  selectViewFormFb: FormGroup;
   loadingForm: boolean;
   submitted: boolean;
   viewList;
+  fbPageList;
 
   constructor(
     private GAService: GoogleAnalyticsService,
@@ -109,16 +112,19 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    let existence, view_id;
+    let existence, view_id, fb_page_id;
     let key: ApiKey;
 
-    this.GEService.loadingScreen.subscribe(value => {this.loading = value; });
+    this.GEService.loadingScreen.subscribe(value => {
+      this.loading = value;
+    });
     this.minSet = [];
     this.minSet.push(
-      {id: -1,
-       minDate: subDays(this.maxDate, this.FILTER_DAYS.ninety)
+      {
+        id: -1,
+        minDate: subDays(this.maxDate, this.FILTER_DAYS.ninety)
       }
-      );
+    );
     this.addBreadcrumb();
     this.GEService.loadingScreen.next(true);
 
@@ -159,8 +165,31 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         }
       }
 
+      if (this.HARD_DASH_DATA.permissions[D_TYPE.FB]) {
+
+        this.fbPageID = await this.getFbPageID();
+
+        if (!this.fbPageID) {
+          await this.getFbPagesList();
+          if (this.fbPageList.length === 1) {
+            key = {fb_page_id: this.fbPageList[0]['id'], service_id: D_TYPE.FB};
+            await this.apiKeyService.updateKey(key).toPromise();
+          }
+          else {
+            this.selectViewFormFb = this.formBuilder.group({
+              fb_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+            });
+            this.selectViewFormFb.controls['fb_page_id'].setValue(this.fbPageList[0].id);
+            this.GEService.loadingScreen.next(false);
+            this.openModal(this.selectViewFb, true);
+
+            return;
+          }
+        }
+      }
+
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
-      this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.FBService.getPages().toPromise())[0].id : null;
+      //this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.getFbPageID()) : null;
       this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
       this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] ? (await this.YTService.getChannels().toPromise())[0].id : null;
       this.firstDateRange = subDays(new Date(), 30); // this.minDate;
@@ -329,18 +358,20 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             case D_TYPE.FB :
             case D_TYPE.IG:
               this.minSet.push(
-                {id: dashChart.chart_id,
-                 minDate: new Date(dashChart.chartData[0]['end_time'])
+                {
+                  id: dashChart.chart_id,
+                  minDate: new Date(dashChart.chartData[0]['end_time'])
                 }
-                );
+              );
               break;
             case D_TYPE.GA:
               this.minSet.push(
-                {id: dashChart.chart_id,
+                {
+                  id: dashChart.chart_id,
                   minDate: (parseDate(dashChart['chartData'][0][0]))
                 }
               );
-            break;
+              break;
             case D_TYPE.YT:
               this.minSet.push(
                 {
@@ -515,7 +546,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     });
   }
 
-  async getViewID()  {
+  async getViewID() {
     let viewID;
 
     try {
@@ -547,6 +578,32 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     const key: ApiKey = {
       ga_view_id: this.selectViewForm.value.view_id,
       service_id: D_TYPE.GA
+    };
+
+    this.loadingForm = true;
+
+    update = await this.apiKeyService.updateKey(key).toPromise();
+
+    if (update) {
+      this.closeModal();
+      await this.ngOnInit();
+    } else {
+      console.error('MANDARE ERRORE');
+    }
+  }
+
+  async selectViewSubmitFb() {
+    let update;
+    this.submitted = true;
+
+    if (this.selectViewFormFb.invalid) {
+      this.loadingForm = false;
+      return;
+    }
+
+    const key: ApiKey = {
+      fb_page_id: this.selectViewFormFb.value.fb_page_id,
+      service_id: D_TYPE.FB
     };
 
     this.loadingForm = true;
@@ -647,7 +704,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
-    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered', ignoreBackdropClick: ignoreBackdrop, keyboard: !ignoreBackdrop});
+    this.modalRef = this.modalService.show(template, {
+      class: 'modal-md modal-dialog-centered',
+      ignoreBackdropClick: ignoreBackdrop,
+      keyboard: !ignoreBackdrop
+    });
   }
 
   closeModal(): void {
@@ -656,5 +717,23 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   optionModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  async getFbPagesList() {
+    try {
+      this.fbPageList = await this.FBService.getPages().toPromise();
+    } catch (e) {
+      console.error('getViewList -> Error doing the query');
+    }
+  }
+
+  async getFbPageID() {
+    let pageID;
+    try {
+      pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
+    } catch (e) {
+      console.error('getFbPageID -> error doing the query', e);
+    }
+    return pageID;
   }
 }
