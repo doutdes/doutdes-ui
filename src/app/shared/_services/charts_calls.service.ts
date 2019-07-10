@@ -2347,6 +2347,7 @@ export class ChartsCallsService {
       case 'fb-fan-count':
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
         value = data[data.length - 1].value;
+
         break;
       case 'ig-follower':
         value = data['followers_count'];
