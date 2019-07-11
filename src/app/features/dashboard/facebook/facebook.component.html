@@ -2,7 +2,7 @@
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 class="my-auto float-left">Facebook </h2>
   </div>
-  <div *ngIf="isApiKeySet" class="col-xl-8 col-sm-6 col-md-8 col-12 my-md-auto">
+  <div *ngIf="isApiKeySet && loaded" class="col-xl-8 col-sm-6 col-md-8 col-12 my-md-auto">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
 
@@ -44,10 +44,10 @@
 
   <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>
-<div *ngIf="isApiKeySet" class="row px-3 pt-3">
+<div *ngIf="isApiKeySet && loaded" class="row px-3 pt-3">
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.FB"></app-minicard>
 </div> <!-- Mini cards -->
-<div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
+<div *ngIf="isApiKeySet && loaded" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
       <app-card [dashChart]="chart"></app-card>
@@ -122,7 +122,7 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="clearDashboard(dashStored)">
+    <button type="button" class="btn btn-danger" (click)="clearDashboard()">
       Sì, rimuovili
     </button>
     <button type="button" class="btn btn-success" (click)="closeModal()">No, lasciali </button>
