@@ -76,6 +76,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   loadingForm: boolean;
   viewList;
   submitted: boolean;
+  emptyMinicards: boolean;
 
 
   constructor(
@@ -124,7 +125,9 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       }
       let  temp = await this.YTService.getChannels().toPromise();
       let channelID = temp[0].id;
-      await this.loadMiniCards(channelID);
+      this.emptyMinicards = await this.loadMiniCards(channelID);
+
+      this.emptyMinicards = false; //flagging it at false since "too soon to get analytics" problem occurs in IG only
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -196,6 +199,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   async loadMiniCards(pageID) {
     let results;
+    let empty = false;
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
@@ -207,11 +211,17 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.YT, this.miniCards[i].measure);
+
+        if(!results)
+          empty = true;
+
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });
+
+    return empty;
   }
 
   async addChartToDashboard(dashChart: DashboardCharts) {

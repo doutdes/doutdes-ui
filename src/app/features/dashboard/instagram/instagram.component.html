@@ -44,7 +44,10 @@
   </div>
 </div>
 
-<div *ngIf="isApiKeySet" class="row px-3 pt-3">
+<div *ngIf=(emptyMinicards) class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5>Le minicard non sono disponibili, in quanto il profilo business è stato attivato di recente.</h5>
+</div> <!-- Mini cards -->
+<div *ngIf="isApiKeySet && !emptyMinicards" class="row px-3 pt-3">
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.IG"></app-minicard>
 </div> <!-- Mini cards -->
 

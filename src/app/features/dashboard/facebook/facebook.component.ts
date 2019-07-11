@@ -87,6 +87,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
+  emptyMinicards: boolean;
 
   // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
@@ -110,6 +111,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   async loadMiniCards(pageID) {
     // 1. Init intervalData (retrieve data of previous month)
     let results;
+    let empty = false;
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
@@ -125,11 +127,18 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
+
+        if(!results)
+          empty = true;
+
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });
+
+    return empty;
+
   }
 
   async loadDashboard() { // TODO get pageID and refactor
@@ -160,7 +169,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         return;
       }
 
-      await this.loadMiniCards(this.pageID);
+      this.emptyMinicards = await this.loadMiniCards(this.pageID);
+      this.emptyMinicards = false; //flagging it at false since "too soon to get analytics" problem occurs in IG only
+
 
       if (dash.id) {
         this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
