@@ -75,6 +75,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   loadingForm: boolean;
   viewList;
   submitted: boolean;
+  emptyMinicards: boolean;
 
 
   constructor(
@@ -123,7 +124,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
-      await this.loadMiniCards();
+      this.emptyMinicards = await this.loadMiniCards();
+      this.emptyMinicards = false; //flagging it at false since "too soon to get analytics" problem occurs in IG only
+
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -195,6 +198,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   async loadMiniCards() {
     // 1. Init intervalData (retrieve data of previous month)
     let results;
+    let empty = false;
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
@@ -207,11 +211,16 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
+
+        if(!results)
+          empty = true;
+
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });
+    return empty;
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {

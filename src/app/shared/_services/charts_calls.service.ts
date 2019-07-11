@@ -2203,10 +2203,10 @@ export class ChartsCallsService {
       last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
     };
 
-    if(measure!='subs') //used to avoid date parsing in YT subscribers (that doesn't contain such infos). Expect more elegant sol. in future
+    //if(measure!='subs') //used to avoid date parsing in YT subscribers (that doesn't contain such infos). Expect more elegant sol. in future
       data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
 
-    if(measure=='vids')
+    if(measure=='vids' || measure=='subs')
       sum = data.length;
     else {
       for (const i in data) {
@@ -2218,7 +2218,7 @@ export class ChartsCallsService {
 
     switch (measure) {
       case 'subs':
-        value = Number.parseFloat(avg);
+        value = sum;
         step = this.searchStep(value, measure);
         perc = value;
         break;
