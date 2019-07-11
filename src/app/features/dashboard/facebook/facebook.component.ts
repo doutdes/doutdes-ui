@@ -69,7 +69,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   public miniCards: MiniCard[] = FbMiniCards;
   private dashStored: Array<DashboardCharts> = [];
 
-  public loading = false;
+  public loading = false; // TODO to edit
+  loaded: boolean = false;
   public isApiKeySet = true;
   modalRef: BsModalRef;
 
@@ -155,7 +156,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       type: D_TYPE.FB,
     };
 
-
     this.GEService.loadingScreen.next(true);
 
     try {
@@ -172,13 +172,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       this.emptyMinicards = await this.loadMiniCards(this.pageID);
       this.emptyMinicards = false; //flagging it at false since "too soon to get analytics" problem occurs in IG only
 
-
-      if (dash.id) {
-        this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
-      } else {
-        console.error('Cannot retrieve a page ID for the Facebook dashboard.');
-        return;
-      }
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -365,12 +358,20 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
-  async checkExistance() {
-    let response, result;
+  async checkExistence() {
+    let response, isPermissionGranted, result;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FB).toPromise();
-      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.FB).toPromise())['granted'];
+      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.FB).toPromise();
+
+      if(isPermissionGranted.isTokenValid) {
+        result = response['exists'] && isPermissionGranted['granted'];
+      } else {
+        result = null;
+        this.toastr.error('I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+      }
+
     } catch (e) {
       console.error(e);
       result = null;
@@ -391,7 +392,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.addBreadcrumb();
 
     try {
-      existence = await this.checkExistance();
+      existence = await this.checkExistence();
 
       if (!existence) { // If the Api Key has not been set yet, then a message is print
         this.isApiKeySet = false;
@@ -423,7 +424,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           return;
         }
       }
-
 
       this.firstDateRange = this.minDate;
       this.lastDateRange = this.maxDate;
@@ -463,6 +463,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
       this.localeService.use('it');
       await this.loadDashboard();
+      this.loaded = true;
     }
     catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
