@@ -15,7 +15,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
 import {YoutubeService} from '../../../shared/_services/youtube.service';
-import {D_TYPE} from '../../../shared/_models/Dashboard';
+import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {ToastrService} from 'ngx-toastr';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
@@ -27,7 +27,6 @@ import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 const PrimaryWhite = '#ffffff';
 
@@ -63,6 +62,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   public miniCards: MiniCard[] = CustomMiniCards;
   private dashStored: Array<DashboardCharts> = [];
 
+  loaded: boolean = false;
   public loading = false;
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
@@ -78,7 +78,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   lastDateRange: Date;
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
-  minSet: Array<{id: number; minDate: Date}>;   // contains the minimum Date for every chart, used to refresh datepicker on the fly
+  minSet: Array<{ id: number; minDate: Date }> = [];   // contains the minimum Date for every chart, used to refresh datepicker on the fly
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
   modalRef: BsModalRef;
@@ -112,13 +112,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     let existence, view_id;
     let key: ApiKey;
 
-    this.GEService.loadingScreen.subscribe(value => {this.loading = value; });
-    this.minSet = [];
-    this.minSet.push(
-      {id: -1,
-       minDate: subDays(this.maxDate, this.FILTER_DAYS.ninety)
-      }
-      );
+    this.GEService.loadingScreen.subscribe(value => {
+      this.loading = value;
+    });
+    this.minSet.push({
+      id: -1,
+      minDate: subDays(this.maxDate, this.FILTER_DAYS.ninety)
+    });
     this.addBreadcrumb();
     this.GEService.loadingScreen.next(true);
 
@@ -131,7 +131,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.HARD_DASH_DATA.permissions = (await this.checkExistence()).permissions;
+      this.HARD_DASH_DATA.permissions = existence.permissions;
 
       if (this.HARD_DASH_DATA.permissions[D_TYPE.GA]) {
 
@@ -302,6 +302,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         }
       }
 
+      this.loaded = true;
+
     } catch (e) {
       console.error(e);
       this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
@@ -329,18 +331,20 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             case D_TYPE.FB :
             case D_TYPE.IG:
               this.minSet.push(
-                {id: dashChart.chart_id,
-                 minDate: new Date(dashChart.chartData[0]['end_time'])
+                {
+                  id: dashChart.chart_id,
+                  minDate: new Date(dashChart.chartData[0]['end_time'])
                 }
-                );
+              );
               break;
             case D_TYPE.GA:
               this.minSet.push(
-                {id: dashChart.chart_id,
+                {
+                  id: dashChart.chart_id,
                   minDate: (parseDate(dashChart['chartData'][0][0]))
                 }
               );
-            break;
+              break;
             case D_TYPE.YT:
               this.minSet.push(
                 {
@@ -462,14 +466,20 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   async checkExistence() {
     const permissions = {};
     const keys = Object.keys(D_TYPE);
-    let response, somethingGranted = false;
+    let response, isPermissionGranted, somethingGranted = false;
 
     try {
       for (const i in keys) {
         if (D_TYPE[keys[i]] !== D_TYPE.CUSTOM) {
           response = await this.apiKeyService.checkIfKeyExists(D_TYPE[keys[i]]).toPromise();
-          permissions[D_TYPE[keys[i]]] = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE[keys[i]]).toPromise())['granted'];
-          somethingGranted = somethingGranted || permissions[D_TYPE[keys[i]]];
+          isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE[keys[i]]).toPromise();
+
+          if(isPermissionGranted.tokenValid) {
+            permissions[D_TYPE[keys[i]]] = response['exists'] && isPermissionGranted['granted'];
+            somethingGranted = somethingGranted || permissions[D_TYPE[keys[i]]];
+          } else {
+            this.toastr.error('I permessi di accesso ai tuoi dati ' + DS_TYPE[D_TYPE[keys[i]]] + ' sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+          }
         }
       }
     } catch (e) {
@@ -515,7 +525,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     });
   }
 
-  async getViewID()  {
+  async getViewID() {
     let viewID;
 
     try {
@@ -647,7 +657,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
-    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered', ignoreBackdropClick: ignoreBackdrop, keyboard: !ignoreBackdrop});
+    this.modalRef = this.modalService.show(template, {
+      class: 'modal-md modal-dialog-centered',
+      ignoreBackdropClick: ignoreBackdrop,
+      keyboard: !ignoreBackdrop
+    });
   }
 
   closeModal(): void {

@@ -10,7 +10,7 @@ import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
-import {addDays, subDays} from 'date-fns';
+import {subDays} from 'date-fns';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
 import jsPDF from 'jspdf';
@@ -23,7 +23,7 @@ import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootst
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
-import {ToastContainerDirective, ToastrService} from 'ngx-toastr';
+import {ToastrService} from 'ngx-toastr';
 
 
 @Component({
@@ -56,6 +56,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   public loading = false;
   public isApiKeySet: boolean = true;
+
+  loaded: boolean = false;
 
   @select() filter: Observable<any>;
 
@@ -185,6 +187,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
         }
       }
+
+      this.loaded = true;
 
     } catch (e) {
       console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
@@ -393,21 +397,17 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   clearDashboard(): void {
-    //console.log(charts_id);
-
     this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
       this.filterActions.clearDashboard(D_TYPE.FB);
       this.closeModal();
     }, error => {
+      console.error(error);
+      this.closeModal();
+
       if (error.status === 500) {
         this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
-        this.closeModal();
-        console.error(error);
       } else {
-        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
-        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
-        console.error(error);
-        this.closeModal();
+        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la pulizia della dashboard.');
       }
     });
   }
@@ -516,11 +516,20 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   async checkExistance() {
-    let response, result = null;
+    let response, isPermissionGranted, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.GA).toPromise();
-      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.GA).toPromise())['granted'];
+      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.GA).toPromise();
+
+      console.warn(isPermissionGranted);
+
+      if(isPermissionGranted.tokenValid) {
+        result = response['exists'] && isPermissionGranted['granted'];
+      } else {
+        this.toastr.error('I permessi di accesso ai tuoi dati del sito web sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+      }
+
     } catch (e) {
       console.error(e);
     }
