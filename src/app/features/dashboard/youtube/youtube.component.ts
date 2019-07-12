@@ -11,7 +11,7 @@ import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
-import {addDays, subDays} from 'date-fns';
+import {subDays} from 'date-fns';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
 import jsPDF from 'jspdf';
@@ -19,12 +19,12 @@ import html2canvas from 'html2canvas';
 import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
-import {YtMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+import {MiniCard, YtMiniCards} from '../../../shared/_models/MiniCard';
 import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
-import {ToastContainerDirective, ToastrService} from 'ngx-toastr';
+import {ToastrService} from 'ngx-toastr';
 
 
 @Component({
@@ -57,6 +57,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   public loading = false;
   public isApiKeySet = true;
+  loaded: boolean = false;
 
   @select() filter: Observable<any>;
 
@@ -190,6 +191,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
       }
+
+      this.loaded = true;
 
     } catch (e) {
       console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
@@ -533,18 +536,25 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   }
 
   async checkExistance() {
-    let response, result = null;
+    let response, isPermissionGranted, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.YT).toPromise();
-      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.YT).toPromise())['granted'];
+      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.YT).toPromise();
+
+      if(isPermissionGranted.tokenValid) {
+        result = response['exists'] && isPermissionGranted['granted'];
+      } else {
+        this.toastr.error('I permessi di accesso ai tuoi dati YouTube sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+      }
+
     } catch (e) {
       console.error(e);
     }
 
     return result;
   }
-/// TODO: Verify usefulness
+
   async getViewID()  {
     let viewID;
 

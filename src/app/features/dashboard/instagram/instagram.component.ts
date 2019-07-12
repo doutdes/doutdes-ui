@@ -57,6 +57,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   public loading = false;
   public isApiKeySet = true;
+
+  loaded: boolean = false;
+
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
@@ -226,6 +229,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         console.warn(err);
       });
     }
+
+    this.loaded = true;
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
@@ -314,11 +319,18 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async checkExistance() {
-    let response, result = null;
+    let response, isPermissionGranted, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.IG).toPromise();
-      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise())['granted'];
+      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise();
+
+      if(isPermissionGranted.tokenValid) {
+        result = response['exists'] && isPermissionGranted['granted'];
+      } else {
+        this.toastr.error('I permessi di accesso ai tuoi dati Instagram sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+      }
+
     } catch (e) {
       console.error(e);
     }

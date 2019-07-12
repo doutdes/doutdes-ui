@@ -69,9 +69,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   public miniCards: MiniCard[] = FbMiniCards;
   private dashStored: Array<DashboardCharts> = [];
 
-  public loading = false; // TODO to edit
-  loaded: boolean = false;
+  public loading = false;
   public isApiKeySet = true;
+
+  loaded: boolean = false;
   modalRef: BsModalRef;
 
   // Form for init
@@ -359,22 +360,20 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async checkExistence() {
-    let response, isPermissionGranted, result;
+    let response, isPermissionGranted, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FB).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.FB).toPromise();
 
-      if(isPermissionGranted.isTokenValid) {
+      if(isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        result = null;
         this.toastr.error('I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
       }
 
     } catch (e) {
       console.error(e);
-      result = null;
     }
 
     return result;

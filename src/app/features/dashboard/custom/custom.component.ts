@@ -15,7 +15,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
 import {YoutubeService} from '../../../shared/_services/youtube.service';
-import {D_TYPE} from '../../../shared/_models/Dashboard';
+import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {ToastrService} from 'ngx-toastr';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
@@ -27,7 +27,6 @@ import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
-import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 const PrimaryWhite = '#ffffff';
 
@@ -64,6 +63,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   public miniCards: MiniCard[] = CustomMiniCards;
   private dashStored: Array<DashboardCharts> = [];
 
+  loaded: boolean = false;
   public loading = false;
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
@@ -79,7 +79,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   lastDateRange: Date;
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
-  minSet: Array<{ id: number; minDate: Date }>;   // contains the minimum Date for every chart, used to refresh datepicker on the fly
+  minSet: Array<{ id: number; minDate: Date }> = [];   // contains the minimum Date for every chart, used to refresh datepicker on the fly
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
   modalRef: BsModalRef;
@@ -118,13 +118,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.GEService.loadingScreen.subscribe(value => {
       this.loading = value;
     });
-    this.minSet = [];
-    this.minSet.push(
-      {
-        id: -1,
-        minDate: subDays(this.maxDate, this.FILTER_DAYS.ninety)
-      }
-    );
+    this.minSet.push({
+      id: -1,
+      minDate: subDays(this.maxDate, this.FILTER_DAYS.ninety)
+    });
     this.addBreadcrumb();
     this.GEService.loadingScreen.next(true);
 
@@ -137,7 +134,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.HARD_DASH_DATA.permissions = (await this.checkExistence()).permissions;
+      this.HARD_DASH_DATA.permissions = existence.permissions;
 
       if (this.HARD_DASH_DATA.permissions[D_TYPE.GA]) {
 
@@ -330,6 +327,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
       }
+
+      this.loaded = true;
 
     } catch (e) {
       console.error(e);
@@ -532,7 +531,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
 
     forkJoin(observables).subscribe(miniDatas => {
-      //console.warn(JSON.parse(JSON.stringify(miniDatas)));
       for (const i in miniDatas) {
         if (Object.entries(miniDatas[i]).length !== 0) {
           results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
