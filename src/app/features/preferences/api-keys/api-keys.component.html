@@ -1,4 +1,4 @@
-<div class="row rounded p-4 title-header h-13">
+<div class="row rounded p-4 title-header">
   <div class="col-md-12 pl-0">
     <h2 class="my-auto pl-0">Sorgenti dati</h2>
   </div>
@@ -74,13 +74,14 @@
     <p style="text-align: justify"><i class="fas fa-exclamation-circle mr-1" style="color: #ad0009; font-size:14pt"></i><b style="color: #ad0009;">Operazione pericolosa</b>: l'eliminazione di una sorgente dati comporta la definitiva rimozione da DoUtDes di tutti i dati associati al servizio.
       Alcuni dati, non essendo presenti sulla sorgente esterna, <b>non saranno più recuperabili</b>. Non sarà
     inoltre possibile visualizzare i grafici associati al servizio stesso.</p>
-    <p *ngIf="serviceToDelete.type === D_TYPE.FB && services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted'] ">
+    <label class="checkbox-inline"><input type="checkbox" value="" (click)="this.check()"> Ho letto con attenzione.</label>
+    <p *ngIf="serviceToDelete.type === D_TYPE.FB && services$[D_TYPE.IG] && services$[D_TYPE.IGmr-1]['granted'] ">
     <i class="fas fa-exclamation-triangle text-warning mr-1" style="font-size:14pt"></i><b class="text-warning">Avviso:</b> l'eliminazione del servizio Facebook comporta l'eliminazione contestuale del servizio Instagram.</p>
   </div>
 
   <div class="modal-footer">
 
-    <button type="button" class="btn btn-danger" (click)="deleteService(serviceToDelete.type)">
+    <button *ngIf="this.checkbox" type="button" class="btn btn-danger" (click)="deleteService(serviceToDelete.type)">
       Sì, elimina
     </button>
     <button type="button" class="btn btn-success" (click)="modalRef.hide()">No, mantieni</button>

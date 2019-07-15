@@ -33,6 +33,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   serviceToDelete: Service;
   somethingGranted: boolean = false;
 
+  checkbox: Boolean;
+
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
@@ -101,6 +103,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   }
 
   openModal(template: TemplateRef<any>, service: Service) {
+    this.checkbox = false;
     this.serviceToDelete = service;
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
@@ -135,7 +138,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   getLogo(serviceID: number) {
     let classes = 'mr-2 mt-1 fab ';
 
-    console.log('logo');
+    //console.log('logo');
 
     switch (serviceID) {
       case D_TYPE.FB:
@@ -172,4 +175,9 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.removeBreadcrumb();
   }
+
+  check() {
+    this.checkbox = !this.checkbox;
+  }
+
 }

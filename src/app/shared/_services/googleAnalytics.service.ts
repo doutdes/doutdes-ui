@@ -18,7 +18,7 @@ export class GoogleAnalyticsService {
 
   getViewList() {
     const headers = this.getAuthorization();
-    console.log(headers);
+    //console.log(headers);
     return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/ga/getViewList', {headers});
   }
 
