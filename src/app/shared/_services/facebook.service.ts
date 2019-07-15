@@ -102,6 +102,8 @@ export class FacebookService {
     return anyType
       ? this.http.get<FbAnyData[]>(this.formatURL(call, pageID), {headers})
       : this.http.get<FbNumberData[]>(this.formatURL(call, pageID), {headers});
+
+
   }
 
   fbposts(pageID) {
