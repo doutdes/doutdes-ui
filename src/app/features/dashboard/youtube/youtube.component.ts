@@ -77,8 +77,11 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   loadingForm: boolean;
   viewList;
   submitted: boolean;
-  emptyMinicards: boolean;
 
+  dashErrors = {
+    emptyMiniCards: false,
+    noPages: false
+  };
 
   constructor(
     private YTService: YoutubeService,
@@ -124,11 +127,15 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         console.error('Cannot retrieve a valid ID for the Website dashboard.');
         return;
       }
-      let  temp = await this.YTService.getChannels().toPromise();
-      let channelID = temp[0].id;
-      this.emptyMinicards = await this.loadMiniCards(channelID);
+      let temp = await this.YTService.getChannels().toPromise();
 
-      this.emptyMinicards = false; //flagging it at false since "too soon to get analytics" problem occurs in IG only
+      if(temp.length === 0) {
+        this.dashErrors.noPages = true;
+        return;
+      }
+
+      let channelID = temp[0].id;
+      this.dashErrors.emptyMiniCards = await this.loadMiniCards(channelID);
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -151,12 +158,6 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
           for (let i = 0; i < dataArray.length; i++) {
             chart = charts[i];
-            /*
-                            let date = parseDate(data[0]);
-                            if(date < this.minDate) {
-                              this.minDate = date;
-                            }
-            */
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
               let date = parseDate(chart['chartData'][0][0]);
@@ -215,8 +216,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.YT, this.miniCards[i].measure);
 
-        if(!results)
-          empty = true;
+        empty = empty || !results;
 
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';

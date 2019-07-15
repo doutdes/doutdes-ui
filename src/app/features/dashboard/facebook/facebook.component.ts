@@ -22,12 +22,9 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
-import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {int} from 'flatpickr/dist/utils';
-import {HttpErrorResponse, HttpHeaders, HttpRequest, HttpResponseBase} from '@angular/common/http';
-import {HttpJsonParseError} from '@angular/common/http/src/response';
 import {takeUntil} from 'rxjs/operators';
 
 const PrimaryWhite = '#ffffff';
@@ -89,7 +86,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
-  emptyMinicards: boolean;
+
+  dashErrors = {
+    emptyMiniCards: false,
+    noPages: false
+  };
 
   // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
@@ -130,8 +131,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
 
-        if(!results)
-          empty = true;
+        empty = empty || !results;
 
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
@@ -170,9 +170,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.emptyMinicards = await this.loadMiniCards(this.pageID);
-      this.emptyMinicards = false; //flagging it at false since "too soon to get analytics" problem occurs in IG only
-
+      this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -251,6 +249,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
               this.GEService.loadingScreen.next(false);
               this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
             }
+
+            this.loaded = true;
           }, err => {
             console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
             console.warn(err);
@@ -404,6 +404,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       if (!fb_page_id) {
         await this.getPagesList();
 
+        if(this.pageList.length === 0) {
+          this.dashErrors.noPages = true;
+          return;
+        }
+
         if (this.pageList.length === 1) {
           key = {fb_page_id: this.pageList[0]['id'], service_id: D_TYPE.FB};
           update = await this.apiKeyService.updateKey(key).toPromise();
@@ -462,7 +467,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
       this.localeService.use('it');
       await this.loadDashboard();
-      this.loaded = true;
     }
     catch (e) {
       console.error('Error on ngOnInit of Facebook', e);

@@ -45,6 +45,13 @@
 <div *ngIf="isApiKeySet && loaded" class="row px-3 pt-3">
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.YT"></app-minicard>
 </div> <!-- Mini cards -->
+
+<div *ngIf="dashErrors.noPages" class="alert alert-danger px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5><i class="fas fa-exclamation-triangle fa-2x float-left mt-1 mr-3"></i>
+    Al momento, non hai accesso ad un profilo di YouTube. Crea un canale oppure diventane amministratore per osservarne qui gli analytics.
+  </h5>
+</div> <!-- ERR => No pages -->
+
 <div *ngIf="isApiKeySet && loaded" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">

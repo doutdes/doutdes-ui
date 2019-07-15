@@ -68,8 +68,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
-  // datePickerEnabled = false;
-
   modalRef: BsModalRef;
 
   // Form for init
@@ -77,8 +75,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   loadingForm: boolean;
   viewList;
   submitted: boolean;
-  emptyMinicards: boolean;
-
+  dashErrors = {
+    emptyMiniCards: false,
+    noPages: false
+  };
 
   constructor(
     private GAService: GoogleAnalyticsService,
@@ -126,9 +126,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
-      this.emptyMinicards = await this.loadMiniCards();
-      this.emptyMinicards = false; //flagging it at false since "too soon to get analytics" problem occurs in IG only
-
+      this.dashErrors.emptyMiniCards = await this.loadMiniCards();
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -150,12 +148,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
           for (let i = 0; i < dataArray.length; i++) {
             chart = charts[i];
-/*
-                let date = parseDate(data[0]);
-                if(date < this.minDate) {
-                  this.minDate = date;
-                }
-*/
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
               let date = parseDate(chart['chartData'][0][0]);
@@ -216,8 +208,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
 
-        if(!results)
-          empty = true;
+        empty = empty || !results;
 
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
@@ -337,6 +328,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!view_id) {
         await this.getViewList();
+
+        if(this.viewList.length === 0) {
+          this.dashErrors.noPages = true;
+          return;
+        }
 
         if (this.viewList.length === 1) {
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
@@ -530,8 +526,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.GA).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.GA).toPromise();
-
-      console.warn(isPermissionGranted);
 
       if(isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
