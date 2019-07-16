@@ -63,7 +63,7 @@
 
 <ng-template #deleteKey> <!-- Modal warning for deletion of service -->
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Elimina permessi di '{{serviceToDelete.name}}'</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Elimina permessi di {{serviceToDelete.name}}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -75,7 +75,7 @@
       Alcuni dati, non essendo presenti sulla sorgente esterna, <b>non saranno più recuperabili</b>. Non sarà
     inoltre possibile visualizzare i grafici associati al servizio stesso.</p>
     <label class="checkbox-inline"><input type="checkbox" value="" (click)="this.check()"> Ho letto con attenzione.</label>
-    <p *ngIf="serviceToDelete.type === D_TYPE.FB && services$[D_TYPE.IG] && services$[D_TYPE.IGmr-1]['granted'] ">
+    <p *ngIf="serviceToDelete.type === D_TYPE.FB && services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted'] ">
     <i class="fas fa-exclamation-triangle text-warning mr-1" style="font-size:14pt"></i><b class="text-warning">Avviso:</b> l'eliminazione del servizio Facebook comporta l'eliminazione contestuale del servizio Instagram.</p>
   </div>
 
