@@ -9,6 +9,7 @@ import {catchError, map} from 'rxjs/operators';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {IgPage} from '../_models/InstagramData';
 import * as moment from 'moment';
+import {D_TYPE} from '../_models/Dashboard';
 
 @Injectable()
 export class YoutubeService {
