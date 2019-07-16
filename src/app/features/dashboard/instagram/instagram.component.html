@@ -44,9 +44,17 @@
   </div>
 </div>
 
-<div *ngIf="emptyMinicards" class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">
-  <h5>Le minicard non sono disponibili, in quanto il profilo business è stato attivato di recente.</h5>
+<div *ngIf="dashErrors.emptyMiniCards" class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5>Le minicard non sono ancora disponibili, in quanto il profilo business è stato attivato di recente.</h5>
 </div> <!-- Mini cards -->
+
+<div *ngIf="dashErrors.noPages" class="alert alert-danger px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5><i class="fas fa-exclamation-triangle fa-2x float-left mt-1 mr-3"></i>
+    Al momento, non hai accesso ad una pagina Instagram con profilo business. Crea una pagina oppure diventane amministratore per osservarne qui gli analytics.
+  </h5>
+</div> <!-- Mini cards -->
+
+
 <div *ngIf="isApiKeySet && !emptyMinicards && loaded" class="row px-3 pt-3">
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.IG"></app-minicard>
 </div> <!-- Mini cards -->
@@ -64,10 +72,6 @@
   ></app-emptycard>
 
   <ngx-loading [show]="loading" [config]="config"></ngx-loading>
-
-  <!--<ng-template #noContent>
-    <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first Chart!</h5>
-  </ng-template>-->
 </div>
 
 <div *ngIf="!isApiKeySet" class="row">
@@ -92,8 +96,6 @@
     Stiamo creando il tuo report, attendi...
   </div>
 </ng-template>
-
-
 <ng-template #deleteCharts>
   <div class="modal-header">
     <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Eliminazione di tutti i grafici</h4>

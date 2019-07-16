@@ -28,10 +28,12 @@ export class GlobalEventsManagerService {
   }
 
   public isUserLoggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public loadingScreen: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  // TODO delete this subjects
   public removeFromDashboard: BehaviorSubject<[number, number]> = new BehaviorSubject<[number, number]>([0, 0]);
   public updateChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);
   public showChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);
   public updateChartList: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  public loadingScreen: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
 }

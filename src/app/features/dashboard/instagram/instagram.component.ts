@@ -77,7 +77,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
   datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
-  emptyMinicards : boolean;
+
+  dashErrors = {
+    emptyMiniCards: false,
+    noPages: false
+  };
 
   modalRef: BsModalRef;
 
@@ -114,8 +118,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       for(const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
 
-        if(!results)
-          empty = true;
+        empty = empty || !results;
 
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
@@ -127,7 +130,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async loadDashboard() {
-    const existance = await this.checkExistance();
+    const existence = await this.checkExistence();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
@@ -140,7 +143,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       type: D_TYPE.IG,
     };
 
-    if (!existance) { // If the Api Key has not been set yet, then a message is print
+    if (!existence) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
       return;
     }
@@ -150,11 +153,17 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(3).toPromise(); // Instagram type
 
-    // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
-    this.pageID = (await this.IGService.getPages().toPromise())[0].id;
+    // Retrieving the page ID
+    this.pageID = (await this.IGService.getPages().toPromise());
 
-    this.emptyMinicards = await this.loadMiniCards(this.pageID);
+    if(this.pageID.length === 0) {
+      this.dashErrors.noPages = true;
+      return;
+    }
 
+    this.pageID = this.pageID[0].id; // TODO to add the choice of the page, now it takes just the first one
+
+    this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -318,7 +327,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
-  async checkExistance() {
+  async checkExistence() {
     let response, isPermissionGranted, result = null;
 
     try {
