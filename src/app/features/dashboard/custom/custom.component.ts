@@ -120,7 +120,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     this.GEService.loadingScreen.subscribe(value => {
       this.loading = value;
-      console.log('LOADING: ', value);
     });
     this.minSet.push({
       id: -1,
