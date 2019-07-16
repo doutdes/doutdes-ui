@@ -172,8 +172,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           if (this.fbPageList.length === 1) {
             key = {fb_page_id: this.fbPageList[0]['id'], service_id: D_TYPE.FB};
             await this.apiKeyService.updateKey(key).toPromise();
-          }
-          else {
+          } else {
             this.selectViewFormFb = this.formBuilder.group({
               fb_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
             });
@@ -383,8 +382,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
               break;
           }
           this.minSet.forEach(el => {
-            if (el.minDate < this.minDate)
+            if (el.minDate < this.minDate) {
               this.minDate = el.minDate;
+            }
           });
 
           chartToPush.error = false;
@@ -571,19 +571,22 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     let update, key: ApiKey;
     this.submitted = true;
 
-    if (this.selectViewForm.invalid || this.selectViewFormFb.invalid) {
-      this.loadingForm = false;
-      return;
-    }
-
-    switch(service_id) {
+    switch (service_id) {
       case D_TYPE.GA:
+        if (this.selectViewForm.invalid) {
+          this.loadingForm = false;
+          return;
+        }
         key = {
           ga_view_id: this.selectViewForm.value.view_id,
           service_id: D_TYPE.GA
         };
         break;
       case D_TYPE.FB:
+        if (this.selectViewFormFb.invalid) {
+          this.loadingForm = false;
+          return;
+        }
         key = {
           fb_page_id: this.selectViewFormFb.value.fb_page_id,
           service_id: D_TYPE.FB
@@ -683,7 +686,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async getUserCompany() {
-    return <User> await this.userService.get().toPromise();
+    return <User>await this.userService.get().toPromise();
   }
 
   formatStringDate(date: Date) {
