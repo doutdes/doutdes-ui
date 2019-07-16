@@ -47,6 +47,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     permissions: null
   };
 
+  D_TYPE = D_TYPE;
   private fbPageID = null;
   private igPageID = null;
   private ytPageID = null;
@@ -566,19 +567,31 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     }
   }
 
-  async selectViewSubmit() {
-    let update;
+  async selectViewSubmit(service_id: number) {
+    let update, key: ApiKey;
     this.submitted = true;
 
-    if (this.selectViewForm.invalid) {
+    if (this.selectViewForm.invalid || this.selectViewFormFb.invalid) {
       this.loadingForm = false;
       return;
     }
 
-    const key: ApiKey = {
-      ga_view_id: this.selectViewForm.value.view_id,
-      service_id: D_TYPE.GA
-    };
+    switch(service_id) {
+      case D_TYPE.GA:
+        key = {
+          ga_view_id: this.selectViewForm.value.view_id,
+          service_id: D_TYPE.GA
+        };
+        break;
+      case D_TYPE.FB:
+        key = {
+          fb_page_id: this.selectViewFormFb.value.fb_page_id,
+          service_id: D_TYPE.FB
+        };
+        break;
+      default:
+        break;
+    }
 
     this.loadingForm = true;
 
@@ -588,33 +601,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.closeModal();
       await this.ngOnInit();
     } else {
-      console.error('MANDARE ERRORE');
-    }
-  }
-
-  async selectViewSubmitFb() {
-    let update;
-    this.submitted = true;
-
-    if (this.selectViewFormFb.invalid) {
-      this.loadingForm = false;
-      return;
-    }
-
-    const key: ApiKey = {
-      fb_page_id: this.selectViewFormFb.value.fb_page_id,
-      service_id: D_TYPE.FB
-    };
-
-    this.loadingForm = true;
-
-    update = await this.apiKeyService.updateKey(key).toPromise();
-
-    if (update) {
-      this.closeModal();
-      await this.ngOnInit();
-    } else {
-      console.error('MANDARE ERRORE');
+      this.toastr.error('Qualcosa è andato storto scegliendo i dati da visualizzare. Per favore, riprova.', 'Errore durante l\'aggiornamento');
     }
   }
 

@@ -55,7 +55,7 @@
 </div> <!-- Mini cards -->
 
 
-<div *ngIf="isApiKeySet && !emptyMinicards && loaded" class="row px-3 pt-3">
+<div *ngIf="isApiKeySet && !dashErrors.emptyMiniCards && loaded" class="row px-3 pt-3">
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.IG"></app-minicard>
 </div> <!-- Mini cards -->
 
