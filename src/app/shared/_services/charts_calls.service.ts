@@ -2362,6 +2362,7 @@ export class ChartsCallsService {
         }
         break;
       case 'subs':
+        console.log(value);
         value = data[0]['value'];
         step = this.searchStep(value, measure);
         perc = value;
