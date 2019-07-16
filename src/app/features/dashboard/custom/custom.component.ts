@@ -93,6 +93,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   viewList;
   fbPageList;
 
+
   constructor(
     private GAService: GoogleAnalyticsService,
     private FBService: FacebookService,
@@ -113,11 +114,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    let existence, view_id, fb_page_id;
+    let existence, view_id;
+    let igPages, ytChannels;
     let key: ApiKey;
 
     this.GEService.loadingScreen.subscribe(value => {
       this.loading = value;
+      console.log('LOADING: ', value);
     });
     this.minSet.push({
       id: -1,
@@ -162,7 +165,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           }
         }
       }
-
       if (this.HARD_DASH_DATA.permissions[D_TYPE.FB]) {
 
         this.fbPageID = await this.getFbPageID();
@@ -188,8 +190,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
       //this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.getFbPageID()) : null;
-      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
-      this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] ? (await this.YTService.getChannels().toPromise())[0].id : null;
+      igPages = await this.IGService.getPages().toPromise();
+      ytChannels = await this.YTService.getChannels().toPromise();
+
+      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] && igPages.length > 0 ? igPages[0].id : null;
+      this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] && ytChannels.length > 0 ? ytChannels[0].id : null;
       this.firstDateRange = subDays(new Date(), 30); // this.minDate;
       this.lastDateRange = this.maxDate;
       // this.bsRangeValue = [this.firstDateRange, this.lastDateRange];

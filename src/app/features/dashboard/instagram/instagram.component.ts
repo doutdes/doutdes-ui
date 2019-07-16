@@ -234,6 +234,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
         }
       }, err => {
+        this.toastr.error('Il caricamento della dashboard non è andato a buon fine. Per favore, riprova oppure contatta il supporto tecnico.', 'Qualcosa è andato storto!');
         console.error('ERROR in INSTAGRAM COMPONENT, when fetching charts.');
         console.warn(err);
       });

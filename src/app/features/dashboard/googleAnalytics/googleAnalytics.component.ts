@@ -97,6 +97,95 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   ) {
   }
 
+  async ngOnInit() {
+    let existence, view_id, update;
+    let key: ApiKey;
+
+    this.GEService.loadingScreen.subscribe(value => {this.loading = value});
+
+    this.addBreadcrumb();
+
+    try {
+      existence = await this.checkExistance();
+
+      if (!existence) { // If the Api Key has not been set yet, then a message is print
+        this.isApiKeySet = false;
+        return;
+      }
+
+      view_id = await this.getViewID();
+
+      // We check if the user has already set a preferred page if there is more than one in his permissions.
+      if (!view_id) {
+        await this.getViewList();
+
+        if(this.viewList.length === 0) {
+          this.dashErrors.noPages = true;
+          return;
+        }
+
+        if (this.viewList.length === 1) {
+          key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
+          update = await this.apiKeyService.updateKey(key).toPromise();
+
+          if(!update) {
+            return;
+          }
+        } else {
+          this.selectViewForm = this.formBuilder.group({
+            view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
+          });
+
+          this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
+
+          this.openModal(this.selectView, true);
+
+          return;
+        }
+      }
+
+      this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); //this.minDate;
+      this.lastDateRange = this.maxDate;
+      //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+      this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange]; // Starts with Last 30 days
+
+      this.filter.subscribe(elements => {
+        this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
+        const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.GA) : -1;
+        this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
+      });
+
+      let dash_type = this.HARD_DASH_DATA.dashboard_type;
+
+      if (!this.GEService.isSubscriber(dash_type)) {
+        this.GEService.removeFromDashboard.subscribe(values => {
+          if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+            this.filterActions.removeChart(values[0]);
+          }
+        });
+        this.GEService.showChartInDashboard.subscribe(chart => {
+          if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+            this.addChartToDashboard(chart);
+          }
+        });
+        this.GEService.updateChartInDashboard.subscribe(chart => {
+          if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+            this.filterActions.updateChart(chart);
+          }
+        });
+
+        this.GEService.addSubscriber(dash_type);
+      }
+
+      this.localeService.use('it');
+
+      await this.loadDashboard();
+
+    } catch (e) {
+      console.error('Error on ngOnInit of Google Analytics', e);
+    }
+  }
+
   async loadDashboard() {
 
     let dash, charts, dataArray;
@@ -186,6 +275,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       this.loaded = true;
 
     } catch (e) {
+      this.toastr.error('Il caricamento della dashboard non è andato a buon fine. Per favore, riprova oppure contatta il supporto tecnico.', 'Qualcosa è andato storto!');
       console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
       console.error(e);
     }
@@ -305,95 +395,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   removeBreadcrumb() {
     this.breadcrumbActions.deleteBreadcrumb();
-  }
-
-  async ngOnInit() {
-    let existence, view_id, update;
-    let key: ApiKey;
-
-    this.GEService.loadingScreen.subscribe(value => {this.loading = value});
-
-    this.addBreadcrumb();
-
-    try {
-      existence = await this.checkExistance();
-
-      if (!existence) { // If the Api Key has not been set yet, then a message is print
-        this.isApiKeySet = false;
-        return;
-      }
-
-      view_id = await this.getViewID();
-
-      // We check if the user has already set a preferred page if there is more than one in his permissions.
-      if (!view_id) {
-        await this.getViewList();
-
-        if(this.viewList.length === 0) {
-          this.dashErrors.noPages = true;
-          return;
-        }
-
-        if (this.viewList.length === 1) {
-          key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
-          update = await this.apiKeyService.updateKey(key).toPromise();
-
-          if(!update) {
-            return;
-          }
-        } else {
-          this.selectViewForm = this.formBuilder.group({
-            view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
-          });
-
-          this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
-
-          this.openModal(this.selectView, true);
-
-          return;
-        }
-      }
-
-      this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); //this.minDate;
-      this.lastDateRange = this.maxDate;
-      //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-      this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange]; // Starts with Last 30 days
-
-      this.filter.subscribe(elements => {
-        this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-        const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.GA) : -1;
-        this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
-      });
-
-      let dash_type = this.HARD_DASH_DATA.dashboard_type;
-
-      if (!this.GEService.isSubscriber(dash_type)) {
-        this.GEService.removeFromDashboard.subscribe(values => {
-          if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
-            this.filterActions.removeChart(values[0]);
-          }
-        });
-        this.GEService.showChartInDashboard.subscribe(chart => {
-          if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-            this.addChartToDashboard(chart);
-          }
-        });
-        this.GEService.updateChartInDashboard.subscribe(chart => {
-          if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-            this.filterActions.updateChart(chart);
-          }
-        });
-
-        this.GEService.addSubscriber(dash_type);
-      }
-
-      this.localeService.use('it');
-
-      await this.loadDashboard();
-
-    } catch (e) {
-      console.error('Error on ngOnInit of Google Analytics', e);
-    }
   }
 
   ngOnDestroy() {

@@ -39,6 +39,7 @@
            (bsValueChange)="onValueChange($event)"
            bsDaterangepicker> <!-- Date picker -->
   </div>
+  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div> <!-- Header -->
 
 <div *ngIf="somethingGranted && loaded" class="row px-3 pt-3">
@@ -60,8 +61,6 @@
     *ngIf="!loading" class="col-lg-6 " [xlOrder]="3" [lgOrder]="5" [dashboard_data]="HARD_DASH_DATA"
     [ngStyle]="{'padding-left': nChartEven() ? '15px' : '0.5rem', 'padding-right': nChartEven() ? '0.5rem' : '15px'}"
   ></app-emptycard>
-
-  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>
 
 <ng-template #selectView>
