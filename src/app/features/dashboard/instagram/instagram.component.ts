@@ -57,6 +57,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   public loading = false;
   public isApiKeySet = true;
+
+  loaded: boolean = false;
+
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
@@ -74,6 +77,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
   datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
+
+  dashErrors = {
+    emptyMiniCards: false,
+    noPages: false
+  };
 
   modalRef: BsModalRef;
 
@@ -95,6 +103,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   async loadMiniCards(pageID) {
     // 1. Init intervalData (retrieve data of previous month)
     let results;
+    let empty = false;
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
@@ -108,15 +117,20 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     forkJoin(observables).subscribe(miniDatas => {
       for(const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
+
+        empty = empty || !results;
+
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });
+
+    return empty;
   }
 
   async loadDashboard() {
-    const existance = await this.checkExistance();
+    const existence = await this.checkExistence();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
@@ -129,7 +143,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       type: D_TYPE.IG,
     };
 
-    if (!existance) { // If the Api Key has not been set yet, then a message is print
+    if (!existence) { // If the Api Key has not been set yet, then a message is print
       this.isApiKeySet = false;
       return;
     }
@@ -139,10 +153,17 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(3).toPromise(); // Instagram type
 
-    // Retrieving the page ID // TODO to add the choice of the page, now it takes just the first one
-    this.pageID = (await this.IGService.getPages().toPromise())[0].id;
+    // Retrieving the page ID
+    this.pageID = (await this.IGService.getPages().toPromise());
 
-    await this.loadMiniCards(this.pageID);
+    if(this.pageID.length === 0) {
+      this.dashErrors.noPages = true;
+      return;
+    }
+
+    this.pageID = this.pageID[0].id; // TODO to add the choice of the page, now it takes just the first one
+
+    this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -217,6 +238,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         console.warn(err);
       });
     }
+
+    this.loaded = true;
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
@@ -304,12 +327,19 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
-  async checkExistance() {
-    let response, result = null;
+  async checkExistence() {
+    let response, isPermissionGranted, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.IG).toPromise();
-      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise())['granted'];
+      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise();
+
+      if(isPermissionGranted.tokenValid) {
+        result = response['exists'] && isPermissionGranted['granted'];
+      } else {
+        this.toastr.error('I permessi di accesso ai tuoi dati Instagram sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+      }
+
     } catch (e) {
       console.error(e);
     }

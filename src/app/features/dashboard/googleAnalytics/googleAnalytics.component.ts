@@ -10,7 +10,7 @@ import {FilterActions} from '../redux-filter/filter.actions';
 import {select} from '@angular-redux/store';
 import {forkJoin, Observable} from 'rxjs';
 import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
-import {addDays, subDays} from 'date-fns';
+import {subDays} from 'date-fns';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
 
 import jsPDF from 'jspdf';
@@ -23,7 +23,7 @@ import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootst
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
-import {ToastContainerDirective, ToastrService} from 'ngx-toastr';
+import {ToastrService} from 'ngx-toastr';
 
 
 @Component({
@@ -57,6 +57,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   public loading = false;
   public isApiKeySet: boolean = true;
 
+  loaded: boolean = false;
+
   @select() filter: Observable<any>;
 
   // Date variables
@@ -66,8 +68,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
-  // datePickerEnabled = false;
-
   modalRef: BsModalRef;
 
   // Form for init
@@ -75,7 +75,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   loadingForm: boolean;
   viewList;
   submitted: boolean;
-
+  dashErrors = {
+    emptyMiniCards: false,
+    noPages: false
+  };
 
   constructor(
     private GAService: GoogleAnalyticsService,
@@ -123,7 +126,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
-      await this.loadMiniCards();
+      this.dashErrors.emptyMiniCards = await this.loadMiniCards();
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -145,12 +148,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
           for (let i = 0; i < dataArray.length; i++) {
             chart = charts[i];
-/*
-                let date = parseDate(data[0]);
-                if(date < this.minDate) {
-                  this.minDate = date;
-                }
-*/
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
               let date = parseDate(chart['chartData'][0][0]);
@@ -186,6 +183,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         }
       }
 
+      this.loaded = true;
+
     } catch (e) {
       console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
       console.error(e);
@@ -195,6 +194,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   async loadMiniCards() {
     // 1. Init intervalData (retrieve data of previous month)
     let results;
+    let empty = false;
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
@@ -207,11 +207,15 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
+
+        empty = empty || !results;
+
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });
+    return empty;
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
@@ -325,6 +329,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       if (!view_id) {
         await this.getViewList();
 
+        if(this.viewList.length === 0) {
+          this.dashErrors.noPages = true;
+          return;
+        }
+
         if (this.viewList.length === 1) {
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
           update = await this.apiKeyService.updateKey(key).toPromise();
@@ -393,21 +402,17 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   clearDashboard(): void {
-    //console.log(charts_id);
-
     this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
       this.filterActions.clearDashboard(D_TYPE.GA);
       this.closeModal();
     }, error => {
+      console.error(error);
+      this.closeModal();
+
       if (error.status === 500) {
         this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
-        this.closeModal();
-        console.error(error);
       } else {
-        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
-        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
-        console.error(error);
-        this.closeModal();
+        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la pulizia della dashboard.');
       }
     });
   }
@@ -516,11 +521,18 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   async checkExistance() {
-    let response, result = null;
+    let response, isPermissionGranted, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.GA).toPromise();
-      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.GA).toPromise())['granted'];
+      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.GA).toPromise();
+
+      if(isPermissionGranted.tokenValid) {
+        result = response['exists'] && isPermissionGranted['granted'];
+      } else {
+        this.toastr.error('I permessi di accesso ai tuoi dati del sito web sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+      }
+
     } catch (e) {
       console.error(e);
     }

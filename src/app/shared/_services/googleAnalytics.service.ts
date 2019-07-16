@@ -18,7 +18,6 @@ export class GoogleAnalyticsService {
 
   getViewList() {
     const headers = this.getAuthorization();
-    //console.log(headers);
     return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/ga/getViewList', {headers});
   }
 
@@ -67,29 +66,10 @@ export class GoogleAnalyticsService {
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
-  getScopes() {
-    const headers = this.getAuthorization();
-    return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/getScopes/', {headers});
-  }
-
-  gaViewsByCountry(): Observable<any> {
-    const headers = this.getAuthorization();
-
-    return this.http.get<GoogleData[]>(this.formatURL('viewsbycountry/'), {headers})
-      .pipe(map((res) => res), catchError(e => of(e)));
-  }
-
   gaUsers(): Observable<any> {
     const headers = this.getAuthorization();
 
     return this.http.get<GoogleData[]>(this.formatURL('users/'), {headers})
-      .pipe(map((res) => res), catchError(e => of(e)));
-  }
-
-  gaNewUsers(): Observable<any> {
-    const headers = this.getAuthorization();
-
-    return this.http.get<GoogleData[]>(this.formatURL('newusers/'), {headers})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
@@ -102,5 +82,4 @@ export class GoogleAnalyticsService {
       .set('Content-Type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`);
   }
-
 }

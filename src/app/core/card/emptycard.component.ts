@@ -86,13 +86,13 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       try {
         if (!this.GEService.isSubscriber(dummy_dashType)) {
 
-          this.GEService.removeFromDashboard.subscribe(async values => {
+          this.GEService.removeFromDashboard.subscribe(async values => { // TODO to remove (unuseful)
             if (values[0] !== 0 || values[1] !== 0) {
               await this.updateDropdownOptions();
             }
           });
 
-          this.GEService.updateChartList.subscribe(async value => {
+          this.GEService.updateChartList.subscribe(async value => { // TODO to remove (unuseful)
             if (value) {
               await this.updateDropdownOptions();
             }

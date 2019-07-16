@@ -22,12 +22,9 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
-import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {int} from 'flatpickr/dist/utils';
-import {HttpErrorResponse, HttpHeaders, HttpRequest, HttpResponseBase} from '@angular/common/http';
-import {HttpJsonParseError} from '@angular/common/http/src/response';
 import {takeUntil} from 'rxjs/operators';
 
 const PrimaryWhite = '#ffffff';
@@ -71,6 +68,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   public loading = false;
   public isApiKeySet = true;
+
+  loaded: boolean = false;
   modalRef: BsModalRef;
 
   // Form for init
@@ -87,6 +86,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
+
+  dashErrors = {
+    emptyMiniCards: false,
+    noPages: false
+  };
 
   // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
@@ -110,6 +114,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   async loadMiniCards(pageID) {
     // 1. Init intervalData (retrieve data of previous month)
     let results;
+    let empty = false;
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
     const intervalDate: IntervalDate = {
       first: new Date(y, m - 1, 1),
@@ -125,11 +130,17 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
+
+        empty = empty || !results;
+
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });
+
+    return empty;
+
   }
 
   async loadDashboard() { // TODO get pageID and refactor
@@ -146,7 +157,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       type: D_TYPE.FB,
     };
 
-
     this.GEService.loadingScreen.next(true);
 
     try {
@@ -160,14 +170,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         return;
       }
 
-      await this.loadMiniCards(this.pageID);
-
-      if (dash.id) {
-        this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
-      } else {
-        console.error('Cannot retrieve a page ID for the Facebook dashboard.');
-        return;
-      }
+      this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -246,6 +249,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
               this.GEService.loadingScreen.next(false);
               this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
             }
+
+            this.loaded = true;
           }, err => {
             console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
             console.warn(err);
@@ -354,15 +359,21 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
-  async checkExistance() {
-    let response, result;
+  async checkExistence() {
+    let response, isPermissionGranted, result = null;
 
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FB).toPromise();
-      result = response['exists'] && (await this.apiKeyService.isPermissionGranted(D_TYPE.FB).toPromise())['granted'];
+      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.FB).toPromise();
+
+      if(isPermissionGranted.tokenValid) {
+        result = response['exists'] && isPermissionGranted['granted'];
+      } else {
+        this.toastr.error('I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+      }
+
     } catch (e) {
       console.error(e);
-      result = null;
     }
 
     return result;
@@ -380,7 +391,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.addBreadcrumb();
 
     try {
-      existence = await this.checkExistance();
+      existence = await this.checkExistence();
 
       if (!existence) { // If the Api Key has not been set yet, then a message is print
         this.isApiKeySet = false;
@@ -392,6 +403,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!fb_page_id) {
         await this.getPagesList();
+
+        if(this.pageList.length === 0) {
+          this.dashErrors.noPages = true;
+          return;
+        }
 
         if (this.pageList.length === 1) {
           key = {fb_page_id: this.pageList[0]['id'], service_id: D_TYPE.FB};
@@ -412,7 +428,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           return;
         }
       }
-
 
       this.firstDateRange = this.minDate;
       this.lastDateRange = this.maxDate;

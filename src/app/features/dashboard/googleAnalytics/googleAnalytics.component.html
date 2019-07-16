@@ -3,7 +3,7 @@
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 class="my-auto float-left">Google Analytics</h2>
   </div> <!-- Title -->
-  <div *ngIf="isApiKeySet" class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
+  <div *ngIf="isApiKeySet && loaded" class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
     <h5 class="d-inline-block d-sm-none mt-1">Filtra:</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
 
@@ -43,10 +43,20 @@
            bsDaterangepicker> <!-- Date picker -->
   </div>
 </div> <!-- Header -->
-<div *ngIf="isApiKeySet" class="row px-3 pt-3">
+<div *ngIf="dashErrors.emptyMiniCards" class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5>E' stato riscontrato un errore durante il caricamento delle minicards.</h5>
+</div> <!-- ERR => No mini cards -->
+
+<div *ngIf="dashErrors.noPages" class="alert alert-danger px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5><i class="fas fa-exclamation-triangle fa-2x float-left mt-1 mr-3"></i>
+    Al momento, non hai accesso ad un profilo di Google Analytics. Inserisci lo snippet di monitoraggio in un sito web per osservarne qui gli analytics.
+  </h5>
+</div> <!-- ERR => No pages -->
+
+<div *ngIf="isApiKeySet && !dashErrors.emptyMiniCards && loaded" class="row px-3 pt-3">
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.GA"></app-minicard>
 </div> <!-- Mini cards -->
-<div *ngIf="isApiKeySet" class="row" style="padding-bottom: 30px">
+<div *ngIf="isApiKeySet && loaded" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
       <app-card [dashChart]="chart"></app-card>
@@ -69,7 +79,7 @@
       <div class="card p-2" style="background-color: #eee;">
         <div class="card-body">
           <i class="fas fa-crow mr-1" style="font-size:30pt"></i><h5 class="mt-3"> Qua non c'è niente! Prima di poter visualizzare i dati, devi aggiungere la <b>sorgente dati</b> "Google".</h5><br/>
-          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys']">Aggiungi una sorgente dati</button>
+          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys/insert']">Aggiungi una sorgente dati</button>
         </div>
       </div>
     </div>
@@ -131,7 +141,7 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="clearDashboard(dashStored)">
+    <button type="button" class="btn btn-danger" (click)="clearDashboard()">
       Sì, rimuovili
     </button>
     <button type="button" class="btn btn-success" (click)="closeModal()">No, lasciali </button>

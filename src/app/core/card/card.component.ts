@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
@@ -11,6 +11,7 @@ import {ToastrService} from 'ngx-toastr';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {FilterActions} from '../../features/dashboard/redux-filter/filter.actions';
 
 @Component({
   selector: 'app-card',
@@ -61,8 +62,8 @@ export class CardComponent implements OnInit {
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
-    private toastr: ToastrService
-
+    private toastr: ToastrService,
+    private filterActions: FilterActions
   ) {
   }
 
@@ -288,7 +289,8 @@ export class CardComponent implements OnInit {
     this.dashboardService.removeChart(dashboard_id, chart_id)
       .pipe(takeUntil(ds))
       .subscribe(() => {
-        this.GEService.removeFromDashboard.next([chart_id, dashboard_id]);
+        this.filterActions.removeChart(chart_id);
+        // this.GEService.removeFromDashboard.next([chart_id, dashboard_id]);
         this.closeModal();
         // this.toastr.success('"' + this.dashChart.title + '" è stato correttamente rimosso.', 'Grafico rimosso correttamente!');
 
@@ -304,7 +306,8 @@ export class CardComponent implements OnInit {
   updateChart(title, toUpdate): void {
     this.dashboardService.updateChart(toUpdate)
       .subscribe(() => {
-        this.GEService.updateChartInDashboard.next(toUpdate);
+        // this.GEService.updateChartInDashboard.next(toUpdate);
+        this.filterActions.updateChart(toUpdate);
         this.closeModal();
         this.toastr.success('"' + title + '" è stato correttamente rinominato in "' + toUpdate.title + '".', 'Grafico aggiornato correttamente!');
       }, error => {
