@@ -2121,8 +2121,6 @@ export class ChartsCallsService {
         observables.push(this.youtubeService.getVideos(pageIDs));
         break;
       case D_TYPE.CUSTOM:
-        //console.log(permissions);
-        //console.log(pageIDs);
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
@@ -2362,10 +2360,7 @@ export class ChartsCallsService {
         }
         break;
       case 'subs':
-        console.log(value);
-        value = data[0]['value'];
-        step = this.searchStep(value, measure);
-        perc = value;
+         value = data.length;
         break;
     }
 
