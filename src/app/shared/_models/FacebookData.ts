@@ -26,6 +26,52 @@ export const FB_CHART = {
   PAGE_IMPRESSIONS_COUNTRY_ELENCO: 54,
 };
 
+//based on facebook logo-like blue
+export const FB_PALETTE = {
+  'BLUE' : {
+    C1: '#17334f',
+    C2: '#1c3d5f',
+    C3: '#20476f',
+    C4: '#25527e',
+    C5: '#295c8e',
+    C6: '#2e669e',
+    C7: '#3270ae',
+    C8: '#377abe',
+    C9: '#4185c8',
+    C10: '#518fcd',
+    C11: '#6199d1',
+    C12: '#71a3d6',
+  },
+  'TURQUOISE' : {
+    C1: '#12685a',
+    C2: '#157969',
+    C3: '#188b78',
+    C4: '#1c9c87',
+    C5: '#1fad96',
+    C6: '#22bfa5',
+    C7: '#25d0b4',
+    C8: '#2fdabe',
+    C9: '#40ddc3',
+    C10: '#52e0c9',
+    C11: '#63e3ce',
+    C12: '#74e7d3',
+  },
+  'STIFFKEY': {
+    C1: '#244c56',
+    C2: '#2a5965',
+    C3: '#306673',
+    C4: '#387685',
+    C5: '#3c7f90',
+    C6: '#428c9e',
+    C7: '#4899ad',
+    C8: '#52a3b7',
+    C9: '#61aabd',
+    C10: '#6fb2c3',
+    C11: '#7ebac9',
+    C12: '#8cc1cf',
+  }
+
+};
 export interface FbPage {
   name: string;
   id: string;
