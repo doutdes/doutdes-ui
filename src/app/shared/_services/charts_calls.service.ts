@@ -14,7 +14,7 @@ import * as moment from 'moment';
 import _date = moment.unitOfTime._date;
 import * as _ from 'lodash';
 
-import {YT_CHART} from '../_models/YoutubeData';
+import {YT_CHART, YT_PALETTE} from '../_models/YoutubeData';
 
 @Injectable()
 export class ChartsCallsService {
@@ -1896,7 +1896,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffbe5b'],
+            colors: [YT_PALETTE.RED.C11],
             areaOpacity: 0.1
           }
         };
@@ -1921,7 +1921,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#61b4ff'],
+            colors: [YT_PALETTE.OPAL.C2],
             areaOpacity: 0.1
           }
         };
@@ -1946,7 +1946,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#33b362'],
+            colors: [YT_PALETTE.BROWN.C9],
             areaOpacity: 0.1
           }
         };
@@ -1971,7 +1971,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#88372b'],
+            colors: [YT_PALETTE.RED.C12],
             areaOpacity: 0.1
           }
         };
@@ -1996,7 +1996,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#dc852b'],
+            colors: [YT_PALETTE.OPAL.C8],
             areaOpacity: 0.1
           }
         };
@@ -2021,7 +2021,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#a195cc'],
+            colors: [YT_PALETTE.BROWN.C10],
             areaOpacity: 0.1
           }
         };
@@ -2046,7 +2046,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#a195cc'],
+            colors: [YT_PALETTE.RED.C3],
             areaOpacity: 0.1
           }
         };
