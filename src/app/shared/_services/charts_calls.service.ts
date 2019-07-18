@@ -7,9 +7,9 @@ import {YoutubeService} from './youtube.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {D_TYPE} from '../_models/Dashboard';
-import {GA_CHART} from '../_models/GoogleData';
+import {GA_CHART, GA_PALETTE} from '../_models/GoogleData';
 import {FB_CHART, FB_PALETTE} from '../_models/FacebookData';
-import {IG_CHART} from '../_models/InstagramData';
+import {IG_CHART, IG_PALETTE} from '../_models/InstagramData';
 import * as moment from 'moment';
 import _date = moment.unitOfTime._date;
 import * as _ from 'lodash';
@@ -204,918 +204,6 @@ export class ChartsCallsService {
 
         break; // Facebook Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
-        data = [
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-17T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-18T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-19T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-20T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-21T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-22T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-23T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-24T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-25T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-26T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-27T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-28T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-29T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-04-30T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-01T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-02T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-03T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-04T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-05T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-06T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-07T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-08T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-09T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-10T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-11T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-12T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-13T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-14T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-15T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-16T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-17T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-18T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-19T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-20T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-21T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-22T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-23T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-24T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-25T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-26T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-27T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-28T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-29T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-30T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-05-31T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-01T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-02T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-03T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-04T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-05T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-06T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-07T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-08T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-09T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-10T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-11T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-12T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-13T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-14T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-15T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-16T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-17T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-18T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-19T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-20T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-21T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-22T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-23T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-24T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-25T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-26T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-27T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-28T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-29T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-06-30T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-01T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-02T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-03T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-04T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-05T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-06T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-07T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-08T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-09T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-10T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-11T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-12T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-13T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-14T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-15T07:00:00+0000"
-          },
-          {
-            "value": {
-              "like": 1,
-              "wow": 1,
-              "haha": 1,
-              "angry": 1,
-              "sad": 1,
-            },
-            "end_time": "2019-07-16T07:00:00+0000"
-          }
-        ];
         header = [['Reazione', 'numero reaz.']];
         myMap = new Map();
         for (let el of data) {
@@ -1695,7 +783,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.STIFFKEY.C2],
+            colors: [FB_PALETTE.BLUE.C1],
             areaOpacity: 0.1
           }
         };
@@ -1738,7 +826,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.TURQUOISE.C5],
+            colors: [FB_PALETTE.TURQUOISE.C10],
             areaOpacity: 0.1
           }
         };
@@ -1764,7 +852,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.TURQUOISE.C10],
+            colors: [FB_PALETTE.BLUE.C7],
             areaOpacity: 0.1
           }
         };
@@ -1861,7 +949,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.TURQUOISE.C6],
+            colors: [FB_PALETTE.TURQUOISE.C4],
             areaOpacity: 0.1
           }
         };
@@ -1886,7 +974,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.TURQUOISE.C4],
+            colors: [FB_PALETTE.STIFFKEY.C4],
             areaOpacity: 0.1
           }
         };
@@ -1911,7 +999,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.TURQUOISE.C1],
+            colors: [FB_PALETTE.BLUE.C7],
             areaOpacity: 0.1
           }
         };
@@ -1936,7 +1024,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.TURQUOISE.C3],
+            colors: [FB_PALETTE.TURQUOISE.C7],
             areaOpacity: 0.1
           }
         };
@@ -1963,7 +1051,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.BLUE.C6],
+            colors: [FB_PALETTE.STIFFKEY.C7],
             areaOpacity: 0.1
           }
         };
@@ -1989,7 +1077,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.STIFFKEY.C6],
+            colors: [FB_PALETTE.BLUE.C10],
             areaOpacity: 0.1
           }
         };
@@ -2015,7 +1103,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.BLUE.C5],
+            colors: [FB_PALETTE.TURQUOISE.C10],
             areaOpacity: 0.1
           }
         };
@@ -2040,7 +1128,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.STIFFKEY.C1],
+            colors: [FB_PALETTE.STIFFKEY.C10],
             areaOpacity: 0.1
           }
         };
@@ -2065,7 +1153,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [FB_PALETTE.BLUE.C4],
+            colors: [FB_PALETTE.BLUE.C8],
             areaOpacity: 0.1
           }
         };
@@ -2109,7 +1197,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: [FB_PALETTE.BLUE.C4,FB_PALETTE.BLUE.C5,FB_PALETTE.BLUE.C6,FB_PALETTE.TURQUOISE.C4,FB_PALETTE.TURQUOISE.C5,FB_PALETTE.TURQUOISE.C6,FB_PALETTE.STIFFKEY.C4, FB_PALETTE.STIFFKEY.C5, FB_PALETTE.STIFFKEY.C6],
+            colors: [FB_PALETTE.BLUE.C3,FB_PALETTE.BLUE.C8,FB_PALETTE.BLUE.C6,FB_PALETTE.TURQUOISE.C12,FB_PALETTE.TURQUOISE.C4,FB_PALETTE.TURQUOISE.C9,FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9],
 
 
             areaOpacity: 0.2
@@ -2300,7 +1388,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#FFA647'],
+            colors: [GA_PALETTE.LIME.C6],
             areaOpacity: 0.1
           }
         };
@@ -2325,7 +1413,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#01B8AA'],
+            colors: [GA_PALETTE.OCHER.C8],
             areaOpacity: 0.05
           }
         };
@@ -2343,7 +1431,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#A790A5', '#875C74', '#AFD0BE', '#54414E'],
+            colors: [GA_PALETTE.ORANGE.C12, GA_PALETTE.LIME.C7, GA_PALETTE.OCHER.C9, GA_PALETTE.ORANGE.C11],
             areaOpacity: 0.2
           }
         };
@@ -2391,7 +1479,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffdda4'],
+            colors: [GA_PALETTE.ORANGE.C9],
             bar: {groupWidth: '70%'},
             areaOpacity: 0.3
           }
@@ -2419,7 +1507,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#dd738a'],
+            colors: [GA_PALETTE.OCHER.C11],
             areaOpacity: 0.05
           }
         };
@@ -2447,7 +1535,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#52b4de'],
+            colors: [GA_PALETTE.ORANGE.C3],
             areaOpacity: 0.05
           }
         };
@@ -2499,7 +1587,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffc423'],
+            colors: [GA_PALETTE.OCHER.C11],
             areaOpacity: 0.1
           }
         };
@@ -2544,7 +1632,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#fd8f8d', '#c96565'],
+            colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7],
             areaOpacity: 0.2
           }
         };
@@ -2564,7 +1652,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#000'}
             },
-            colors: ['#A0D8C5'],
+            colors: [GA_PALETTE.LIME.C6],
             bar: {groupWidth: '70%'},
             areaOpacity: 0.3
           }
@@ -2606,8 +1694,8 @@ export class ChartsCallsService {
           chartClass: 2,
           options: {
             region: 'world',
-            colors: ['#ff00a7'],
-            colorAxis: {colors: ['#ff96db', '#ff00a7']},
+            colors: [IG_PALETTE.FUCSIA.C9],
+            colorAxis: {colors: [IG_PALETTE.FUCSIA.C1, IG_PALETTE.FUCSIA.C2]},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
             defaultColor: '#333',
@@ -2625,7 +1713,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#388aff', '#ff96db'],
+            colors: [IG_PALETTE.FUCSIA.C5, '#ff96db'],
             areaOpacity: 0.4,
           }
         };
@@ -2640,7 +1728,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#ff96db'],
+            colors: [IG_PALETTE.AMARANTH.C4],
             areaOpacity: 0.4,
           }
         };
@@ -2654,7 +1742,7 @@ export class ChartsCallsService {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#FFCDEE', '#FF88E1', '#F33DFF'],
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 3},
             bar: {groupWidth: '75%'},
@@ -2682,7 +1770,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96db'],
+            colors: [IG_PALETTE.LAVENDER.C1],
             areaOpacity: 0.1
           }
         };
@@ -2707,7 +1795,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96db'],
+            colors: [IG_PALETTE.AMARANTH.C3],
             areaOpacity: 0.1
           }
         };
@@ -2726,12 +1814,12 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#58A5BC', '#3F9AA2', '#F1C85B', '#D9C9B6'],
+            colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C11, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7],
             areaOpacity: 0.2
           }
         };
         if (data.filter(e => e[1] === true).length == 0) {
-          formattedData.options.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'];
+          formattedData.options.colors = [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C11, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7];
           formattedData.dataTable = data;
         } else {
           formattedData.options.colors = ['#D3D3D3'];
@@ -2758,7 +1846,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96bd'],
+            colors: [IG_PALETTE.AMARANTH.C5],
             areaOpacity: 0.1
           }
         };
@@ -2783,7 +1871,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96bd'],
+            colors: [IG_PALETTE.FUCSIA.C3],
             areaOpacity: 0.1
           }
         };

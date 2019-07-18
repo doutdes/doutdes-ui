@@ -26,8 +26,8 @@ export const FB_CHART = {
   PAGE_IMPRESSIONS_COUNTRY_ELENCO: 54,
 };
 
-//based on facebook logo-like blue
 export const FB_PALETTE = {
+  //in reference with FB logo
   'BLUE' : {
     C1: '#17334f',
     C2: '#1c3d5f',
@@ -42,6 +42,7 @@ export const FB_PALETTE = {
     C11: '#6199d1',
     C12: '#71a3d6',
   },
+  //between blue and green
   'TURQUOISE' : {
     C1: '#12685a',
     C2: '#157969',
@@ -56,6 +57,8 @@ export const FB_PALETTE = {
     C11: '#63e3ce',
     C12: '#74e7d3',
   },
+
+  //blue, but greyer
   'STIFFKEY': {
     C1: '#244c56',
     C2: '#2a5965',
@@ -70,7 +73,6 @@ export const FB_PALETTE = {
     C11: '#7ebac9',
     C12: '#8cc1cf',
   }
-
 };
 export interface FbPage {
   name: string;
