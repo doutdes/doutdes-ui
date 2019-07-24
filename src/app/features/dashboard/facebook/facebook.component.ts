@@ -7,11 +7,13 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
+import {DragulaService} from 'ng2-dragula';
+
 import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
-import {forkJoin, Observable, Subject} from 'rxjs';
+import {forkJoin, Observable, Subject, Subscription} from 'rxjs';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 import * as jsPDF from 'jspdf';
@@ -31,7 +33,8 @@ const PrimaryWhite = '#ffffff';
 
 @Component({
   selector: 'app-feature-dashboard-facebook',
-  templateUrl: './facebook.component.html'
+  templateUrl: './facebook.component.html',
+  styleUrls: ['../../../../assets/css/dragula.css']
 })
 
 export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
@@ -91,8 +94,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     emptyMiniCards: false,
     noPages: false
   };
-
   // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
+
+  drag: boolean;
+  subs = new Subscription();
 
   constructor(
     private FBService: FacebookService,
@@ -106,7 +111,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
-    private localeService: BsLocaleService
+    private localeService: BsLocaleService,
+    private dragulaService: DragulaService,
   ) {
 
   }
@@ -159,6 +165,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     this.GEService.loadingScreen.next(true);
 
+    //console.log(observables);
+
     try {
       // Retrieving dashboard ID
       dash = await this.DService.getDashboardByType(D_TYPE.FB).toPromise(); // Facebook type
@@ -170,10 +178,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         return;
       }
 
+      //console.log(this.HARD_DASH_DATA.dashboard_id);
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
       if (this.dashStored) {
         // Ci sono già dati salvati
+        //console.log('ok');
         this.filterActions.loadStoredDashboard(D_TYPE.FB);
         this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
         this.GEService.loadingScreen.next(false);
@@ -181,6 +191,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         if (this.chartArray$.length === 0) {
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
+
       } else {
 
         let ds : Subject<void> = new Subject<void>(); // used to force unsubscription
@@ -262,6 +273,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
       console.error(e);
     }
+
+    //console.log(observables);
   }
 
   async addChartToDashboard(dashChart: DashboardCharts) {
@@ -471,11 +484,20 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
     }
+
+    /*
+    this.dragulaService.createGroup('REVERT', {
+      revertOnSpill: true
+    });
+    */
+
   }
 
   ngOnDestroy() {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
+
+    //this.dragulaService.destroy("REVERT");
   }
 
   clearDashboard(): void {
@@ -594,6 +616,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
+    this.drag = false;
     this.modalRef = this.modalService.show(template, {
       class: 'modal-md modal-dialog-centered',
       ignoreBackdropClick: ignoreBackdrop,
@@ -653,6 +676,16 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   optionModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  dragAndDrop() {
+    //console.log('PRIMA', this.drag);
+    this.drag = !this.drag;
+    this.GEService.dragAndDrop.next(this.drag);
+
+    if (this.drag == true) {
+      this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità "Drag And Drop".');
+    }
   }
 
 }

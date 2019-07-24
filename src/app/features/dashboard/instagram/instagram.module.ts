@@ -46,7 +46,6 @@ defineLocale('it', itLocale);
     ChartsCallsService,
     BreadcrumbActions,
     FilterActions,
-    GlobalEventsManagerService,
     BsLocaleService
   ],
   exports: [

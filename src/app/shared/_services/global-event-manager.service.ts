@@ -35,5 +35,7 @@ export class GlobalEventsManagerService {
   public updateChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);
   public showChartInDashboard: BehaviorSubject<DashboardCharts> = new BehaviorSubject<DashboardCharts>(null);
   public updateChartList: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public dragAndDrop: BehaviorSubject<boolean> = new BehaviorSubject<boolean>( false);
 
+  public draggable = this.dragAndDrop.asObservable();
 }

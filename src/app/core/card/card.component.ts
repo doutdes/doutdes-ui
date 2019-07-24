@@ -9,7 +9,7 @@ import {GA_CHART} from '../../shared/_models/GoogleData';
 import {D_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {FilterActions} from '../../features/dashboard/redux-filter/filter.actions';
 
@@ -57,6 +57,8 @@ export class CardComponent implements OnInit {
 
   D_TYPE = D_TYPE;
 
+  drag: boolean;
+
   constructor(
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
@@ -65,6 +67,7 @@ export class CardComponent implements OnInit {
     private toastr: ToastrService,
     private filterActions: FilterActions
   ) {
+    this.GEService.draggable.subscribe(value => this.drag = value);
   }
 
   ngOnInit() {
@@ -321,6 +324,5 @@ export class CardComponent implements OnInit {
   areAggregatedDataAvailable(chartFormat) {
     return chartFormat == 'linea';
   }
-
 
 }

@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
+import {GlobalEventsManagerService} from './shared/_services/global-event-manager.service';
 
 @Component({
   // tslint:disable-next-line
@@ -8,8 +9,11 @@ import {NavigationEnd, Router} from '@angular/router';
   // templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-  constructor(private router: Router) {
-  }
+  drag: boolean;
+
+  constructor (
+    private router: Router,
+    private GEservice: GlobalEventsManagerService ) {}
 
   ngOnInit() {
     this.router.events.subscribe((evt) => {
@@ -18,5 +22,9 @@ export class AppComponent implements OnInit {
       }
       window.scrollTo(0, 0);
     });
+
+    this.GEservice.dragAndDrop.subscribe(value => this.drag = value);
+
   }
+
 }

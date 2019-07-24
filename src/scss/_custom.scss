@@ -443,3 +443,16 @@ popover-container {
     display: block !important;
   }
 }
+
+#sidebar-container.drag-mode .list-group a.list-group-item:hover, #sidebar-container.drag-mode .list-group-item-action:hover {
+  background-color: inherit !important;
+  color: inherit;
+  cursor: default;
+}
+
+/*
+div#body-row.container.drag-mode {
+  background-color: rgb(210, 209, 209) ;
+}
+ */
+
