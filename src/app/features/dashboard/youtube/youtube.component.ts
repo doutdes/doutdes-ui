@@ -336,13 +336,13 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       }
 
        view_id = await this.getViewID();
-
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!view_id) {
         await this.getViewList();
-        (this.viewList);
+        console.log(this.viewList);
         if (this.viewList.length === 1) {
-          key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.YT};
+          key = {channel_id: this.viewList[0]['id'], service_id: D_TYPE.YT};
+          console.log(key);
           update = await this.apiKeyService.updateKey(key).toPromise();
 
           if (!update) {
@@ -569,7 +569,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   async getViewList() {
     try {
-      this.viewList = await this.GAService.getViewList().toPromise();
+      this.viewList = await this.YTService.getViewList().toPromise();
     } catch (e) {
       console.error('getViewList -> Error doing the query');
     }

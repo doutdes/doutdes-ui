@@ -18,6 +18,7 @@ export class ApiKeysService {
 
   updateKey(api: ApiKey) {
     const headers = this.getAuthorization();
+    console.log(api);
     return this.http.put(this.formatUrl('update'), {api}, {headers});
   }
 
