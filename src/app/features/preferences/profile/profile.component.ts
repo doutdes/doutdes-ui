@@ -13,12 +13,12 @@ import {FiscalCodeValidation} from '../../authentication/validators/fiscal-code-
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {LoginActions} from '../../authentication/login/login.actions';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-feature-preferences-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./profile.component.scss']
 })
 export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
   user: any = null;
@@ -31,6 +31,10 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
 
   @ViewChild('updateInfo') updateInfo: ElementRef;
 
+  lang: string;
+  value: string;
+  tmp: string;
+
   constructor(
     private _sanitizer: DomSanitizer,
     private userService: UserService,
@@ -41,15 +45,18 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private loginActions: LoginActions,
     private breadcrumbActions: BreadcrumbActions,
-    private eventManager: GlobalEventsManagerService
+    private eventManager: GlobalEventsManagerService,
+    public translate: TranslateService
   ) {
+    this.translate.addLangs(['Italiano', 'English']);
   }
 
   ngOnInit(): void {
     this.addBreadcrumb();
 
-    this.userService.get().subscribe(user => {
-      this.user = user;
+    this.userService.get().subscribe(data => {
+      this.user = data;
+
       this.updateRegistration = this.formBuilder.group({
         first_name: [this.user.first_name, Validators.compose([Validators.maxLength(40), Validators.required])],
         last_name: [this.user.last_name, Validators.compose([Validators.maxLength(40), Validators.required])],
@@ -131,14 +138,23 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
       .subscribe(
         data => {
           if (data['status']) {
-            this.toastr.error('Si è verificato un errore durante l\'aggiornamento delle informazioni del profilo', 'Errore di aggiornamento');
+            //this.toastr.error('Si è verificato un errore durante l\'aggiornamento delle informazioni del profilo', 'Errore di aggiornamento');
+
+            this.toastr.error(this.eventManager.getStringToastr(false, true, "PREFERENCES", 'NO_PROFILO'),
+              this.eventManager.getStringToastr(true, false, 'PREFERENCES', 'NO_PROFILO'));
           } else {
-            this.toastr.success('Occorre ripetere il login.', 'Profilo aggiornato con successo!');
+            //this.toastr.success('Occorre ripetere il login.', 'Profilo aggiornato con successo!');
+
+            this.toastr.success(this.eventManager.getStringToastr(false, true, "PREFERENCES", 'OK_PROFILO'),
+              this.eventManager.getStringToastr(true, false, 'PREFERENCES', 'OK_PROFILO'));
             this.loginActions.logoutUser();
           }
         }, error => {
           console.log(error);
-          this.toastr.error('Si è verificato un errore durante l\'aggiornamento delle informazioni del profilo', 'Errore di aggiornamento');
+          //this.toastr.error('Si è verificato un errore durante l\'aggiornamento delle informazioni del profilo', 'Errore di aggiornamento');
+
+          this.toastr.error(this.eventManager.getStringToastr(false, true, "PREFERENCES", 'NO_PROFILO'),
+            this.eventManager.getStringToastr(true, false, 'PREFERENCES', 'NO_PROFILO'));
         }
       );
 
@@ -167,4 +183,5 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
   removeBreadcrumb() {
     this.breadcrumbActions.deleteBreadcrumb();
   }
+
 }

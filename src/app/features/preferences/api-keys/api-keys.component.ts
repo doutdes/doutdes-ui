@@ -13,6 +13,9 @@ import {GlobalEventsManagerService} from '../../../shared/_services/global-event
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
 import {ToastrService} from 'ngx-toastr';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../../shared/_services/user.service';
+import {User} from '../../../shared/_models/User';
 
 const PrimaryWhite = '#ffffff';
 
@@ -35,6 +38,11 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   checkbox: Boolean;
 
+  lang: any;
+  value: string;
+  tmp: string;
+  user: User;
+
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
@@ -53,9 +61,14 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     private modalService: BsModalService,
     private geManager: GlobalEventsManagerService,
     private filterActions: FilterActions,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public translate: TranslateService,
+    private userService: UserService
   ) {
     this.loading = this.geManager.loadingScreen.asObservable();
+
+    this.translate.addLangs(['Italiano', 'English']);
+
   }
 
   async ngOnInit() {
@@ -66,11 +79,17 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     await this.updateList();
 
     if(error == 'true') {
-      this.toastr.error('Si è verificato un errore durante l\'accesso ai dati. Per favore, riprova oppure contatta il supporto.','Errore durante l\'accesso ai dati!');
+      //this.toastr.error('Si è verificato un errore durante l\'accesso ai dati. Per favore, riprova oppure contatta il supporto.','Errore durante l\'accesso ai dati!');
+
+      this.toastr.error(this.geManager.getStringToastr(false, true, "PREFERENCES", 'NO_ACCESSO'),
+        this.geManager.getStringToastr(true, false, 'PREFERENCES', 'NO_ACCESSO'));
       this.router.navigate([], { replaceUrl: true});
     }
     if(error != null && error == 'false') {
-      this.toastr.success('La configurazione del servizio scelto è andata a buon fine.','Servizio configurato correttamente!');
+      //this.toastr.success('La configurazione del servizio scelto è andata a buon fine.','Servizio configurato correttamente!');
+      this.toastr.success(this.geManager.getStringToastr(false, true, "PREFERENCES", 'NO_ACCESSO'),
+        this.geManager.getStringToastr(true, false, 'PREFERENCES', 'NO_ACCESSO'));
+
       this.router.navigate([], { replaceUrl: true});
     }
   }
@@ -115,18 +134,27 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
       if(serviceType === D_TYPE.FB && Object.keys(this.services$).includes(D_TYPE.IG+  '')) {
         delete this.services$[D_TYPE.IG];
+        /*
         this.toastr.info(
           'Da adesso non potrai più accedere alle dashboard collegate a ' + DS_TYPE[D_TYPE.IG],
           'Sorgente ' + DS_TYPE[D_TYPE.IG] + ' eliminata'
         );
+         */
+
+        this.toastr.info( this.geManager.getStringToastr(false, true, "PREFERENCES" , 'STOP_ACCESSO') + DS_TYPE[D_TYPE.IG],
+          DS_TYPE[D_TYPE.IG] + this.geManager.getStringToastr(true, false, 'PREFERENCES', 'STOP_ACCESSO'));
       }
 
       if(Object.keys(this.services$).length === 0) this.somethingGranted = false;
-
+      /*
       this.toastr.info(
         'Da adesso non potrai più accedere alle dashboard collegate a ' + DS_TYPE[serviceType],
         'Sorgente ' + DS_TYPE[serviceType] + ' eliminata'
       );
+      */
+
+      this.toastr.info(this.geManager.getStringToastr(false, true, "PREFERENCES", 'STOP_ACCESSO')  + DS_TYPE[serviceType],
+         DS_TYPE[serviceType] + this.geManager.getStringToastr(true, false, 'PREFERENCES', 'STOP_ACCESSO'));
 
     }, err => {
       console.error(err);
@@ -160,8 +188,23 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Preferenze', '/preferences/'));
-    bread.push(new Breadcrumb('Sorgenti dati', '/preferences/api-keys/'));
+
+    this.userService.get().subscribe(data => {
+      switch (data.lang) {
+        case 'it':
+          bread.push(new Breadcrumb('Preferenze', '/preferences/'));
+          bread.push(new Breadcrumb('Sorgenti dati', '/preferences/api-keys/'));
+          break;
+        case 'en':
+          bread.push(new Breadcrumb('Preferences', '/preferences/'));
+          bread.push(new Breadcrumb('Data sources', '/preferences/api-keys/'));
+          break;
+        default:
+          bread.push(new Breadcrumb('Preferenze', '/preferences/'));
+          bread.push(new Breadcrumb('Sorgenti dati', '/preferences/api-keys/'));
+          break;
+      }
+    });
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }

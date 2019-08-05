@@ -14,11 +14,9 @@ import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstr
 import {ngxLoadingAnimationTypes, NgxLoadingModule} from 'ngx-loading';
 import {UserService} from '../../../shared/_services/user.service';
 
-import {defineLocale} from 'ngx-bootstrap';
-import {itLocale} from 'ngx-bootstrap/locale';
 import {DragulaModule} from 'ng2-dragula';
+import {TranslateModule} from '@ngx-translate/core';
 
-defineLocale('it', itLocale);
 
 @NgModule({
   declarations: [
@@ -43,6 +41,7 @@ defineLocale('it', itLocale);
       fullScreenBackdrop: true
     }),
     DragulaModule,
+    TranslateModule
   ],
   providers: [
     YoutubeService,

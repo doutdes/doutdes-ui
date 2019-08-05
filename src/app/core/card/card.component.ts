@@ -12,6 +12,9 @@ import {AggregatedDataService} from '../../shared/_services/aggregated-data.serv
 import {BehaviorSubject, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {FilterActions} from '../../features/dashboard/redux-filter/filter.actions';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
+import {User} from '../../shared/_models/User';
 
 @Component({
   selector: 'app-card',
@@ -59,13 +62,19 @@ export class CardComponent implements OnInit {
 
   drag: boolean;
 
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
+
   constructor(
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
     private toastr: ToastrService,
-    private filterActions: FilterActions
+    private filterActions: FilterActions,
+    public translate: TranslateService,
   ) {
     this.GEService.draggable.subscribe(value => this.drag = value);
   }

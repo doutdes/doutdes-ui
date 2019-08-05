@@ -21,7 +21,7 @@
             <div class="pl-4">
               <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/google']"
                  (click)="showMenu(false)">
-                <span class="menu-collapsed">Sito web</span>
+                <span class="menu-collapsed">{{'MENU.SITO_WEB' | translate }}</span>
               </a>
               <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/facebook']"
                  (click)="showMenu(false)">
@@ -37,19 +37,19 @@
               </a>
               <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/custom']"
                  (click)="showMenu(false)">
-                <span class="menu-collapsed">Personalizzata</span>
+                <span class="menu-collapsed">{{'MENU.PERSONALIZZATA' | translate }}</span>
               </a>
             </div>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
                data-toggle="collapse" aria-expanded="false">
-              <strong class="text-capitalize"><i class="fa fa-user fa-fw mr-2"></i>Preferenze</strong></a>
+              <strong class="text-capitalize"><i class="fa fa-user fa-fw mr-2"></i>{{'MENU.PREFERENZE' | translate }}</strong></a>
             <div class="pl-4">
               <!--<a class="list-group-item list-group-item-action py-1">-->
                 <!--<span class="menu-collapsed">Account settings</span>-->
               <!--</a>-->
               <a class="list-group-item list-group-item-action py-1"
                  [routerLink]="['/preferences/api-keys']" (click)="showMenu(false)">
-                <span class="menu-collapsed">Sorgenti dati</span>
+                <span class="menu-collapsed">{{'MENU.SOREGENTI' | translate }}</span>
               </a>
             </div>
             <!--[routerLink]="['/report']"-->
@@ -59,10 +59,10 @@
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
                [routerLink]="['/calendar']" (click)="showMenu(false)"
                data-toggle="collapse" aria-expanded="false">
-              <strong class="text-capitalize"><i class="fa fa-calendar-alt fa-fw mr-2"></i>Calendario</strong></a>
+              <strong class="text-capitalize"><i class="fa fa-calendar-alt fa-fw mr-2"></i>{{'MENU.CALENDARIO' | translate }}</strong></a>
             <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
                data-toggle="collapse" aria-expanded="false">
-              <strong class="text-capitalize text-secondary"><i class="fa fa-envelope fa-fw mr-2"></i>Notifiche</strong></a>
+              <strong class="text-capitalize text-secondary"><i class="fa fa-envelope fa-fw mr-2"></i>{{'MENU.NOTIFICHE' | translate }}</strong></a>
           </div>
 
         </li>
@@ -82,16 +82,16 @@
     </div>
 
     <!-- Menu and avatar -->
-    <div éid="menu_small" class="dropdown-menu position-menu-small dropdown-menu-right float-right col-2">
+    <div id="menu_small" class="dropdown-menu position-menu-small dropdown-menu-right float-right col-2">
       <div class="dropdown-header text-center">
-        <strong class="text-capitalize ">Impostazioni</strong>
+        <strong class="text-capitalize ">{{'MENU.IMPOSTAZIONI' | translate }}</strong>
       </div>
       <a class="dropdown-item">
-        <i class="fa fa-user"></i> Il mio profilo</a>
+        <i class="fa fa-user"></i>{{'MENU.PROFILO' | translate }}</a>
       <a class="dropdown-item menu-collapsed text-secondary ">
-        <i class="fa fa-wrench"></i> Impostazioni</a>
+        <i class="fa fa-wrench"></i>{{'MENU.IMPOSTAZIONI' | translate }}</a>
       <a class="dropdown-item">
-        <i class="fa fa-lock"></i> Esci</a>
+        <i class="fa fa-lock"></i>{{'MENU.ESCI' | translate }} </a>
     </div>
     <div class="collapse navbar-collapse" id="navbarNavDropdown" style="flex-grow: 0">
 <!--      <div *ngIf="!isUserLoggedIn">
@@ -112,8 +112,8 @@
             <a class="nav-link nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                aria-expanded="false">
               <div class="mr-1" style="float:left; margin-top:-4px">
-                <span class="text-white" style="float:right; font-size:10pt">Ciao, <b style="font-size:13pt">{{username}}</b></span><br>
-                <span style="font-size:7pt; color: #ccc; float:right">Oggi è {{today}}</span>
+                <span class="text-white" style="float:right; font-size:10pt">{{'MENU.CIAO' | translate }}<b style="font-size:13pt">{{username}}</b></span><br>
+                <span style="font-size:7pt; color: #ccc; float:right">{{'MENU.OGGI' | translate }}{{today}}</span>
               </div>
               <div style="float: right;">
                 <img alt="admin@bootstrapmaster.com" class="img-avatar" src="assets/img/avatars/4.jpg" style="height: 35px;">
@@ -129,7 +129,7 @@
               <a class="dropdown-item" href="#">
                 <i class="fa fa-wrench"></i> Impostazioni</a> -->
               <a class="dropdown-item" (click)="logout()">
-                <i class="fa fa-lock"></i> Disconnetti</a>
+                <i class="fa fa-lock"></i>{{'MENU.DISCONNETTI' | translate }}</a>
             </div>
           </li>
         </ul>

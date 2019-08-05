@@ -16,12 +16,9 @@ import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstr
 import {FilterActions} from '../redux-filter/filter.actions';
 import {NgxLoadingModule} from 'ngx-loading';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
-
-import {defineLocale} from 'ngx-bootstrap';
-import {itLocale} from 'ngx-bootstrap/locale';
 import {DragulaModule} from 'ng2-dragula';
-
-defineLocale('it', itLocale);
+import {TranslateModule} from '@ngx-translate/core';
+import {UserService} from '../../../shared/_services/user.service';
 
 
 @NgModule({
@@ -40,6 +37,7 @@ defineLocale('it', itLocale);
     BsDropdownModule.forRoot(),
     NgxLoadingModule.forRoot({}),
     DragulaModule,
+    TranslateModule
   ],
   providers: [
     ApiKeysService,
@@ -50,6 +48,7 @@ defineLocale('it', itLocale);
     FilterActions,
     BsLocaleService,
     DragulaModule,
+    UserService,
   ],
   exports: [
     FeatureDashboardInstagramComponent

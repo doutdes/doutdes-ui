@@ -13,6 +13,9 @@ import {ToastrService} from 'ngx-toastr';
 import {T} from '@angular/core/src/render3';
 import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
+import {User} from '../../shared/_models/User';
 
 @Component({
   selector: 'app-emptycard',
@@ -56,15 +59,19 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   description: string; // Description of the metric shown
 
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
 
   constructor(
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
-    private toastr: ToastrService
-  ) {
-  }
+    private toastr: ToastrService,
+    public translate: TranslateService
+  ) { }
 
   async ngOnInit() {
     const dashData = this.dashboard_data;
@@ -106,7 +113,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       }
     }
   }
-
 
   get form() {
     return this.insertChartForm.controls;
@@ -264,4 +270,5 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
   }
+
 }

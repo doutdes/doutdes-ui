@@ -13,6 +13,10 @@ import {CalendarEvent, CalendarEventTimesChangedEvent, CalendarView, DAYS_OF_WEE
 import {endOfDay, isSameDay, isSameMonth, startOfDay} from 'date-fns';
 import {CalendarService} from '../../shared/_services/calendar.service';
 import {NewCalendar} from '../../shared/_models/Calendar';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
+import {User} from '../../shared/_models/User';
+import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 
 const colors: any = {
   red: {
@@ -51,6 +55,13 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   activeDayIsOpen: boolean = false;
   refresh: Subject<any> = new Subject();
 
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
+
+  tmp_title: string = null;
+
   events: CalendarEvent[] = [];
   public locale: 'it';
 
@@ -58,8 +69,15 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
     private breadcrumbActions: BreadcrumbActions,
     private calendarService: CalendarService,
     private modalService: BsModalService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    public translate: TranslateService,
+    private userService: UserService,
+    private GEservice: GlobalEventsManagerService
     ) {
+    this.userService.get().subscribe(value => {
+      this.tmp_title = this.checkTitle(value.lang);
+    });
+
   }
 
   ngOnInit(): void {
@@ -74,6 +92,7 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
 
     this.loadEvents();
     this.addBreadcrumb();
+
   }
 
   ngOnDestroy(): void {
@@ -84,7 +103,20 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Calendario', '/calendar/'));
+
+    this.userService.get().subscribe(data => {
+      switch (data.lang) {
+        case 'it':
+          bread.push(new Breadcrumb('Calendario', '/calendar/'));
+          break;
+        case 'en':
+          bread.push(new Breadcrumb('Calendar', '/calendar/'));
+          break;
+        default:
+          bread.push(new Breadcrumb('Calendario', '/calendar/'));
+          break;
+      }
+    });
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -120,9 +152,8 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   }
 
   addEvent(): void {
-
     let event: CalendarEvent = {
-      title: 'Nuovo evento',
+      title: this.tmp_title,
       start: startOfDay(new Date()),
       end: endOfDay(new Date()),
       color: colors.red,
@@ -216,4 +247,20 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
   formatData(data: Date) {
     return data.toLocaleDateString('it-IT') + ' - ' + data.toLocaleTimeString('it-IT');
   }
+
+  checkTitle(lang) {
+    switch (lang) {
+      case 'it':
+        this.tmp_title = 'Nuovo evento';
+        break;
+      case 'en':
+        this.tmp_title = 'New event';
+        break;
+      default:
+        this.tmp_title = 'Nuovo evento';
+    }
+
+    return this.tmp_title;
+  }
+
 }

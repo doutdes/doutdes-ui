@@ -1,6 +1,9 @@
 import {ChangeDetectionStrategy, Component, HostBinding, Input, OnInit} from '@angular/core';
 import {MiniCard} from '../../shared/_models/MiniCard';
 import {D_TYPE} from '../../shared/_models/Dashboard';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
+import {User} from '../../shared/_models/User';
 
 @Component({
   selector: 'app-minicard',
@@ -18,6 +21,15 @@ export class MiniCardComponent implements OnInit {
 
   month: string;
   progressClassColor: string;
+
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
+
+  constructor (
+    public translate: TranslateService
+  ){ }
 
   ngOnInit(): void {
     this.elementClass += this.minicard.padding;
@@ -40,9 +52,8 @@ export class MiniCardComponent implements OnInit {
         this.progressClassColor = 'bg-danger';
         break;
     } // Set the background of the progress bar
+
   }
-
-
 
   formatMeasure(measure: string){
     // let result = 0;

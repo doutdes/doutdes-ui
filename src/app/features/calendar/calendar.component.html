@@ -1,6 +1,6 @@
 <div class="row rounded p-4 title-header">
   <div class="col-md-12 pl-0">
-    <h2 class="my-auto pl-0">Calendario</h2>
+    <h2 class="my-auto pl-0">{{ 'CALENDARIO.TITLE' | translate }}</h2>
   </div>
 </div>
 
@@ -13,13 +13,13 @@
         [view]="view"
         [(viewDate)]="viewDate"
         (viewDateChange)="activeDayIsOpen = false">
-        Precedente
+        {{ 'CALENDARIO.PRECEDENTE' | translate }}
       </div>
       <div
         class="btn btn-light"
         mwlCalendarToday
         [(viewDate)]="viewDate">
-        Oggi
+        {{ 'CALENDARIO.OGGI' | translate }}
       </div>
       <div
         class="btn btn-outline-light"
@@ -27,7 +27,7 @@
         [view]="view"
         [(viewDate)]="viewDate"
         (viewDateChange)="activeDayIsOpen = false">
-        Successivo
+        {{ 'CALENDARIO.SUCCESSIVO' | translate }}
       </div>
     </div>
   </div>
@@ -40,19 +40,19 @@
         class="btn btn-primary"
         (click)="changeView(CalendarView.Month)"
         [class.active]="view === CalendarView.Month">
-        Mensile
+        {{ 'CALENDARIO.MENSILE' | translate }}
       </div>
       <div
         class="btn btn-primary"
         (click)="changeView(CalendarView.Week)"
         [class.active]="view === CalendarView.Week">
-        Settimanale
+        {{ 'CALENDARIO.SETTIMANALE' | translate }}
       </div>
       <div
         class="btn btn-primary"
         (click)="changeView(CalendarView.Day)"
         [class.active]="view === CalendarView.Day">
-        Giornaliero
+        {{ 'CALENDARIO.GIORNALIERO' | translate }}
       </div>
     </div>
   </div>
@@ -94,10 +94,10 @@
 
 <div class="row my-4">
   <div class="col-md-4">
-    <h3 *ngIf="events.length > 0">Modifica eventi</h3>
+    <h3 *ngIf="events.length > 0">{{ 'CALENDARIO.MOD_EVENTI' | translate }}</h3>
   </div>
   <div class="offset-md-6 col-md-2">
-    <button class="btn btn-primary float-right" (click)="addEvent()">Aggiungi nuovo</button>
+    <button class="btn btn-primary float-right" (click)="addEvent()">{{ 'CALENDARIO.ADD_NEW' | translate }}</button>
   </div>
 </div>
 
@@ -105,12 +105,12 @@
 
   <thead>
   <tr>
-    <th>Titolo</th>
-    <th>Colore n. 1</th>
-    <th>Colore n. 2</th>
-    <th>Inizia </th>
-    <th>Finisce</th>
-    <th>Azioni</th>
+    <th>{{ 'CALENDARIO.TITOLO' | translate }}</th>
+    <th>{{ 'CALENDARIO.COLORE_1' | translate }}</th>
+    <th>{{ 'CALENDARIO.COLORE_2' | translate }}</th>
+    <th>{{ 'CALENDARIO.INIZIA' | translate }}</th>
+    <th>{{ 'CALENDARIO.FINISCE' | translate }}</th>
+    <th>{{ 'CALENDARIO.AZIONI' | translate }}</th>
   </tr>
   </thead>
   <tbody>
@@ -158,8 +158,8 @@
           mwlFlatpickr><!--altFormat="F j, Y H:i"-->
       </td>
       <td>
-        <button class="btn btn-info text-white" (click)="eventUpdated(event); refresh.next()">Aggiorna</button>
-        <button class="btn btn-danger ml-1" (click)="deleteEvent(event, index); refresh.next()">Elimina</button>
+        <button class="btn btn-info text-white" (click)="eventUpdated(event); refresh.next()">{{ 'CALENDARIO.AGGIORNA' | translate }}</button>
+        <button class="btn btn-danger ml-1" (click)="deleteEvent(event, index); refresh.next()">{{ 'CALENDARIO.ELIMINA' | translate }}</button>
       </td>
     </tr>
   </tbody>
@@ -178,18 +178,18 @@
 
     <div class="container" style="padding-bottom: 16px;">
       <div class="row">
-        <div class="col-md-3 font-weight-bold">Inizia</div>
+        <div class="col-md-3 font-weight-bold">{{ 'CALENDARIO.INIZIA' | translate }}</div>
         <div class="col-md-9">{{formatData(modalData.event.start)}}</div>
       </div>
       <div class="row">
-        <div class="col-md-3 font-weight-bold">Finisce</div>
+        <div class="col-md-3 font-weight-bold">{{ 'CALENDARIO.FINISCE' | translate }}</div>
         <div class="col-md-9">{{formatData(modalData.event.end)}}</div>
       </div>
     </div>
 
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-danger" (click)="closeModal()">Chiudi</button>
+      <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'CALENDARIO.CLOSE' | translate }}</button>
     </div>
   </div>
 

@@ -16,11 +16,9 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
 import {YoutubeService} from '../../../shared/_services/youtube.service';
 
-import {defineLocale} from 'ngx-bootstrap';
-import {itLocale} from 'ngx-bootstrap/locale';
 import {DragulaModule} from 'ng2-dragula';
-
-defineLocale('it', itLocale);
+import {TranslateModule} from '@ngx-translate/core';
+import {UserService} from '../../../shared/_services/user.service';
 
 @NgModule({
   declarations: [
@@ -37,7 +35,8 @@ defineLocale('it', itLocale);
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgxLoadingModule.forRoot({}),
-    DragulaModule
+    DragulaModule,
+    TranslateModule
   ],
   providers: [
     GoogleAnalyticsService,
@@ -46,7 +45,8 @@ defineLocale('it', itLocale);
     FilterActions,
     BsLocaleService,
     YoutubeService,
-    InstagramService
+    InstagramService,
+    UserService
   ],
   exports: [
     FeatureDashboardCustomComponent

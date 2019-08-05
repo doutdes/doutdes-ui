@@ -29,6 +29,7 @@ import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
 import * as _ from 'lodash';
 import {DragulaService} from 'ng2-dragula';
+import {TranslateService} from '@ngx-translate/core';
 
 const PrimaryWhite = '#ffffff';
 
@@ -85,7 +86,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   minSet: Array<{ id: number; minDate: Date }> = [];   // contains the minimum Date for every chart, used to refresh datepicker on the fly
   bsRangeValue: Date[];
-  dateChoice: String = 'Ultimi 30 giorni';
+  dateChoice: String = null;
   modalRef: BsModalRef;
 
   // Form for init
@@ -97,6 +98,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   fbPageList;
 
   drag: boolean;
+
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
 
   constructor(
     private GAService: GoogleAnalyticsService,
@@ -113,12 +119,16 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private modalService: BsModalService,
     private formBuilder: FormBuilder,
     private userService: UserService,
-    private localeService: BsLocaleService,
     private dragulaService: DragulaService,
+    public translate: TranslateService
   ) {
     this.dragulaService.createGroup("REVERT", {
       revertOnSpill: false,
     });
+
+    this.userService.get().subscribe(value => {
+      this.dateChoice = this.dateChoiceCheck(value.lang);
+    })
   }
 
   async ngOnInit() {
@@ -236,15 +246,19 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.GEService.addSubscriber(dash_type);
       }
 
-      this.localeService.use('it');
       await this.loadMiniCards();
       await this.loadDashboard();
       this.GEService.loadingScreen.next(false);
 
     } catch (e) {
       console.error('Error on ngOnInit of Google Analytics', e);
-      this.toastr.error('È stato riscontrato un errore durante il carimento della dashboard. Per favore, riprova oppure contatta il supporto.', 'Errore nel carimento della dashboard');
+      //this.toastr.error('È stato riscontrato un errore durante il carimento della dashboard. Per favore, riprova oppure contatta il supporto.', 'Errore nel carimento della dashboard');
+
+      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_ORD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
     }
+
+
   }
 
   async loadDashboard() {
@@ -272,7 +286,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       if (dash['id']) {
         this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
       } else {
-        this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
+        //this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_INIZ'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_INIZ'));
         return;
       }
 
@@ -283,7 +300,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.GEService.loadingScreen.next(false);
 
         if (this.chartArray$.length === 0) {
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+          //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+
+          this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
@@ -338,7 +358,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         } else {
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+          //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+
+          this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       }
 
@@ -346,7 +369,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     } catch (e) {
       console.error(e);
-      this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
+      //this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
+
+      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_INIZ'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_INIZ'));
     }
 
   }
@@ -408,12 +434,19 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             this.minDate = date;
           }
 
-          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
+          //this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
+
+          this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ADD'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
 
-          this.toastr.error('I dati disponibili per ' + dashChart.title + ' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
+         // this.toastr.error('"' + dashChart.title + ' contiene dati che non potrebbero essere sufficienti', 'Errore durante l\'aggiunta del grafico');
+
+          this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_DATI'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI'));
+
         }
         this.filterActions.addChart(chartToPush);
         this.filterActions.filterData(dateInterval);
@@ -421,7 +454,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         console.log('Error querying the Chart');
         console.log(error1);
 
-        this.toastr.error('C\'è stato un errore recuperando i dati per il grafico ' + dashChart.title + '. Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
+        //this.toastr.error('"' + dashChart.title + ': C\'è stato un errore recuperando i dati per il grafico . Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
+
+        this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_DATI_1'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI_1'));
       });
   }
 
@@ -447,16 +483,52 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     switch (days) {
       case this.FILTER_DAYS.seven:
-        this.dateChoice = 'Ultimi 7 giorni';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Ultimi 7 giorni';
+            break;
+          case 'en':
+            this.dateChoice = 'Last 7 days';
+            break;
+          default:
+            this.dateChoice = 'Ultimi 7 giorni';
+        }
         break;
       case this.FILTER_DAYS.thirty:
-        this.dateChoice = 'Ultimi 30 giorni';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Ultimi 30 giorni';
+            break;
+          case 'en':
+            this.dateChoice = 'Last 30 days';
+            break;
+          default:
+            this.dateChoice = 'Ultimi 30 giorni';
+        }
         break;
       case this.FILTER_DAYS.ninety:
-        this.dateChoice = 'Ultimi 90 giorni';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Ultimi 90 giorni';
+            break;
+          case 'en':
+            this.dateChoice = 'Last 90 days';
+            break;
+          default:
+            this.dateChoice = 'Ultimi 90 giorni';
+        }
         break;
       default:
-        this.dateChoice = 'Personalizzato';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Personalizzato';
+            break;
+          case 'en':
+            this.dateChoice = 'Customized';
+            break;
+          default:
+            this.dateChoice = 'Personalizzato';
+        }
         break;
     }
   }
@@ -466,7 +538,20 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
-    bread.push(new Breadcrumb('Sito web', '/dashboard/google/'));
+
+    this.userService.get().subscribe(data => {
+      switch (data.lang) {
+        case 'it':
+          bread.push(new Breadcrumb('Sito web', '/dashboard/google/'));
+          break;
+        case 'en':
+          bread.push(new Breadcrumb('Website', '/dashboard/google/'));
+          break;
+        default:
+          bread.push(new Breadcrumb('Sito web', '/dashboard/google/'));
+          break;
+      }
+    });
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -620,7 +705,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.closeModal();
       await this.ngOnInit();
     } else {
-      this.toastr.error('Qualcosa è andato storto scegliendo i dati da visualizzare. Per favore, riprova.', 'Errore durante l\'aggiornamento');
+      //this.toastr.error('Qualcosa è andato storto scegliendo i dati da visualizzare. Per favore, riprova.', 'Errore durante l\'aggiornamento');
+
+      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_AGG'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_AGG'));
     }
   }
 
@@ -632,12 +720,18 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.closeModal();
     }, error => {
       if (error.status === 500) {
-        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
+        //this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_CLEAR'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_CLEAR'));
         this.closeModal();
         console.error(error);
       } else {
-        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
+        //this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
         //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_RIMOZIONE'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
         console.error(error);
         this.closeModal();
       }
@@ -746,14 +840,20 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   dragAndDrop () {
     if (this.chartArray$.length == 0) {
-      this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
+      //this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
+
+      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_ORDINAMENTO'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ORDINAMENTO'));
     } else {
       this.drag = true;
       this.GEService.dragAndDrop.next(this.drag);
     }
 
     if (this.drag == true) {
-      this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
+      //this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
+
+      this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'MOD_ORD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MOD_ORD'));
     }
 
   }
@@ -789,9 +889,15 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.closeModal();
         this.drag = false;
         this.GEService.dragAndDrop.next(this.drag);
-        this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
+        //this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
+
+        this.toastr.success(this.GEService.getStringToastr(false, true, "DASHBOARD", 'SUC_ORD'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
       }, error => {
-        this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
+        //this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_ORD'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
         console.log('Error updating the Dashboard');
         console.log(error);
       });
@@ -802,4 +908,19 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.drag = false;
     this.GEService.dragAndDrop.next(this.drag);
   }
+
+  dateChoiceCheck(lang) {
+    switch (lang) {
+      case 'it':
+        this.dateChoice = 'Ultimi 30 giorni';
+        break;
+      case 'en':
+        this.dateChoice = 'Last 30 days';
+        break;
+      default:
+        this.dateChoice = 'Ultimi 30 giorni';
+    }
+    return this.dateChoice;
+  }
+
 }

@@ -7,6 +7,8 @@ import {FeatureTutorialGaComponent} from './google/tutorialGa.component';
 import {ModalModule} from 'ngx-bootstrap';
 import {FeatureTutorialFbComponent} from './facebook/tutorialFb.component';
 import {FeatureTutorialIgComponent} from './instagram/tutorialIg.component';
+import {TranslateModule} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
 
 
 @NgModule({
@@ -19,10 +21,12 @@ import {FeatureTutorialIgComponent} from './instagram/tutorialIg.component';
     CoreModule,
     CommonModule,
     FeatureTutorialRoutingModule,
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    TranslateModule
   ],
   providers: [
-    BreadcrumbActions
+    BreadcrumbActions,
+    UserService
   ],
   exports: [
     FeatureTutorialGaComponent
