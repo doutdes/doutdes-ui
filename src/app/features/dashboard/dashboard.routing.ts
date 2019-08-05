@@ -6,6 +6,7 @@ import {FeatureDashboardCustomComponent} from './custom/custom.component';
 import {FeatureDashboardInstagramComponent} from './instagram/instagram.component';
 import {FeatureDashboardYoutubeAnalyticsComponent} from './youtube/youtube.component';
 import {FeatureDashboardComponent} from './dashboard.component';
+import {FeatureDashboardFacebookMarketingComponent} from './facebook-marketing/facebook-marketing.component';
 
 /** App Components **/
 
@@ -25,6 +26,10 @@ import {FeatureDashboardComponent} from './dashboard.component';
       {
         path: 'facebook',
         component: FeatureDashboardFacebookComponent
+      },
+      {
+        path: 'facebook-marketing',
+        component: FeatureDashboardFacebookMarketingComponent
       },
       {
         path: 'instagram',

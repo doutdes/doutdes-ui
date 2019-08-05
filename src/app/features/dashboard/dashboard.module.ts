@@ -10,21 +10,23 @@ import {FeatureDashboardYoutubeAnalyticsModule} from './youtube/youtube.module';
 import {FeatureDashboardCustomModule} from './custom/custom.module';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
 import {FeatureDashboardInstagramModule} from './instagram/instagram.module';
+import {FeatureDashboardFacebookMarketingModule} from './facebook-marketing/facebook-marketing.module';
 
 @NgModule({
   declarations: [
     FeatureDashboardComponent
   ],
   imports: [
-    SharedModule,
     CoreModule,
+    SharedModule,
     AppFooterModule,
+    FeatureDashboardCustomModule,
+    FeatureDashboardRoutingModule,
     FeatureDashboardFacebookModule,
     FeatureDashboardInstagramModule,
     FeatureDashboardGoogleAnalyticsModule,
     FeatureDashboardYoutubeAnalyticsModule,
-    FeatureDashboardCustomModule,
-    FeatureDashboardRoutingModule
+    FeatureDashboardFacebookMarketingModule,
   ],
   providers: [
     AggregatedDataService
