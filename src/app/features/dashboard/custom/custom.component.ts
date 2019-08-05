@@ -545,7 +545,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     pageIDs[D_TYPE.IG] = this.igPageID;
     pageIDs[D_TYPE.YT] = this.ytPageID;
 
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs[D_TYPE.YT], intervalDate, permissions);
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
