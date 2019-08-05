@@ -130,7 +130,8 @@ export class CardComponent implements OnInit {
       dashboard_id: this.dashChart.dashboard_id,
       chart_id: this.dashChart.chart_id,
       title: this.updateChartForm.value.chartTitle,
-      format: this.dashChart.format
+      format: this.dashChart.format,
+      //position: this.dashChart.position
     };
 
     this.loading = true;

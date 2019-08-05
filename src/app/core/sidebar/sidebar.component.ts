@@ -25,7 +25,7 @@ export class SidebarComponent {
       //this.drag = this.globalEventService.dragAndDrop.asObservable();
 
     this.globalEventService.draggable.subscribe(value => {
-      console.warn('HO RICEVUTO ', value);
+      //console.warn('HO RICEVUTO ', value);
       this.drag = value
     });
 

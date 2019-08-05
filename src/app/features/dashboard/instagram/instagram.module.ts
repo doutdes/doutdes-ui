@@ -19,6 +19,7 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 import {defineLocale} from 'ngx-bootstrap';
 import {itLocale} from 'ngx-bootstrap/locale';
+import {DragulaModule} from 'ng2-dragula';
 
 defineLocale('it', itLocale);
 
@@ -38,6 +39,7 @@ defineLocale('it', itLocale);
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgxLoadingModule.forRoot({}),
+    DragulaModule,
   ],
   providers: [
     ApiKeysService,
@@ -46,7 +48,8 @@ defineLocale('it', itLocale);
     ChartsCallsService,
     BreadcrumbActions,
     FilterActions,
-    BsLocaleService
+    BsLocaleService,
+    DragulaModule,
   ],
   exports: [
     FeatureDashboardInstagramComponent
