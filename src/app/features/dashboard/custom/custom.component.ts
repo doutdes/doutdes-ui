@@ -27,6 +27,8 @@ import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
+import * as _ from 'lodash';
+import {DragulaService} from 'ng2-dragula';
 
 const PrimaryWhite = '#ffffff';
 
@@ -63,6 +65,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   public chartArray$: Array<DashboardCharts> = [];
   public miniCards: MiniCard[] = CustomMiniCards;
   private dashStored: Array<DashboardCharts> = [];
+  public tmpArray: Array<DashboardCharts> = [];
 
   loaded: boolean = false;
   public loading = false;
@@ -93,6 +96,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   viewList;
   fbPageList;
 
+  drag: boolean;
+
   constructor(
     private GAService: GoogleAnalyticsService,
     private FBService: FacebookService,
@@ -108,12 +113,17 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private modalService: BsModalService,
     private formBuilder: FormBuilder,
     private userService: UserService,
-    private localeService: BsLocaleService
+    private localeService: BsLocaleService,
+    private dragulaService: DragulaService,
   ) {
+    this.dragulaService.createGroup("REVERT", {
+      revertOnSpill: false,
+    });
   }
 
   async ngOnInit() {
-    let existence, view_id, fb_page_id;
+    let existence, view_id;
+    let igPages, ytChannels;
     let key: ApiKey;
 
     this.GEService.loadingScreen.subscribe(value => {
@@ -162,7 +172,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           }
         }
       }
-
       if (this.HARD_DASH_DATA.permissions[D_TYPE.FB]) {
 
         this.fbPageID = await this.getFbPageID();
@@ -187,8 +196,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
       //this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.getFbPageID()) : null;
-      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise())[0].id : null;
-      this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] ? (await this.YTService.getChannels().toPromise())[0].id : null;
+      igPages = await this.IGService.getPages().toPromise();
+      ytChannels = await this.YTService.getChannels().toPromise();
+
+      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] && igPages.length > 0 ? igPages[0].id : null;
+      this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] && ytChannels.length > 0 ? ytChannels[0].id : null;
       this.firstDateRange = subDays(new Date(), 30); // this.minDate;
       this.lastDateRange = this.maxDate;
       // this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -250,6 +262,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     };
 
     let pageID, dash, charts, dataArray;
+
+    this.dragulaService.find("REVERT");
 
     try {
       // Retrieving dashboard ID
@@ -464,6 +478,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
+
+    this.dragulaService.destroy("REVERT");
   }
 
   nChartEven() {
@@ -702,6 +718,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   closeModal(): void {
+    this.submitted = false;
     this.modalRef.hide();
   }
 
@@ -725,5 +742,64 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       console.error('getFbPageID -> error doing the query', e);
     }
     return pageID;
+  }
+
+  dragAndDrop () {
+    if (this.chartArray$.length == 0) {
+      this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
+    } else {
+      this.drag = true;
+      this.GEService.dragAndDrop.next(this.drag);
+    }
+
+    if (this.drag == true) {
+      this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
+    }
+
+  }
+
+  onMovement($event, value) {
+
+    if (!value) {
+      let i = 0;
+      this.tmpArray = $event;
+      this.chartArray$ = this.tmpArray;
+
+      for (i = 0; i < this.chartArray$.length; i++) {
+        this.chartArray$[i].position = i+1;
+      }
+
+    } else {
+      this.updateChartPosition(this.chartArray$);
+      this.GEService.loadingScreen.next(false);
+    }
+
+  }
+
+  updateChartPosition(toUpdate): void {
+
+    toUpdate = _.map(toUpdate, function(el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position}
+    });
+
+    this.DService.updateChartPosition(toUpdate)
+      .subscribe(() => {
+        // this.GEService.updateChartInDashboard.next(toUpdate);
+        this.filterActions.updateChartPosition(toUpdate, this.D_TYPE.CUSTOM);
+        this.closeModal();
+        this.drag = false;
+        this.GEService.dragAndDrop.next(this.drag);
+        this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
+      }, error => {
+        this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
+        console.log('Error updating the Dashboard');
+        console.log(error);
+      });
+
+  }
+
+  checkDrag () {
+    this.drag = false;
+    this.GEService.dragAndDrop.next(this.drag);
   }
 }

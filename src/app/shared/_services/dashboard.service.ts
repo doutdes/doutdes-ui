@@ -57,6 +57,12 @@ export class DashboardService {
     return this.http.put(environment.protocol + environment.host + ':' + environment.port + '/dashboards/updateChartInDashboard/', {chart}, {headers});
   }
 
+  updateChartPosition (chartArray) {
+    const headers = this.getAuthorization();
+    let body = {body: chartArray};
+    return this.http.put(`${environment.protocol}${environment.host}:${environment.port}/dashboards/updateChartsInDashboard/`, {chartArray}, {headers});
+  }
+
   removeChart(dashboard_id, chart_id) {
 
     const headers = this.getAuthorization();

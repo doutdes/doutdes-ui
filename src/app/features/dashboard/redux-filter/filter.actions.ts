@@ -51,6 +51,7 @@ export class FilterActions {
     let chart_id, index, dateInterval;
 
     // Given the original data, it retrieves the right format for the data
+
     if (filteredDashboard) {
       for (let i in filteredDashboard.data) {
         if(!filteredDashboard.data[i].error) { // If there was not error during the retrieving of the chart data
@@ -66,6 +67,7 @@ export class FilterActions {
 
       if (index < 0) { // The dashboard was never been stored
         this.storedDashboards.push(JSON.parse(JSON.stringify(initialData)));
+        index = this.storedDashboards.findIndex((el: DashboardData) => el.type === currentDashboard.type);
       } else {
         this.storedDashboards[index] = JSON.parse(JSON.stringify(initialData));
       }
@@ -98,6 +100,34 @@ export class FilterActions {
       filteredDashboard: this.filteredDashboard,
       storedDashboards: this.storedDashboards
     });
+  }
+
+  updateChartPosition (arrayChart$: DashboardCharts, type: number) {
+    const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === type);
+
+    for(let i = 0; i < this.currentDashboard.data.length; i++){
+      this.currentDashboard.data.find(el => el.chart_id === arrayChart$[i].chart_id).position = arrayChart$[i].position;
+      this.filteredDashboard.data.find(el => el.chart_id === arrayChart$[i].chart_id).position = arrayChart$[i].position;
+      this.storedDashboards[storedIndex].data.find(el => el.chart_id === arrayChart$[i].chart_id).position = arrayChart$[i].position;
+    }
+
+    this.sortDashboards(storedIndex);
+
+    this.Redux.dispatch({
+      type: FILTER_UPDATE,
+      currentDashboard: this.currentDashboard,
+      filteredDashboard: this.filteredDashboard,
+      storedDashboards: this.storedDashboards
+    });
+
+  }
+
+  sortDashboards(storedIndex: number) {
+    this.currentDashboard.data = this.currentDashboard.data.sort((a: DashboardCharts, b: DashboardCharts) => a.position - b.position);
+    this.filteredDashboard.data = this.filteredDashboard.data.sort((a: DashboardCharts, b: DashboardCharts) => a.position - b.position);
+    if (storedIndex > 0) {
+      this.storedDashboards[storedIndex].data = this.storedDashboards[storedIndex].data.sort((a: DashboardCharts, b: DashboardCharts) => a.position - b.position);
+    }
   }
 
   addChart(chart: DashboardCharts) {

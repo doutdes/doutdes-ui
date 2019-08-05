@@ -26,7 +26,6 @@ import {IsNotAuthenticatedGuard} from '../shared/_guards/is-not-authenticated.gu
   ],
   providers: [
     IsAuthenticatedGuard,
-    GlobalEventsManagerService
   ],
   exports: [
   ]
