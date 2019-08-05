@@ -56,6 +56,10 @@ export const YT_PALETTE = {
     C12: '#af8392',
   }
 };
+export interface YtPage {
+  name: string;
+  id: string;
+}
 
 export interface YoutubeData {
   date: string;

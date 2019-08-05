@@ -2117,7 +2117,8 @@ export class ChartsCallsService {
         observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
-        observables.push(this.youtubeService.getSubscribers(pageIDs));
+        let obj = {};
+        observables.push(this.youtubeService.getSubscribers(obj));
         observables.push(this.youtubeService.getData(YT_CHART.VIEWS, intervalDate, pageIDs));
         observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
         observables.push(this.youtubeService.getVideos(pageIDs));
@@ -2227,8 +2228,12 @@ export class ChartsCallsService {
     }
 
     avg = (sum / data.length).toFixed(2);
+    if (isNaN(sum))
+      sum = 0;
+    if (isNaN(avg))
+      avg = 0.0;
 
-    switch (measure) {
+      switch (measure) {
       case 'subs':
         value = sum;
         step = this.searchStep(value, measure);
@@ -2353,8 +2358,6 @@ export class ChartsCallsService {
         value = data['followers_count'];
         break;
       case 'ga-tot-user':
-
-        //console.log('GOOGLE', data);
         value = 0;
         data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
         for (const i in data) {
@@ -2362,7 +2365,8 @@ export class ChartsCallsService {
         }
         break;
       case 'subs':
-         value = data.length;
+        data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
+        value = data.length;
         break;
     }
 

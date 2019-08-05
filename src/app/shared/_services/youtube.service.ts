@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
-import {YT_CHART, YoutubeData} from '../_models/YoutubeData';
+import {YT_CHART, YoutubeData, YtPage} from '../_models/YoutubeData';
 
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
@@ -19,17 +19,17 @@ export class YoutubeService {
 
   getChannels() {
     const headers = this.getAuthorization();
-    return this.http.get<IgPage[]>(this.formatURL(null, 'channels'), {headers});
+    return this.http.get<YtPage[]>(this.formatURL(null, 'channels'), {headers});
   }
 
   getVideos(pageIDs) {
     const headers = this.getAuthorization();
-    return this.http.get<IgPage[]>(this.formatURL(null, pageIDs+'/videos'), {headers});
+    return this.http.get<YoutubeData[]>(this.formatURL(null, pageIDs+'/videos'), {headers});
   }
 
   getSubscribers(pageIDs) {
     const headers = this.getAuthorization();
-    return this.http.get<IgPage[]>(this.formatURL(null, pageIDs+'/subscribers'), {headers});
+    return this.http.get<YtPage[]>(this.formatURL(null, pageIDs+'/subscribers'), {headers});
   }
 
 
