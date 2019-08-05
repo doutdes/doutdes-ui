@@ -196,11 +196,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
       //this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.getFbPageID()) : null;
-      igPages = await this.IGService.getPages().toPromise();
-      ytChannels = await this.YTService.getChannels().toPromise();
+      this.igPageID = (this.HARD_DASH_DATA.permissions[D_TYPE.IG]) ? await this.IGService.getPages().toPromise() : null;
+      this.ytPageID = (this.HARD_DASH_DATA.permissions[D_TYPE.YT]) ? await this.YTService.getChannels().toPromise() : null;
 
-      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] && igPages.length > 0 ? igPages[0].id : null;
-      this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] && ytChannels.length > 0 ? ytChannels[0].id : null;
       this.firstDateRange = subDays(new Date(), 30); // this.minDate;
       this.lastDateRange = this.maxDate;
       // this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -242,7 +240,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.GEService.loadingScreen.next(false);
 
     } catch (e) {
-      console.error('Error on ngOnInit of Google Analytics', e);
+      console.error('Error on ngOnInit of Custom Dashboard', e);
       this.toastr.error('È stato riscontrato un errore durante il carimento della dashboard. Per favore, riprova oppure contatta il supporto.', 'Errore nel carimento della dashboard');
     }
   }
