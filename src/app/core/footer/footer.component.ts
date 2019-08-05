@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 
 @Component({
   selector: 'app-core-footer',
@@ -7,4 +8,13 @@ import {Component} from '@angular/core';
 
 export class FooterComponent {
   copyrightYear = new Date().getFullYear();
+  drag: boolean;
+
+  constructor (
+    private GEservice: GlobalEventsManagerService
+    ) { };
+
+  ngOnInit(): void {
+    this.GEservice.dragAndDrop.subscribe(value => this.drag = value);
+  }
 }

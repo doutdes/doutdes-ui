@@ -2126,7 +2126,7 @@ export class ChartsCallsService {
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
-        observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs) : of({}));
+        observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs[D_TYPE.YT]) : of({}));
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');

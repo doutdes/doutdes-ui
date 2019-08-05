@@ -167,7 +167,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       dashboard_id: this.dashboard_data.dashboard_id,
       title: selected.Title,
       type: selected.Type,
-      format: selected.format
+      format: selected.format,
+      //position: selected.position
     };
 
 

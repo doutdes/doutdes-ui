@@ -1,6 +1,8 @@
 import {NgModule} from '@angular/core';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 
+import {DragulaModule} from 'ng2-dragula';
+
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 
 import {AppComponent} from './app.component';
@@ -38,9 +40,11 @@ import {ToastContainerModule, ToastrModule} from 'ngx-toastr';
     ToastrModule.forRoot({
       timeOut: 5000,
       positionClass: 'toast-top-right',
+      //progressBar: true
     }),
     ToastContainerModule,
-    StoreModule
+    StoreModule,
+    DragulaModule.forRoot(),
   ],
   declarations: [
     AppComponent,
@@ -53,4 +57,5 @@ import {ToastContainerModule, ToastrModule} from 'ngx-toastr';
   ],
   bootstrap: [ AppComponent ]
 })
+
 export class AppModule { }

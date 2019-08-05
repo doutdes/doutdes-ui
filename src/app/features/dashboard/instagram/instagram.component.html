@@ -2,7 +2,7 @@
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 class="my-auto float-left">Instagram</h2>
   </div>
-  <div *ngIf="isApiKeySet && loaded" class="col-xl-8 col-sm-6 col-md-8 col-12 my-md-auto">
+  <div *ngIf="isApiKeySet && loaded && !this.drag" class="col-xl-8 col-sm-6 col-md-8 col-12 my-md-auto">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
 
@@ -17,6 +17,9 @@
         </li>
         <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()">
           <i class="fas fa-file-pdf mr-2"></i>Esporta in PDF
+        </li>
+        <li class="dropdown-item cursor-pointer" (click)="dragAndDrop()">
+          <i class="fas fa-arrows-alt mr-2"></i>Ordina la dashboard
         </li>
       </ul>
 
@@ -54,12 +57,26 @@
   </h5>
 </div> <!-- Mini cards -->
 
-
-<div *ngIf="isApiKeySet && !dashErrors.emptyMiniCards && loaded" class="row px-3 pt-3">
+<div *ngIf="isApiKeySet && !dashErrors.emptyMiniCards && loaded && !this.drag" class="row px-3 pt-3">
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.IG"></app-minicard>
 </div> <!-- Mini cards -->
 
-<div *ngIf="isApiKeySet && loaded" class="row" style="padding-bottom: 30px">
+<div *ngIf="this.drag" class="alert alert-primary mt-3 mb-0 py-sm-4" role="alert">
+  <i class="fas fa-2x fa-people-carry mr-3" style=""></i>
+  <h5 class="mb-0 d-inline-block mr-auto">Modalità ordinamento</h5>
+  <button type="button" class="btn btn-success ml-lg-1 ml-sm-2 d-md-inline-block d-none float-right" (click)="optionModal(save)">Salva</button>
+  <button type="button" class="btn btn-secondary ml-lg-1 ml-sm-2 d-md-inline-block d-none float-right" (click)="optionModal(deactivates)">Annulla</button>
+</div> <!-- Drag And Drop -->
+
+<div [dragula]="'REVERT'" [dragulaModel]="chartArray$" (dragulaModelChange)="onMovement($event, false)" *ngIf="isApiKeySet && !dashErrors.noPages && loaded && drag" class="row" style="padding-bottom: 30px" >
+  <ng-container *ngIf="chartArray$.length > 0">
+    <div  *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container vamp">
+      <app-card [dashChart]="chart"></app-card>
+    </div>
+  </ng-container>
+</div> <!-- Dashboard card whith drag true -->
+
+<div *ngIf="isApiKeySet && loaded && !drag" class="row" style="padding-bottom: 30px">
   <ng-container *ngIf="chartArray$.length > 0">
     <div *ngFor="let chart of chartArray$" class="col-lg-6 pt-3 card-container">
       <app-card [dashChart]="chart"></app-card>
@@ -96,6 +113,7 @@
     Stiamo creando il tuo report, attendi...
   </div>
 </ng-template>
+
 <ng-template #deleteCharts>
   <div class="modal-header">
     <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Eliminazione di tutti i grafici</h4>
@@ -115,4 +133,45 @@
     <button type="button" class="btn btn-success" (click)="closeModal()">No, lasciali </button>
   </div>
 
-</ng-template>
+</ng-template> <!-- Clear Dashboard -->
+
+<ng-template #save>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-save mr-3"></i> Salvataggio modifiche</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    Sei veramente sicuro di voler salvare tutte le modifiche?
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="closeModal()">No, non salvare </button>
+    <button type="button" class="btn btn-success" (click)="onMovement(null, true)">Sì, salva </button>
+  </div>
+
+</ng-template> <!-- Save Drag And Drop -->
+
+<ng-template #deactivates>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i>Annullare la modalità temporaneo di ordinamento</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <p>Sei veramente sicuro di voler annullare la modalità ordinamento?</p>
+    <p style="text-align: justify"><i class="fas fa-exclamation-circle mr-1" style="color: #ad0009; font-size:14pt"></i><b style="color: #ad0009;">Operazione pericolosa</b>: L'annullamento della modalità temporanea di ordinamento non salverà le modifiche effettuate.
+      Pertanto le modifiche effettuate verranno perse e non saranno più recuperabili.
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" (click)="checkDrag(); closeModal()">Sì, annulla </button>
+    <button type="button" class="btn btn-danger" (click)="closeModal()">No, non annulare </button>
+  </div>
+
+</ng-template> <!-- Deactivates Drag And Drop -->
+

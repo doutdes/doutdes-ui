@@ -22,6 +22,8 @@ export class HeaderComponent {
   username: string;
   today: string;
 
+  drag: boolean;
+
   constructor(
     private actions: LoginActions,
     private localStore: StoreService,
@@ -36,6 +38,8 @@ export class HeaderComponent {
       this.isUserLoggedIn = value;
       this.username = this.localStore.getUserNames();
     });
+
+    this.globalEventService.dragAndDrop.subscribe(value => this.drag = value);
   }
 
   logout() {
@@ -46,5 +50,7 @@ export class HeaderComponent {
   showMenu(show: boolean) {
     this.showSidebar = show;
   }
+
+
 
 }
