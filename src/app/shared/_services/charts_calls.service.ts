@@ -11,8 +11,6 @@ import {GA_CHART, GA_PALETTE} from '../_models/GoogleData';
 import {FB_CHART, FB_PALETTE} from '../_models/FacebookData';
 import {IG_CHART, IG_PALETTE} from '../_models/InstagramData';
 import * as moment from 'moment';
-import _date = moment.unitOfTime._date;
-import * as _ from 'lodash';
 
 import {YT_CHART, YT_PALETTE} from '../_models/YoutubeData';
 
@@ -57,9 +55,7 @@ export class ChartsCallsService {
     let interval;
     let temp, index;
     let myMap;
-
-
-    // console.warn('ID: ' + ID + ' - ', data);
+    let limit;
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -624,8 +620,9 @@ export class ChartsCallsService {
         interval = 3; // Interval of hours to show
         header = [['Follower online', 'Min', 'Media', 'Max']];
 
-        for (let i = 0; i < data.length; i++)
+        for (let i = 0; i < data.length; i++) {
           keys.push(data[i]['value']);
+        }
 
         for (let i = 0; i < 24; i += interval) {
           // MIN | AVG | MAX
@@ -635,13 +632,13 @@ export class ChartsCallsService {
         // putting a unique entry in chartData for every existent age range
         for (let day = 0; day < keys.length; day++) {
 
-          let limit = keys[day] ? Object.keys(keys[day]).length : 0;
+          limit = keys[day] ? Object.keys(keys[day]).length : 0;
 
           for (let h_interval = 0; h_interval < limit; h_interval += interval) {
             temp = 0;
             index = 0;
             for (let hour = h_interval; hour < (h_interval + interval); hour++) {
-              temp += isNaN(parseInt(keys[day][hour], 10)) ? 0 : parseInt(keys[day][hour]);
+              temp += isNaN(parseInt(keys[day][hour], 10)) ? 0 : parseInt(keys[day][hour], 10);
               index = (hour + 1) / interval;
             }
 
@@ -2061,8 +2058,7 @@ export class ChartsCallsService {
   }
 
   public addPaddindRows(chartData) {
-
-    let paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+    const paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
     for (let i = 0; i < paddingRows; i++) {
       chartData.push(['', null]);
@@ -2326,7 +2322,7 @@ export class ChartsCallsService {
   }
 
   private getInstagramMiniValue(measure, data, intervalDate) {
-    let value, perc, sum = 0, avg, max, aux, step;
+    let value, perc, sum = 0, step;
 
     switch (measure) {
       case 'count':
