@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
-import {YT_CHART, YoutubeData} from '../_models/YoutubeData';
+import {YT_CHART, YoutubeData, YtPage} from '../_models/YoutubeData';
 
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
@@ -19,17 +19,17 @@ export class YoutubeService {
 
   getChannels() {
     const headers = this.getAuthorization();
-    return this.http.get<IgPage[]>(this.formatURL(null, 'channels'), {headers});
+    return this.http.get<YtPage[]>(this.formatURL(null, 'channels'), {headers});
   }
 
   getVideos(pageIDs) {
     const headers = this.getAuthorization();
-    return this.http.get<IgPage[]>(this.formatURL(null, pageIDs+'/videos'), {headers});
+    return this.http.get<YoutubeData[]>(this.formatURL(null, pageIDs+'/videos'), {headers});
   }
 
   getSubscribers(pageIDs) {
     const headers = this.getAuthorization();
-    return this.http.get<IgPage[]>(this.formatURL(null, pageIDs+'/subscribers'), {headers});
+    return this.http.get<YtPage[]>(this.formatURL(null, pageIDs+'/subscribers'), {headers});
   }
 
 
@@ -66,24 +66,16 @@ export class YoutubeService {
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
-  private formatURL(intervalDate: IntervalDate, urlCall: string) {
-    /*if(intervalDate == null)
-      return environment.protocol + environment.host + ':' + environment.port + '/yt/' + urlCall;
+  getViewList() {
+    const headers = this.getAuthorization();
+    return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/yt/getViewList', {headers});
+  }
 
-    const startDate = (intervalDate == undefined || intervalDate.first == undefined || intervalDate.last == null)
-      ? '90daysAgo'
-      : this.formatDate(intervalDate.first);
-    const endDate = (intervalDate == undefined || intervalDate.last == undefined || intervalDate.last == null)
-      ? 'today'
-      : this.formatDate(intervalDate.last);
-*/
+  private formatURL(intervalDate: IntervalDate, urlCall: string) {
       return environment.protocol + environment.host + ':' + environment.port + '/yt/' + urlCall + '/';
 
   }
 
-  private formatDate(date: Date) {
-    return moment(date).format('YYYY-MM-DD');
-  }
 
   private getAuthorization() {
     return new HttpHeaders()

@@ -15,6 +15,7 @@ export class BreadcrumbComponent implements OnInit {
   @select() breadcrumb$: Observable<Breadcrumb[]>;
   breadList = [];
   isUserLoggedIn: boolean;
+  drag: boolean;
 
   constructor(private globalEventService: GlobalEventsManagerService, private ngRedux: NgRedux<IAppState>) {
     this.globalEventService.isUserLoggedIn.subscribe(value => {
@@ -27,6 +28,7 @@ export class BreadcrumbComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.globalEventService.dragAndDrop.subscribe(value => this.drag = value);
   }
 
 }

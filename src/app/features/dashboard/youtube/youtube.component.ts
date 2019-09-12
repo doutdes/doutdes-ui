@@ -25,6 +25,8 @@ import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {ToastrService} from 'ngx-toastr';
+import * as _ from 'lodash';
+import {DragulaService} from 'ng2-dragula';
 
 
 @Component({
@@ -54,6 +56,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   public chartArray$: Array<DashboardCharts> = [];
   public miniCards: MiniCard[] = YtMiniCards;
   private dashStored: DashboardData;
+  public tmpArray: Array<DashboardCharts> = [];
 
   public loading = false;
   public isApiKeySet = true;
@@ -83,6 +86,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     noPages: false
   };
 
+  drag: boolean;
+
   constructor(
     private YTService: YoutubeService,
     public GAService : GoogleAnalyticsService,
@@ -97,8 +102,12 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     private modalService: BsModalService,
     private apiKeyService: ApiKeysService,
     private formBuilder: FormBuilder,
-    private localeService: BsLocaleService
+    private localeService: BsLocaleService,
+    private dragulaService: DragulaService,
 ) {
+    this.dragulaService.createGroup("REVERT", {
+      revertOnSpill: false,
+    });
   }
 
   async loadDashboard() {
@@ -117,6 +126,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     let chart: DashboardCharts;
 
     this.GEService.loadingScreen.next(true);
+
+    this.dragulaService.find("REVERT");
 
     try {
       // Retrieving dashboard ID
@@ -336,13 +347,13 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       }
 
        view_id = await this.getViewID();
-
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!view_id) {
         await this.getViewList();
-        (this.viewList);
+        console.log(this.viewList);
         if (this.viewList.length === 1) {
-          key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.YT};
+          key = {channel_id: this.viewList[0]['id'], service_id: D_TYPE.YT};
+          console.log(key);
           update = await this.apiKeyService.updateKey(key).toPromise();
 
           if (!update) {
@@ -406,6 +417,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   ngOnDestroy() {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
+
+    this.dragulaService.destroy("REVERT");
   }
 
   clearDashboard(): void {
@@ -532,6 +545,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   }
 
   closeModal(): void {
+    this.submitted = false;
     this.modalRef.hide();
   }
 
@@ -569,7 +583,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   async getViewList() {
     try {
-      this.viewList = await this.GAService.getViewList().toPromise();
+      this.viewList = await this.YTService.getViewList().toPromise();
     } catch (e) {
       console.error('getViewList -> Error doing the query');
     }
@@ -577,6 +591,65 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   optionModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  dragAndDrop () {
+    if (this.chartArray$.length == 0) {
+      this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
+    } else {
+      this.drag = true;
+      this.GEService.dragAndDrop.next(this.drag);
+    }
+
+    if (this.drag == true) {
+      this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
+    }
+
+  }
+
+  onMovement($event, value) {
+
+    if (!value) {
+      let i = 0;
+      this.tmpArray = $event;
+      this.chartArray$ = this.tmpArray;
+
+      for (i = 0; i < this.chartArray$.length; i++) {
+        this.chartArray$[i].position = i+1;
+      }
+
+    } else {
+      this.updateChartPosition(this.chartArray$);
+      this.GEService.loadingScreen.next(false);
+    }
+
+  }
+
+  updateChartPosition(toUpdate): void {
+
+    toUpdate = _.map(toUpdate, function(el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position}
+    });
+
+    this.DService.updateChartPosition(toUpdate)
+      .subscribe(() => {
+        // this.GEService.updateChartInDashboard.next(toUpdate);
+        this.filterActions.updateChartPosition(toUpdate, this.D_TYPE.YT);
+        this.closeModal();
+        this.drag = false;
+        this.GEService.dragAndDrop.next(this.drag);
+        this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
+      }, error => {
+        this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
+        console.log('Error updating the Dashboard');
+        console.log(error);
+      });
+
+  }
+
+  checkDrag () {
+    this.drag = false;
+    this.GEService.dragAndDrop.next(this.drag);
   }
 
 }

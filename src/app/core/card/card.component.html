@@ -1,6 +1,6 @@
 <div class="container-fluid p-0">
 
-  <div class="btn-group float-right" dropdown>
+  <div *ngIf="!this.drag" class="btn-group float-right" dropdown>
     <button id="button-basic" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
             aria-controls="dropdown-basic"><span class="caret"></span>
     </button>
@@ -12,7 +12,7 @@
   </div>
 
   <!-- CARD WITH CHART -->
-  <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" [ngStyle]="{'backgroundColor': '#fff', 'color': color, 'border-bottom' : '2px solid ' + color}"
+  <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length> 0" [ngClass]="" [ngStyle]="{'backgroundColor': '#fff', 'color': color, 'border-bottom' : '2px solid ' + color}"
        style="padding:10px; border-top: 1px solid #ccc; border-right: 1px solid #ccc; border-left: 1px solid #ccc">
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
     <span style="font-size:14pt">{{dashChart.title}}</span><span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart.format}})</span>

@@ -7,6 +7,8 @@ import {ChartsCallsService} from '../../../shared/_services/charts_calls.service
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
+import {DragulaService} from 'ng2-dragula';
+
 import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
@@ -23,12 +25,14 @@ import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootst
 
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import * as _ from 'lodash';
 
 const PrimaryWhite = '#ffffff';
 
 @Component({
   selector: 'app-feature-dashboard-instagram',
-  templateUrl: './instagram.component.html'
+  templateUrl: './instagram.component.html',
+  styleUrls: ['../../../../assets/css/dragula.css']
 })
 
 export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
@@ -54,6 +58,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   public chartArray$: Array<DashboardCharts> = [];
   public miniCards: MiniCard[] = IgMiniCards;
   private dashStored: Array<DashboardCharts> = [];
+  public tmpArray: Array<DashboardCharts> = [];
 
   public loading = false;
   public isApiKeySet = true;
@@ -85,6 +90,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   modalRef: BsModalRef;
 
+  drag: boolean;
+
   constructor(
     private IGService: InstagramService,
     private apiKeyService: ApiKeysService,
@@ -96,8 +103,12 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private userService: UserService,
     private modalService: BsModalService,
-    private localeService: BsLocaleService
+    private localeService: BsLocaleService,
+    private dragulaService: DragulaService
   ) {
+    this.dragulaService.createGroup("REVERT", {
+      revertOnSpill: false,
+    });
   }
 
   async loadMiniCards(pageID) {
@@ -150,11 +161,14 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     this.GEService.loadingScreen.next(true);
 
+    this.dragulaService.find("REVERT");
+
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(3).toPromise(); // Instagram type
 
     // Retrieving the page ID
     this.pageID = (await this.IGService.getPages().toPromise());
+    console.log(this.pageID);
 
     if(this.pageID.length === 0) {
       this.dashErrors.noPages = true;
@@ -392,6 +406,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
+
+    this.dragulaService.destroy("REVERT");
   }
 
   clearDashboard(): void {
@@ -484,6 +500,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
+    this.drag = false;
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered', ignoreBackdropClick: ignoreBackdrop, keyboard: !ignoreBackdrop});
   }
 
@@ -493,6 +510,65 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   optionModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  dragAndDrop () {
+    if (this.chartArray$.length == 0) {
+      this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
+    } else {
+      this.drag = true;
+      this.GEService.dragAndDrop.next(this.drag);
+    }
+
+    if (this.drag == true) {
+      this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
+    }
+
+  }
+
+  onMovement($event, value) {
+
+    if (!value) {
+      let i = 0;
+      this.tmpArray = $event;
+      this.chartArray$ = this.tmpArray;
+
+      for (i = 0; i < this.chartArray$.length; i++) {
+        this.chartArray$[i].position = i+1;
+      }
+
+    } else {
+      this.updateChartPosition(this.chartArray$);
+      this.GEService.loadingScreen.next(false);
+    }
+
+  }
+
+  updateChartPosition(toUpdate): void {
+
+    toUpdate = _.map(toUpdate, function(el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position}
+    });
+
+    this.DService.updateChartPosition(toUpdate)
+      .subscribe(() => {
+        // this.GEService.updateChartInDashboard.next(toUpdate);
+        this.filterActions.updateChartPosition(toUpdate, this.D_TYPE.IG);
+        this.closeModal();
+        this.drag = false;
+        this.GEService.dragAndDrop.next(this.drag);
+        this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
+      }, error => {
+        this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
+        console.log('Error updating the Dashboard');
+        console.log(error);
+      });
+
+  }
+
+  checkDrag () {
+    this.drag = false;
+    this.GEService.dragAndDrop.next(this.drag);
   }
 
 }

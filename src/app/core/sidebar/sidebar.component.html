@@ -1,4 +1,4 @@
-<div id="sidebar-container" class="sidebar-expanded d-none d-lg-block-2 col-1-5" *ngIf="isUserLoggedIn">
+<div id="sidebar-container" class="sidebar-expanded d-none d-lg-block-2 col-1-5 " [ngClass]="{'drag-mode': drag}" [ngStyle]="{'opacity': drag ? '0.2' : '1'}" *ngIf="isUserLoggedIn">
   <ul class="list-group sticky-top sticky-offset" style="margin-top:13px">
     <!-- Separator with title -->
     <li class="list-group-item sidebar-separator-title d-flex align-items-center menu-collapsed">
@@ -7,30 +7,27 @@
     <!-- /END Separator -->
     <!-- Menu with submenu -->
     <div data-toggle="collapse" aria-expanded="false"
-       class="list-group-item list-group-item-action flex-column align-items-start" style="background-color: #eeeeee;">
+         class="list-group-item list-group-item-action flex-column align-items-start" style="background-color: #eeeeee;">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-tachometer-alt mr-3"></span>
         <span class="menu-collapsed text-black">Le mie dashboard</span>
       </div>
     </div>
     <!-- Submenu content -->
-    <div id="submenu1" class="sidebar-submenu">
-      <a [routerLink]="['/dashboard/google']" class="list-group-item list-group-item-action">
+    <div id="submenu1" class="sidebar-submenu" >
+      <a [routerLink]="[drag ? '#' : '/dashboard/google']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Sito web</span>
       </a>
-      <a [routerLink]="['/dashboard/facebook']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag ? '#' : '/dashboard/facebook']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Facebook</span>
       </a>
-      <a [routerLink]="['/dashboard/facebook-marketing']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed ml-4">Marketing</span>
-      </a>
-      <a [routerLink]="['/dashboard/instagram']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag ? '#' : '/dashboard/instagram']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Instagram</span>
       </a>
-      <a [routerLink]="['/dashboard/youtube']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag ? '#' : '/dashboard/youtube']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Youtube</span>
       </a>
-      <a [routerLink]="['/dashboard/custom']"  class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag ? '#' : '/dashboard/custom']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Personalizzata</span>
       </a>
     </div>
@@ -45,13 +42,13 @@
     <!-- Submenu content -->
     <div id="submenu2" class="collapse sidebar-submenu">
       <!--<a [routerLink]="['/preferences/profile']" class="list-group-item list-group-item-action">-->
-        <!--<span class="menu-collapsed">Profilo</span>-->
+      <!--<span class="menu-collapsed">Profilo</span>-->
       <!--</a>-->
-      <a [routerLink]="['/preferences/api-keys']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag ? '#' : '/preferences/api-keys']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Configura sorgenti dati</span>
       </a>
       <!--<a *ngIf="userType === 0" [routerLink]="['/authentication/register']" class="list-group-item list-group-item-action">-->
-        <!--<span class="menu-collapsed">Crea account</span>-->
+      <!--<span class="menu-collapsed">Crea account</span>-->
       <!--</a>-->
     </div>
 
@@ -66,7 +63,7 @@
 
     <!-- Submenu content -->
     <div *ngIf="userType === 0" id="submenu4" class="collapse sidebar-submenu">
-      <a [routerLink]="['/authentication/register']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag ? '#' : '/authentication/register']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Crea account</span>
       </a>
     </div>
@@ -75,6 +72,7 @@
       <div class="d-flex w-100 justify-content-start align-items-center" style="color: #777">
         <span class="fa fa-tasks fa-fs mr-3"></span>
         <span class="menu-collapsed">Report</span>
+        <!-- [routerLink]="[drag ? '#' : '/authentication/register']" -->
       </div>
     </a>
     <!-- Separator with title -->
@@ -82,7 +80,7 @@
       <small class="font-weight-bold text-uppercase">Strumenti</small>
     </li>
     <!-- /END Separator -->
-    <a class="list-group-item list-group-item-action" [routerLink]="['/calendar']">
+    <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/calendar']">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-calendar-alt fa-fw mr-3"></span>
         <span class="menu-collapsed">Calendario</span>
@@ -105,13 +103,13 @@
     </a>
     <!-- Submenu content -->
     <div id="submenu3" class="collapse sidebar-submenu">
-      <a [routerLink]="['/tutorial/google']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag ? '#' : '/tutorial/google']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Tutorial Analytics</span>
       </a>
-      <a [routerLink]="['/tutorial/facebook']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag ? '#' : '/tutorial/facebook']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Tutorial Facebook</span>
       </a>
-      <a [routerLink]="['/tutorial/instagram']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag ? '#' : '/tutorial/instgram']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Tutorial Instagram</span>
       </a>
     </div>

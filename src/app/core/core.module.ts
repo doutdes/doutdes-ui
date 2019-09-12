@@ -36,7 +36,6 @@ import {FilterActions} from '../features/dashboard/redux-filter/filter.actions';
     PopoverModule.forRoot()
   ],
   providers: [
-    GlobalEventsManagerService,
     LoginActions,
     BsModalService,
     DashboardService,

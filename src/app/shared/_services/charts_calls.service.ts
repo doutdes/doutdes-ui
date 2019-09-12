@@ -7,14 +7,14 @@ import {YoutubeService} from './youtube.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {D_TYPE} from '../_models/Dashboard';
-import {GA_CHART} from '../_models/GoogleData';
-import {FB_CHART} from '../_models/FacebookData';
-import {IG_CHART} from '../_models/InstagramData';
+import {GA_CHART, GA_PALETTE} from '../_models/GoogleData';
+import {FB_CHART, FB_PALETTE} from '../_models/FacebookData';
+import {IG_CHART, IG_PALETTE} from '../_models/InstagramData';
 import * as moment from 'moment';
 import _date = moment.unitOfTime._date;
 import * as _ from 'lodash';
 
-import {YT_CHART} from '../_models/YoutubeData';
+import {YT_CHART, YT_PALETTE} from '../_models/YoutubeData';
 
 @Injectable()
 export class ChartsCallsService {
@@ -551,11 +551,16 @@ export class ChartsCallsService {
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
           });
 
-          paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+          chartData.sort(function (obj1, obj2) {
+            return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+          });
 
-          for (let i = 0; i < paddingRows; i++) {
-            chartData.push(['', null]);
-          }
+          // paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+          chartData = this.addPaddindRows(chartData);
+
+          // for (let i = 0; i < paddingRows; i++) {
+          //   chartData.push(['', null]);
+          // }
         }
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
@@ -783,7 +788,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#8cd0bd'],
+            colors: [FB_PALETTE.BLUE.C1],
             areaOpacity: 0.1
           }
         };
@@ -796,7 +801,7 @@ export class ChartsCallsService {
           chartClass: 2,
           options: {
             region: 'world',
-            colors: ['#63c2de'],
+            colors: [FB_PALETTE.BLUE.C1],
             colorAxis: {colors: ['#9EDEEF', '#63c2de']},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
@@ -826,7 +831,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#63c2de'],
+            colors: [FB_PALETTE.TURQUOISE.C10],
             areaOpacity: 0.1
           }
         };
@@ -852,7 +857,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#9c8372'],
+            colors: [FB_PALETTE.BLUE.C7],
             areaOpacity: 0.1
           }
         };
@@ -898,7 +903,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#58A5BC', '#3F9AA2', '#F1C85B', '#D9C9B6'],
+            colors: [FB_PALETTE.BLUE.C2, FB_PALETTE.BLUE.C3, FB_PALETTE.TURQUOISE.C1, FB_PALETTE.STIFFKEY.C2],
             areaOpacity: 0.2
           }
         };
@@ -923,7 +928,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#8cd0bd'],
+            colors: [FB_PALETTE.BLUE.C4],
             areaOpacity: 0.1
           }
         };
@@ -949,7 +954,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#8a74e1'],
+            colors: [FB_PALETTE.TURQUOISE.C4],
             areaOpacity: 0.1
           }
         };
@@ -974,7 +979,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['f26767'],
+            colors: [FB_PALETTE.STIFFKEY.C4],
             areaOpacity: 0.1
           }
         };
@@ -999,7 +1004,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#f998e3'],
+            colors: [FB_PALETTE.BLUE.C7],
             areaOpacity: 0.1
           }
         };
@@ -1024,7 +1029,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#259526'],
+            colors: [FB_PALETTE.TURQUOISE.C7],
             areaOpacity: 0.1
           }
         };
@@ -1051,7 +1056,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#5befeb'],
+            colors: [FB_PALETTE.STIFFKEY.C7],
             areaOpacity: 0.1
           }
         };
@@ -1077,7 +1082,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#443fe9'],
+            colors: [FB_PALETTE.BLUE.C10],
             areaOpacity: 0.1
           }
         };
@@ -1103,7 +1108,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#1ee503'],
+            colors: [FB_PALETTE.TURQUOISE.C10],
             areaOpacity: 0.1
           }
         };
@@ -1128,7 +1133,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#f36424'],
+            colors: [FB_PALETTE.STIFFKEY.C10],
             areaOpacity: 0.1
           }
         };
@@ -1153,7 +1158,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#075eee'],
+            colors: [FB_PALETTE.BLUE.C8],
             areaOpacity: 0.1
           }
         };
@@ -1178,7 +1183,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#027500'],
+            colors: [FB_PALETTE.TURQUOISE.C8],
             areaOpacity: 0.1
           }
         };
@@ -1197,7 +1202,9 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#7cf3e0', '#0670f3', '#f31900', '#a4958a', '#F30DA6', '#0AA41F', '#F3ED00', '#00F3E5', '#9549F3'],
+            colors: [FB_PALETTE.BLUE.C3,FB_PALETTE.BLUE.C8,FB_PALETTE.BLUE.C6,FB_PALETTE.TURQUOISE.C12,FB_PALETTE.TURQUOISE.C4,FB_PALETTE.TURQUOISE.C9,FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9],
+
+
             areaOpacity: 0.2
           }
         };
@@ -1222,7 +1229,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#81b9f6'],
+            colors: [FB_PALETTE.STIFFKEY.C8],
             areaOpacity: 0.1
           }
         };
@@ -1237,7 +1244,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
+            colors: [FB_PALETTE.TURQUOISE.C6, FB_PALETTE.TURQUOISE.C8, FB_PALETTE.TURQUOISE.C10],
             areaOpacity: 0.4,
           }
         };
@@ -1288,7 +1295,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#2224ef'],
+            colors: [FB_PALETTE.TURQUOISE.C3],
             areaOpacity: 0.1
           }
         };
@@ -1327,7 +1334,7 @@ export class ChartsCallsService {
           options: {
             region: 'IT',
             displayMode: 'markers',
-            colors: ['#63c2de'],
+            colors: [FB_PALETTE.BLUE.C3],
             colorAxis: {colors: ['#9EDEEF', '#63c2de']},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
@@ -1386,7 +1393,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#FFA647'],
+            colors: [GA_PALETTE.LIME.C6],
             areaOpacity: 0.1
           }
         };
@@ -1411,7 +1418,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#01B8AA'],
+            colors: [GA_PALETTE.OCHER.C8],
             areaOpacity: 0.05
           }
         };
@@ -1429,7 +1436,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#A790A5', '#875C74', '#AFD0BE', '#54414E'],
+            colors: [GA_PALETTE.ORANGE.C12, GA_PALETTE.LIME.C7, GA_PALETTE.OCHER.C9, GA_PALETTE.ORANGE.C11],
             areaOpacity: 0.2
           }
         };
@@ -1477,7 +1484,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffdda4'],
+            colors: [GA_PALETTE.ORANGE.C9],
             bar: {groupWidth: '70%'},
             areaOpacity: 0.3
           }
@@ -1505,7 +1512,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#dd738a'],
+            colors: [GA_PALETTE.OCHER.C11],
             areaOpacity: 0.05
           }
         };
@@ -1533,7 +1540,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#52b4de'],
+            colors: [GA_PALETTE.ORANGE.C3],
             areaOpacity: 0.05
           }
         };
@@ -1585,7 +1592,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffc423'],
+            colors: [GA_PALETTE.OCHER.C11],
             areaOpacity: 0.1
           }
         };
@@ -1630,7 +1637,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#fd8f8d', '#c96565'],
+            colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7],
             areaOpacity: 0.2
           }
         };
@@ -1650,7 +1657,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#000'}
             },
-            colors: ['#A0D8C5'],
+            colors: [GA_PALETTE.LIME.C6],
             bar: {groupWidth: '70%'},
             areaOpacity: 0.3
           }
@@ -1692,8 +1699,8 @@ export class ChartsCallsService {
           chartClass: 2,
           options: {
             region: 'world',
-            colors: ['#ff00a7'],
-            colorAxis: {colors: ['#ff96db', '#ff00a7']},
+            colors: [IG_PALETTE.FUCSIA.C9],
+            colorAxis: {colors: [IG_PALETTE.FUCSIA.C1, IG_PALETTE.FUCSIA.C2]},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
             defaultColor: '#333',
@@ -1711,7 +1718,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#388aff', '#ff96db'],
+            colors: [IG_PALETTE.FUCSIA.C5, '#ff96db'],
             areaOpacity: 0.4,
           }
         };
@@ -1726,7 +1733,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#ff96db'],
+            colors: [IG_PALETTE.AMARANTH.C4],
             areaOpacity: 0.4,
           }
         };
@@ -1740,7 +1747,7 @@ export class ChartsCallsService {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#FFCDEE', '#FF88E1', '#F33DFF'],
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 3},
             bar: {groupWidth: '75%'},
@@ -1768,7 +1775,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96db'],
+            colors: [IG_PALETTE.LAVENDER.C1],
             areaOpacity: 0.1
           }
         };
@@ -1793,7 +1800,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96db'],
+            colors: [IG_PALETTE.AMARANTH.C3],
             areaOpacity: 0.1
           }
         };
@@ -1812,12 +1819,12 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#58A5BC', '#3F9AA2', '#F1C85B', '#D9C9B6'],
+            colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C11, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7],
             areaOpacity: 0.2
           }
         };
         if (data.filter(e => e[1] === true).length == 0) {
-          formattedData.options.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'];
+          formattedData.options.colors = [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C11, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7];
           formattedData.dataTable = data;
         } else {
           formattedData.options.colors = ['#D3D3D3'];
@@ -1844,7 +1851,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96bd'],
+            colors: [IG_PALETTE.AMARANTH.C5],
             areaOpacity: 0.1
           }
         };
@@ -1869,7 +1876,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96bd'],
+            colors: [IG_PALETTE.FUCSIA.C3],
             areaOpacity: 0.1
           }
         };
@@ -1894,7 +1901,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffbe5b'],
+            colors: [YT_PALETTE.RED.C11],
             areaOpacity: 0.1
           }
         };
@@ -1919,7 +1926,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#61b4ff'],
+            colors: [YT_PALETTE.OPAL.C2],
             areaOpacity: 0.1
           }
         };
@@ -1944,7 +1951,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#33b362'],
+            colors: [YT_PALETTE.BROWN.C9],
             areaOpacity: 0.1
           }
         };
@@ -1969,7 +1976,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#88372b'],
+            colors: [YT_PALETTE.RED.C12],
             areaOpacity: 0.1
           }
         };
@@ -1994,7 +2001,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#dc852b'],
+            colors: [YT_PALETTE.OPAL.C8],
             areaOpacity: 0.1
           }
         };
@@ -2019,7 +2026,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#a195cc'],
+            colors: [YT_PALETTE.BROWN.C10],
             areaOpacity: 0.1
           }
         };
@@ -2044,7 +2051,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#a195cc'],
+            colors: [YT_PALETTE.RED.C3],
             areaOpacity: 0.1
           }
         };
@@ -2115,7 +2122,8 @@ export class ChartsCallsService {
         observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
-        observables.push(this.youtubeService.getSubscribers(pageIDs));
+        let obj = {};
+        observables.push(this.youtubeService.getSubscribers(obj));
         observables.push(this.youtubeService.getData(YT_CHART.VIEWS, intervalDate, pageIDs));
         observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
         observables.push(this.youtubeService.getVideos(pageIDs));
@@ -2124,7 +2132,7 @@ export class ChartsCallsService {
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
-        observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs) : of({}));
+        observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs[D_TYPE.YT]) : of({}));
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
@@ -2225,8 +2233,12 @@ export class ChartsCallsService {
     }
 
     avg = (sum / data.length).toFixed(2);
+    if (isNaN(sum))
+      sum = 0;
+    if (isNaN(avg))
+      avg = 0.0;
 
-    switch (measure) {
+      switch (measure) {
       case 'subs':
         value = sum;
         step = this.searchStep(value, measure);
@@ -2351,8 +2363,6 @@ export class ChartsCallsService {
         value = data['followers_count'];
         break;
       case 'ga-tot-user':
-
-        //console.log('GOOGLE', data);
         value = 0;
         data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
         for (const i in data) {
@@ -2360,7 +2370,8 @@ export class ChartsCallsService {
         }
         break;
       case 'subs':
-         value = data.length;
+        data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
+        value = data.length;
         break;
     }
 
