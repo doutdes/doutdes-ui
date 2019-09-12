@@ -551,11 +551,16 @@ export class ChartsCallsService {
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
           });
 
-          paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+          chartData.sort(function (obj1, obj2) {
+            return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+          });
 
-          for (let i = 0; i < paddingRows; i++) {
-            chartData.push(['', null]);
-          }
+          // paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+          chartData = this.addPaddindRows(chartData);
+
+          // for (let i = 0; i < paddingRows; i++) {
+          //   chartData.push(['', null]);
+          // }
         }
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
