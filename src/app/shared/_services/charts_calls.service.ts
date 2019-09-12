@@ -207,17 +207,17 @@ export class ChartsCallsService {
         header = [['Reazione', 'numero reaz.']];
         myMap = new Map();
         for (let el of data) {
-           if(el['value']) {
-               let reacts = el['value'];
-               for(let i in reacts) {
-                 let value = parseInt(reacts[i], 10);
-                 if (myMap.has(i)) {
-                   myMap.set(i, myMap.get(i) + value);
-                 } else {
-                   myMap.set(i, value);
-                 }
-               }
-           }
+          if (el['value']) {
+            let reacts = el['value'];
+            for (let i in reacts) {
+              let value = parseInt(reacts[i], 10);
+              if (myMap.has(i)) {
+                myMap.set(i, myMap.get(i) + value);
+              } else {
+                myMap.set(i, value);
+              }
+            }
+          }
         }
 
         var key = myMap.keys();
@@ -229,7 +229,7 @@ export class ChartsCallsService {
 
         break; // Facebook Reazioni torta
       case FB_CHART.REACTIONS_LINEA:
-        header = [['Data','Reazioni']];
+        header = [['Data', 'Reazioni']];
 
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
@@ -238,7 +238,7 @@ export class ChartsCallsService {
 
               sum = Object.values(el.value).reduce((a: Number, b: Number) => {
                 // @ts-ignore
-                return a + b
+                return a + b;
               }, 0);
 
               chartData.push([moment(el.end_time).toDate(), sum]);
@@ -258,9 +258,9 @@ export class ChartsCallsService {
 
         myMap = new Map();
         for (let el of data) {
-          if(el['value']) {
+          if (el['value']) {
             let reacts = el['value'];
-            for(let i in reacts) {
+            for (let i in reacts) {
               let value = parseInt(reacts[i], 10);
               if (myMap.has(i)) {
                 myMap.set(i, myMap.get(i) + value);
@@ -300,7 +300,7 @@ export class ChartsCallsService {
             if (el && (el.value != undefined)) {
               sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
                 // @ts-ignore
-                return a + b
+                return a + b;
               }, 0);
               chartData.push([moment(el.end_time).toDate(), sum]);
             } else {
@@ -338,7 +338,7 @@ export class ChartsCallsService {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
 
-        chartData = chartData.slice(0,15);
+        chartData = chartData.slice(0, 15);
 
         break; // Facebook Vista contenuti per città (geomappa)
       case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
@@ -1202,7 +1202,7 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: [FB_PALETTE.BLUE.C3,FB_PALETTE.BLUE.C8,FB_PALETTE.BLUE.C6,FB_PALETTE.TURQUOISE.C12,FB_PALETTE.TURQUOISE.C4,FB_PALETTE.TURQUOISE.C9,FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9],
+            colors: [FB_PALETTE.BLUE.C3, FB_PALETTE.BLUE.C8, FB_PALETTE.BLUE.C6, FB_PALETTE.TURQUOISE.C12, FB_PALETTE.TURQUOISE.C4, FB_PALETTE.TURQUOISE.C9, FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9],
 
 
             areaOpacity: 0.2
@@ -1880,7 +1880,7 @@ export class ChartsCallsService {
             areaOpacity: 0.1
           }
         };
-      break;
+        break;
       case YT_CHART.VIEWS:
         formattedData = {
           chartType: 'AreaChart',
@@ -2060,7 +2060,7 @@ export class ChartsCallsService {
     return formattedData;
   }
 
-  public addPaddindRows (chartData) {
+  public addPaddindRows(chartData) {
 
     let paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
@@ -2080,7 +2080,7 @@ export class ChartsCallsService {
       case D_TYPE.FB:
       case D_TYPE.IG:
         if (data.length > 0) {
-          min = data.map(x => x[1]).reduce((c,p) => c < p ? c : p);
+          min = data.map(x => x[1]).reduce((c, p) => c < p ? c : p);
           break;
         }
         break;
@@ -2156,7 +2156,7 @@ export class ChartsCallsService {
         break;
       case D_TYPE.YT :
         result = this.getYTMiniValue(measure, data);
-        break
+        break;
       case D_TYPE.CUSTOM:
         result = this.getCustomMiniValue(measure, data, intervalDate);
         break;
@@ -2222,9 +2222,9 @@ export class ChartsCallsService {
     };
 
     //if(measure!='subs') //used to avoid date parsing in YT subscribers (that doesn't contain such infos). Expect more elegant sol. in future
-      data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
+    data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
 
-    if(measure=='vids' || measure=='subs')
+    if (measure == 'vids' || measure == 'subs')
       sum = data.length;
     else {
       for (const i in data) {
@@ -2238,7 +2238,7 @@ export class ChartsCallsService {
     if (isNaN(avg))
       avg = 0.0;
 
-      switch (measure) {
+    switch (measure) {
       case 'subs':
         value = sum;
         step = this.searchStep(value, measure);
@@ -2332,13 +2332,15 @@ export class ChartsCallsService {
       case 'count':
         value = data['followers_count'];
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
+      case 'post-sum':
+        data = data.filter(el => (new Date(el.timestamp)) >= intervalDate.first && (new Date(el.timestamp)) <= intervalDate.last);
+        value = data.length;
+        break;
       default:
         data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
-        for (const i in data) {
-          sum += data[i].value;
+        for (const el of data) {
+          sum += el.value;
         }
-
-        // avg = sum / data.length;
         value = sum;
 
         break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
@@ -2418,7 +2420,7 @@ export class ChartsCallsService {
   private getDomain(arg: string) {
     let domain;
 
-    if (arg.indexOf("://") > -1) {
+    if (arg.indexOf('://') > -1) {
       domain = arg.split('/')[2];
     } else {
       domain = arg.split('/')[0];
@@ -2427,12 +2429,12 @@ export class ChartsCallsService {
     //trova e rimuovi eventuale porta
     domain = domain.split(':')[0];
 
-    domain = domain.replace(/\$/g, ".");
+    domain = domain.replace(/\$/g, '.');
 
     return domain;
   }
 
-  public mapChartData (data) {
+  public mapChartData(data) {
 
     let myMap = new Map();
     let chartData = [];
@@ -2465,7 +2467,7 @@ export class ChartsCallsService {
     return chartData;
   }
 
-  public lengthKeys (data) {
+  public lengthKeys(data) {
     let myMap;
     myMap = new Map();
     let keys = [];

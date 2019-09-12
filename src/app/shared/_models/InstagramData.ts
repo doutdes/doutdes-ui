@@ -12,7 +12,7 @@ export const IG_CHART = { // ID charts in the database
 };
 
 export const IG_PALETTE = {
-  //took by the main color of the dashboard
+  // Took by the main color of the dashboard
   'FUCSIA' : {
     C1: '#66005f',
     C2: '#7a0072',
@@ -27,7 +27,7 @@ export const IG_PALETTE = {
     C11: '#ff33f1',
     C12: '#ff47f3',
   },
-  //soft purple-ish
+  // Soft purple-ish
   'LAVENDER' : {
     C1: '#4c1b5f',
     C2: '#591f6f',
@@ -43,7 +43,7 @@ export const IG_PALETTE = {
     C12: '#c180db',
   },
 
-  //I used to believe this was blue
+  // I used to believe this was blue
   'AMARANTH': {
     C1: '#660029',
     C2: '#7a0031',
@@ -66,15 +66,15 @@ export interface IgPage {
 }
 
 export interface IgMedia {
-  id: number,
-  media_type: string,
-  timestamp: Date
+  id: number;
+  media_type: string;
+  timestamp: Date;
 }
 
 export interface IgBusinessInfo {
-  id: number,
-  follower_count: number,
-  media_count: number,
+  id: number;
+  follower_count: number;
+  media_count: number;
 }
 
 export interface IgAnyData {

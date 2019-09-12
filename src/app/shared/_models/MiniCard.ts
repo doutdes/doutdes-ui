@@ -92,7 +92,6 @@ export let IgMiniCards: MiniCard[] = [
     measure: ''
   }
 ];
-
 export let YtMiniCards: MiniCard[] = [
   {
 
@@ -128,7 +127,6 @@ export let YtMiniCards: MiniCard[] = [
 
   },
 ];
-
 
 export let CustomMiniCards: MiniCard[] = [
   {
