@@ -13,6 +13,7 @@ import {ToastrService} from 'ngx-toastr';
 import {T} from '@angular/core/src/render3';
 import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {Chart} from '../../shared/_models/Chart';
 
 @Component({
   selector: 'app-emptycard',
@@ -118,7 +119,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     try {
       await this.updateDropdownOptions();
 
-      if(this.metrics.length === 0) {
+      if (this.metrics.length === 0) {
         this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
       } else {
         this.modalService.onHide.subscribe(() => {
@@ -145,9 +146,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     this.chartRequired = false;
 
     selected = this.chartRemaining.find(chart =>
-      chart.Type == this.insertChartForm.value.channel &&
-      chart.Title == this.insertChartForm.value.title &&
-      chart.format == this.insertChartForm.value.style
+      chart.type === this.insertChartForm.value.channel &&
+      chart.title === this.insertChartForm.value.title &&
+      chart.format === this.insertChartForm.value.style
     );
 
     if (!selected) {
@@ -165,8 +166,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     dashChart = {
       chart_id: selected.ID,
       dashboard_id: this.dashboard_data.dashboard_id,
-      title: selected.Title,
-      type: selected.Type,
+      title: selected.title,
+      type: selected.type,
       format: selected.format,
       //position: selected.position
     };
@@ -198,30 +199,32 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     if (this.dashboard_data) {
 
-        this.chartRemaining = this.dashboard_data.dashboard_type !== 0
-          ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type).toPromise()
-          : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
+      this.chartRemaining = this.dashboard_data.dashboard_type !== 0
+        ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type).toPromise()
+        : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
 
 
-          if (this.chartRemaining && this.chartRemaining.length > 0) {
+      if (this.chartRemaining && this.chartRemaining.length > 0) {
 
-            // Update channels
-            if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
-              for (const i in this.dashboard_data.permissions) {
-                if (this.dashboard_data.permissions[i]) this.channels.push({name: DS_TYPE[i], value: i});
-              }
-            } else {
-              this.channels.push({name: DS_TYPE[this.dashboard_data.dashboard_type], value: this.dashboard_data.dashboard_type});
+        // Update channels
+        if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
+          for (const i in this.dashboard_data.permissions) {
+            if (this.dashboard_data.permissions[i]) {
+              this.channels.push({name: DS_TYPE[i], value: i});
             }
-
-            this.insertChartForm.controls['channel'].setValue(this.channels[0].value);
-
-            this.filterDropdown(true);
-
-            result = true;
           }
+        } else {
+          this.channels.push({name: DS_TYPE[this.dashboard_data.dashboard_type], value: this.dashboard_data.dashboard_type});
+        }
 
-          return result;
+        this.insertChartForm.controls['channel'].setValue(this.channels[0].value);
+
+        this.filterDropdown(true);
+
+        result = true;
+      }
+
+      return result;
 
     } else {
       console.error('ERROR in EMPTY-CARD. Cannot retrieve dashboard data.');
@@ -232,14 +235,19 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   filterDropdown(updateChannel = false) {
     if (updateChannel) {
-      this.metrics = this.getUnique(this.chartRemaining.filter(chart => chart.Type == this.insertChartForm.value.channel), 'Title');
-      this.insertChartForm.controls['metric'].setValue(this.metrics[0].Title);
+      this.metrics = this.getUnique(this.chartRemaining
+        .filter(chart => chart.type === this.insertChartForm.value.channel)
+        .sort((a: Chart, b: Chart) => a.title.localeCompare(b.title)), 'title'
+      );
+      this.insertChartForm.controls['metric'].setValue(this.metrics[0].title);
     }
 
-    this.description = (this.chartRemaining.find(chart => chart.Title == this.insertChartForm.value.metric && chart.Type == this.insertChartForm.value.channel)).description;
+    this.description = (this.chartRemaining.find(chart => chart.title === this.insertChartForm.value.metric && chart.type === this.insertChartForm.value.channel)).description;
 
     // Update styles
-    this.styles = this.chartRemaining.filter(chart => chart.Title == this.insertChartForm.value.metric && chart.Type == this.insertChartForm.value.channel).map(item => item.format);
+    this.styles = this.chartRemaining
+      .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === this.insertChartForm.value.channel)
+      .map(item => item.format);
     this.insertChartForm.controls['style'].setValue(this.styles[0]);
 
     // Update title
@@ -256,11 +264,16 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       .map((e, i, final) => final.indexOf(e) === i && i)
 
       // eliminate the dead keys & store unique objects
-      .filter(e => arr[e]).map(e => arr[e]);
+      .filter(e => arr[e]).map(e => arr[e])
+    ;
 
     return unique;
 
   }
+ // a: 6, b: 8
+  compareNumbers = (a: number, b: number): number => {
+    return a - b;
+  };
 
   ngOnDestroy() {
   }

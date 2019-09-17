@@ -14,7 +14,7 @@ export class FacebookMarketingService {
 
   private getAuthorization = (): HttpHeaders =>
     new HttpHeaders()
-      .set('Content-Type', 'application/json')
+      .set('Content-type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`)
 
 }

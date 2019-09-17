@@ -2076,7 +2076,7 @@ export class ChartsCallsService {
       case D_TYPE.FB:
       case D_TYPE.IG:
         if (data.length > 0) {
-          min = data.map(x => x[1]).reduce((c, p) => c < p ? c : p);
+          min = data.map(x => x[1]).reduce((c, p) => c < p ? c : p) * perc;
           break;
         }
         break;

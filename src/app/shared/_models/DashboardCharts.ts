@@ -8,7 +8,7 @@ export interface DashboardCharts {
   position?: number;
   error?: boolean;
   geoData?: any;
-  originalTitle?:any;
+  originalTitle?: any;
   type?: number;
   aggregated?: any;
 }

@@ -23,6 +23,14 @@ export class DashboardService {
       + type, {headers});
   }
 
+  getChartsByFormat = (format: string): Observable<Array<Chart>> => {
+    const headers = this.getAuthorization();
+    return this.http.get<Array<Chart>>(
+      `${environment.protocol}${environment.host}:${environment.port}/dashboards/getChartsByFormat/${format}`,
+      {headers}
+    );
+  };
+
   getAllDashboardCharts(dashboard_id) {
     const headers = this.getAuthorization();
     return this.http.get<DashboardCharts[]>(environment.protocol + environment.host + ':' + environment.port + '/dashboards/getDashboardByID/'
@@ -57,7 +65,7 @@ export class DashboardService {
     return this.http.put(environment.protocol + environment.host + ':' + environment.port + '/dashboards/updateChartInDashboard/', {chart}, {headers});
   }
 
-  updateChartPosition (chartArray) {
+  updateChartPosition(chartArray) {
     const headers = this.getAuthorization();
     let body = {body: chartArray};
     return this.http.put(`${environment.protocol}${environment.host}:${environment.port}/dashboards/updateChartsInDashboard/`, {chartArray}, {headers});
@@ -78,14 +86,14 @@ export class DashboardService {
     });
   }
 
-  clearDashboard (dashboard_id) {
+  clearDashboard(dashboard_id) {
     const headers = this.getAuthorization();
 
     const body = {
       dashboard_id: dashboard_id
     };
 
-    return this.http.request('delete',environment.protocol + environment.host + ':' + environment.port + '/dashboards/clearDashboard/', {
+    return this.http.request('delete', environment.protocol + environment.host + ':' + environment.port + '/dashboards/clearDashboard/', {
       body,
       headers
     });
@@ -104,7 +112,7 @@ export class DashboardService {
 
   }
 
-  deleteDashboard(dashboard_id){
+  deleteDashboard(dashboard_id) {
 
     const headers = this.getAuthorization();
 
@@ -118,7 +126,7 @@ export class DashboardService {
     });
   }
 
-  addUserDashboard(dashboard_id){
+  addUserDashboard(dashboard_id) {
 
     const headers = this.getAuthorization();
 
@@ -129,7 +137,7 @@ export class DashboardService {
     return this.http.post(environment.protocol + environment.host + ':' + environment.port + '/dashboards/addUserDashboard/', body, {headers});
   }
 
-  deleteUserDashboard(dashboard_id){
+  deleteUserDashboard(dashboard_id) {
 
     const headers = this.getAuthorization();
 
@@ -145,7 +153,7 @@ export class DashboardService {
 
   getAuthorization() {
     return new HttpHeaders()
-      .set('Content-Type', 'application/json')
+      .set('Content-type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`);
   }
 }
