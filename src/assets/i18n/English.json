@@ -53,7 +53,8 @@
     "ADMIN": "Super admin",
     "CREA_ACCOUNT": "Create account",
     "STRUMENTI": "Tools",
-    "GUIDE": "User guides"
+    "GUIDE": "User guides",
+    "PROFILO": "Update profile"
   },
   "DASHBOARD": {
     "CUSTOM": "My dashboard",
@@ -135,8 +136,8 @@
     "LUOGO": "Birthplace",
     "LUOGO_O": "Mandatory Birthplace",
     "LUOGO_ALERT": "The place of birth must not exceed 50 characters",
-    "DATE_NASCITA": "Date of Birth",
-    "DATE_NASCITA_O": "Birth Date required",
+    "DATA_NASCITA": "Date of Birth",
+    "DATA_NASCITA_O": "Birth Date required",
     "COD_F_O": "Compulsory tax code",
     "COD_F_ALERT_1": "The tax code must have 16 characters",
     "COD_F_ALERT_2": "Tax code not valid",
@@ -147,9 +148,12 @@
     "CITTA": "City",
     "CITTA_O": "Mandatory city",
     "CITTA_ALERT": "The City must not exceed 50 characters",
+    "CITTA_RIC": "City required",
     "PROVINCIA": "Province",
     "PROVINCIA_O": "Mandatory Province",
     "PROVINCIA_ALERT": "The province must not exceed 2 characters",
+    "SIGLA_PRO": "The abbreviation of the obligatory province",
+    "SIGLA_PRO_LUNG": "The abbreviation of the province must be a maximum of 2 characters",
     "CAP_O": "Cap required",
     "CAP_ALERT": "The cap must not exceed 5 characters",
     "PASSWORD": "Password",
@@ -161,7 +165,13 @@
     "UPDATE_DOM": "Do you really want to update your information? You will be disconnected from the platform.",
     "NO": "No",
     "SI": "Yes, yes",
-    "CAP": "Cap"
+    "CAP": "Cap",
+    "LANGUAGE": "Language",
+    "DATI_IMP": "Company data:",
+    "DATI_ACC": "Account data:",
+    "SAVE_UP": "Save data updated",
+    "RAG_SOC": "Mandatory company name",
+    "COGNOME_TIT": "Surname holder required"
   },
   "TUTORIAL_FB": {
     "TITLE": "Tutorial: importing Facebook data",
@@ -292,5 +302,24 @@
     "ACCESSO_YT": "Login with Youtube",
     "NO_SERVICE": "You have already configured all available services!",
     "GO_TO_SORGENTE": "Return to data sources"
+  },
+  "REGISTER": {
+    "TIPO_ACCOUNT": "Type of account",
+    "IMPRESA": "Business",
+    "EDITOR": "Editor",
+    "ANALISTA": "Analist",
+    "IND_SOC_O": "Mandatory social address",
+    "CITTA_R": "Requested city",
+    "CITTA_LUNG": "The city name must be a maximum of 50 characters",
+    "USERNAME_O": "Mandatory username",
+    "USERNAME_LUNG": "The username must be a maximum of 40 characters",
+    "EMAIL_O": "Email is required",
+    "EMAIL_LUNG": "The password must be a maximum of 40 characters",
+    "PASSWORD_O": "The password is mandatory",
+    "PASSWORD_LUNG": "The password must be a maximum of 40 characters",
+    "PASS_NO_COIN": "Passwords do not match",
+    "NEW_ACC": "Create account",
+    "EMAIL_INSERT": "Enter a valid email address",
+    "PASSWORD_MIN": "The password must contain at least 10 characters"
   }
 }

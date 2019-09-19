@@ -16,6 +16,7 @@ import {ToastrService} from 'ngx-toastr';
 import {TranslateService} from '@ngx-translate/core';
 import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
+import {HttpClient} from '@angular/common/http';
 
 const PrimaryWhite = '#ffffff';
 
@@ -63,7 +64,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     private filterActions: FilterActions,
     private toastr: ToastrService,
     public translate: TranslateService,
-    private userService: UserService
+    private userService: UserService,
+    private http: HttpClient
   ) {
     this.loading = this.geManager.loadingScreen.asObservable();
 
@@ -79,16 +81,47 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     await this.updateList();
 
     if(error == 'true') {
-      //this.toastr.error('Si è verificato un errore durante l\'accesso ai dati. Per favore, riprova oppure contatta il supporto.','Errore durante l\'accesso ai dati!');
 
-      this.toastr.error(this.geManager.getStringToastr(false, true, "PREFERENCES", 'NO_ACCESSO'),
-        this.geManager.getStringToastr(true, false, 'PREFERENCES', 'NO_ACCESSO'));
+      this.userService.get().subscribe(data => {
+        this.user = data;
+
+        this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.geManager.langObj.next(file);
+
+            this.toastr.error(this.geManager.getStringToastr(false, true, "PREFERENCES", 'NO_ACCESSO'),
+              this.geManager.getStringToastr(true, false, 'PREFERENCES', 'NO_ACCESSO'));
+          }, error => {
+            console.error(error);
+          });
+
+      }, err => {
+        console.error(err);
+      });
+
       this.router.navigate([], { replaceUrl: true});
     }
     if(error != null && error == 'false') {
-      //this.toastr.success('La configurazione del servizio scelto è andata a buon fine.','Servizio configurato correttamente!');
-      this.toastr.success(this.geManager.getStringToastr(false, true, "PREFERENCES", 'NO_ACCESSO'),
-        this.geManager.getStringToastr(true, false, 'PREFERENCES', 'NO_ACCESSO'));
+
+      this.userService.get().subscribe(data => {
+        this.user = data;
+
+        this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.geManager.langObj.next(file);
+
+            this.toastr.success(this.geManager.getStringToastr(false, true, "PREFERENCES", 'OK_ACCESSO'),
+              this.geManager.getStringToastr(true, false, 'PREFERENCES', 'OK_ACCESSO'));
+          }, error => {
+            console.error(error);
+          });
+
+      }, err => {
+        console.error(err);
+      });
+
+
+
 
       this.router.navigate([], { replaceUrl: true});
     }
@@ -134,24 +167,12 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
       if(serviceType === D_TYPE.FB && Object.keys(this.services$).includes(D_TYPE.IG+  '')) {
         delete this.services$[D_TYPE.IG];
-        /*
-        this.toastr.info(
-          'Da adesso non potrai più accedere alle dashboard collegate a ' + DS_TYPE[D_TYPE.IG],
-          'Sorgente ' + DS_TYPE[D_TYPE.IG] + ' eliminata'
-        );
-         */
 
         this.toastr.info( this.geManager.getStringToastr(false, true, "PREFERENCES" , 'STOP_ACCESSO') + DS_TYPE[D_TYPE.IG],
           DS_TYPE[D_TYPE.IG] + this.geManager.getStringToastr(true, false, 'PREFERENCES', 'STOP_ACCESSO'));
       }
 
       if(Object.keys(this.services$).length === 0) this.somethingGranted = false;
-      /*
-      this.toastr.info(
-        'Da adesso non potrai più accedere alle dashboard collegate a ' + DS_TYPE[serviceType],
-        'Sorgente ' + DS_TYPE[serviceType] + ' eliminata'
-      );
-      */
 
       this.toastr.info(this.geManager.getStringToastr(false, true, "PREFERENCES", 'STOP_ACCESSO')  + DS_TYPE[serviceType],
          DS_TYPE[serviceType] + this.geManager.getStringToastr(true, false, 'PREFERENCES', 'STOP_ACCESSO'));
@@ -189,22 +210,24 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
     bread.push(new Breadcrumb('Home', '/'));
 
-    this.userService.get().subscribe(data => {
-      switch (data.lang) {
-        case 'it':
-          bread.push(new Breadcrumb('Preferenze', '/preferences/'));
-          bread.push(new Breadcrumb('Sorgenti dati', '/preferences/api-keys/'));
-          break;
-        case 'en':
-          bread.push(new Breadcrumb('Preferences', '/preferences/'));
-          bread.push(new Breadcrumb('Data sources', '/preferences/api-keys/'));
-          break;
-        default:
-          bread.push(new Breadcrumb('Preferenze', '/preferences/'));
-          bread.push(new Breadcrumb('Sorgenti dati', '/preferences/api-keys/'));
-          break;
-      }
-    });
+    if ((this.geManager.getStringBreadcrumb('PREFERENZE') == null) &&
+      this.geManager.getStringBreadcrumb('SORGENTE_DATI') == null) {
+
+      this.userService.get().subscribe(value => {
+        this.user = value;
+
+        this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.geManager.langBread.next(file);
+            bread.push(new Breadcrumb(this.geManager.getStringBreadcrumb('PREFERENZE'), '/preferences/'));
+            bread.push(new Breadcrumb(this.geManager.getStringBreadcrumb('SORGENTE_DATI'), '/preferences/api-keys'));
+          })
+      })
+
+    } else {
+      bread.push(new Breadcrumb(this.geManager.getStringBreadcrumb('PREFERENZE'), '/preferences/'));
+      bread.push(new Breadcrumb(this.geManager.getStringBreadcrumb('SORGENTE_DATI'), '/preferences/api-keys'));
+    }
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -219,6 +242,22 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   check() {
     this.checkbox = !this.checkbox;
+  }
+
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
+        break;
+      case "en" :
+        this.value = "English";
+        break;
+      default:
+        this.value = "Italiano";
+    }
+
+    return this.value;
   }
 
 }

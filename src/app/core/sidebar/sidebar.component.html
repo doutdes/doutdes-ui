@@ -41,9 +41,9 @@
     </a>
     <!-- Submenu content -->
     <div id="submenu2" class="collapse sidebar-submenu">
-      <!--<a [routerLink]="['/preferences/profile']" class="list-group-item list-group-item-action">-->
-      <!--<span class="menu-collapsed">Profilo</span>-->
-      <!--</a>-->
+      <a [routerLink]="['/preferences/profile']" class="list-group-item list-group-item-action">
+      <span class="menu-collapsed">{{ 'SIDEBAR.PROFILO' | translate }}</span>
+      </a>
       <a [routerLink]="[drag ? '#' : '/preferences/api-keys']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">{{'SIDEBAR.CONFIGURA_SORGENTI_DATI' | translate }}</span>
       </a>
@@ -51,10 +51,6 @@
       <a [routerLink]="[drag ? '#' : '/preferences/language']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">{{'SIDEBAR.CONFIGURA_LINGUA' | translate }}</span>
       </a>
-
-      <!--<a *ngIf="userType === 0" [routerLink]="['/authentication/register']" class="list-group-item list-group-item-action">-->
-      <!--<span class="menu-collapsed">Crea account</span>-->
-      <!--</a>-->
     </div>
 
     <a *ngIf="userType === 0" href="#submenu4" data-toggle="collapse" aria-expanded="false"

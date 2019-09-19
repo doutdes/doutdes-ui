@@ -56,22 +56,25 @@ export class LanguageComponent implements OnInit {
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    this.userService.get().subscribe(data => {
-      switch (data.lang) {
-        case 'it':
-          bread.push(new Breadcrumb('Preferenze', '/preferences/'));
-          bread.push(new Breadcrumb('Impostazione lingua', '/preferences/language/'));
-          break;
-        case 'en':
-          bread.push(new Breadcrumb('Preferences', '/preferences/'));
-          bread.push(new Breadcrumb('Language setting', '/preferences/language/'));
-          break;
-        default:
-          bread.push(new Breadcrumb('Preferenze', '/preferences/'));
-          bread.push(new Breadcrumb('Impostazione lingua', '/preferences/language/'));
-          break;
-      }
-    });
+
+    if ((this.GEService.getStringBreadcrumb('PREFERENZE') == null) &&
+      this.GEService.getStringBreadcrumb('IMPO_LINGUA') == null) {
+
+      this.userService.get().subscribe(value => {
+        this.user = value;
+
+        this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang(this.user.lang) + ".json")
+          .subscribe(file => {
+            this.GEService.langBread.next(file);
+            bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('PREFERENZE'), '/preferences/'));
+            bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('IMPO_LINGUA'), '/preferences/api-keys'));
+          })
+      })
+
+    } else {
+      bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('PREFERENZE'), '/preferences/'));
+      bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('IMPO_LINGUA'), '/preferences/api-keys'));
+    }
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -109,14 +112,11 @@ export class LanguageComponent implements OnInit {
       .subscribe (
           data => {
             if (data['status']) {
-              //this.toastr.error('Si è verificato un errore durante l\'aggiornamento della lingua della piattaforma', 'Errore di aggiornamento');
 
               this.toastr.error(this.GEService.getStringToastr(false, true, "PREFERENCES", 'NO_AGG'),
                 this.GEService.getStringToastr(true, false, 'PREFERENCES', 'NO_AGG'));
             } else {
               this.router.navigate(['/'], { replaceUrl: true, });
-
-              //this.toastr.success('La lingua della piattaforma è stata aggiornata come da te richiesto', 'Lingua aggiornata con successo!');
 
               this.checkToastrUpdateSuccess(this.lang);
             }
@@ -134,6 +134,7 @@ export class LanguageComponent implements OnInit {
   }
 
   controlLanguage () {
+
       switch (this.lang) {
         case "Italiano" :
           this.lang = "it";
@@ -148,7 +149,7 @@ export class LanguageComponent implements OnInit {
 
   checkToastrUpdateSuccess(lang) {
 
-    this.http.get("./assets/langToastr/" + this.conversionSetDefaultLang(lang) + ".json")
+    this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang(lang) + ".json")
       .subscribe(file => {
         this.toastr.success(this.getStringToastrUpdateSuccess(false, true, "PREFERENCES", 'OK_AGG', file),
           this.getStringToastrUpdateSuccess(true, false, 'PREFERENCES', 'OK_AGG', file));

@@ -30,6 +30,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import * as _ from 'lodash';
 import {DragulaService} from 'ng2-dragula';
 import {TranslateService} from '@ngx-translate/core';
+import {HttpClient} from '@angular/common/http';
 
 const PrimaryWhite = '#ffffff';
 
@@ -120,15 +121,27 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private userService: UserService,
     private dragulaService: DragulaService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private http: HttpClient
   ) {
     this.dragulaService.createGroup("REVERT", {
       revertOnSpill: false,
     });
 
     this.userService.get().subscribe(value => {
-      this.dateChoice = this.dateChoiceCheck(value.lang);
-    })
+      this.user = value;
+
+      if (this.GEService.getStringFilterDate('FILTER_DATE','LAST_30') == null){
+        this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.GEService.langFilterDate.next(file);
+            this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
+          })
+
+      } else {
+        this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
+      }
+    });
   }
 
   async ngOnInit() {
@@ -539,19 +552,21 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
 
-    this.userService.get().subscribe(data => {
-      switch (data.lang) {
-        case 'it':
-          bread.push(new Breadcrumb('Sito web', '/dashboard/google/'));
-          break;
-        case 'en':
-          bread.push(new Breadcrumb('Website', '/dashboard/google/'));
-          break;
-        default:
-          bread.push(new Breadcrumb('Sito web', '/dashboard/google/'));
-          break;
-      }
-    });
+    if (this.GEService.getStringBreadcrumb('SITO_WEB') == null) {
+
+      this.userService.get().subscribe(value => {
+        this.user = value;
+
+        this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.GEService.langBread.next(file);
+            bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('SITO_WEB'), '/dashboard/google'));
+          })
+      })
+
+    } else {
+      bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('SITO_WEB'), '/dashboard/google'));
+    }
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -636,10 +651,12 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       for (const i in miniDatas) {
         if (Object.entries(miniDatas[i]).length !== 0) {
           results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
+          this.getNameMinicard(i);
           this.miniCards[i].value = results['value'];
           this.miniCards[i].progress = results['perc'] + '%';
           this.miniCards[i].step = results['step'];
         } else {
+          this.getNameMinicard(i);
           this.miniCards[i].value = '-';
           this.miniCards[i].progress = '0%';
           this.miniCards[i].step = 0;
@@ -705,8 +722,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.closeModal();
       await this.ngOnInit();
     } else {
-      //this.toastr.error('Qualcosa è andato storto scegliendo i dati da visualizzare. Per favore, riprova.', 'Errore durante l\'aggiornamento');
-
       this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_AGG'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_AGG'));
     }
@@ -720,15 +735,12 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.closeModal();
     }, error => {
       if (error.status === 500) {
-        //this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
-
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_CLEAR'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_CLEAR'));
         this.closeModal();
         console.error(error);
       } else {
-        //this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
-        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+      //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_RIMOZIONE'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
@@ -840,8 +852,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   dragAndDrop () {
     if (this.chartArray$.length == 0) {
-      //this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
-
       this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_ORDINAMENTO'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ORDINAMENTO'));
     } else {
@@ -850,8 +860,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     }
 
     if (this.drag == true) {
-      //this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
-
       this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'MOD_ORD'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MOD_ORD'));
     }
@@ -889,12 +897,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.closeModal();
         this.drag = false;
         this.GEService.dragAndDrop.next(this.drag);
-        //this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
 
         this.toastr.success(this.GEService.getStringToastr(false, true, "DASHBOARD", 'SUC_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
       }, error => {
-        //this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
@@ -909,18 +915,55 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.GEService.dragAndDrop.next(this.drag);
   }
 
-  dateChoiceCheck(lang) {
-    switch (lang) {
-      case 'it':
-        this.dateChoice = 'Ultimi 30 giorni';
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
         break;
-      case 'en':
-        this.dateChoice = 'Last 30 days';
+      case "en" :
+        this.value = "English";
         break;
       default:
-        this.dateChoice = 'Ultimi 30 giorni';
+        this.value = "Italiano";
     }
-    return this.dateChoice;
+
+    return this.value;
+  }
+
+  getNameMinicard (id_minicard) {
+
+    this.userService.get().subscribe(data => {
+      this.user = data;
+
+      this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+        .subscribe(file => {
+          this.GEService.langFilterDate.next(file);
+
+          switch (id_minicard) {
+            case '0' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("CUSTOM", "UT_TOT");
+              break;
+            case '1' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("CUSTOM", "FAN");
+              break;
+            case '2' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("CUSTOM", "FOLLOWER");
+              break;
+            case '3' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("CUSTOM", "ISCR");
+              break;
+          }
+
+        }, err => {
+          console.error(err);
+        })
+
+    }, err => {
+      console.error(err);
+    });
+
+
   }
 
 }

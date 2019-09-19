@@ -17,6 +17,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {UserService} from '../../shared/_services/user.service';
 import {User} from '../../shared/_models/User';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
+import {HttpClient} from '@angular/common/http';
 
 const colors: any = {
   red: {
@@ -72,12 +73,23 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
     private formBuilder: FormBuilder,
     public translate: TranslateService,
     private userService: UserService,
-    private GEservice: GlobalEventsManagerService
+    private GEservice: GlobalEventsManagerService,
+    private http: HttpClient
     ) {
     this.userService.get().subscribe(value => {
-      this.tmp_title = this.checkTitle(value.lang);
-    });
+      this.user = value;
 
+      if (this.GEservice.getStringFilterDate('CALENDARIO','NEW_EVENT') == null){
+        this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.GEservice.langFilterDate.next(file);
+            this.tmp_title = this.GEservice.getStringFilterDate('CALENDARIO','NEW_EVENT');
+          })
+
+      } else {
+        this.tmp_title = this.GEservice.getStringFilterDate('CALENDARIO','NEW_EVENT');
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -104,19 +116,22 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
 
     bread.push(new Breadcrumb('Home', '/'));
 
-    this.userService.get().subscribe(data => {
-      switch (data.lang) {
-        case 'it':
-          bread.push(new Breadcrumb('Calendario', '/calendar/'));
-          break;
-        case 'en':
-          bread.push(new Breadcrumb('Calendar', '/calendar/'));
-          break;
-        default:
-          bread.push(new Breadcrumb('Calendario', '/calendar/'));
-          break;
-      }
-    });
+    if (this.GEservice.getStringBreadcrumb('CALENDARIO') == null) {
+
+      this.userService.get().subscribe(value => {
+        this.user = value;
+
+        this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.GEservice.langBread.next(file);
+            bread.push(new Breadcrumb(this.GEservice.getStringBreadcrumb('CALENDARIO'), '/calendar/'));
+          })
+      })
+
+    } else {
+      bread.push(new Breadcrumb(this.GEservice.getStringBreadcrumb('CALENDARIO'), '/calendar/'));
+    }
+
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -248,19 +263,20 @@ export class FeatureCalendarComponent implements OnInit, OnDestroy{
     return data.toLocaleDateString('it-IT') + ' - ' + data.toLocaleTimeString('it-IT');
   }
 
-  checkTitle(lang) {
-    switch (lang) {
-      case 'it':
-        this.tmp_title = 'Nuovo evento';
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
         break;
-      case 'en':
-        this.tmp_title = 'New event';
+      case "en" :
+        this.value = "English";
         break;
       default:
-        this.tmp_title = 'Nuovo evento';
+        this.value = "Italiano";
     }
 
-    return this.tmp_title;
+    return this.value;
   }
 
 }

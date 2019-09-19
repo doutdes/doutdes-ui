@@ -27,6 +27,7 @@ import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as _ from 'lodash';
 import {TranslateService} from '@ngx-translate/core';
+import {HttpClient} from '@angular/common/http';
 
 const PrimaryWhite = '#ffffff';
 
@@ -109,15 +110,27 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     private modalService: BsModalService,
     private localeService: BsLocaleService,
     private dragulaService: DragulaService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private http: HttpClient
   ) {
     this.dragulaService.createGroup("REVERT", {
       revertOnSpill: false,
     });
 
     this.userService.get().subscribe(value => {
-      this.dateChoice = this.dateChoiceCheck(value.lang);
-    })
+      this.user = value;
+
+      if (this.GEService.getStringFilterDate('FILTER_DATE','LAST_30') == null){
+        this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.GEService.langFilterDate.next(file);
+            this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
+          })
+
+      } else {
+        this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
+      }
+    });
     //this.dateChoice = this.dateChoiceCheck();
   }
 
@@ -141,6 +154,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
         empty = empty || !results;
 
+        this.getNameMinicard(i);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
@@ -202,7 +216,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.datePickerEnabled = true;
 
       if (this.chartArray$.length === 0) {
-        //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
 
         this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
@@ -257,13 +270,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
           this.filterActions.initData(currentData);
           this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
           this.GEService.loadingScreen.next(false);
-          //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
 
           this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       }, err => {
-        //this.toastr.error('Il caricamento della dashboard non è andato a buon fine. Per favore, riprova oppure contatta il supporto tecnico.', 'Qualcosa è andato storto!');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_CARICAMENTO'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_CARICAMENTO'));
@@ -290,8 +301,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
           chartToPush.error = false;
-
-          //this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
 
           this.toastr.success( dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'ADD'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
@@ -409,7 +418,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       if(isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        //this.toastr.error('I permessi di accesso ai tuoi dati Instagram sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_PERMESSI'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_PERMESSI'));
@@ -477,15 +485,12 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.closeModal();
     }, error => {
       if (error.status === 500) {
-        //this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
-
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_CLEAR'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_CLEAR'));
         this.closeModal();
         console.error(error);
       } else {
-        //this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_RIMOZIONE'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
@@ -580,7 +585,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   dragAndDrop () {
     if (this.chartArray$.length == 0) {
-      //this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
 
       this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_ORDINAMENTO'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ORDINAMENTO'));
@@ -590,7 +594,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     }
 
     if (this.drag == true) {
-      //this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
 
       this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'MOD_ORD'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MOD_ORD'));
@@ -629,12 +632,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         this.closeModal();
         this.drag = false;
         this.GEService.dragAndDrop.next(this.drag);
-        //this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
 
         this.toastr.success(this.GEService.getStringToastr(false, true, "DASHBOARD", 'SUC_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
       }, error => {
-        //this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
@@ -649,18 +650,54 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.GEService.dragAndDrop.next(this.drag);
   }
 
-  dateChoiceCheck(lang) {
-    switch (lang) {
-      case 'it':
-        this.dateChoice = 'Ultimi 30 giorni';
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
         break;
-      case 'en':
-        this.dateChoice = 'Last 30 days';
+      case "en" :
+        this.value = "English";
         break;
       default:
-        this.dateChoice = 'Ultimi 30 giorni';
+        this.value = "Italiano";
     }
-    return this.dateChoice;
+
+    return this.value;
   }
 
+  getNameMinicard (id_minicard) {
+
+    this.userService.get().subscribe(data => {
+      this.user = data;
+
+      this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+        .subscribe(file => {
+          this.GEService.langFilterDate.next(file);
+
+          switch (id_minicard) {
+            case '0' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("INSTAGRAM", "FOLL");
+              break;
+            case '1' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("INSTAGRAM", "POST");
+              break;
+            case '2' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("INSTAGRAM", "VIEW_PRO");
+              break;
+            case '3' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("INSTAGRAM", "VIS_POST");
+              break;
+          }
+
+        }, err => {
+          console.error(err);
+        })
+
+    }, err => {
+      console.error(err);
+    });
+
+
+  }
 }

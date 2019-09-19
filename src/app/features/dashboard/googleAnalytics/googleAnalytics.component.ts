@@ -28,6 +28,7 @@ import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {ToastrService} from 'ngx-toastr';
 import * as _ from 'lodash';
 import {TranslateService} from '@ngx-translate/core';
+import {HttpClient} from '@angular/common/http';
 
 
 @Component({
@@ -106,15 +107,28 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private apiKeyService: ApiKeysService,
     private formBuilder: FormBuilder,
     private dragulaService: DragulaService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private http: HttpClient
   ) {
     this.dragulaService.createGroup("REVERT", {
       revertOnSpill: false,
     });
 
     this.userService.get().subscribe(value => {
-      this.dateChoice = this.dateChoiceCheck(value.lang);
-    })
+      this.user = value;
+
+      if (this.GEService.getStringFilterDate('FILTER_DATE','LAST_30') == null){
+        this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.GEService.langFilterDate.next(file);
+            this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
+          })
+
+      } else {
+        this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
+      }
+    });
+
   }
 
   async ngOnInit() {
@@ -329,6 +343,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
         empty = empty || !results;
 
+        this.getNameMinicard(i);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
@@ -354,15 +369,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           chartToPush.chartData = chartData;
           chartToPush.error = false;
 
-          //this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
-
           this.toastr.success(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ADD'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
         } else {
           chartToPush.error = true;
           console.error('Errore recuperando dati per ' + dashChart);
-
-          //this.toastr.error('I dati disponibili per ' + dashChart.title +' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
 
           this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_DATI'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI'));
@@ -375,7 +386,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       }, error1 => {
         console.error('Error querying the Chart');
         console.error(error1);
-        //this.toastr.error('C\'è stato un errore recuperando i dati per il grafico ' + dashChart.title + '. Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
 
         this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_DATI_1'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI_1'));
@@ -463,19 +473,23 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     bread.push(new Breadcrumb('Home', '/'));
     bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
 
-    this.userService.get().subscribe(data => {
-      switch (data.lang) {
-        case 'it':
-          bread.push(new Breadcrumb('Sito web', '/dashboard/google/'));
-          break;
-        case 'en':
-          bread.push(new Breadcrumb('Website', '/dashboard/google/'));
-          break;
-        default:
-          bread.push(new Breadcrumb('Sito web', '/dashboard/google/'));
-          break;
-      }
-    });
+    if (this.GEService.getStringBreadcrumb('SITO_WEB') == null) {
+
+      this.userService.get().subscribe(value => {
+        this.user = value;
+
+        this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.GEService.langBread.next(file);
+            bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('SITO_WEB'), '/dashboard/google'));
+          })
+      })
+
+    } else {
+      bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('SITO_WEB'), '/dashboard/google'));
+    }
+
+    //console.log(this.GEService.getStringBreadcrumb('SITO_WEB'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -500,12 +514,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       this.closeModal();
 
       if (error.status === 500) {
-        //this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_CLEAR'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_CLEAR'));
       } else {
-        //this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la pulizia della dashboard.');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_RIMOZIONE'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
@@ -628,7 +640,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       if(isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        //this.toastr.error('I permessi di accesso ai tuoi dati del sito web sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_PERMESSI'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_PERMESSI'));
@@ -667,7 +678,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   dragAndDrop () {
     if (this.chartArray$.length == 0) {
-      //this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
 
       this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_ORDINAMENTO'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ORDINAMENTO'));
@@ -677,7 +687,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     }
 
     if (this.drag == true) {
-      //this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
 
       this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'MOD_ORD'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MOD_ORD'));
@@ -716,12 +725,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.closeModal();
         this.drag = false;
         this.GEService.dragAndDrop.next(this.drag);
-        //this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'SUC_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
       }, error => {
-        //this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
@@ -736,17 +743,55 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.GEService.dragAndDrop.next(this.drag);
   }
 
-  dateChoiceCheck(lang) {
-    switch (lang) {
-      case 'it':
-        this.dateChoice = 'Ultimi 30 giorni';
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
         break;
-      case 'en':
-        this.dateChoice = 'Last 30 days';
+      case "en" :
+        this.value = "English";
         break;
       default:
-        this.dateChoice = 'Ultimi 30 giorni';
+        this.value = "Italiano";
     }
-    return this.dateChoice;
+
+    return this.value;
   }
+
+  getNameMinicard (id_minicard) {
+
+    this.userService.get().subscribe(data => {
+      this.user = data;
+
+      this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+        .subscribe(file => {
+          this.GEService.langFilterDate.next(file);
+
+          switch (id_minicard) {
+            case '0' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("GOOGLE", "UT_TOT");
+              break;
+            case '1' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("GOOGLE", "VISITE_TOT");
+              break;
+            case '2' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("GOOGLE", "FREQ_RIMB");
+              break;
+            case '3' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("GOOGLE", "DU_SES");
+              break;
+          }
+
+        }, err => {
+          console.error(err);
+        })
+
+    }, err => {
+      console.error(err);
+    });
+
+
+  }
+
 }

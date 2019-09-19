@@ -14,6 +14,8 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {LoginActions} from '../../authentication/login/login.actions';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
 import {TranslateService} from '@ngx-translate/core';
+import {HttpClient} from '@angular/common/http';
+import {validate} from 'codelyzer/walkerFactory/walkerFn';
 
 @Component({
   selector: 'app-feature-preferences-profile',
@@ -46,7 +48,8 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
     private loginActions: LoginActions,
     private breadcrumbActions: BreadcrumbActions,
     private eventManager: GlobalEventsManagerService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private http: HttpClient
   ) {
     this.translate.addLangs(['Italiano', 'English']);
   }
@@ -72,12 +75,14 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
         password: [null, Validators.compose([Validators.required])],
         r_password: [null, Validators.compose([Validators.required])],
         company_name: [this.user.company_name],
-        vat_number: [this.user.vat_number, Validators.compose([Validators.maxLength(11)])]
+        vat_number: [this.user.vat_number, Validators.compose([Validators.maxLength(11)])],
+        lang: [this.user.lang]
       }, {
         validator: Validators.compose([PasswordValidation.MatchPassword, FiscalCodeValidation.CheckFiscalCode])
       });
       this.selectChangeHandler(this.user.user_type);
     });
+
   }
 
   ngOnDestroy(): void {
@@ -132,7 +137,11 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
   }
 
   updateUser() {
+    this.controlLanguage();
+    this.updateRegistration.value.lang = this.lang;
     const user = <User> this.updateRegistration.value;
+
+    console.log(this.updateRegistration.value.lang);
 
     this.userService.update(user)
       .subscribe(
@@ -174,14 +183,65 @@ export class FeaturePreferencesProfileComponent implements OnInit, OnDestroy {
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Preferenze', '/preferences/'));
-    bread.push(new Breadcrumb('Profilo', '/preferences/profile/'));
+
+    if ((this.eventManager.getStringBreadcrumb('PREFERENZE') == null) &&
+        this.eventManager.getStringBreadcrumb('PROFILO') == null) {
+
+      this.userService.get().subscribe(value => {
+        this.user = value;
+
+        this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.eventManager.langBread.next(file);
+            bread.push(new Breadcrumb(this.eventManager.getStringBreadcrumb('PREFERENZE'), '/preferences/'));
+            bread.push(new Breadcrumb(this.eventManager.getStringBreadcrumb('PROFILO'), '/preferences/profile'));
+          })
+      })
+
+    } else {
+      bread.push(new Breadcrumb(this.eventManager.getStringBreadcrumb('PREFERENZE'), '/preferences/'));
+      bread.push(new Breadcrumb(this.eventManager.getStringBreadcrumb('PROFILO'), '/preferences/profile'));
+    }
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
 
   removeBreadcrumb() {
     this.breadcrumbActions.deleteBreadcrumb();
+  }
+
+  checkSelect (value) {
+    this.lang = value.target.value;
+  }
+
+  controlLanguage () {
+
+    switch (this.lang) {
+      case "Italiano" :
+        this.lang = "it";
+        break;
+      case "English" :
+        this.lang = "en";
+        break;
+      default:
+        this.lang = "it";
+    }
+  }
+
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
+        break;
+      case "en" :
+        this.value = "English";
+        break;
+      default:
+        this.value = "Italiano";
+    }
+
+    return this.value;
   }
 
 }

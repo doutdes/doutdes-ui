@@ -53,7 +53,8 @@
   	"ADMIN": "Super admin",
   	"CREA_ACCOUNT": "Crea account",
   	"STRUMENTI": "Strumenti",
-  	"GUIDE": "Guide d'uso"
+  	"GUIDE": "Guide d'uso",
+    "PROFILO": "Aggiorna profilo"
   },
   "DASHBOARD": {
   	"CUSTOM": "La mia dashboard",
@@ -147,9 +148,12 @@
     "CITTA": "Città",
     "CITTA_O": "Città obbligatoria",
     "CITTA_ALERT": "La Città non deve superare i 50 caratteri",
+    "CITTA_RIC": "Città richiesta",
     "PROVINCIA": "Provincia",
     "PROVINCIA_O": "Provincia obbligatoria",
     "PROVINCIA_ALERT": "La provincia non deve superare i 2 caratteri",
+    "SIGLA_PRO": "La sigla della provincia obbligatoria",
+    "SIGLA_PRO_LUNG": "La sigla della provincia deve essere di massimo 2 caratteri",
     "CAP": "Cap",
     "CAP_O": "Cap obbligatorio",
     "CAP_ALERT": "Il cap non deve superare i 5 caratteri",
@@ -161,7 +165,13 @@
     "UPDATE_CONF": "Sei sicuro?",
     "UPDATE_DOM": "Vuoi veramente aggiornare le tue informazioni? Sarai disconnesso dalla piattaforma.",
     "NO": "No",
-    "SI": "Si"
+    "SI": "Si",
+    "LANGUAGE": "Lingua",
+    "DATI_IMP": "Dati impresa:",
+    "DATI_ACC": "Dati account:",
+    "SAVE_UP": "Salva dati aggiornati",
+    "RAG_SOC": "Ragione sociale obbligatoria",
+    "COGNOME_TIT": "Cognome titolare obbligatorio"
   },
   "TUTORIAL_FB": {
     "TITLE": "Tutorial: importazione dati Facebook",
@@ -224,7 +234,7 @@
     "PERMESSI": "Permessi ricevuti",
     "ELIMINA": "Elimina",
     "NO_SORG": "Nessuna sorgente dati esterna presente. Per aggiungerne una nuova, accedi col rispettivo account e concedi i permessi.",
-    "ELEMINA_PERM": " Elimina permessi di ",
+    "ELIMINA_PERM": " Elimina permessi di ",
     "ELIMINA_DOM": "Sei veramente sicuro di voler rimuovere i permessi selezionati?",
     "OPERAZIONE_PER": "Operazione pericolosa",
     "OPERAZIONE_PER_DESCRIZIONE": ": l'eliminazione di una sorgente dati comporta la definitiva rimozione da DoUtDes di tutti i dati associati al servizio. Alcuni dati, non essendo presenti sulla sorgente esterna, ",
@@ -283,7 +293,7 @@
     "INFO_2": "è necessario accedere",
     "INFO_3": " con i seguenti servizi esterni.",
     "IMPORTARE_GOOGLE": "Per importare i dati del tuo sito web:",
-    "ACCESSO_GOOOLE": "Accedi con Google",
+    "ACCESSO_GOOGLE": "Accedi con Google",
     "IMPORTARE_FB": "Per importare i dati della tua pagina Facebook:",
     "ACCESSO_FB": "Accedi con Facebook",
     "IMPORTARE_INSTA": "Per importare i dati della tua pagina Instagram:",
@@ -292,5 +302,24 @@
     "ACCESSO_YT": "Accedi con Youtube",
     "NO_SERVICE": "Hai già configurato tutti i servizi disponibili!",
     "GO_TO_SORGENTE": "Torna a sorgenti dati"
+  },
+  "REGISTER": {
+    "TIPO_ACCOUNT": "Tipo di account",
+    "IMPRESA": "Impresa",
+    "EDITOR": "Editor",
+    "ANALISTA": "Analista",
+    "IND_SOC_O": "Indirizzo sociale obbligatorio",
+    "CITTA_R": "Città richiesta",
+    "CITTA_LUNG": "Il nome della città deve essere di massimo 50 caratteri",
+    "USERNAME_O": "Username obbligatorio",
+    "USERNAME_LUNG": "L'username deve essere di massimo 40 caratteri",
+    "EMAIL_O": "L'email è obbligatorio",
+    "EMAIL_LUNG": "La password deve essere di massimo 40 caratteri",
+    "PASSWORD_O": "La password è obbligatoria",
+    "PASSWORD_LUNG": "La password deve essere di massimo 40 caratteri",
+    "PASS_NO_COIN": "Le password non coincidono",
+    "NEW_ACC": "Crea account",
+    "EMAIL_INSERT": "Inserisci una email valida",
+    "PASSWORD_MIN": "La password deve contenere almeno 10 caratteri"
   }
 }

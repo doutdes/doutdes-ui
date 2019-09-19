@@ -36,10 +36,23 @@ export class AppComponent implements OnInit {
             this.translate.setDefaultLang(this.conversionSetDefaultLang());
 
             //Per settare la lingua dei toastr
-            this.http.get("./assets/langToastr/" + this.conversionSetDefaultLang() + ".json")
+            this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
               .subscribe(file => {
                 this.GEservice.langObj.next(file)
               });
+
+            //Per settare la lingua delle breadcrumb
+            this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+              .subscribe(file => {
+                this.GEservice.langBread.next(file)
+              });
+
+            //Per settare la lingua delle stringhe varie
+            this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+              .subscribe(file => {
+                this.GEservice.langFilterDate.next(file)
+              });
+
 
           }, err => {
             console.error(err);
@@ -58,17 +71,35 @@ export class AppComponent implements OnInit {
 
     this.GEservice.dragAndDrop.subscribe(value => this.drag = value);
 
+    this.GEservice.isUserLoggedIn.subscribe(data => {
 
-    this.userService.get().subscribe(data => {
-      this.user = data;
+      if (data) {
+        this.userService.get().subscribe(data => {
+          this.user = data;
 
-      //Per settare la lingua dei toastr
-      this.http.get("./assets/langToastr/" + this.conversionSetDefaultLang() + ".json")
-        .subscribe(file => {
-          this.GEservice.langObj.next(file)
+          //Per settare la lingua dei toastr
+          this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+            .subscribe(file => {
+              this.GEservice.langObj.next(file)
+            });
+
+          //Per settare la lingua delle breadcrumb
+          this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+            .subscribe(file => {
+              this.GEservice.langBread.next(file)
+            });
+
+          //Per settare la lingua delle stringhe varie
+          this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+            .subscribe(file => {
+              this.GEservice.langFilterDate.next(file)
+            });
+
+        }, err => {
+          console.error(err);
         });
-    }, err => {
-      console.error(err);
+
+      }
     });
 
   }
