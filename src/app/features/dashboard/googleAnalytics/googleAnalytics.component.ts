@@ -27,6 +27,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {ToastrService} from 'ngx-toastr';
 import * as _ from 'lodash';
+import {ChartParams} from '../../../shared/_models/Chart';
 
 
 @Component({
@@ -69,7 +70,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   // Date variables
   firstDateRange: Date;
   lastDateRange: Date;
-  maxDate: Date = subDays(new Date(),this.FILTER_DAYS.yesterday);
+  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
   dateChoice: String = 'Ultimi 30 giorni';
@@ -103,7 +104,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     private localeService: BsLocaleService,
     private dragulaService: DragulaService
   ) {
-    this.dragulaService.createGroup("REVERT", {
+    this.dragulaService.createGroup('REVERT', {
       revertOnSpill: false,
     });
   }
@@ -112,7 +113,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     let existence, view_id, update;
     let key: ApiKey;
 
-    this.GEService.loadingScreen.subscribe(value => {this.loading = value});
+    this.GEService.loadingScreen.subscribe(value => {
+      this.loading = value;
+    });
 
     this.addBreadcrumb();
 
@@ -130,7 +133,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       if (!view_id) {
         await this.getViewList();
 
-        if(this.viewList.length === 0) {
+        if (this.viewList.length === 0) {
           this.dashErrors.noPages = true;
           return;
         }
@@ -139,7 +142,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
           update = await this.apiKeyService.updateKey(key).toPromise();
 
-          if(!update) {
+          if (!update) {
             return;
           }
         } else {
@@ -199,14 +202,14 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   async loadDashboard() {
 
-    let dash, charts, dataArray;
+    let dash, charts, dataArray, chartParams: ChartParams = {};
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData = {
+    const currentData: DashboardData = {
       data: chartsToShow,
       interval: dateInterval,
       type: D_TYPE.GA,
@@ -215,7 +218,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     this.GEService.loadingScreen.next(true);
 
-    this.dragulaService.find("REVERT");
+    this.dragulaService.find('REVERT');
 
     try {
       // Retrieving dashboard ID
@@ -228,7 +231,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
-      this.dashErrors.emptyMiniCards = await this.loadMiniCards();
+      // this.dashErrors.emptyMiniCards = await this.loadMiniCards();
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -237,14 +240,22 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.GEService.loadingScreen.next(false);
 
         if (this.chartArray$.length === 0) {
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
 
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id)));// Retrieves data for each chart
+          charts.forEach(chartEl => {
+            chartParams = {
+              metric: chartEl.metric,
+              dimensions: chartEl.dimensions,
+              filter: chartEl.filter,
+              sort: chartEl.sort
+            };
+            observables.push(this.CCService.retrieveChartData(chartEl.type, chartParams));
+          }); // Retrieves data for each chart
 
           dataArray = await forkJoin(observables).toPromise();
 
@@ -254,7 +265,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
               chart.chartData = dataArray[i];
               let date = parseDate(chart['chartData'][0][0]);
 
-              if(date < this.minDate)
+              if (date < this.minDate)
                 this.minDate = date;
 
               chart.error = false;
@@ -281,7 +292,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         } else {
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
       }
 
@@ -323,13 +334,18 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
-
+    const chartParams: ChartParams = {
+      metric: dashChart.metric,
+      dimensions: dashChart.dimensions,
+      sort: dashChart.sort,
+      filter: dashChart.filter
+    };
     const dateInterval: IntervalDate = {
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
     };
 
-    this.CCService.retrieveChartData(dashChart.chart_id, dateInterval)
+    this.CCService.retrieveChartData(dashChart.type, chartParams)
       .subscribe(chartData => {
 
         this.GEService.loadingScreen.next(true);
@@ -343,7 +359,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           chartToPush.error = true;
           console.error('Errore recuperando dati per ' + dashChart);
 
-          this.toastr.error('I dati disponibili per ' + dashChart.title +' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
+          this.toastr.error('I dati disponibili per ' + dashChart.title + ' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
         }
 
         this.filterActions.addChart(chartToPush);
@@ -359,7 +375,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   onValueChange(value): void {
 
-    if (value){// && this.datePickerEnabled) {
+    if (value) {// && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
         first: new Date(value[0].setHours(0, 0, 0, 0)), // TO REMEMBER: always set ms to 0!!!!
@@ -414,7 +430,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
 
-    this.dragulaService.destroy("REVERT");
+    this.dragulaService.destroy('REVERT');
   }
 
   clearDashboard(): void {
@@ -502,7 +518,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     return this.chartArray$.length % 2 === 0;
   }
 
-  async selectViewSubmit(){
+  async selectViewSubmit() {
     let update;
     this.submitted = true;
 
@@ -520,7 +536,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     update = await this.apiKeyService.updateKey(key).toPromise();
 
-    if(update) {
+    if (update) {
       this.closeModal();
       await this.ngOnInit();
     } else {
@@ -530,7 +546,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
     this.drag = false;
-    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered', ignoreBackdropClick: ignoreBackdrop, keyboard: !ignoreBackdrop});
+    this.modalRef = this.modalService.show(template, {
+      class: 'modal-md modal-dialog-centered',
+      ignoreBackdropClick: ignoreBackdrop,
+      keyboard: !ignoreBackdrop
+    });
   }
 
   closeModal(): void {
@@ -545,10 +565,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.GA).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.GA).toPromise();
 
-      if(isPermissionGranted.tokenValid) {
+      if (isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        this.toastr.error('I permessi di accesso ai tuoi dati del sito web sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+        this.toastr.error('I permessi di accesso ai tuoi dati del sito web sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!');
       }
 
     } catch (e) {
@@ -558,7 +578,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     return result;
   }
 
-  async getViewID()  {
+  async getViewID() {
     let viewID;
 
     try {
@@ -582,7 +602,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 
-  dragAndDrop () {
+  dragAndDrop() {
     if (this.chartArray$.length == 0) {
       this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
     } else {
@@ -604,7 +624,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       this.chartArray$ = this.tmpArray;
 
       for (i = 0; i < this.chartArray$.length; i++) {
-        this.chartArray$[i].position = i+1;
+        this.chartArray$[i].position = i + 1;
       }
 
     } else {
@@ -616,8 +636,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   updateChartPosition(toUpdate): void {
 
-    toUpdate = _.map(toUpdate, function(el) {
-      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position}
+    toUpdate = _.map(toUpdate, function (el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position};
     });
 
     this.DService.updateChartPosition(toUpdate)
@@ -636,7 +656,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
   }
 
-  checkDrag () {
+  checkDrag() {
     this.drag = false;
     this.GEService.dragAndDrop.next(this.drag);
   }

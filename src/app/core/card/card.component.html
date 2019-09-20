@@ -155,12 +155,12 @@
   </div>
 
   <div class="modal-body">
-    <!--<form [formGroup]="updateChartForm" (ngSubmit)="onSubmit()">-->
+    <form [formGroup]="addMetricForm" (ngSubmit)="addMetricToChart()">
       <div class="form-group row">
         <label class="col-sm-5 col-form-label">Metrica aggiuntiva:</label>
         <div class="col-sm-7">
-          <select class="form-control">
-            <option *ngFor="let metric of metrics" [value]="metric.title">{{metric.title}}</option>
+          <select class="form-control" formControlName="metricControl">
+            <option *ngFor="let metric of metrics" [ngValue]="metric">{{metric.title}}</option>
           </select>
         </div>
       </div>
@@ -168,6 +168,6 @@
         <button type="submit" class="btn btn-success">Aggiungi</button>
         <button type="button" class="btn btn-danger" (click)="closeModal()">Annulla</button>
       </div>
-    <!--</form>-->
+    </form>
   </div>
 </ng-template>

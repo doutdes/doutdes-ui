@@ -3,7 +3,7 @@ import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {GoogleChartComponent} from 'ng2-google-charts';
 import {GA_CHART} from '../../shared/_models/GoogleData';
 import {D_TYPE} from '../../shared/_models/Dashboard';
@@ -49,7 +49,6 @@ export class CardComponent implements OnInit {
   avgTrend: number;
 
   percentual: Boolean;
-  metrics: Array<Chart>;
 
   background = '#000';
   color = '#fff';
@@ -60,8 +59,10 @@ export class CardComponent implements OnInit {
   submitted = false;
 
   D_TYPE = D_TYPE;
-
   drag: boolean;
+
+  metrics: Array<Chart>;
+  addMetricForm: FormGroup;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -79,34 +80,7 @@ export class CardComponent implements OnInit {
     this.aggregated = !!this.dashChart.aggregated;
 
     // Handling icon nicknames
-    switch (this.dashChart.type) {
-      case D_TYPE.FB: {
-        this.icon = 'fa-facebook-f';
-        this.color = '#407CA5';
-        this.background = '#e6f6f8';
-        break;
-      }
-      case D_TYPE.GA: {
-        this.icon = 'fab fa-google';
-        this.background = '#FBEEEB';
-        this.color = '#DB5D43';
-        break;
-      }
-      case D_TYPE.IG: {
-        this.icon = 'fa-instagram';
-        this.background = '#f7e6f1';
-        this.color = '#e7008a';
-        break;
-      }
-      case D_TYPE.YT: {
-        this.icon = 'fa-youtube';
-        this.background = '#c44e4e';
-        this.color = '#bf0000';
-      }
-      default: {
-        break;
-      }
-    }
+    this.setColorStyle();
 
     if (this.aggregated) {
       this.handleAggregated();
@@ -115,7 +89,35 @@ export class CardComponent implements OnInit {
     this.updateChartForm = this.formBuilder.group({
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });
+
   }
+
+  setColorStyle = (): void => {
+    switch (this.dashChart.type) {
+      case D_TYPE.FB:
+        this.icon = 'fa-facebook-f';
+        this.color = '#407CA5';
+        this.background = '#e6f6f8';
+        break;
+      case D_TYPE.GA:
+        this.icon = 'fab fa-google';
+        this.background = '#FBEEEB';
+        this.color = '#DB5D43';
+        break;
+      case D_TYPE.IG:
+        this.icon = 'fa-instagram';
+        this.background = '#f7e6f1';
+        this.color = '#e7008a';
+        break;
+      case D_TYPE.YT:
+        this.icon = 'fa-youtube';
+        this.background = '#c44e4e';
+        this.color = '#bf0000';
+        break;
+      default:
+        break;
+    }
+  };
 
   get form() {
     return this.updateChartForm.controls;
@@ -327,8 +329,12 @@ export class CardComponent implements OnInit {
           'Errore durante l\'aggiornamento del grafico.'
         );
         console.log('Error updating the Chart');
-        console.log(error); 
+        console.log(error);
       });
+  }
+
+  addMetricToChart() {
+    this.filterActions.addMetric(this.dashChart, this.addMetricForm.controls.metricControl.value);
   }
 
   getMetricsAvailable() {
@@ -337,6 +343,10 @@ export class CardComponent implements OnInit {
         this.metrics = charts
           .filter(chart => chart.ID !== this.dashChart.chart_id && chart.type === this.dashChart.type)
           .sort((a: Chart, b: Chart) => a.title.localeCompare(b.title));
+
+        this.addMetricForm = this.formBuilder.group({
+          metricControl: [this.metrics[0]]
+        });
 
         this.openModal(this.addMetric);
       }, err => {

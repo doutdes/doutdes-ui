@@ -77,8 +77,8 @@ export interface IgBusinessInfo {
   media_count: number;
 }
 
-export interface IgAnyData {
-  value: Array<any>;
+export interface IgData {
+  value: any;
   end_time: Date;
 }
 

@@ -9,7 +9,7 @@ import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
 import {DragulaService} from 'ng2-dragula';
 import {merge} from 'rxjs';
-import {mapTo, startWith} from 'rxjs/operators';
+import {mapTo, startWith, switchMap} from 'rxjs/operators';
 
 import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
@@ -33,6 +33,7 @@ import {takeUntil} from 'rxjs/operators';
 import {container} from '@angular/core/src/render3/instructions';
 
 import * as _ from 'lodash';
+import {ChartParams} from '../../../shared/_models/Chart';
 
 const PrimaryWhite = '#ffffff';
 
@@ -119,53 +120,53 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     private localeService: BsLocaleService,
     private dragulaService: DragulaService,
   ) {
-    this.dragulaService.createGroup("REVERT", {
+    this.dragulaService.createGroup('REVERT', {
       revertOnSpill: false,
     });
 
   }
 
-  async loadMiniCards(pageID) {
-    // 1. Init intervalData (retrieve data of previous month)
-    let results;
-    let empty = false;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
-    const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
-    };
-
-    let pageIDs = {};
-
-    pageIDs[D_TYPE.FB] = pageID;
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs, null);
-
-
-    forkJoin(observables).subscribe(miniDatas => {
-      for (const i in miniDatas) {
-        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
-
-        empty = empty || !results;
-
-        this.miniCards[i].value = results['value'];
-        this.miniCards[i].progress = results['perc'] + '%';
-        this.miniCards[i].step = results['step'];
-      }
-    });
-
-    return empty;
-
-  }
+  // async loadMiniCards(pageID) {
+  //   // 1. Init intervalData (retrieve data of previous month)
+  //   let results;
+  //   let empty = false;
+  //   let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+  //   const intervalDate: IntervalDate = {
+  //     first: new Date(y, m - 1, 1),
+  //     last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+  //   };
+  //
+  //   let pageIDs = {};
+  //
+  //   pageIDs[D_TYPE.FB] = pageID;
+  //   const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs, null);
+  //
+  //
+  //   forkJoin(observables).subscribe(miniDatas => {
+  //     for (const i in miniDatas) {
+  //       results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
+  //
+  //       empty = empty || !results;
+  //
+  //       this.miniCards[i].value = results['value'];
+  //       this.miniCards[i].progress = results['perc'] + '%';
+  //       this.miniCards[i].step = results['step'];
+  //     }
+  //   });
+  //
+  //   return empty;
+  //
+  // }
 
   async loadDashboard() { // TODO get pageID and refactor
-    let dash;
-    let observables: Observable<any>[] = [];
+    let dash, chartParams: ChartParams = {};
+    const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData = {
+    const currentData: DashboardData = {
       data: chartsToShow,
       interval: dateInterval,
       type: D_TYPE.FB,
@@ -173,7 +174,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     this.GEService.loadingScreen.next(true);
 
-    this.dragulaService.find("REVERT");
+    this.dragulaService.find('REVERT');
 
     try {
       // Retrieving dashboard ID
@@ -186,12 +187,11 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         return;
       }
 
-      //console.log(this.HARD_DASH_DATA.dashboard_id);
-      this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
+      // console.log(this.HARD_DASH_DATA.dashboard_id);
+      // this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
       if (this.dashStored) {
         // Ci sono già dati salvati
-        //console.log('ok');
         this.filterActions.loadStoredDashboard(D_TYPE.FB);
         this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
         this.GEService.loadingScreen.next(false);
@@ -202,7 +202,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
       } else {
 
-        let ds : Subject<void> = new Subject<void>(); // used to force unsubscription
+        const ds: Subject<void> = new Subject<void>(); // used to force unsubscription
 
         // Retrieving dashboard charts
         this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
@@ -210,7 +210,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
             if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
-              charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
+              charts.forEach(chart => {
+                chartParams = {
+                  metric: chart.metric,
+                };
+                observables.push(this.CCService.retrieveChartData(chart.type, chartParams, this.pageID));
+              }); // Retrieves data for each chart
 
               forkJoin(observables)
                 .pipe(takeUntil(ds))
@@ -291,13 +296,15 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       last: this.bsRangeValue[1]
     };
 
-    let dummySubj : Subject<void> = new Subject<void>(); // used to force unsubscription
+    const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
+    const chartParams: ChartParams = {
+      metric: dashChart.metric
+    };
 
     try {
-
-        this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
-          .pipe(takeUntil(dummySubj))
-          .subscribe( data => {
+      this.CCService.retrieveChartData(dashChart.type, chartParams, this.pageID)
+        .pipe(takeUntil(dummySubj))
+        .subscribe(data => {
 
           this.GEService.loadingScreen.next(true);
 
@@ -320,11 +327,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           dummySubj.next();
           dummySubj.complete();
         });
-      }
-      catch (err) {
-        console.log('Error querying the chart');
-        console.log(err);
-      };
+    } catch (err) {
+      console.log('Error querying the chart');
+      console.log(err);
+    }
   }
 
   onValueChange(value): void {
@@ -386,10 +392,13 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FB).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.FB).toPromise();
 
-      if(isPermissionGranted.tokenValid) {
+      if (isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        this.toastr.error('I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+        this.toastr.error(
+          'I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.',
+          'Permessi non validi!'
+        );
       }
 
     } catch (e) {
@@ -424,7 +433,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       if (!fb_page_id) {
         await this.getPagesList();
 
-        if(this.pageList.length === 0) {
+        if (this.pageList.length === 0) {
           this.dashErrors.noPages = true;
           return;
         }
@@ -447,6 +456,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
           return;
         }
+      } else {
+        this.pageID = fb_page_id;
       }
 
       this.firstDateRange = this.minDate;
@@ -459,11 +470,13 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
       this.filter.subscribe(elements => {
         this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-        const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB) : -1;
+        const index = elements['storedDashboards']
+          ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB)
+          : -1;
         this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
       });
 
-      let dash_type = this.HARD_DASH_DATA.dashboard_type;
+      const dash_type = this.HARD_DASH_DATA.dashboard_type;
 
       if (!this.GEService.isSubscriber(dash_type)) {
         this.GEService.removeFromDashboard.subscribe(values => {
@@ -487,8 +500,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
       this.localeService.use('it');
       await this.loadDashboard();
-    }
-    catch (e) {
+    } catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
     }
 
@@ -498,7 +510,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
 
-    this.dragulaService.destroy("REVERT");
+    this.dragulaService.destroy('REVERT');
   }
 
   clearDashboard(): void {
@@ -574,7 +586,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     // Numero grafici per riga dipendente da dimensioni grafico
     for (let i = 0; i < cards.length; i++) {
-      const canvas = await html2canvas(cards[i], { scale:1, width: cardW});
+      const canvas = await html2canvas(cards[i], {scale: 1, width: cardW});
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
       // Determines offset
@@ -680,7 +692,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 
-  dragAndDrop () {
+  dragAndDrop() {
     if (this.chartArray$.length == 0) {
       this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
     } else {
@@ -702,7 +714,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       this.chartArray$ = this.tmpArray;
 
       for (i = 0; i < this.chartArray$.length; i++) {
-        this.chartArray$[i].position = i+1;
+        this.chartArray$[i].position = i + 1;
       }
 
     } else {
@@ -714,8 +726,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   updateChartPosition(toUpdate): void {
 
-    toUpdate = _.map(toUpdate, function(el) {
-      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position}
+    toUpdate = _.map(toUpdate, function (el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position};
     });
 
     this.DService.updateChartPosition(toUpdate)
@@ -734,7 +746,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   }
 
-  checkDrag () {
+  checkDrag() {
     this.drag = false;
     this.GEService.dragAndDrop.next(this.drag);
   }

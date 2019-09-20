@@ -6,9 +6,11 @@ import {GA_CHART, GoogleData} from '../_models/GoogleData';
 
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
+import {ChartParams} from '../_models/Chart';
 
 @Injectable()
 export class GoogleAnalyticsService {
+  private urlRequest = `${environment.protocol}${environment.host}:${environment.port}/ga/data`;
 
   constructor(
     private http: HttpClient,
@@ -21,48 +23,15 @@ export class GoogleAnalyticsService {
     return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/ga/getViewList', {headers});
   }
 
-  getData(ID): Observable<any> {
+  getData(chartParams: ChartParams): Observable<any> {
     const headers = this.getAuthorization();
-    let call;
+    const params = {};
 
-    switch (ID) {
-      case GA_CHART.IMPRESSIONS_DAY:
-        call = 'pageviews/';
-        break;
-      case GA_CHART.SESSION_DAY:
-        call = 'sessions/';
-        break;
-      case GA_CHART.SOURCES_COLUMNS:
-      case GA_CHART.SOURCES_PIE:
-        call = 'sources/';
-        break;
-      case GA_CHART.MOST_VISITED_PAGES:
-        call = 'mostviews/';
-        break;
-      case GA_CHART.BOUNCE_RATE:
-        call = 'bouncerate/';
-        break;
-      case GA_CHART.AVG_SESS_DURATION:
-        call = 'avgsessionduration/';
-        break;
-      case GA_CHART.BROWSER_SESSION:
-        call = 'browsers/';
-        break;
-      case GA_CHART.NEW_USERS:
-        call = 'newusers/';
-        break;
-      case GA_CHART.MOBILE_DEVICES:
-        call = 'mobiledevices/';
-        break;
-      case GA_CHART.PAGE_LOAD_TIME:
-        call = 'pageloadtime/';
-        break;
-      case GA_CHART.PERCENT_NEW_SESSION:
-        call = 'percentnewsessions/';
-        break;
+    for (const el of Object.keys(chartParams)) {
+      params[el] = chartParams[el];
     }
 
-    return this.http.get<GoogleData[]>(this.formatURL(call), {headers})
+    return this.http.get<GoogleData[]>(this.urlRequest, {headers, params})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
@@ -73,7 +42,7 @@ export class GoogleAnalyticsService {
       .pipe(map((res) => res), catchError(e => of(e)));
   }
 
-  private formatURL( urlCall: string) {
+  private formatURL(urlCall: string) {
     return environment.protocol + environment.host + ':' + environment.port + '/ga/' + urlCall;
   }
 

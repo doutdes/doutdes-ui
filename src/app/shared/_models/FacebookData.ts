@@ -80,13 +80,13 @@ export interface FbPage {
 }
 
 export interface FbPost {
-  id: string,
-  created_time: Date,
-  name?: string
+  id: string;
+  created_time: Date;
+  name?: string;
 }
 
-export interface FbAnyData {
-  value: Array<any>;
+export interface FbData {
+  value: Array<any> | number;
   end_time: Date;
 }
 

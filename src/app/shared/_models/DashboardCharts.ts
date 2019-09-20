@@ -3,6 +3,12 @@ export interface DashboardCharts {
   chart_id: number;
   title: string;
   format: string;
+  metric?: string;
+  dimensions?: string;
+  sort?: string;
+  filter?: string;
+  period?: string;
+  interval?: number;
   color?: string;
   chartData?: any;
   position?: number;

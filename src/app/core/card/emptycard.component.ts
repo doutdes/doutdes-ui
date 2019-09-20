@@ -108,7 +108,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     }
   }
 
-
   get form() {
     return this.insertChartForm.controls;
   }
@@ -169,9 +168,13 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       title: selected.title,
       type: selected.type,
       format: selected.format,
-      //position: selected.position
+      metric: selected.metric,
+      dimensions: selected.dimensions,
+      sort: selected.sort,
+      filter: selected.filter,
+      period: selected.period,
+      interval: selected.interval
     };
-
 
     try {
       await this.dashboardService.addChartToDashboard(dashChart).toPromise();
@@ -183,7 +186,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
 
       await this.updateDropdownOptions();
-
 
     } catch (error) {
       this.toastr.error('Non è stato possibile aggiungere "' + dashChart.title + '" alla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico.');

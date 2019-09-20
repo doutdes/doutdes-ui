@@ -2,14 +2,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
-import {YT_CHART, YoutubeData, YtPage} from '../_models/YoutubeData';
+import {YoutubeData, YT_CHART, YtPage} from '../_models/YoutubeData';
 
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
-import {IgPage} from '../_models/InstagramData';
-import * as moment from 'moment';
-import {D_TYPE} from '../_models/Dashboard';
 
 @Injectable()
 export class YoutubeService {

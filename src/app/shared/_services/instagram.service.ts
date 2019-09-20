@@ -2,17 +2,21 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {
   IgPage,
-  IgAnyData,
+  IgData,
   IgNumberData, IG_CHART, IgMedia, IgBusinessInfo
 
 } from '../_models/InstagramData';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
+import {FbData} from '../_models/FacebookData';
+import {ChartParams} from '../_models/Chart';
 
 // TODO Capire perché queste chiamate non vengano intercettate dall'interceptor
 
 @Injectable()
 export class InstagramService {
+  private urlRequest = `${environment.protocol}${environment.host}:${environment.port}/ig/data`;
+
   constructor(private http: HttpClient, private storeService: StoreService) {
   }
 
@@ -21,52 +25,17 @@ export class InstagramService {
     return this.http.get<IgPage[]>(this.formatURL('pages'), {headers});
   }
 
-  getData(ID, pageID) {
+  getData(chartParams: ChartParams, pageID: string) {
     const headers = this.getAuthorization();
-    let call;
-    let anyType = true;
+    const params = {
+      page_id: pageID,
+      metric: chartParams.metric,
+      period: chartParams.period,
+      interval: `${chartParams.interval}`
+    };
 
-    switch (ID) {
-      case IG_CHART.AUD_CITY:
-        call = 'audcity';
-        break;
-      case IG_CHART.AUD_COUNTRY:
-        call = 'audcountry';
-        break;
-      case IG_CHART.AUD_GENDER_AGE:
-        call = 'audgenderage';
-        break;
-      case IG_CHART.AUD_LOCALE:
-        call = 'audlocale';
-        break;
-      case IG_CHART.ONLINE_FOLLOWERS:
-        call = 'onlinefollowers';
-        break;
-      case IG_CHART.IMPRESSIONS:
-        call = 'impressions';
-        anyType = false;
-        break;
-      case IG_CHART.PROFILE_VIEWS:
-        call = 'profileviews';
-        anyType = false;
-        break;
-      case IG_CHART.REACH:
-        call = 'reach';
-        anyType = false;
-        break;
-      case IG_CHART.ACTION_PERFORMED:
-        call = 'actionsperformed';
-        anyType = false;
-        break;
-      case IG_CHART.FOLLOWER_COUNT:
-        call = 'followercount';
-        anyType = false;
-        break;
-    }
 
-    return anyType
-      ? this.http.get<IgAnyData[]>(this.formatURL(call, pageID), {headers})
-      : this.http.get<IgNumberData[]>(this.formatURL(call, pageID), {headers});
+    return this.http.get<IgData>(this.urlRequest, {headers, params});
   }
 
   getMedia(pageID, n=20) {

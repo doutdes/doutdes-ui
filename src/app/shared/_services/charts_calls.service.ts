@@ -13,6 +13,7 @@ import {IG_CHART, IG_PALETTE} from '../_models/InstagramData';
 import * as moment from 'moment';
 
 import {YT_CHART, YT_PALETTE} from '../_models/YoutubeData';
+import {ChartParams} from '../_models/Chart';
 
 @Injectable()
 export class ChartsCallsService {
@@ -31,18 +32,30 @@ export class ChartsCallsService {
     return '...';
   }
 
-  public retrieveChartData(ID, intervalDate?, pageID?): Observable<any> {
-    if (Object.values(FB_CHART).includes(ID)) {
-      return this.facebookService.getData(ID, pageID);
-    } else if (Object.values(IG_CHART).includes(ID)) {
-      return this.instagramService.getData(ID, pageID);
-    } else if (Object.values(GA_CHART).includes(ID)) {
-      return this.googleAnalyticsService.getData(ID);
-    } else if (Object.values(YT_CHART).includes(ID)) {
-      return this.youtubeService.getData(ID, intervalDate, pageID);
-    } else {
-      throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
+  public retrieveChartData(type: number, params: ChartParams, pageID?: any): Observable<any> { // TODO change with params instead of ID
+
+    switch (type) {
+      case D_TYPE.FB:
+        return this.facebookService.getData(params.metric, pageID);
+      case D_TYPE.GA:
+        return this.googleAnalyticsService.getData(params);
+      case D_TYPE.IG:
+        return this.instagramService.getData(params, pageID);
+      default:
+        throw new Error('chartCallService.retrieveChartData -> this chart type does not exist!');
     }
+
+    /*    if (Object.values(FB_CHART).includes(ID)) {
+          return this.facebookService.getData(ID, pageID);
+        } else if (Object.values(IG_CHART).includes(ID)) {
+          return this.instagramService.getData(ID, pageID);
+        } else if (Object.values(GA_CHART).includes(ID)) {
+          return this.googleAnalyticsService.getData(ID);
+        } else if (Object.values(YT_CHART).includes(ID)) {
+          return this.youtubeService.getData(ID, intervalDate, pageID);
+        } else {
+          throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
+        }*/
   }
 
   public initFormatting(ID, data) {
@@ -569,6 +582,8 @@ export class ChartsCallsService {
         break; // IG Audience Country
       case IG_CHART.AUD_GENDER_AGE:
         header = [['Età', 'Maschio', 'Femmina']];
+
+        console.warn(data);
 
         let gender_data = data[0] ? Object.keys(data[0]['value']) : null;
 
@@ -1878,6 +1893,7 @@ export class ChartsCallsService {
           }
         };
         break;
+
       case YT_CHART.VIEWS:
         formattedData = {
           chartType: 'AreaChart',
@@ -2099,23 +2115,23 @@ export class ChartsCallsService {
     switch (serviceID) {
       case D_TYPE.FB:
         pageID = pageIDs[D_TYPE.FB];
-        observables.push(this.facebookService.getData(FB_CHART.FANS_DAY, pageID));
+        observables.push(this.facebookService.getData('page_fans', pageID));
         observables.push(this.facebookService.fbposts(pageID));
         observables.push(this.facebookService.fbpagereactions(pageID));
-        observables.push(this.facebookService.getData(FB_CHART.IMPRESSIONS, pageID));
+        observables.push(this.facebookService.getData('page_impressions_unique', pageID));
         break;
       case D_TYPE.GA:
         observables.push(this.googleAnalyticsService.gaUsers());
-        observables.push(this.googleAnalyticsService.getData(GA_CHART.SESSION_DAY));
-        observables.push(this.googleAnalyticsService.getData(GA_CHART.BOUNCE_RATE));
-        observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION));
+        // observables.push(this.googleAnalyticsService.getData(GA_CHART.SESSION_DAY));
+        // observables.push(this.googleAnalyticsService.getData(GA_CHART.BOUNCE_RATE));
+        // observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION));
         break;
       case D_TYPE.IG:
         pageID = pageIDs[D_TYPE.IG];
         observables.push(this.instagramService.getBusinessInfo(pageID));
         observables.push(this.instagramService.getMedia(pageID));
-        observables.push(this.instagramService.getData(IG_CHART.PROFILE_VIEWS, pageID));
-        observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
+        // observables.push(this.instagramService.getData(IG_CHART.PROFILE_VIEWS, pageID));
+        // observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
         let obj = {};
@@ -2126,7 +2142,7 @@ export class ChartsCallsService {
         break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
-        observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
+        observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData('page_fans', pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
         observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs[D_TYPE.YT]) : of({}));
         break;
