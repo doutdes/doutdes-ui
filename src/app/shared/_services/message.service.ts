@@ -6,7 +6,7 @@ import {UserMessage} from '../_models/UserMessage';
 
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
-import {IgPage} from '../_models/InstagramData';
+
 
 @Injectable()
 export class MessageService {
@@ -15,13 +15,26 @@ export class MessageService {
 
   getMessageByID(id) {
     const headers = this.getAuthorization();
-    return this.http.get<Message[]>(this.formatURL('id'), {headers});
+    return this.http.get<Message>(this.formatURL('getMessageByID/' + id), {headers});
   }
 
+  getMessageForUser() {
+    const headers = this.getAuthorization();
+    return this.http.get<Message[]>(this.formatURL('getMessagesForUser'), {headers});
+  }
 
-  private formatURL (call, pageID = null) {
-    const aux = pageID ? (pageID + '/' + call) : call;
-    return environment.protocol + environment.host + ':' + environment.port + '/message/' + aux;
+  createMessage(message: Message) {
+    const headers = this.getAuthorization();
+    return this.http.post(this.formatURL('createMessage'), message, {headers});
+  }
+
+  sendMessageToUser(message_id, user_id) {
+    const headers = this.getAuthorization();
+    return this.http.post(this.formatURL('sendMessageToUser'), {message_id: message_id, user_id: user_id}, {headers});
+  }
+
+  private formatURL(call): string {
+    return environment.protocol + environment.host + ':' + environment.port + '/message/' + call;
   }
 
   private getAuthorization() {
