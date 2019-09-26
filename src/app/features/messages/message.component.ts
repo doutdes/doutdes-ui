@@ -18,7 +18,7 @@ import {forEach} from '@angular/router/src/utils/collection';
 export class FeatureMessageComponent implements OnInit, OnDestroy {
 
   dataSource: MatTableDataSource<Message>;
-  displayedColumns: Array<string> = ['title', 'text'];
+  displayedColumns: Array<string> = ['title','text', 'createdAt'];
 
   constructor(
     private breadcrumbActions: BreadcrumbActions,
@@ -37,9 +37,12 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
     this.messageService.getMessageForUser()
       .subscribe(messageList => {
           for (message of messageList) {
-            observables.push(this.messageService.getMessageByID(message.message_id))
+            observables.push(this.messageService.getMessageByID(message.message_id));
           }
-          forkJoin(observables).subscribe(message => console.log (message));
+          forkJoin(observables).subscribe(data => {
+            this.dataSource = new MatTableDataSource<Message>(data);
+            console.log(this.dataSource);
+          });
         },
         error => {
           console.log(error);

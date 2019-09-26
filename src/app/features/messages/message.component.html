@@ -4,6 +4,37 @@
   </div>
 </div>
 
+
+<div class="container-fluid d-none d-md-block"> <!-- d-none d-md-none d-xl-block"> -->
+  <table mat-table [dataSource]="dataSource" matSort class="table-striped w-100 ">
+
+    <!-- Title Column -->
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef>Titolo</th>
+      <td mat-cell *matCellDef="let message">
+        <span style="font-size: 17px;">{{message.title}}</span> <br/>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="text">
+      <th mat-header-cell *matHeaderCellDef>Testo</th>
+      <td mat-cell *matCellDef="let message">
+        <span style="font-size: 17px;">{{message.text}}</span> <br/>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef>Ora di invio</th>
+      <td mat-cell *matCellDef="let message">
+        <span style="font-size: 17px;">{{message.createdAt}}</span> <br/>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+  </table>
+</div>
 <!--<table mat-table>-->
   <!--<ng-container matColumnDef="title">-->
     <!--<th mat-header-cell *matHeaderCellDef> score</th>-->
