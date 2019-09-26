@@ -4,6 +4,8 @@ import {CoreModule} from '../../core/core.module';
 import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
 import {FeatureMessageRoutingModule} from './message.routing';
 import {FeatureMessageComponent} from './message.component';
+import {MatTableModule} from '@angular/material';
+import {MessageService} from '../../shared/_services/message.service';
 
 @NgModule({
   declarations: [
@@ -12,10 +14,12 @@ import {FeatureMessageComponent} from './message.component';
   imports: [
     SharedModule,
     CoreModule,
-    FeatureMessageRoutingModule
+    FeatureMessageRoutingModule,
+    MatTableModule
   ],
   providers: [
-    BreadcrumbActions
+    BreadcrumbActions,
+    MessageService
   ],
   exports: [
     FeatureMessageComponent

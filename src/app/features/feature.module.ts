@@ -22,7 +22,7 @@ import {IsNotAuthenticatedGuard} from '../shared/_guards/is-not-authenticated.gu
     SharedModule,
     CoreModule,
     PerfectScrollbarModule,
-    NgxLoadingModule.forRoot({}),
+    NgxLoadingModule.forRoot({})
   ],
   providers: [
     IsAuthenticatedGuard,

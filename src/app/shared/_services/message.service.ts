@@ -20,7 +20,7 @@ export class MessageService {
 
   getMessageForUser() {
     const headers = this.getAuthorization();
-    return this.http.get<Message[]>(this.formatURL('getMessagesForUser'), {headers});
+    return this.http.get<Array<UserMessage>>(this.formatURL('getMessagesForUser'), {headers});
   }
 
   createMessage(message: Message) {
