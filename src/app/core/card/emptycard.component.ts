@@ -125,7 +125,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       await this.updateDropdownOptions();
 
       if(this.metrics.length === 0) {
-        this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
+
+        this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'FULL_GRAF'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'FULL_GRAF'));
       } else {
         this.modalService.onHide.subscribe(() => {
           this.closeModal();
@@ -191,7 +193,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
 
     } catch (error) {
-      this.toastr.error('Non è stato possibile aggiungere "' + dashChart.title + '" alla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico.');
+      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_ADD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ADD'));
       console.error('Error inserting the Chart in the dashboard');
       console.error(error);
     }
@@ -239,6 +242,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   filterDropdown(updateChannel = false) {
     if (updateChannel) {
       this.metrics = this.getUnique(this.chartRemaining.filter(chart => chart.Type == this.insertChartForm.value.channel), 'Title');
+      console.log(this.chartRemaining);
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].Title);
     }
 
@@ -247,7 +251,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     // Update styles
     this.styles = this.chartRemaining.filter(chart => chart.Title == this.insertChartForm.value.metric && chart.Type == this.insertChartForm.value.channel).map(item => item.format);
     this.insertChartForm.controls['style'].setValue(this.styles[0]);
-
     // Update title
     this.insertChartForm.controls['title'].setValue(this.insertChartForm.value.metric);
 

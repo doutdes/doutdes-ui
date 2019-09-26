@@ -59,6 +59,14 @@
     "NO_DATI_1": {
       "TITLE": "Error adding chart",
       "MESSAGE": ": There was an error retrieving the data for the chart. Please try again later or contact support."
+    },
+    "NO_ADD": {
+      "TITLE": " : The chart could not be added to the dashboard.",
+      "MESSAGE": "Error adding chart."
+    },
+    "FULL_GRAF": {
+      "TITLE": "No graphic available",
+      "MESSAGE": "You have already added all the charts currently available for this dashboard."
     }
   },
   "PREFERENCES": {

@@ -59,6 +59,14 @@
     "NO_DATI_1": {
       "TITLE": "Errore durante l'aggiunta del grafico",
       "MESSAGE": ": C'è stato un errore recuperando i dati per il grafico. Per favore, riprova più tardi oppure contatta il supporto."
+    },
+    "NO_ADD": {
+      "TITLE": " : Non è stato possibile aggiungere il grafico alla dashboard.",
+      "MESSAGE": "Errore durante l'aggiunta del grafico."
+    },
+    "FULL_GRAF": {
+      "TITLE": "Nessun grafico disponibile",
+      "MESSAGE": "Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard."
     }
   },
   "PREFERENCES": {

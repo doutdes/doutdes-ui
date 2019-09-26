@@ -21,7 +21,8 @@
 		"PASSWORD": "Password",
 		"RIP_PASS": "Ripeti password",
 		"NOME_TIT": "Nome titolare",
-		"COGN_TIT": "Cognome titolare"
+		"COGN_TIT": "Cognome titolare",
+		"TIT_GRA": "Titolo del grafico"
 	},
 	"MINICARD": {
 		"FACEBOOK": {

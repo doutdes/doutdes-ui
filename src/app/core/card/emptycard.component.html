@@ -49,7 +49,7 @@
         <div class="row mb-2">
           <label class="col-sm-2 col-form-label">{{ 'EMPTYCARD.TITLE' | translate }}</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control pl-3" formControlName="title" placeholder="Titolo del grafico"
+            <input type="text" class="form-control pl-3" formControlName="title" placeholder="{{this.GEService.getStringFilterDate('PLACEHOLDER','TIT_GRA')}}"
                    [ngClass]="{ 'is-invalid': submitted && form.title.errors }">
 
             <div *ngIf="submitted && form['title'].errors" class="invalid-feedback">

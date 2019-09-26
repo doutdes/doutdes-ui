@@ -21,7 +21,8 @@
 		"PASSWORD": "Password",
 		"RIP_PASS": "Repeat password",
 		"NOME_TIT": "Name holder",
-		"COGN_TIT": "Surname holder"
+		"COGN_TIT": "Surname holder",
+		"TIT_GRA": "Title of graphic"
 	},
 	"MINICARD": {
 		"FACEBOOK": {
