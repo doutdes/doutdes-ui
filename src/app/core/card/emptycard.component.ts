@@ -242,7 +242,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   filterDropdown(updateChannel = false) {
     if (updateChannel) {
       this.metrics = this.getUnique(this.chartRemaining.filter(chart => chart.Type == this.insertChartForm.value.channel), 'Title');
-      console.log(this.chartRemaining);
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].Title);
     }
 
