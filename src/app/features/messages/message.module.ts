@@ -7,6 +7,7 @@ import {FeatureMessageComponent} from './message.component';
 import {MatTableModule} from '@angular/material';
 import {MessageService} from '../../shared/_services/message.service';
 
+
 @NgModule({
   declarations: [
     FeatureMessageComponent
@@ -15,7 +16,7 @@ import {MessageService} from '../../shared/_services/message.service';
     SharedModule,
     CoreModule,
     FeatureMessageRoutingModule,
-    MatTableModule
+    MatTableModule,
   ],
   providers: [
     BreadcrumbActions,

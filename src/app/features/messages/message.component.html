@@ -4,29 +4,27 @@
   </div>
 </div>
 
-
-<div class="container-fluid d-none d-md-block"> <!-- d-none d-md-none d-xl-block"> -->
+<div class="container-fluid d-none d-md-block">
   <table mat-table [dataSource]="dataSource" matSort class="table-striped w-100 ">
-
     <!-- Title Column -->
     <ng-container matColumnDef="title">
       <th mat-header-cell *matHeaderCellDef>Titolo</th>
       <td mat-cell *matCellDef="let message">
-        <span style="font-size: 17px;">{{message.title}}</span> <br/>
+        <span style="font-size: 15px;">{{message.title}}</span> <br/>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="text">
-      <th mat-header-cell *matHeaderCellDef>Testo</th>
+      <th mat-header-cell *matHeaderCellDef >Testo</th>
       <td mat-cell *matCellDef="let message">
-        <span style="font-size: 17px;">{{message.text}}</span> <br/>
+        <span class="text-message" style="font-size: 15px;">{{message.text}}</span> <br/>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="createdAt">
       <th mat-header-cell *matHeaderCellDef>Ora di invio</th>
       <td mat-cell *matCellDef="let message">
-        <span style="font-size: 17px;">{{message.createdAt}}</span> <br/>
+        <span style="font-size: 15px;">{{this.formatDate(message.createdAt)}}</span> <br/>
       </td>
     </ng-container>
 

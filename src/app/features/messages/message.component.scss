@@ -1,0 +1,25 @@
+// Material table
+th.mat-header-cell {
+  text-transform: uppercase !important;
+  font-weight: bold !important;
+  font-size: 15px;
+  color: black;
+  padding-right: 10px;
+}
+
+tr.mat-header-row {
+  border-bottom: 5px solid #20a8d8 !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #edf5fd !important;
+}
+
+td {
+  font-size: 15px !important;
+  border: 0 !important;
+}
+
+.text-message {
+  font-style: italic !important;
+}

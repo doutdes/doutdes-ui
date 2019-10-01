@@ -4,15 +4,15 @@ import {Breadcrumb} from '../../core/breadcrumb/Breadcrumb';
 import {Message} from '../../shared/_models/Message';
 import {MatTableDataSource} from '@angular/material';
 import {MessageService} from '../../shared/_services/message.service';
-import {map, mergeMap, scan, switchMap} from 'rxjs/operators';
-import {UserMessage} from '../../shared/_models/UserMessage';
-import {flatMap} from 'tslint/lib/utils';
 import {forkJoin, Observable} from 'rxjs';
-import {forEach} from '@angular/router/src/utils/collection';
+import * as moment from 'moment';
+import {UserMessage} from '../../shared/_models/UserMessage';
 
 @Component({
   selector: 'app-feature-messages',
   templateUrl: './message.component.html',
+  styleUrls: ['./message.component.scss'],
+
 })
 
 export class FeatureMessageComponent implements OnInit, OnDestroy {
@@ -41,13 +41,18 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
           }
           forkJoin(observables).subscribe(data => {
             this.dataSource = new MatTableDataSource<Message>(data);
-            console.log(this.dataSource);
           });
         },
         error => {
           console.log(error);
         });
     return observables;
+  }
+
+  formatDate (date) : String {
+    date = moment(date, null ,'it', true);
+    date = date.format('DD MMMM YYYY, H:mm:ss');
+    return date.toString();
   }
 
   addBreadcrumb() {
