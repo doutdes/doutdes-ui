@@ -27,6 +27,7 @@ import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {ToastrService} from 'ngx-toastr';
 import * as _ from 'lodash';
 import {DragulaService} from 'ng2-dragula';
+import {ChartParams} from '../../../shared/_models/Chart';
 
 
 @Component({
@@ -90,7 +91,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   constructor(
     private YTService: YoutubeService,
-    public GAService : GoogleAnalyticsService,
+    public GAService: GoogleAnalyticsService,
     private breadcrumbActions: BreadcrumbActions,
     private DService: DashboardService,
     private CCService: ChartsCallsService,
@@ -104,21 +105,22 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     private formBuilder: FormBuilder,
     private localeService: BsLocaleService,
     private dragulaService: DragulaService,
-) {
-    this.dragulaService.createGroup("REVERT", {
+  ) {
+    this.dragulaService.createGroup('REVERT', {
       revertOnSpill: false,
     });
   }
 
   async loadDashboard() {
-    let dash, charts, dataArray;
+    let dash, charts, dataArray, chartParams: ChartParams = {};
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData = {
+
+    const currentData: DashboardData = {
       data: chartsToShow,
       interval: dateInterval,
       type: D_TYPE.YT,
@@ -127,7 +129,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
     this.GEService.loadingScreen.next(true);
 
-    this.dragulaService.find("REVERT");
+    this.dragulaService.find('REVERT');
 
     try {
       // Retrieving dashboard ID
@@ -138,14 +140,14 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         console.error('Cannot retrieve a valid ID for the Website dashboard.');
         return;
       }
-      let temp = await this.YTService.getChannels().toPromise();
+      const channels = await this.YTService.getChannels().toPromise();
 
-      if(temp.length === 0) {
+      if (channels.length === 0) {
         this.dashErrors.noPages = true;
         return;
       }
 
-      let channelID = temp[0].id;
+      const channelID = channels[0].id;
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(channelID);
 
       if (this.dashStored) {
@@ -162,9 +164,13 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
-          let  temp = await this.YTService.getChannels().toPromise();
-          let channelID = temp[0].id;
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, dateInterval, channelID)));// Retrieves data for each chart
+          charts.forEach((item: DashboardCharts) => {
+            chartParams = {
+              metric: item.metric,
+            };
+            observables.push(this.CCService.retrieveChartData(chart.type, chartParams, channelID));
+          }); // Retrieves data for each chart
+
           dataArray = await forkJoin(observables).toPromise();
 
           for (let i = 0; i < dataArray.length; i++) {
@@ -184,8 +190,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
             }
 
             chartsToShow.push(chart);
-           }
-
+          }
+          3;
           currentData.data = chartsToShow;
 
           this.filterActions.initData(currentData);
@@ -245,9 +251,13 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
     };
-    let  temp = await this.YTService.getChannels().toPromise();
+    let temp = await this.YTService.getChannels().toPromise();
     let channelID = temp[0].id;
-    this.CCService.retrieveChartData(dashChart.chart_id, dateInterval, channelID)
+    const chartParams = {
+      metric: dashChart.metric
+    };
+
+    this.CCService.retrieveChartData(dashChart.type, chartParams, channelID)
       .subscribe(chartData => {
 
         this.GEService.loadingScreen.next(true);
@@ -333,7 +343,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     let key: ApiKey;
 
     this.GEService.loadingScreen.subscribe(value => {
-      this.loading = value
+      this.loading = value;
     });
 
     this.addBreadcrumb();
@@ -346,7 +356,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         return;
       }
 
-       view_id = await this.getViewID();
+      view_id = await this.getViewID();
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!view_id) {
         await this.getViewList();
@@ -418,7 +428,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
 
-    this.dragulaService.destroy("REVERT");
+    this.dragulaService.destroy('REVERT');
   }
 
   clearDashboard(): void {
@@ -556,10 +566,10 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.YT).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.YT).toPromise();
 
-      if(isPermissionGranted.tokenValid) {
+      if (isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        this.toastr.error('I permessi di accesso ai tuoi dati YouTube sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+        this.toastr.error('I permessi di accesso ai tuoi dati YouTube sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!');
       }
 
     } catch (e) {
@@ -569,7 +579,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     return result;
   }
 
-  async getViewID()  {
+  async getViewID() {
     let viewID;
 
     try {
@@ -583,7 +593,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   async getViewList() {
     try {
-      this.viewList = await this.YTService.getViewList().toPromise();
+      this.viewList = await this.YTService.getChannels().toPromise();
     } catch (e) {
       console.error('getViewList -> Error doing the query');
     }
@@ -593,7 +603,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 
-  dragAndDrop () {
+  dragAndDrop() {
     if (this.chartArray$.length == 0) {
       this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
     } else {
@@ -615,7 +625,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       this.chartArray$ = this.tmpArray;
 
       for (i = 0; i < this.chartArray$.length; i++) {
-        this.chartArray$[i].position = i+1;
+        this.chartArray$[i].position = i + 1;
       }
 
     } else {
@@ -627,8 +637,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   updateChartPosition(toUpdate): void {
 
-    toUpdate = _.map(toUpdate, function(el) {
-      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position}
+    toUpdate = _.map(toUpdate, function (el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position};
     });
 
     this.DService.updateChartPosition(toUpdate)
@@ -647,7 +657,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   }
 
-  checkDrag () {
+  checkDrag() {
     this.drag = false;
     this.GEService.dragAndDrop.next(this.drag);
   }

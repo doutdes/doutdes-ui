@@ -116,7 +116,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     private localeService: BsLocaleService,
     private dragulaService: DragulaService,
   ) {
-    this.dragulaService.createGroup("REVERT", {
+    this.dragulaService.createGroup('REVERT', {
       revertOnSpill: false,
     });
   }
@@ -246,107 +246,107 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async loadDashboard() {
+    /*
+        const observables: Observable<any>[] = [];
+        const chartsToShow: Array<DashboardCharts> = [];
+        const dateInterval: IntervalDate = {
+          first: this.minDate,
+          last: this.maxDate
+        };
+        let currentData: DashboardData = {
+          data: chartsToShow,
+          interval: dateInterval,
+          type: D_TYPE.CUSTOM,
+        };
 
-    const observables: Observable<any>[] = [];
-    const chartsToShow: Array<DashboardCharts> = [];
-    const dateInterval: IntervalDate = {
-      first: this.minDate,
-      last: this.maxDate
-    };
-    let currentData: DashboardData = {
-      data: chartsToShow,
-      interval: dateInterval,
-      type: D_TYPE.CUSTOM,
-    };
+        let pageID, dash, charts, dataArray;
 
-    let pageID, dash, charts, dataArray;
+        this.dragulaService.find("REVERT");
 
-    this.dragulaService.find("REVERT");
+        try {
+          // Retrieving dashboard ID
+          dash = await this.DService.getDashboardByType(D_TYPE.CUSTOM).toPromise(); // Custom dashboard type
 
-    try {
-      // Retrieving dashboard ID
-      dash = await this.DService.getDashboardByType(D_TYPE.CUSTOM).toPromise(); // Custom dashboard type
-
-      if (dash['id']) {
-        this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
-      } else {
-        this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
-        return;
-      }
-
-      if (this.dashStored) {
-        // Ci sono già dati salvati
-        this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
-        this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-        this.GEService.loadingScreen.next(false);
-
-        if (this.chartArray$.length === 0) {
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
-        }
-      } else {
-        charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
-
-        if (charts && charts.length > 0) { // Checking if dashboard is not empty
-          charts.forEach(async chart => {
-            // If the permission for the service is granted
-            if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
-              pageID = this.getPageID(chart.type);
-              observables.push(this.CCService.retrieveChartData(chart.chart_id, dateInterval, pageID));
-            }
-          }); // Retrieves data for each chart
-
-
-          dataArray = await forkJoin(observables).toPromise();
-
-          if (dataArray) {
-            for (let i = 0; i < dataArray.length; i++) {
-
-              const chart: DashboardCharts = charts[i];
-
-              if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-
-                chart.chartData = dataArray[i];
-                this.minDate = new Date(Math.min.apply(null, this.minSet));
-
-                chart.error = false;
-              } else {
-                chart.error = true;
-
-                console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
-                console.error(dataArray[i]);
-              }
-
-              chartsToShow.push(chart);
-            }
-
-            currentData = {
-              data: chartsToShow,
-              interval: dateInterval,
-              type: D_TYPE.CUSTOM,
-            };
-
-            this.filterActions.initData(currentData);
-            this.GEService.updateChartList.next(true);
-
-            // Shows last 30 days
-            this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-
-            this.GEService.loadingScreen.next(false);
+          if (dash['id']) {
+            this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
+          } else {
+            this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
+            return;
           }
-        } else {
-          this.filterActions.initData(currentData);
-          this.GEService.loadingScreen.next(false);
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+
+          if (this.dashStored) {
+            // Ci sono già dati salvati
+            this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
+            this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
+            this.GEService.loadingScreen.next(false);
+
+            if (this.chartArray$.length === 0) {
+              this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+            }
+          } else {
+            charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
+
+            if (charts && charts.length > 0) { // Checking if dashboard is not empty
+              charts.forEach(async chart => {
+                // If the permission for the service is granted
+                if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
+                  pageID = this.getPageID(chart.type);
+                  observables.push(this.CCService.retrieveChartData(chart.chart_id, dateInterval, pageID));
+                }
+              }); // Retrieves data for each chart
+
+
+              dataArray = await forkJoin(observables).toPromise();
+
+              if (dataArray) {
+                for (let i = 0; i < dataArray.length; i++) {
+
+                  const chart: DashboardCharts = charts[i];
+
+                  if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+
+                    chart.chartData = dataArray[i];
+                    this.minDate = new Date(Math.min.apply(null, this.minSet));
+
+                    chart.error = false;
+                  } else {
+                    chart.error = true;
+
+                    console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
+                    console.error(dataArray[i]);
+                  }
+
+                  chartsToShow.push(chart);
+                }
+
+                currentData = {
+                  data: chartsToShow,
+                  interval: dateInterval,
+                  type: D_TYPE.CUSTOM,
+                };
+
+                this.filterActions.initData(currentData);
+                this.GEService.updateChartList.next(true);
+
+                // Shows last 30 days
+                this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
+
+                this.GEService.loadingScreen.next(false);
+              }
+            } else {
+              this.filterActions.initData(currentData);
+              this.GEService.loadingScreen.next(false);
+              this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+            }
+          }
+
+          this.loaded = true;
+
+        } catch (e) {
+          console.error(e);
+          this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
         }
-      }
-
-      this.loaded = true;
-
-    } catch (e) {
-      console.error(e);
-      this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
-    }
-
+    */
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
@@ -360,67 +360,67 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     pageID = this.getPageID(dashChart.type);
 
-    this.CCService.retrieveChartData(dashChart.chart_id, dateInterval, pageID)
-      .subscribe(chartData => {
-        if (!chartData['status']) { // Se la chiamata non rende errori
-          chartToPush.chartData = chartData;
+    /*    this.CCService.retrieveChartData(dashChart.chart_id, dateInterval, pageID) todo edit
+          .subscribe(chartData => {
+            if (!chartData['status']) { // Se la chiamata non rende errori
+              chartToPush.chartData = chartData;
 
-          // getting the minDate of the chart, depending on its type
-          switch (dashChart.type) {
-            case D_TYPE.FB :
-            case D_TYPE.IG:
-              this.minSet.push(
-                {
-                  id: dashChart.chart_id,
-                  minDate: new Date(dashChart.chartData[0]['end_time'])
+              // getting the minDate of the chart, depending on its type
+              switch (dashChart.type) {
+                case D_TYPE.FB :
+                case D_TYPE.IG:
+                  this.minSet.push(
+                    {
+                      id: dashChart.chart_id,
+                      minDate: new Date(dashChart.chartData[0]['end_time'])
+                    }
+                  );
+                  break;
+                case D_TYPE.GA:
+                  this.minSet.push(
+                    {
+                      id: dashChart.chart_id,
+                      minDate: (parseDate(dashChart['chartData'][0][0]))
+                    }
+                  );
+                  break;
+                case D_TYPE.YT:
+                  this.minSet.push(
+                    {
+                      id: dashChart.chart_id,
+                      minDate: (parseDate(dashChart.chartData[0]['date']))
+                    }
+                  );
+                  break;
+              }
+              this.minSet.forEach(el => {
+                if (el.minDate < this.minDate) {
+                  this.minDate = el.minDate;
                 }
-              );
-              break;
-            case D_TYPE.GA:
-              this.minSet.push(
-                {
-                  id: dashChart.chart_id,
-                  minDate: (parseDate(dashChart['chartData'][0][0]))
-                }
-              );
-              break;
-            case D_TYPE.YT:
-              this.minSet.push(
-                {
-                  id: dashChart.chart_id,
-                  minDate: (parseDate(dashChart.chartData[0]['date']))
-                }
-              );
-              break;
-          }
-          this.minSet.forEach(el => {
-            if (el.minDate < this.minDate) {
-              this.minDate = el.minDate;
+              });
+
+              chartToPush.error = false;
+
+              const date = parseDate(chartToPush['chartData'][0][0]);
+              if (date < this.minDate) {
+                this.minDate = date;
+              }
+
+              this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
+            } else {
+              chartToPush.error = true;
+              console.log('Errore recuperando dati per ' + dashChart);
+
+              this.toastr.error('I dati disponibili per ' + dashChart.title + ' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
             }
-          });
+            this.filterActions.addChart(chartToPush);
+            this.filterActions.filterData(dateInterval);
+          }, error1 => {
+            console.log('Error querying the Chart');
+            console.log(error1);
 
-          chartToPush.error = false;
-
-          const date = parseDate(chartToPush['chartData'][0][0]);
-          if (date < this.minDate) {
-            this.minDate = date;
-          }
-
-          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
-        } else {
-          chartToPush.error = true;
-          console.log('Errore recuperando dati per ' + dashChart);
-
-          this.toastr.error('I dati disponibili per ' + dashChart.title + ' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
-        }
-        this.filterActions.addChart(chartToPush);
-        this.filterActions.filterData(dateInterval);
-      }, error1 => {
-        console.log('Error querying the Chart');
-        console.log(error1);
-
-        this.toastr.error('C\'è stato un errore recuperando i dati per il grafico ' + dashChart.title + '. Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
-      });
+            this.toastr.error('C\'è stato un errore recuperando i dati per il grafico ' + dashChart.title + '. Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
+          });*/
   }
 
   onValueChange(value): void {
@@ -477,7 +477,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
 
-    this.dragulaService.destroy("REVERT");
+    this.dragulaService.destroy('REVERT');
   }
 
   nChartEven() {
@@ -742,7 +742,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     return pageID;
   }
 
-  dragAndDrop () {
+  dragAndDrop() {
     if (this.chartArray$.length == 0) {
       this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
     } else {
@@ -764,7 +764,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.chartArray$ = this.tmpArray;
 
       for (i = 0; i < this.chartArray$.length; i++) {
-        this.chartArray$[i].position = i+1;
+        this.chartArray$[i].position = i + 1;
       }
 
     } else {
@@ -776,8 +776,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   updateChartPosition(toUpdate): void {
 
-    toUpdate = _.map(toUpdate, function(el) {
-      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position}
+    toUpdate = _.map(toUpdate, function (el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position};
     });
 
     this.DService.updateChartPosition(toUpdate)
@@ -796,7 +796,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   }
 
-  checkDrag () {
+  checkDrag() {
     this.drag = false;
     this.GEService.dragAndDrop.next(this.drag);
   }

@@ -41,21 +41,12 @@ export class ChartsCallsService {
         return this.googleAnalyticsService.getData(params);
       case D_TYPE.IG:
         return this.instagramService.getData(params, pageID);
+      case D_TYPE.YT:
+        return this.youtubeService.getData(params.metric, pageID);
       default:
-        throw new Error('chartCallService.retrieveChartData -> this chart type does not exist!');
+        throw new Error(`chartCallService.retrieveChartData -> chart type n.${type} does not exist!`);
     }
 
-    /*    if (Object.values(FB_CHART).includes(ID)) {
-          return this.facebookService.getData(ID, pageID);
-        } else if (Object.values(IG_CHART).includes(ID)) {
-          return this.instagramService.getData(ID, pageID);
-        } else if (Object.values(GA_CHART).includes(ID)) {
-          return this.googleAnalyticsService.getData(ID);
-        } else if (Object.values(YT_CHART).includes(ID)) {
-          return this.youtubeService.getData(ID, intervalDate, pageID);
-        } else {
-          throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
-        }*/
   }
 
   public initFormatting(ID, data) {
@@ -2110,7 +2101,10 @@ export class ChartsCallsService {
   }
 
   public retrieveMiniChartData(serviceID: number, pageIDs?, intervalDate?: IntervalDate, permissions?) {
-    let observables: Observable<any>[] = [], pageID;
+    const observables: Array<Observable<any>> = [];
+    const obj = {};
+    let pageID;
+
 
     switch (serviceID) {
       case D_TYPE.FB:
@@ -2134,17 +2128,19 @@ export class ChartsCallsService {
         // observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
         break;
       case D_TYPE.YT:
-        let obj = {};
-        observables.push(this.youtubeService.getSubscribers(obj));
-        observables.push(this.youtubeService.getData(YT_CHART.VIEWS, intervalDate, pageIDs));
-        observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
-        observables.push(this.youtubeService.getVideos(pageIDs));
+        // observables.push(this.youtubeService.getSubscribers(obj));
+        // observables.push(this.youtubeService.getData(, intervalDate, pageIDs));
+        // observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
+        // observables.push(this.youtubeService.getVideos(pageIDs));
         break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
-        observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData('page_fans', pageIDs[D_TYPE.FB]) : of({}));
-        observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
-        observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs[D_TYPE.YT]) : of({}));
+        observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null
+          ? this.facebookService.getData('page_fans', pageIDs[D_TYPE.FB]) : of({}));
+        observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null
+          ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
+        // observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null
+        // ? this.youtubeService.getSubscribers(pageIDs[D_TYPE.YT]) : of({}));
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');

@@ -222,18 +222,16 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                 .subscribe(dataArray => {
                   for (let i = 0; i < dataArray.length; i++) {
 
-                    let chart: DashboardCharts = charts[i];
+                    const chart: DashboardCharts = charts[i];
 
                     if ((dataArray.length > 0 && dataArray[i] == null)) {
                       chart.error = true;
                       console.warn('The attached chart does not contain any data.', chart);
-                    }
-                    else if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+                    } else if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                       if (dataArray[i].length === 0) { //if there is no data available
                         chart.error = true;
-                      }
-                      else {
+                      } else {
                         chart.chartData = dataArray[i];
                         let date = new Date(chart.chartData[0]['end_time']);
                         if (date < this.minDate)

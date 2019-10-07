@@ -7,60 +7,44 @@ import {YoutubeData, YT_CHART, YtPage} from '../_models/YoutubeData';
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
+import {FbData} from '../_models/FacebookData';
 
 @Injectable()
 export class YoutubeService {
+  private urlRequest = `${environment.protocol}${environment.host}:${environment.port}/yt`;
 
   constructor(private http: HttpClient, private storeService: StoreService) {
   }
 
   getChannels() {
     const headers = this.getAuthorization();
-    return this.http.get<YtPage[]>(this.formatURL(null, 'channels'), {headers});
+    return this.http.get<YtPage[]>(`${this.urlRequest}/channels`, {headers});
   }
 
+
+  getData(metric: string, channel_id: string) {
+    const headers = this.getAuthorization();
+    const params = {
+      metric: metric,
+      channel_id: channel_id
+    };
+
+    return this.http.get<Array<YoutubeData>>(`${this.urlRequest}/data`, {headers, params});
+  }
+
+  // Get videos === video on the metric of getData
+  // Get subs === info on the metric of getData
+  // Get viewList === getChannels
+
+/*
   getVideos(pageIDs) {
     const headers = this.getAuthorization();
-    return this.http.get<YoutubeData[]>(this.formatURL(null, pageIDs+'/videos'), {headers});
+    return this.http.get<YoutubeData[]>(this.formatURL(null, pageIDs + '/videos'), {headers});
   }
 
   getSubscribers(pageIDs) {
     const headers = this.getAuthorization();
-    return this.http.get<YtPage[]>(this.formatURL(null, pageIDs+'/subscribers'), {headers});
-  }
-
-
-
-  getData(ID, intervalDate, pageID): Observable<any> {
-    const headers = this.getAuthorization();
-    let call;
-
-    switch (ID) {
-      case YT_CHART.VIEWS:
-        call = 'views';
-        break;
-      case YT_CHART.COMMENTS:
-        call = 'comments';
-        break;
-      case YT_CHART.LIKES:
-        call = 'likes';
-        break;
-      case YT_CHART.DISLIKES:
-        call = 'dislikes';
-        break;
-      case YT_CHART.SHARES:
-        call = 'shares';
-        break;
-      case YT_CHART.AVGVIEW:
-        call = 'avgView';
-        break;
-      case YT_CHART.ESTWATCH:
-        call = 'estWatch';
-        break;
-    }
-
-    return this.http.get<YoutubeData[]>(this.formatURL(intervalDate, pageID + '/' + call), {headers})
-      .pipe(map((res) => res), catchError(e => of(e)));
+    return this.http.get<YtPage[]>(this.formatURL(null, pageIDs + '/subscribers'), {headers});
   }
 
   getViewList() {
@@ -69,9 +53,10 @@ export class YoutubeService {
   }
 
   private formatURL(intervalDate: IntervalDate, urlCall: string) {
-      return environment.protocol + environment.host + ':' + environment.port + '/yt/' + urlCall + '/';
+    return environment.protocol + environment.host + ':' + environment.port + '/yt/' + urlCall + '/';
 
   }
+*/
 
 
   private getAuthorization() {

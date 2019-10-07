@@ -9,8 +9,8 @@ export const YT_CHART = {
 };
 
 export const YT_PALETTE = {
-  //took by the main color of the dashboard
-  'RED' : {
+  // Took by the main color of the dashboard
+  'RED': {
     C1: '#520000',
     C2: '#660000',
     C3: '#7a0000',
@@ -24,8 +24,8 @@ export const YT_PALETTE = {
     C11: '#ff1f1f',
     C12: '#ff3333',
   },
-  //don't resemble anything good, but it's coherent with red
-  'BROWN' : {
+  // Don't resemble anything good, but it's coherent with red
+  'BROWN': {
     C1: '#421a10',
     C2: '#4d1e12',
     C3: '#632617',
@@ -40,7 +40,7 @@ export const YT_PALETTE = {
     C12: '#d8735a',
   },
 
-  //greyer purple
+  // Greyer purple
   'OPAL': {
     C1: '#322026',
     C2: '#3e282f',
@@ -56,6 +56,7 @@ export const YT_PALETTE = {
     C12: '#af8392',
   }
 };
+
 export interface YtPage {
   name: string;
   id: string;
