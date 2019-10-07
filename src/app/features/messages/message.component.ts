@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../core/breadcrumb/Breadcrumb';
 import {Message} from '../../shared/_models/Message';
@@ -7,21 +7,29 @@ import {MessageService} from '../../shared/_services/message.service';
 import {forkJoin, Observable} from 'rxjs';
 import * as moment from 'moment';
 import {UserMessage} from '../../shared/_models/UserMessage';
-import { ToastrService } from 'ngx-toastr';
+import {ToastrService} from 'ngx-toastr';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 
 @Component({
   selector: 'app-feature-messages',
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.scss'],
-
 })
 
 export class FeatureMessageComponent implements OnInit, OnDestroy {
 
+  modalRef: BsModalRef;
+  modalMessage: Message;
+
+  messageList: Array <UserMessage>;
   dataSource: MatTableDataSource<Message>;
-  displayedColumns: Array<string> = [ 'createdAt', 'title', 'read', 'delete'];
+  displayedColumns: Array<string> = ['notify', 'createdAt', 'title', 'read'];
+
+  @ViewChild('openMessage') openMessageTemplate: ElementRef;
+  @ViewChild('removeMessage') removeMessageTemplate: ElementRef;
 
   constructor(
+    private modalService: BsModalService,
     private breadcrumbActions: BreadcrumbActions,
     private messageService: MessageService,
     private toastr: ToastrService
@@ -33,44 +41,63 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
     this.getMessages();
   }
 
+  openModal(modal: ElementRef, message?: Message) {
+    this.modalMessage = message;
+    this.modalRef = this.modalService.show(modal, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  decline = (): void => {
+    this.modalRef.hide();
+  };
+
   getMessages() {
     let observables: Observable<any>[] = [];
-    let message;
+    let message, aux: UserMessage;
     this.messageService.getMessageForUser()
       .subscribe(messageList => {
-          for (message of messageList) {
-            observables.push(this.messageService.getMessageByID(message.message_id));
+          if (messageList) {
+            for (message of messageList) {
+              observables.push(this.messageService.getMessageByID(message.message_id));
+            }
+
+            forkJoin(observables).subscribe((data: Array<Message>) => {
+              for(let item of data) {
+                aux = messageList.find(el => el.message_id === item.id);
+                item.is_read = aux.is_read;
+              }
+
+              console.log(data);
+
+              this.dataSource = new MatTableDataSource<Message>(data);
+            });
           }
-          forkJoin(observables).subscribe(data => {
-            this.dataSource = new MatTableDataSource<Message>(data);
-          });
         },
         error => {
           console.log(error);
         });
-    return observables;
   }
 
   setAsRead(message_id) {
     this.messageService.setMessageAsRead(message_id)
       .subscribe(data => {
-        this.toastr.success('', 'Messaggio letto!');
       }, error => {
-      this.toastr.error('Si è verificato un errore.', 'Errore');
-    })
+      });
   }
 
-  deleteMessage (message_id){
+  deleteMessage(message_id) {
     this.messageService.deleteMessage(message_id)
       .subscribe(data => {
         this.toastr.success('', 'Messaggio eliminato con successo!');
+        let newData = this.dataSource.data.filter((message: Message) => message.id !== message_id);
+        this.dataSource = new MatTableDataSource<Message>(newData);
+        this.decline();
       }, error => {
         this.toastr.error('Si è verificato un errore durante l\'eliminazione del messaggio.', 'Errore');
-      })
+      });
   }
 
-  formatDate (date) : String {
-    date = moment(date, null ,'it', true);
+  formatDate(date): String {
+    date = moment(date, null, 'it', true);
     date = date.format('DD MMMM YYYY, H:mm:ss');
     return date.toString();
   }
@@ -91,6 +118,5 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.removeBreadcrumb();
   }
-
 
 }

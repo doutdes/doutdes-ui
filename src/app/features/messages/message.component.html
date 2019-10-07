@@ -4,27 +4,28 @@
   </div>
 </div>
 
-<div class="container-fluid d-none d-md-block">
+<div *ngIf="dataSource && dataSource.data.length > 0" class="container-fluid d-none d-md-block">
   <table mat-table [dataSource]="dataSource" matSort class="table-striped w-100 ">
+
+    <ng-container matColumnDef="notify">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let message">
+        <i *ngIf="!message.is_read" class="fas fa-exclamation-circle text-warning"></i>
+      </td>
+    </ng-container>
+
     <!-- Title Column -->
     <ng-container matColumnDef="title">
       <th mat-header-cell *matHeaderCellDef>Titolo</th>
       <td mat-cell *matCellDef="let message">
-        <span style="font-size: 15px; cursor: pointer">{{message.title}}</span> <br/>
+        <span [ngStyle]="{'font-weight': !message.is_read ? 'bold': 'normal'}" style="font-size: 15px; cursor: pointer;" (click)="openModal(openMessage, message); setAsRead(message.id)">{{message.title}}</span> <br/>
       </td>
-    </ng-container>
-
-    <ng-container matColumnDef="text">
-    <th mat-header-cell *matHeaderCellDef >Testo</th>
-    <td mat-cell *matCellDef="let message">
-    <span class="text-message" style="font-size: 15px;">{{message.text}}</span> <br/>
-    </td>
     </ng-container>
 
     <ng-container matColumnDef="createdAt">
       <th mat-header-cell *matHeaderCellDef>Ora di invio</th>
       <td mat-cell *matCellDef="let message">
-        <span style="font-size: 15px;">{{this.formatDate(message.createdAt)}}</span> <br/>
+        <span [ngStyle]="{'font-weight': !message.is_read ? 'bold': 'normal'}" style="font-size: 15px;">{{this.formatDate(message.createdAt)}}</span> <br/>
       </td>
     </ng-container>
 
@@ -32,13 +33,7 @@
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let message">
         <i class="far fa-envelope-open" style="cursor: pointer" (click)="setAsRead(message.id)"></i>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="delete">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let message">
-        <i class="far fa-trash-alt" style="cursor: pointer" (click)="deleteMessage(message.id)" ></i>
+        <i class="far fa-trash-alt" style="cursor: pointer" (click)="openModal(removeMessage, message)"></i>
       </td>
     </ng-container>
 
@@ -47,18 +42,36 @@
 
   </table>
 </div>
-<!--<table mat-table>-->
-<!--<ng-container matColumnDef="title">-->
-<!--<th mat-header-cell *matHeaderCellDef> score</th>-->
-<!--<td mat-cell>fadfadfsadasd2</td>-->
-<!--</ng-container>-->
-<!--<ng-container matColumnDef="text">-->
-<!--<th mat-header-cell *matHeaderCellDef> team</th>-->
-<!--<td mat-cell> asdasdasdasdas</td>-->
-<!--</ng-container>-->
 
+<div *ngIf="!dataSource || dataSource.data.length === 0" class="container-fluid d-none d-md-block">
+  <h3>Nessun messaggio</h3>
+</div>
+<ng-template #openMessage>
+  <div class="modal-header">
+    <h4 class="modal-title">{{this.modalMessage.title}}</h4>
+  </div>
 
-<!--<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>-->
-<!--<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>-->
+  <div class="modal-body">
+    <span>{{this.modalMessage.text}}</span>
+  </div>
 
-<!--</table>-->
+</ng-template>
+
+<!-- Modal deletion template -->
+<ng-template #removeMessage>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Cancellazione di {{modalMessage.title}}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    Sei sicuro di voler cancellare questo messaggio? Questa operazione è irreversibile!
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="decline()">No</button>
+    <button type="button" class="btn btn-success" (click)="deleteMessage(modalMessage.id)">Si, elimina</button>
+  </div>
+</ng-template>
