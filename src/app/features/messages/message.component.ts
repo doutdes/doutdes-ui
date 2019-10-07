@@ -61,7 +61,12 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
   }
 
   deleteMessage (message_id){
-
+    this.messageService.deleteMessage(message_id)
+      .subscribe(data => {
+        this.toastr.success('', 'Messaggio eliminato con successo!');
+      }, error => {
+        this.toastr.error('Si è verificato un errore durante l\'eliminazione del messaggio.', 'Errore');
+      })
   }
 
   formatDate (date) : String {
