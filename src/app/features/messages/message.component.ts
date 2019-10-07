@@ -7,6 +7,7 @@ import {MessageService} from '../../shared/_services/message.service';
 import {forkJoin, Observable} from 'rxjs';
 import * as moment from 'moment';
 import {UserMessage} from '../../shared/_models/UserMessage';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-feature-messages',
@@ -18,11 +19,12 @@ import {UserMessage} from '../../shared/_models/UserMessage';
 export class FeatureMessageComponent implements OnInit, OnDestroy {
 
   dataSource: MatTableDataSource<Message>;
-  displayedColumns: Array<string> = ['title','text', 'createdAt'];
+  displayedColumns: Array<string> = [ 'createdAt', 'title', 'read', 'delete'];
 
   constructor(
     private breadcrumbActions: BreadcrumbActions,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private toastr: ToastrService
   ) {
   }
 
@@ -47,6 +49,19 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
           console.log(error);
         });
     return observables;
+  }
+
+  setAsRead(message_id) {
+    this.messageService.setMessageAsRead(message_id)
+      .subscribe(data => {
+        this.toastr.success('', 'Messaggio letto!');
+      }, error => {
+      this.toastr.error('Si è verificato un errore.', 'Errore');
+    })
+  }
+
+  deleteMessage (message_id){
+
   }
 
   formatDate (date) : String {

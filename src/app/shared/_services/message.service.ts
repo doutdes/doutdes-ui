@@ -33,6 +33,16 @@ export class MessageService {
     return this.http.post(this.formatURL('sendMessageToUser'), {message_id: message_id, user_id: user_id}, {headers});
   }
 
+  deleteMessage(message_id){
+    const headers = this.getAuthorization();
+    return this.http.delete(this.formatURL('deleteMessageForUser/'+ message_id ),{headers});
+  }
+
+  setMessageAsRead(message_id){
+    const headers = this.getAuthorization();
+    return this.http.put(this.formatURL('setMessageRead'),{message_id:message_id},{headers});
+  }
+
   private formatURL(call): string {
     return environment.protocol + environment.host + ':' + environment.port + '/message/' + call;
   }
