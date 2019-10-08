@@ -408,7 +408,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
 
-    let existence, fb_page_id, update;
+    let existence, update;
     let key: ApiKey;
 
     this.GEService.loadingScreen.subscribe(value => {
@@ -425,10 +425,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         return;
       }
 
-      fb_page_id = await this.getPageID();
+      this.pageID = await this.getPageID();
 
       // We check if the user has already set a preferred page if there is more than one in his permissions.
-      if (!fb_page_id) {
+      if (!this.pageID) {
         await this.getPagesList();
 
         if (this.pageList.length === 0) {
@@ -454,8 +454,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
           return;
         }
-      } else {
-        this.pageID = fb_page_id;
       }
 
       this.firstDateRange = this.minDate;

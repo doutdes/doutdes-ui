@@ -574,8 +574,6 @@ export class ChartsCallsService {
       case IG_CHART.AUD_GENDER_AGE:
         header = [['Età', 'Maschio', 'Femmina']];
 
-        console.warn(data);
-
         let gender_data = data[0] ? Object.keys(data[0]['value']) : null;
 
         if (gender_data && gender_data.length > 0) {

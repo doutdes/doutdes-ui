@@ -29,6 +29,7 @@ import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
 import * as _ from 'lodash';
 import {DragulaService} from 'ng2-dragula';
+import {ChartParams} from '../../../shared/_models/Chart';
 
 const PrimaryWhite = '#ffffff';
 
@@ -246,181 +247,200 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async loadDashboard() {
-    /*
-        const observables: Observable<any>[] = [];
-        const chartsToShow: Array<DashboardCharts> = [];
-        const dateInterval: IntervalDate = {
-          first: this.minDate,
-          last: this.maxDate
-        };
-        let currentData: DashboardData = {
-          data: chartsToShow,
-          interval: dateInterval,
-          type: D_TYPE.CUSTOM,
-        };
+    let chartParams: ChartParams = {};
+    const observables: Observable<any>[] = [];
+    const chartsToShow: Array<DashboardCharts> = [];
+    const dateInterval: IntervalDate = {
+      first: this.minDate,
+      last: this.maxDate
+    };
+    let currentData: DashboardData = {
+      data: chartsToShow,
+      interval: dateInterval,
+      type: D_TYPE.CUSTOM,
+    };
 
-        let pageID, dash, charts, dataArray;
+    let pageID, dash, charts, dataArray;
 
-        this.dragulaService.find("REVERT");
+    this.dragulaService.find('REVERT');
 
-        try {
-          // Retrieving dashboard ID
-          dash = await this.DService.getDashboardByType(D_TYPE.CUSTOM).toPromise(); // Custom dashboard type
+    try {
+      // Retrieving dashboard ID
+      dash = await this.DService.getDashboardByType(D_TYPE.CUSTOM).toPromise(); // Custom dashboard type
 
-          if (dash['id']) {
-            this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
-          } else {
-            this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
-            return;
-          }
+      if (dash['id']) {
+        this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
+      } else {
+        this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
+        return;
+      }
 
-          if (this.dashStored) {
-            // Ci sono già dati salvati
-            this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
-            this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-            this.GEService.loadingScreen.next(false);
+      if (this.dashStored) {
+        // Ci sono già dati salvati
+        this.filterActions.loadStoredDashboard(D_TYPE.CUSTOM);
+        this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
+        this.GEService.loadingScreen.next(false);
 
-            if (this.chartArray$.length === 0) {
-              this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
-            }
-          } else {
-            charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
-
-            if (charts && charts.length > 0) { // Checking if dashboard is not empty
-              charts.forEach(async chart => {
-                // If the permission for the service is granted
-                if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
-                  pageID = this.getPageID(chart.type);
-                  observables.push(this.CCService.retrieveChartData(chart.chart_id, dateInterval, pageID));
-                }
-              }); // Retrieves data for each chart
-
-
-              dataArray = await forkJoin(observables).toPromise();
-
-              if (dataArray) {
-                for (let i = 0; i < dataArray.length; i++) {
-
-                  const chart: DashboardCharts = charts[i];
-
-                  if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-
-                    chart.chartData = dataArray[i];
-                    this.minDate = new Date(Math.min.apply(null, this.minSet));
-
-                    chart.error = false;
-                  } else {
-                    chart.error = true;
-
-                    console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
-                    console.error(dataArray[i]);
-                  }
-
-                  chartsToShow.push(chart);
-                }
-
-                currentData = {
-                  data: chartsToShow,
-                  interval: dateInterval,
-                  type: D_TYPE.CUSTOM,
-                };
-
-                this.filterActions.initData(currentData);
-                this.GEService.updateChartList.next(true);
-
-                // Shows last 30 days
-                this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-
-                this.GEService.loadingScreen.next(false);
-              }
-            } else {
-              this.filterActions.initData(currentData);
-              this.GEService.loadingScreen.next(false);
-              this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
-            }
-          }
-
-          this.loaded = true;
-
-        } catch (e) {
-          console.error(e);
-          this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
+        if (this.chartArray$.length === 0) {
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
-    */
+      } else {
+        charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
+
+        if (charts && charts.length > 0) { // Checking if dashboard is not empty
+          charts.forEach(async (chart: DashboardCharts) => {
+            chartParams = {};
+            // If the permission for the service is granted
+            if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
+              chartParams = {
+                metric: chart.metric,
+                dimensions: chart.dimensions || null,
+                sort: chart.sort || null,
+                interval: chart.interval || null,
+                period: chart.period || null,
+                filter: chart.filter || null
+              };
+
+              pageID = this.getPageID(chart.type);
+              observables.push(this.CCService.retrieveChartData(chart.type, chartParams, pageID));
+            }
+          }); // Retrieves data for each chart
+
+
+          dataArray = await forkJoin(observables).toPromise();
+
+          if (dataArray) {
+            for (let i = 0; i < dataArray.length; i++) {
+
+              const chart: DashboardCharts = charts[i];
+
+              if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+
+                chart.chartData = dataArray[i];
+                this.minDate = new Date(Math.min.apply(null, this.minSet));
+
+                chart.error = false;
+              } else {
+                chart.error = true;
+
+                console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve data from one of the charts. More info:');
+                console.error(dataArray[i]);
+              }
+
+              chartsToShow.push(chart);
+            }
+
+            currentData = {
+              data: chartsToShow,
+              interval: dateInterval,
+              type: D_TYPE.CUSTOM,
+            };
+
+            this.filterActions.initData(currentData);
+            this.GEService.updateChartList.next(true);
+
+            // Shows last 30 days
+            this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
+
+            this.GEService.loadingScreen.next(false);
+          }
+        } else {
+          this.filterActions.initData(currentData);
+          this.GEService.loadingScreen.next(false);
+          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+        }
+      }
+
+      this.loaded = true;
+
+    } catch (e) {
+      console.error(e);
+      this.toastr.error(
+        'Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.',
+        'Errore durante l\'inizializzazione della dashboard.'
+      );
+    }
   }
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
-    let pageID = null;
-
+    const pageID = this.getPageID(dashChart.type);
     const dateInterval: IntervalDate = {
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
     };
+    const chartParams: ChartParams = {
+      metric: dashChart.metric,
+      dimensions: dashChart.dimensions || null,
+      sort: dashChart.sort || null,
+      interval: dashChart.interval || null,
+      period: dashChart.period || null,
+      filter: dashChart.filter || null
+    };
 
-    pageID = this.getPageID(dashChart.type);
 
-    /*    this.CCService.retrieveChartData(dashChart.chart_id, dateInterval, pageID) todo edit
-          .subscribe(chartData => {
-            if (!chartData['status']) { // Se la chiamata non rende errori
-              chartToPush.chartData = chartData;
+    this.CCService.retrieveChartData(dashChart.type, chartParams, pageID)
+      .subscribe(chartData => {
+        console.log('chart data received');
+          if (!chartData['status']) { // Se la chiamata non rende errori
+            chartToPush.chartData = chartData;
 
-              // getting the minDate of the chart, depending on its type
-              switch (dashChart.type) {
-                case D_TYPE.FB :
-                case D_TYPE.IG:
-                  this.minSet.push(
-                    {
-                      id: dashChart.chart_id,
-                      minDate: new Date(dashChart.chartData[0]['end_time'])
-                    }
-                  );
-                  break;
-                case D_TYPE.GA:
-                  this.minSet.push(
-                    {
-                      id: dashChart.chart_id,
-                      minDate: (parseDate(dashChart['chartData'][0][0]))
-                    }
-                  );
-                  break;
-                case D_TYPE.YT:
-                  this.minSet.push(
-                    {
-                      id: dashChart.chart_id,
-                      minDate: (parseDate(dashChart.chartData[0]['date']))
-                    }
-                  );
-                  break;
-              }
-              this.minSet.forEach(el => {
-                if (el.minDate < this.minDate) {
-                  this.minDate = el.minDate;
-                }
-              });
-
-              chartToPush.error = false;
-
-              const date = parseDate(chartToPush['chartData'][0][0]);
-              if (date < this.minDate) {
-                this.minDate = date;
-              }
-
-              this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
-            } else {
-              chartToPush.error = true;
-              console.log('Errore recuperando dati per ' + dashChart);
-
-              this.toastr.error('I dati disponibili per ' + dashChart.title + ' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
+            // getting the minDate of the chart, depending on its type
+            switch (dashChart.type) {
+              case D_TYPE.FB :
+              case D_TYPE.IG:
+                this.minSet.push({
+                  id: dashChart.chart_id,
+                  minDate: new Date(dashChart.chartData[0]['end_time'])
+                });
+                break;
+              case D_TYPE.GA:
+                this.minSet.push({
+                  id: dashChart.chart_id,
+                  minDate: (parseDate(dashChart['chartData'][0][0]))
+                });
+                break;
+              case D_TYPE.YT:
+                this.minSet.push({
+                  id: dashChart.chart_id,
+                  minDate: (parseDate(dashChart.chartData[0]['date']))
+                });
+                break;
             }
-            this.filterActions.addChart(chartToPush);
-            this.filterActions.filterData(dateInterval);
-          }, error1 => {
-            console.log('Error querying the Chart');
-            console.log(error1);
+            this.minSet.forEach(el => {
+              if (el.minDate < this.minDate) {
+                this.minDate = el.minDate;
+              }
+            });
 
-            this.toastr.error('C\'è stato un errore recuperando i dati per il grafico ' + dashChart.title + '. Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
-          });*/
+            chartToPush.error = false;
+
+            const date = parseDate(chartToPush['chartData'][0][0]);
+            if (date < this.minDate) {
+              this.minDate = date;
+            }
+
+            this.toastr.success(`"${dashChart.title}" è stato correttamente aggiunto alla dashboard.`, 'Grafico aggiunto!');
+          } else {
+            chartToPush.error = true;
+            console.log('Errore recuperando dati per ' + dashChart);
+
+            this.toastr.error(
+              `I dati disponibili per ${dashChart.title} potrebbero essere non sufficienti`,
+              'Errore durante l\'aggiunta del grafico'
+            );
+          }
+          this.filterActions.addChart(chartToPush);
+          this.filterActions.filterData(dateInterval);
+        }, error1 => {
+          console.log('Error querying the Chart');
+          console.log(error1);
+
+          this.toastr.error(
+            `C'è stato un errore recuperando i dati per il grafico ${dashChart.title}. Per favore, riprova più tardi oppure contatta il supporto.`,
+            'Errore durante l\'aggiunta del grafico');
+        }
+      );
   }
 
   onValueChange(value): void {
@@ -530,35 +550,35 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   async loadMiniCards() {
     // 1. Init intervalData (retrieve data of previous month)
-    let results, pageIDs = {};
-    const permissions = this.HARD_DASH_DATA.permissions;
-    const date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    /*    let results, pageIDs = {};
+        const permissions = this.HARD_DASH_DATA.permissions;
+        const date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
-    const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
-    };
+        const intervalDate: IntervalDate = {
+          first: new Date(y, m - 1, 1),
+          last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+        };
 
-    pageIDs[D_TYPE.FB] = this.fbPageID;
-    pageIDs[D_TYPE.IG] = this.igPageID;
-    pageIDs[D_TYPE.YT] = this.ytPageID;
+        pageIDs[D_TYPE.FB] = this.fbPageID;
+        pageIDs[D_TYPE.IG] = this.igPageID;
+        pageIDs[D_TYPE.YT] = this.ytPageID;
 
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
+        const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
 
-    forkJoin(observables).subscribe(miniDatas => {
-      for (const i in miniDatas) {
-        if (Object.entries(miniDatas[i]).length !== 0) {
-          results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
-          this.miniCards[i].value = results['value'];
-          this.miniCards[i].progress = results['perc'] + '%';
-          this.miniCards[i].step = results['step'];
-        } else {
-          this.miniCards[i].value = '-';
-          this.miniCards[i].progress = '0%';
-          this.miniCards[i].step = 0;
-        }
-      }
-    });
+        forkJoin(observables).subscribe(miniDatas => {
+          for (const i in miniDatas) {
+            if (Object.entries(miniDatas[i]).length !== 0) {
+              results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
+              this.miniCards[i].value = results['value'];
+              this.miniCards[i].progress = results['perc'] + '%';
+              this.miniCards[i].step = results['step'];
+            } else {
+              this.miniCards[i].value = '-';
+              this.miniCards[i].progress = '0%';
+              this.miniCards[i].step = 0;
+            }
+          }
+        });*/
   }
 
   async getViewID() {

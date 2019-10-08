@@ -20,7 +20,7 @@ import {Chart} from '../../shared/_models/Chart';
   templateUrl: './emptycard.component.html'
 })
 
-export class EmptycardComponent implements OnInit, OnDestroy {
+export class EmptycardComponent implements OnInit {
 
   @Input() xlOrder: string;
   @Input() lgOrder: string;
@@ -82,7 +82,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     if (!dashData) {
       console.error('ERROR in EMPTY-CARD. Cannot get retrieve dashboard data.');
     } else {
-      let dummy_dashType = -1; // A dummy dash_type for the emptycard, as event subscriber
+      const dummy_dashType = -1; // A dummy dash_type for the emptycard, as event subscriber
 
       try {
         if (!this.GEService.isSubscriber(dummy_dashType)) {
@@ -145,7 +145,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     this.chartRequired = false;
 
     selected = this.chartRemaining.find(chart =>
-      chart.type === this.insertChartForm.value.channel &&
+      chart.type === parseInt(this.insertChartForm.value.channel, 10) &&
       chart.title === this.insertChartForm.value.title &&
       chart.format === this.insertChartForm.value.style
     );
@@ -162,22 +162,17 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     this.loading = true;
 
+    selected.chart_id = selected.ID;
+    delete selected['ID'];
+
     dashChart = {
-      chart_id: selected.ID,
+      ...selected,
       dashboard_id: this.dashboard_data.dashboard_id,
-      title: selected.title,
-      type: selected.type,
-      format: selected.format,
-      metric: selected.metric,
-      dimensions: selected.dimensions,
-      sort: selected.sort,
-      filter: selected.filter,
-      period: selected.period,
-      interval: selected.interval
     };
 
     try {
       await this.dashboardService.addChartToDashboard(dashChart).toPromise();
+      console.log('todo done')
       this.closeModal();
 
       this.GEService.showChartInDashboard.next(dashChart);
@@ -188,11 +183,13 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       await this.updateDropdownOptions();
 
     } catch (error) {
-      this.toastr.error('Non è stato possibile aggiungere "' + dashChart.title + '" alla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico.');
+      this.toastr.error(
+        `Non è stato possibile aggiungere ${dashChart.title} alla dashboard. Riprova più tardi oppure contatta il supporto.`,
+        'Errore durante l\'aggiunta del grafico.'
+      );
       console.error('Error inserting the Chart in the dashboard');
       console.error(error);
     }
-
   }
 
   async updateDropdownOptions() {
@@ -202,7 +199,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     if (this.dashboard_data) {
 
       this.chartRemaining = this.dashboard_data.dashboard_type !== 0
-        ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type).toPromise()
+        ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
+          .toPromise()
         : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
 
 
@@ -235,48 +233,37 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   }
 
-  filterDropdown(updateChannel = false) {
+  filterDropdown = (updateChannel = false) => {
     if (updateChannel) {
       this.metrics = this.getUnique(this.chartRemaining
-        .filter(chart => chart.type === this.insertChartForm.value.channel)
+        .filter(chart => chart.type === parseInt(this.insertChartForm.value.channel, 10))
         .sort((a: Chart, b: Chart) => a.title.localeCompare(b.title)), 'title'
       );
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].title);
     }
 
-    this.description = (this.chartRemaining.find(chart => chart.title === this.insertChartForm.value.metric && chart.type === this.insertChartForm.value.channel)).description;
+    // Set the description of the metric
+    this.description = (this.chartRemaining.find(chart =>
+      chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10)
+    )).description;
 
     // Update styles
     this.styles = this.chartRemaining
-      .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === this.insertChartForm.value.channel)
+      .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10))
       .map(item => item.format);
     this.insertChartForm.controls['style'].setValue(this.styles[0]);
 
     // Update title
     this.insertChartForm.controls['title'].setValue(this.insertChartForm.value.metric);
+  };
 
-    // Set the description of the metric
-  }
+  getUnique = (arr, comp) =>
+    arr.map(e => e[comp])
 
-  getUnique(arr, comp) {
-    const unique = arr
-      .map(e => e[comp])
-
-      // store the keys of the unique objects
+    // store the keys of the unique objects
       .map((e, i, final) => final.indexOf(e) === i && i)
 
       // eliminate the dead keys & store unique objects
-      .filter(e => arr[e]).map(e => arr[e])
-    ;
+      .filter(e => arr[e]).map(e => arr[e]);
 
-    return unique;
-
-  }
- // a: 6, b: 8
-  compareNumbers = (a: number, b: number): number => {
-    return a - b;
-  };
-
-  ngOnDestroy() {
-  }
 }

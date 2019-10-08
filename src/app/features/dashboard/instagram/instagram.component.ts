@@ -205,7 +205,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
           // Retrieves data for each chart
           charts.forEach(chart => {
-            console.log('charti', chart);
             chartParams = {
               metric: chart.metric,
               period: chart.period,

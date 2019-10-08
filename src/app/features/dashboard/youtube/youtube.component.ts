@@ -61,7 +61,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   public loading = false;
   public isApiKeySet = true;
-  loaded: boolean = false;
+  loaded = false;
 
   @select() filter: Observable<any>;
 
@@ -168,7 +168,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
             chartParams = {
               metric: item.metric,
             };
-            observables.push(this.CCService.retrieveChartData(chart.type, chartParams, channelID));
+            observables.push(this.CCService.retrieveChartData(item.type, chartParams, channelID));
           }); // Retrieves data for each chart
 
           dataArray = await forkJoin(observables).toPromise();
@@ -213,7 +213,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       this.loaded = true;
 
     } catch (e) {
-      console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
+      console.error('ERROR in YOUTUBE-COMPONENT. Cannot retrieve dashboard charts. More info:');
       console.error(e);
     }
   }
