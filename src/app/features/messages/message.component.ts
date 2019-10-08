@@ -43,7 +43,10 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
 
   openModal(modal: ElementRef, message?: Message) {
     this.modalMessage = message;
-    this.modalRef = this.modalService.show(modal, {class: 'modal-md modal-dialog-centered'});
+    this.modalRef = this.modalService.show(modal,
+      {class: 'modal-md modal-dialog-centered',
+        backdrop: 'static',
+        keyboard: false});
   }
 
   decline = (): void => {
@@ -59,15 +62,12 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
             for (message of messageList) {
               observables.push(this.messageService.getMessageByID(message.message_id));
             }
-
             forkJoin(observables).subscribe((data: Array<Message>) => {
+              data = data.sort((a,b)=> new Date(a.createdAt).getTime() - new Date (b.createdAt).getTime());
               for(let item of data) {
                 aux = messageList.find(el => el.message_id === item.id);
                 item.is_read = aux.is_read;
               }
-
-              console.log(data);
-
               this.dataSource = new MatTableDataSource<Message>(data);
             });
           }
@@ -77,11 +77,15 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
         });
   }
 
-  setAsRead(message_id) {
-    this.messageService.setMessageAsRead(message_id)
+  setAsRead(message) {
+    if (!message.is_read){
+    this.messageService.setMessageAsRead(message.id)
       .subscribe(data => {
+        this.getMessages();
       }, error => {
+        console.log(error);
       });
+    }
   }
 
   deleteMessage(message_id) {
@@ -98,7 +102,7 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
 
   formatDate(date): String {
     date = moment(date, null, 'it', true);
-    date = date.format('DD MMMM YYYY, H:mm:ss');
+    date = date.local().format('DD MMMM YYYY, H:mm');
     return date.toString();
   }
 
