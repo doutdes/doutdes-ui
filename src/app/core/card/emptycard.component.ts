@@ -105,6 +105,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
         console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.', e);
       }
     }
+
   }
 
 
@@ -117,7 +118,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     try {
       await this.updateDropdownOptions();
-
       if(this.metrics.length === 0) {
         this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
       } else {
@@ -144,9 +144,10 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     this.submitted = true;
     this.chartRequired = false;
 
+
     selected = this.chartRemaining.find(chart =>
-      chart.Type == this.insertChartForm.value.channel &&
-      chart.Title == this.insertChartForm.value.title &&
+      chart.type == this.insertChartForm.value.channel &&
+      chart.title == this.insertChartForm.value.title &&
       chart.format == this.insertChartForm.value.style
     );
 
@@ -165,8 +166,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     dashChart = {
       chart_id: selected.ID,
       dashboard_id: this.dashboard_data.dashboard_id,
-      title: selected.Title,
-      type: selected.Type,
+      title: selected.title,
+      type: selected.type,
       format: selected.format
     };
 
@@ -230,15 +231,16 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   }
 
   filterDropdown(updateChannel = false) {
+
     if (updateChannel) {
-      this.metrics = this.getUnique(this.chartRemaining.filter(chart => chart.Type == this.insertChartForm.value.channel), 'Title');
-      this.insertChartForm.controls['metric'].setValue(this.metrics[0].Title);
+      this.metrics = this.getUnique(this.chartRemaining.filter(chart => chart.type == this.insertChartForm.value.channel), 'title');
+      this.insertChartForm.controls['metric'].setValue(this.metrics[0].title);
     }
 
-    this.description = (this.chartRemaining.find(chart => chart.Title == this.insertChartForm.value.metric && chart.Type == this.insertChartForm.value.channel)).description;
+    this.description = (this.chartRemaining.find(chart => chart.title == this.insertChartForm.value.metric && chart.type == this.insertChartForm.value.channel)).description;
 
     // Update styles
-    this.styles = this.chartRemaining.filter(chart => chart.Title == this.insertChartForm.value.metric && chart.Type == this.insertChartForm.value.channel).map(item => item.format);
+    this.styles = this.chartRemaining.filter(chart => chart.title == this.insertChartForm.value.metric && chart.type == this.insertChartForm.value.channel).map(item => item.format);
     this.insertChartForm.controls['style'].setValue(this.styles[0]);
 
     // Update title

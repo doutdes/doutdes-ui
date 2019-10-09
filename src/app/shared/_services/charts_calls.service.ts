@@ -15,6 +15,11 @@ import _date = moment.unitOfTime._date;
 import * as _ from 'lodash';
 
 import {YT_CHART} from '../_models/YoutubeData';
+import {FacebookMarketingService} from './facebook-marketing.service';
+import {FBM_CHART} from '../_models/FacebookMarketingData';
+import NumberFormat = Intl.NumberFormat;
+import {computeStyle} from '@angular/animations/browser/src/util';
+import {parse} from 'ts-node';
 
 @Injectable()
 export class ChartsCallsService {
@@ -23,7 +28,8 @@ export class ChartsCallsService {
     private facebookService: FacebookService,
     private googleAnalyticsService: GoogleAnalyticsService,
     private instagramService: InstagramService,
-    private youtubeService: YoutubeService) {
+    private youtubeService: YoutubeService,
+    private facebookMarketingService: FacebookMarketingService) {
   }
 
   public static cutString(str, maxLength) {
@@ -42,6 +48,8 @@ export class ChartsCallsService {
       return this.googleAnalyticsService.getData(ID);
     } else if (Object.values(YT_CHART).includes(ID)) {
       return this.youtubeService.getData(ID, intervalDate, pageID);
+    } else if (Object.values(FBM_CHART).includes(ID)) {
+      return this.facebookMarketingService.getData(ID, pageID);
     } else {
       throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
     }
@@ -58,6 +66,8 @@ export class ChartsCallsService {
     let temp, index;
     let myMap;
 
+    let age = [];let female = [];let male = [];let hourlyVar = []; //this
+    const time = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24']; //this
 
     // console.warn('ID: ' + ID + ' - ', data);
 
@@ -71,7 +81,6 @@ export class ChartsCallsService {
         break;  // FB Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
         header = [['Paese', 'Numero fan']];
-
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [k, data[data.length - 1].value[k]];
@@ -751,14 +760,397 @@ export class ChartsCallsService {
           chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
         }
         break;
-    }
 
+      case FBM_CHART.AGE_REACH:
+        header = [['Età', 'Copertura']];
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(data[i].age), parseInt(data[i].reach, 10)]);
+        }
+        break;
+      case FBM_CHART.AGE_IMPRESSIONS:
+        header = [['Età', 'Impression']];
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(data[i].age), parseInt(data[i].impressions, 10)]);
+        }
+        break;
+      case FBM_CHART.AGE_SPEND:
+        header = [['Età', 'Costo']];
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(data[i].age), parseInt(data[i].spend, 10)]);
+        }
+        break;
+      case FBM_CHART.AGE_INLINE:
+        header = [['Età', 'Click link']];
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(data[i].age), parseInt(data[i].inline_link_clicks, 10)]);
+        }
+        break;
+      case FBM_CHART.AGE_CLICKS:
+        header = [['Età', 'Click']];
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(data[i].age), parseInt(data[i].clicks, 10)]);
+        }
+        break;
+      case FBM_CHART.AGE_CPC:
+        header = [['Età', 'CPC']];
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(data[i].age), parseFloat(data[i].cpc)]);
+        }
+        break;
+      case FBM_CHART.AGE_CPP:
+        header = [['Età', 'CPP']];
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(data[i].age), parseFloat(data[i].cpp)]);
+        }
+        break;
+      case FBM_CHART.AGE_CTR:
+        header = [['Età', 'CTR']];
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(data[i].age), parseFloat(data[i].ctr)]);
+        }
+        break;
+
+      case FBM_CHART.GENDER_REACH:
+        header = [['Genere', 'Copertura']];
+        for (let i = 0; i < 2; i++) {
+          chartData.push([(data[i].gender), parseInt(data[i].reach, 10)]);
+        }
+        break;
+      case FBM_CHART.GENDER_IMPRESSIONS:
+        header = [['Genere', 'Impression']];
+        for (let i = 0; i < 2; i++) {
+          chartData.push([(data[i].gender), parseInt(data[i].impressions, 10)]);
+        }
+        break;
+      case FBM_CHART.GENDER_SPEND:
+        header = [['Genere', 'Costo']];
+        for (let i = 0; i < 2; i++) {
+          chartData.push([(data[i].gender), parseInt(data[i].spend, 10)]);
+        }
+        break;
+      case FBM_CHART.GENDER_INLINE:
+        header = [['Genere', 'Click link']];
+        for (let i = 0; i < 2; i++) {
+          chartData.push([(data[i].gender), parseInt(data[i].inline_link_clicks, 10)]);
+        }
+        break;
+      case FBM_CHART.GENDER_CLICKS:
+        header = [['Genere', 'Click']];
+        for (let i = 0; i < 2; i++) {
+          chartData.push([(data[i].gender), parseInt(data[i].clicks, 10)]);
+        }
+        break;
+      case FBM_CHART.GENDER_CPC:
+        header = [['Genere', 'CPC']];
+        for (let i = 0; i < 2; i++) {
+          chartData.push([(data[i].gender), parseFloat(data[i].cpc)]);
+        }
+        break;
+      case FBM_CHART.GENDER_CPP:
+        header = [['Genere', 'CPP']];
+        for (let i = 0; i < 2; i++) {
+          chartData.push([(data[i].gender), parseFloat(data[i].cpp)]);
+        }
+        break;
+      case FBM_CHART.GENDER_CTR:
+        header = [['Genere', 'CTR']];
+        for (let i = 0; i < 2; i++) {
+          chartData.push([(data[i].gender), parseFloat(data[i].ctr)]);
+        }
+        break;
+
+      case FBM_CHART.GENDER_AGE_REACH:
+        header = [['Età', 'Copertura-Donna', {role: 'style'}, {role: 'annotation'}, 'Copertura-Uomo', {role: 'style'}, {role: 'annotation'}]];
+
+        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0); //this
+        data.forEach(d => d.gender === 'female' ? female.push(d.reach * -1) : 0);
+        data.forEach(d => d.gender === 'male' ? male.push(d.reach) : 0);
+
+        for (let i = 0; i < 6; i++) {
+            chartData.push([
+              age[i],
+              parseFloat(female[i]), '#B22222', age[i],
+              parseFloat(male[i]), '#0000CD', ''
+            ]);
+        }
+        break;
+      case FBM_CHART.GENDER_AGE_IMPRESSIONS:
+        header = [['Età', 'Impression-Donna', {role: 'style'}, {role: 'annotation'}, 'Impression-Uomo', {role: 'style'}, {role: 'annotation'}]];
+
+        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? female.push(d.impressions * -1) : 0);
+        data.forEach(d => d.gender === 'male' ? male.push(d.impressions) : 0);
+
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+        }
+        break;
+      case FBM_CHART.GENDER_AGE_SPEND:
+        header = [['Età', 'Costo-Donna', {role: 'style'}, {role: 'annotation'}, 'Costo-Uomo', {role: 'style'}, {role: 'annotation'}]];
+
+        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? female.push(d.spend * -1) : 0);
+        data.forEach(d => d.gender === 'male' ? male.push(d.spend) : 0);
+
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+        }
+        break;
+      case FBM_CHART.GENDER_AGE_CLICKS:
+        header = [['Age', 'Click-Donna', {role: 'style'}, {role: 'annotation'}, 'Click-Uomo', {role: 'style'}, {role: 'annotation'}]];
+
+        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? female.push(d.clicks * -1) : 0);
+        data.forEach(d => d.gender === 'male' ? male.push(d.clicks) : 0);
+
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+        }
+        break;
+      case FBM_CHART.GENDER_AGE_INLINE:
+        header = [['Età', 'Click link-Donna', {role: 'style'}, {role: 'annotation'}, 'Click link-Uomo', {role: 'style'}, {role: 'annotation'}]];
+
+        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? female.push(d.inline_link_clicks * -1) : 0);
+        data.forEach(d => d.gender === 'male' ? male.push(d.inline_link_clicks) : 0);
+
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+        }
+        break;
+      case FBM_CHART.GENDER_AGE_CPC:
+        header = [['Age', 'CPC-FEMALE', {role: 'style'}, {role: 'annotation'}, 'CPC-MALE', {role: 'style'}, {role: 'annotation'}]];
+
+        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? female.push(d.cpc * -1) : 0);
+        data.forEach(d => d.gender === 'male' ? male.push(d.cpc) : 0);
+
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+        }
+        break;
+      case FBM_CHART.GENDER_AGE_CTR:
+        header = [['Age', 'CTR-FEMALE', {role: 'style'}, {role: 'annotation'}, 'CTR-MALE', {role: 'style'}, {role: 'annotation'}]];
+
+        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? female.push(d.ctr * -1) : 0);
+        data.forEach(d => d.gender === 'male' ? male.push(d.ctr) : 0);
+
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+        }
+        break;
+      case FBM_CHART.GENDER_AGE_CPP:
+        header = [['Age', 'CPP-FEMALE', {role: 'style'}, {role: 'annotation'}, 'CPP-MALE', {role: 'style'}, {role: 'annotation'}]];
+
+        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? female.push(d.cpp * -1) : 0);
+        data.forEach(d => d.gender === 'male' ? male.push(d.cpp) : 0);
+
+        for (let i = 0; i < 6; i++) {
+          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+        }
+        break;
+
+      case FBM_CHART.COUNTRYREGION_REACH:
+        header = [['Paese-Regione', 'Copertura']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].reach, 10)]);
+        }
+        break;
+      case FBM_CHART.COUNTRYREGION_IMPRESSIONS:
+        header = [['Paese-Regione', 'Impression']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].impressions, 10)]);
+        }
+        break;
+      case FBM_CHART.COUNTRYREGION_SPEND:
+        header = [['Paese-Regione', 'Costo']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].spend, 10)]);
+        }
+        break;
+      case FBM_CHART.COUNTRYREGION_CPC:
+        header = [['Paese-Regione', 'CPC']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([(data[i].country + '-' + data[i].region), parseFloat(data[i].cpc)]);
+        }
+        break;
+      case FBM_CHART.COUNTRYREGION_CTR:
+        header = [['Paese-Regione', 'CTR']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].ctr, 10)]);
+        }
+        break;
+      case FBM_CHART.COUNTRYREGION_CPP:
+        header = [['Paese-Regione', 'CPP']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].cpp, 10)]);
+        }
+        break;
+      case FBM_CHART.COUNTRYREGION_CLICKS:
+        header = [['Paese-Regione', 'Click']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].clicks, 10)]);
+        }
+        break;
+      case FBM_CHART.COUNTRYREGION_INLINE:
+        header = [['Paese-Regione', 'Click link']];
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].inline_link_clicks, 10)]);
+        }
+        break;
+
+      case FBM_CHART.HOURLYADVERTISER_IMPRESSIONS:
+        header = [['Orario', 'Impression']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseInt(data[i].impressions, 10) + parseInt(data[i+1].impressions, 10) + parseInt(data[i+2].impressions, 10)); //this
+
+          chartData.push([
+            time[i],
+            parseInt(hourlyVar[i], 10)]);
+        }
+        break;
+      case FBM_CHART.HOURLYADVERTISER_SPEND:
+        header = [['Orario', 'Spend']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseInt(data[i].spend, 10) + parseInt(data[i+1].spend, 10) + parseInt(data[i+2].spend,10));
+
+          chartData.push([
+            time[i],
+            parseInt(hourlyVar[i], 10)]);
+        }
+        break;
+      case FBM_CHART.HOURLYADVERTISER_CPC:
+        header = [['Orario', 'CPC']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseFloat(data[i].cpc) + parseFloat(data[i+1].cpc) + parseFloat(data[i+2].cpc));
+
+          chartData.push([
+            time[i],
+            parseFloat(hourlyVar[i])]);
+        }
+        break;
+      case FBM_CHART.HOURLYADVERTISER_CTR:
+        header = [['Orario', 'CTR']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseFloat(data[i].ctr) + parseFloat(data[i+1].ctr) + parseFloat(data[i+2].ctr));
+
+          chartData.push([
+            time[i],
+            parseFloat(hourlyVar[i])]);
+        }
+        break;
+      case FBM_CHART.HOURLYADVERTISER_CLICKS:
+        header = [['Orario', 'Click']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseInt(data[i].clicks, 10) + parseInt(data[i+1].clicks, 10) + parseInt(data[i+2].clicks,10));
+
+          chartData.push([
+            time[i],
+            parseInt(hourlyVar[i], 10)]);
+        }
+        break;
+      case FBM_CHART.HOURLYADVERTISER_INLINE:
+        header = [['Orario', 'Click link']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i+1].inline_link_clicks, 10) + parseInt(data[i+2].inline_link_clicks, 10));
+
+          chartData.push([
+            time[i],
+            parseInt(hourlyVar[i], 10)]);
+        }
+        break;
+
+      case FBM_CHART.HOURLYAUDIENCE_REACH:
+        header = [['Orario', 'Copertura']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseInt(data[i].reach, 10) + parseInt(data[i+1].reach, 10) + parseInt(data[i+2].reach, 10));
+
+          chartData.push([
+            time[i],
+            parseInt(hourlyVar[i], 10)]);
+        }
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_IMPRESSIONS:
+        header = [['Orario', 'Impression']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseInt(data[i].impressions,10) + parseInt(data[i+1].impressions, 10) + parseInt(data[i+2].impressions, 10));
+
+          chartData.push([
+            time[i],
+            parseInt(hourlyVar[i], 10)]);
+        }
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_SPEND:
+        header = [['Orario', 'Costo']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseInt(data[i].spend, 10) + parseInt(data[i+1].spend, 10) + parseInt(data[i+2].spend, 10));
+
+          chartData.push([
+            time[i],
+            parseInt(hourlyVar[i], 10)]);
+        }
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_CPC:
+        header = [['Orario', 'CPC']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseFloat(data[i].cpc) + parseFloat(data[i+1].cpc) + parseFloat(data[i+2].cpc));
+
+          chartData.push([
+            time[i],
+            parseFloat(hourlyVar[i])]);
+        }
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_CTR:
+        header = [['Orario', 'CTR']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseFloat(data[i].ctr) + parseFloat(data[i+1].ctr) + parseFloat(data[i+2].ctr));
+
+          chartData.push([
+            time[i],
+            parseFloat(hourlyVar[i])]);
+        }
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_CPP:
+        header = [['Orario', 'CPP']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseFloat(data[i].cpp) + parseFloat(data[i+1].cpp) + parseFloat(data[i+2].cpp));
+
+          chartData.push([
+            time[i],
+            parseFloat(hourlyVar[i])]);
+        }
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_CLICKS:
+        header = [['Orario', 'Click']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseInt(data[i].clicks, 10) + parseInt(data[i+1].clicks, 10) + parseInt(data[i+2].clicks, 10));
+
+          chartData.push([
+            time[i],
+            parseInt(hourlyVar[i], 10)]);
+        }
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_INLINE:
+        header = [['Orario', 'Click link']];
+        for (let i = 0; i < time.length; i++) {
+          hourlyVar.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i+1].inline_link_clicks, 10) + parseInt(data[i+2].inline_link_clicks, 10));
+
+          chartData.push([
+            time[i],
+            parseInt(hourlyVar[i], 10)]);
+        }
+        break;
+    }
     return chartData.length > 0 ? header.concat(chartData) : [];
   }
 
   public formatChart(ID, data) {
     let formattedData;
     let type;
+    let val = 0;
+    const copy = data; //this
 
     data = this.initFormatting(ID, data);
 
@@ -2049,6 +2441,1275 @@ export class ChartsCallsService {
           }
         };
         break;
+
+      case FBM_CHART.AGE_REACH:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.AGE_IMPRESSIONS:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.AGE_SPEND:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.AGE_INLINE:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.AGE_CLICKS:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.AGE_CPC:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.AGE_CPP:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.AGE_CTR:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+
+      case FBM_CHART.GENDER_REACH:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_IMPRESSIONS:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_SPEND:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_INLINE:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_CLICKS:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_CPC:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_CPP:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_CTR:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+
+      case FBM_CHART.GENDER_AGE_REACH:
+        copy.forEach(d => parseInt(d.reach) > val ? val = parseInt(d.reach) : val); //this
+
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9, //TODO delete
+          formatters: [
+            {
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: ';',
+              }
+            },
+          ],
+          options: {
+            isStacked: true,
+            chartArea: {
+              left: "3%",
+              top: "0%",
+              width: "94%",
+              height: "90%"
+            },
+            height: 310,
+            bar: {
+              groupWidth: "70%"
+            },
+            legend: {
+              position: "none"
+            },
+            hAxis: {
+              ticks: [
+                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: 0, f: '0'},
+                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val), f: this.searchStep(val).toString()}
+                ],
+              format: ';',
+            }, // horizontal label
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 7},
+              direction: -1 /* value responsible for inverse the bar chart from desending to accending order */
+            },
+            animation: {
+              duration: 1000,
+              easing: 'out',
+              startup: true
+            },
+            annotations: {
+              textStyle: {
+                fontSize: 13,
+                bold: true,
+                italic: true,
+                // The color of the text.
+                color: '#871b47',
+                // The color of the text outline.
+                auraColor: '#d799ae',
+                // The transparency of the text.
+                opacity: 0.8
+              }
+            }
+          }
+        };
+
+        break;
+      case FBM_CHART.GENDER_AGE_IMPRESSIONS:
+        copy.forEach(d => parseInt(d.impressions) > val ? val = parseInt(d.impressions) : val);
+
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9, //TODO delete
+          formatters: [
+            {
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: ';',
+              }
+            },
+          ],
+          options: {
+            isStacked: true,
+            chartArea: {
+              left: "3%",
+              top: "0%",
+              width: "94%",
+              height: "90%"
+            },            height: 310,
+            bar: {
+              groupWidth: "70%"
+            },
+            legend: {
+              position: "none"
+            },
+            hAxis: {
+              ticks: [
+                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: 0, f: '0'},
+                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val), f: this.searchStep(val).toString()}
+              ],
+              format: ';',
+            },
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 7},
+              direction: -1 /* value responsible for inverse the bar chart from desending to accending order */
+            },
+            animation: {
+              duration: 1000,
+              easing: 'out',
+              startup: true
+            },
+            annotations: {
+              textStyle: {
+                fontSize: 13,
+                bold: true,
+                italic: true,
+                // The color of the text.
+                color: '#871b47',
+                // The color of the text outline.
+                auraColor: '#d799ae',
+                // The transparency of the text.
+                opacity: 0.8
+              }
+            }
+          }
+        };
+
+        break;
+      case FBM_CHART.GENDER_AGE_SPEND:
+        copy.forEach(d => parseInt(d.spend) > val ? val = parseInt(d.spend) : val);
+
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9, //TODO delete
+          formatters: [
+            {
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: ';',
+              }
+            },
+          ],
+          options: {
+            isStacked: true,
+            chartArea: {
+              left: "3%",
+              top: "0%",
+              width: "94%",
+              height: "90%"
+            },            height: 310,
+            bar: {
+              groupWidth: "70%"
+            },
+            legend: {
+              position: "none"
+            },
+            hAxis: {
+              ticks: [
+                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: 0, f: '0'},
+                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val), f: this.searchStep(val).toString()}
+              ],
+              format: ';',
+            },
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 7},
+              direction: -1 /* value responsible for inverse the bar chart from desending to accending order */
+            },
+            animation: {
+              duration: 1000,
+              easing: 'out',
+              startup: true
+            },
+            annotations: {
+              textStyle: {
+                fontSize: 13,
+                bold: true,
+                italic: true,
+                // The color of the text.
+                color: '#871b47',
+                // The color of the text outline.
+                auraColor: '#d799ae',
+                // The transparency of the text.
+                opacity: 0.8
+              }
+            }
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_AGE_INLINE:
+        copy.forEach(d => parseInt(d.inline_link_clicks) > val ? val = parseInt(d.inline_link_clicks) : val);
+
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9, //TODO delete
+          formatters: [
+            {
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: ';',
+              }
+            },
+          ],
+          options: {
+            isStacked: true,
+            chartArea: {
+              left: "3%",
+              top: "0%",
+              width: "94%",
+              height: "90%"
+            },            height: 310,
+            bar: {
+              groupWidth: "70%"
+            },
+            legend: {
+              position: "none"
+            },
+            hAxis: {
+              ticks: [
+                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: 0, f: '0'},
+                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val), f: this.searchStep(val).toString()}
+              ],
+              format: ';',
+            },
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 7},
+              direction: -1 /* value responsible for inverse the bar chart from desending to accending order */
+            },
+            animation: {
+              duration: 1000,
+              easing: 'out',
+              startup: true
+            },
+            annotations: {
+              textStyle: {
+                fontSize: 13,
+                bold: true,
+                italic: true,
+                // The color of the text.
+                color: '#871b47',
+                // The color of the text outline.
+                auraColor: '#d799ae',
+                // The transparency of the text.
+                opacity: 0.8
+              }
+            }
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_AGE_CLICKS:
+        copy.forEach(d => parseInt(d.clicks) > val ? val = parseInt(d.clicks) : val);
+
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9, //TODO delete
+          formatters: [
+            {
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: ';',
+              }
+            },
+          ],
+          options: {
+            isStacked: true,
+            chartArea: {
+              left: "3%",
+              top: "0%",
+              width: "94%",
+              height: "90%"
+            },            height: 310,
+            bar: {
+              groupWidth: "70%"
+            },
+            legend: {
+              position: "none"
+            },
+            hAxis: {
+              ticks: [
+                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: 0, f: '0'},
+                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val), f: this.searchStep(val).toString()}
+              ],
+              format: ';',
+            },
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 7},
+              direction: -1 /* value responsible for inverse the bar chart from desending to accending order */
+            },
+            animation: {
+              duration: 1000,
+              easing: 'out',
+              startup: true
+            },
+            annotations: {
+              textStyle: {
+                fontSize: 13,
+                bold: true,
+                italic: true,
+                // The color of the text.
+                color: '#871b47',
+                // The color of the text outline.
+                auraColor: '#d799ae',
+                // The transparency of the text.
+                opacity: 0.8
+              }
+            }
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_AGE_CPC:
+        copy.forEach(d => parseInt(d.cpc) > val ? val = parseInt(d.cpc) : val);
+
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9, //TODO delete
+          formatters: [
+            {
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: ';',
+              }
+            },
+          ],
+          options: {
+            isStacked: true,
+            chartArea: {
+              left: "3%",
+              top: "3%",
+              width: "94%",
+              height: "90%"
+            },
+            height: 310,
+            bar: {
+              groupWidth: "70%"
+            },
+            legend: {
+              position: "none"
+            },
+            hAxis: {
+              ticks: [
+                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: 0, f: '0'},
+                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val), f: this.searchStep(val).toString()}
+              ],
+              format: ';',
+            },
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 7},
+              direction: -1 /* value responsible for inverse the bar chart from desending to accending order */
+            },
+            animation: {
+              duration: 1000,
+              easing: 'out',
+              startup: true
+            },
+            annotations: {
+              textStyle: {
+                fontSize: 13,
+                bold: true,
+                italic: true,
+                // The color of the text.
+                color: '#871b47',
+                // The color of the text outline.
+                auraColor: '#d799ae',
+                // The transparency of the text.
+                opacity: 0.8
+              }
+            }
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_AGE_CPP:
+        copy.forEach(d => parseInt(d.cpp) > val ? val = parseInt(d.cpp) : val);
+
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9, //TODO delete
+          formatters: [
+            {
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: ';',
+              }
+            },
+          ],
+          options: {
+            isStacked: true,
+            chartArea: {
+              left: "3%",
+              top: "0%",
+              width: "94%",
+              height: "90%"
+            },            height: 310,
+            bar: {
+              groupWidth: "70%"
+            },
+            legend: {
+              position: "none"
+            },
+            hAxis: {
+              ticks: [
+                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: 0, f: '0'},
+                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val), f: this.searchStep(val).toString()}
+              ],
+              format: ';',
+            },
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 7},
+              direction: -1 /* value responsible for inverse the bar chart from desending to accending order */
+            },
+            animation: {
+              duration: 1000,
+              easing: 'out',
+              startup: true
+            },
+            annotations: {
+              textStyle: {
+                fontSize: 13,
+                bold: true,
+                italic: true,
+                // The color of the text.
+                color: '#871b47',
+                // The color of the text outline.
+                auraColor: '#d799ae',
+                // The transparency of the text.
+                opacity: 0.8
+              }
+            }
+          }
+        };
+        break;
+      case FBM_CHART.GENDER_AGE_CTR:
+        copy.forEach(d => parseInt(d.ctr) > val ? val = parseInt(d.ctr) : val);
+
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9, //TODO delete
+          formatters: [
+            {
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: ';',
+              }
+            },
+          ],
+          options: {
+            isStacked: true,
+            chartArea: {
+              left: "3%",
+              top: "0%",
+              width: "94%",
+              height: "90%"
+            },            height: 310,
+            bar: {
+              groupWidth: "70%"
+            },
+            legend: {
+              position: "none"
+            },
+            hAxis: {
+              ticks: [
+                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: 0, f: '0'},
+                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val), f: this.searchStep(val).toString()}
+              ],
+              format: ';',
+            },
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 7},
+              direction: -1 /* value responsible for inverse the bar chart from desending to accending order */
+            },
+            animation: {
+              duration: 1000,
+              easing: 'out',
+              startup: true
+            },
+            annotations: {
+              textStyle: {
+                fontSize: 13,
+                bold: true,
+                italic: true,
+                // The color of the text.
+                color: '#871b47',
+                // The color of the text outline.
+                auraColor: '#d799ae',
+                // The transparency of the text.
+                opacity: 0.8
+              }
+            }
+          }
+        };
+        break;
+
+      case FBM_CHART.COUNTRYREGION_REACH:
+       /* formattedData = {
+          chartType: 'GeoChart',
+          dataTable: [
+            ['City',   'Population', 'Area'],
+            ['Rome',      2761477,    1285.31],
+            ['Milan',     1324110,    181.76],
+            ['Naples',    959574,     117.27],
+            ['Turin',     907563,     130.17],
+            ['Palermo',   655875,     158.9],
+            ['Genoa',     607906,     243.60],
+            ['Bologna',   380181,     140.7],
+            ['Florence',  371282,     102.41],
+            ['Fiumicino', 67370,      213.44],
+            ['Anzio',     52192,      43.43],
+            ['Ciampino',  38262,      11]
+          ],
+          containerId: 'chart_div',
+          options: {
+            region: 'IT',
+            displayMode: 'markers',
+            resolution: 'provinces',
+            colorAxis: {colors: ['green', 'blue']}
+          }
+        };*/
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;
+      case FBM_CHART.COUNTRYREGION_IMPRESSIONS:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;
+      case FBM_CHART.COUNTRYREGION_SPEND:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;
+      case FBM_CHART.COUNTRYREGION_INLINE:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;
+      case FBM_CHART.COUNTRYREGION_CLICKS:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;
+      case FBM_CHART.COUNTRYREGION_CPC:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;
+      case FBM_CHART.COUNTRYREGION_CPP:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;
+      case FBM_CHART.COUNTRYREGION_CTR:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break;
+
+      case FBM_CHART.HOURLYADVERTISER_IMPRESSIONS:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYADVERTISER_SPEND:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYADVERTISER_INLINE:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYADVERTISER_CLICKS:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYADVERTISER_CPC:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYADVERTISER_CTR:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+
+      case FBM_CHART.HOURLYAUDIENCE_REACH:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_IMPRESSIONS:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_SPEND:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_INLINE:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_CLICKS:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_CPC:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_CPP:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+      case FBM_CHART.HOURLYAUDIENCE_CTR:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            height: 310,
+            isStacked: true,
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 6},
+              textPosition: 'in',
+              textStyle: {color: '#999'}},
+            colors: ['#1b53ff'],
+            areaOpacity: 0.4,
+          }
+        };
+        break;
+
     }
     return formattedData;
   }
@@ -2071,6 +3732,7 @@ export class ChartsCallsService {
 
     switch (type) {
       case D_TYPE.FB:
+      case D_TYPE.FBM:
       case D_TYPE.IG:
         if (data.length > 0) {
           min = data.map(x => x[1]).reduce((c,p) => c < p ? c : p);
@@ -2120,6 +3782,11 @@ export class ChartsCallsService {
         observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
         observables.push(this.youtubeService.getVideos(pageIDs));
         break;
+      case D_TYPE.FBM:
+        pageID = pageIDs[D_TYPE.FBM];
+        observables.push(this.facebookMarketingService.getData(FBM_CHART, pageID));
+
+        break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
@@ -2148,6 +3815,9 @@ export class ChartsCallsService {
         break;
       case D_TYPE.YT :
         result = this.getYTMiniValue(measure, data);
+        break
+      case D_TYPE.FBM :
+        result = this.getFacebookMarketingMiniValue(measure, data, intervalDate);
         break
       case D_TYPE.CUSTOM:
         result = this.getCustomMiniValue(measure, data, intervalDate);
@@ -2313,6 +3983,39 @@ export class ChartsCallsService {
     return {value, perc, step};
   }
 
+  private getFacebookMarketingMiniValue(measure, data, intervalDate) {
+    let value, perc, sum = 0, avg, max, aux, step;
+
+    switch (measure) {
+      case 'reach':
+
+        value = data.reach;
+
+        break;
+      case 'spend':
+        value = data.spend;
+
+        break;
+      case 'click':
+        value = data.clicks;
+
+        break;
+      case 'impressions':
+        value = data.impressions;
+
+        break;
+      default:
+        value = data.reach;
+
+        break;
+    }
+
+    step = this.searchStep(value);
+    perc = value / step * 100;
+
+    return {value, perc, step};
+  }
+
   private getInstagramMiniValue(measure, data, intervalDate) {
     let value, perc, sum = 0, avg, max, aux, step;
 
@@ -2371,7 +4074,7 @@ export class ChartsCallsService {
   }
 
   private searchStep(value, measure?) {
-    const nextStep = [10, 25, 50, 250, 1000, 5000, 10000, 50000, 100000];
+    const nextStep = [10, 25, 50, 250, 1000, 5000, 10000, 15000, 20000, 30000, 40000, 50000, 100000, 200000, 300000, 400000];
     let step;
     let done = false;
     let i = 0;

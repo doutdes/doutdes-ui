@@ -34,7 +34,7 @@ export class UserService {
 
   private getAuthorization() {
     return new HttpHeaders()
-      .set('Content-Type', 'application/json')
+      .set('Content-type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`);
   }
 }

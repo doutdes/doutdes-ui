@@ -233,7 +233,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         console.error('Cannot retrieve a page ID for the Facebook dashboard.');
         return;
       }
-
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
       if (this.dashStored) {
@@ -378,7 +377,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
           .pipe(takeUntil(dummySubj))
           .subscribe( data => {
-
+          console.log(data);
           this.GEService.loadingScreen.next(true);
 
           if (!data['status']) { // Se la chiamata non rende errori

@@ -33,13 +33,15 @@ export class AggregatedDataService {
     let nValues = 0;
     let prevNValues = 0;
     let filteredData;
-
     switch (chart.type) {
       case D_TYPE.GA:
         filteredData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= dateInterval.first.getTime() && parseDate(el[0]).getTime() <= dateInterval.last.getTime());
         break;
       case D_TYPE.YT:
         filteredData = chart.chartData.filter(el => parseDate(el.date).getTime() >= dateInterval.first.getTime() && parseDate(el.date).getTime() <= dateInterval.last.getTime());
+        break;
+      case D_TYPE.FBM:
+        filteredData = chart.chartData.filter(el => (new Date(el.date_stop)) >=  dateInterval.first && (moment(el.date_stop).toDate()) <= dateInterval.last);
         break;
       default:
         filteredData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= dateInterval.first && (moment(el.end_time).toDate()) <= dateInterval.last);
@@ -105,7 +107,9 @@ export class AggregatedDataService {
           break;
         case D_TYPE.YT :
           filteredData = chart.chartData.filter(el => parseDate(el.date) >= dateInterval.first && parseDate(el.date) <= dateInterval.last);
-
+          break;
+        case D_TYPE.FBM:
+          filteredData = chart.chartData.filter(el => (new Date(el.date_stop)) >=  dateInterval.first && (moment(el.date_stop).toDate()) <= dateInterval.last);
           break;
         default:
           filteredData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= dateInterval.first && (moment(el.end_time).toDate()) <= dateInterval.last);
@@ -116,10 +120,14 @@ export class AggregatedDataService {
          : chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
  */
       let prevDate = this.getPrevious(dateInterval);
-      prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
-        ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
-        : chart.chartData.filter(el => (moment(el.end_time).toDate()) >= prevDate.first && (moment(el.end_time).toDate()) <= prevDate.last);
-
+      if(chart.type === D_TYPE.FBM){
+        prevFilteredData = chart.chartData.filter(el => (new Date(el.date_stop)) >=  prevDate.first && (moment(el.date_stop).toDate()) <= prevDate.last);
+      }
+      else {
+        prevFilteredData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+          ? chart.chartData.filter(el => parseDate(el[0]) >= prevDate.first && parseDate(el[0]) <= prevDate.last)
+          : chart.chartData.filter(el => (moment(el.end_time).toDate()) >= prevDate.first && (moment(el.end_time).toDate()) <= prevDate.last);
+      }
     }
 
     /*
@@ -141,6 +149,9 @@ export class AggregatedDataService {
         break;
       case D_TYPE.YT:
         prevFilteredData = chart.chartData.filter(el => parseDate(el.date).getTime() >= prevDate.first.getTime() && parseDate(el.date).getTime() <= prevDate.last.getTime());
+        break;
+      case D_TYPE.FBM:
+        prevFilteredData = chart.chartData.filter(el => (moment(el.date_stop).toDate()) >= dateInterval.first && (moment(el.date_stop).toDate()) <= dateInterval.last);
         break;
       default:
         prevFilteredData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= prevDate.first && (moment(el.end_time).toDate()) <= prevDate.last);
@@ -172,10 +183,35 @@ export class AggregatedDataService {
           prevLowest = value < prevLowest ? value : prevLowest;
         }
         break;
+      case D_TYPE.FBM:
+        const type_value = chart.title.substring(chart.title.indexOf('_')+1);
+
+        for (let i = 0; i < filteredData.length; i++) {
+          const value = parseFloat(filteredData[i][type_value.toLowerCase()]);
+
+          if (value) {
+            sum += value;
+            nValues++;
+          }
+          highest = value > highest ? value : highest;
+          lowest = value < lowest ? value : lowest;
+        }
+
+        // WORKING ON GETTING JSON FOR PREVIOUS PERIOD
+        for (let i = 0; i < prevFilteredData.length; i++) {
+          const value = parseFloat(prevFilteredData[i]['value']);
+          if (value) {
+            prevSum += value;
+            prevNValues++;
+          }
+          prevHighest = value > prevHighest ? value : prevHighest;
+          prevLowest = value < prevLowest ? value : prevLowest;
+        }
+        break;
+
       case D_TYPE.FB:
       case D_TYPE.IG:
       case D_TYPE.YT:
-        // console.log(filteredData);
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i]['value']);
           if (value) {
@@ -235,7 +271,6 @@ export class AggregatedDataService {
      console.log('lowest ',result.lowest);
      console.log('prevLowest',result.prevLowest);
      console.log('----------');*/
-
     return result;
   }
 

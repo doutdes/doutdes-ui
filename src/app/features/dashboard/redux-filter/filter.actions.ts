@@ -55,12 +55,13 @@ export class FilterActions {
       for (let i in filteredDashboard.data) {
         if(!filteredDashboard.data[i].error) { // If there was not error during the retrieving of the chart data
           chart_id = filteredDashboard.data[i].chart_id;
+
           dateInterval = this.getIntervalDate(filteredDashboard.data[i].chartData, filteredDashboard.data[i].type);
+
           filteredDashboard.data[i].aggregated = this.ADService.getAggregatedData(filteredDashboard.data[i], dateInterval);
           filteredDashboard.data[i].chartData = this.CCService.formatChart(chart_id, filteredDashboard.data[i].chartData);
         }
       }
-
       // It searches if the dashboard was already initialized. If it's not, then the dashboard will be stored
       index = this.storedDashboards ? this.storedDashboards.findIndex((el: DashboardData) => el.type === currentDashboard.type) : -1;
 
@@ -144,9 +145,9 @@ export class FilterActions {
 
   filterByDateInterval(filterInterval: IntervalDate) {
     const dashToFilter: DashboardData = JSON.parse(JSON.stringify(this.currentDashboard)); // Looses the reference to original data
+
     const filtered = [];
     let chart;
-
     if (dashToFilter) {
       for (let i = 0; i < dashToFilter.data.length; i++) {
         chart = dashToFilter.data[i];
@@ -160,6 +161,9 @@ export class FilterActions {
                 break;
               case D_TYPE.YT:
                 chart.chartData = chart.chartData.filter(el => parseDate(el.date).getTime() >= filterInterval.first.getTime() && parseDate(el.date).getTime() <= filterInterval.last.getTime());
+                break;
+              case D_TYPE.FBM:
+                chart.chartData = chart.chartData.filter(el => parseDate(el.date_stop).getTime() >= filterInterval.first.getTime() && parseDate(el.date_stop).getTime() <= filterInterval.last.getTime());
                 break;
               default:
                 chart.chartData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
@@ -232,8 +236,8 @@ export class FilterActions {
   }
 
   getIntervalDate(data, type): IntervalDate {
-    return type == D_TYPE.GA || D_TYPE.YT ?
-      {first: parseDate(data[0][0]), last: parseDate(data[data.length - 1][0])} :
-      {first: new Date(data[0]['end_time']), last: new Date (data[data.length - 1]['end_time'])};
+    return (type === D_TYPE.GA || type === D_TYPE.YT) ? {first: parseDate(data[0][0]), last: parseDate(data[data.length - 1][0])}
+          : (type === D_TYPE.FBM) ? {first: new Date(data[0].date_start), last: new Date(data[0].date_stop)}
+          : {first: new Date(data[0]['end_time']), last: new Date (data[data.length - 1]['end_time'])};
   }
 }
