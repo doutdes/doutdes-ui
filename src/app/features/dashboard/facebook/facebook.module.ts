@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {AppFooterModule} from '@coreui/angular';
 import {SharedModule} from '../../../shared/shared.module';
 import {CoreModule} from '../../../core/core.module';
-import {FeatureDashboardFacebookComponent} from './facebook.component';
+import {FeatureDashboardFacebookInsightComponent} from './insights/facebook-insights.component';
 import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
 import {FacebookService} from '../../../shared/_services/facebook.service';
@@ -20,12 +20,17 @@ import {NgxLoadingModule} from 'ngx-loading';
 
 import {defineLocale} from 'ngx-bootstrap';
 import {itLocale} from 'ngx-bootstrap/locale';
+import {FacebookMarketingService} from '../../../shared/_services/facebook-marketing.service';
+import {FeatureDashboardFacebookMarketingComponent} from './marketing/facebook-marketing.component';
+import {FeatureDashboardFacebookCampaignsComponent} from './campaigns/facebook-campaigns.component';
 
 defineLocale('it', itLocale);
 
 @NgModule({
   declarations: [
-    FeatureDashboardFacebookComponent
+    FeatureDashboardFacebookInsightComponent,
+    FeatureDashboardFacebookCampaignsComponent,
+    FeatureDashboardFacebookMarketingComponent
   ],
   imports: [
     SharedModule,
@@ -48,10 +53,13 @@ defineLocale('it', itLocale);
     FilterActions,
     UserService,
     GlobalEventsManagerService,
-    BsLocaleService
+    BsLocaleService,
+    FacebookMarketingService
   ],
   exports: [
-    FeatureDashboardFacebookComponent
+    FeatureDashboardFacebookInsightComponent,
+    FeatureDashboardFacebookCampaignsComponent,
+    FeatureDashboardFacebookMarketingComponent
   ]
 })
 

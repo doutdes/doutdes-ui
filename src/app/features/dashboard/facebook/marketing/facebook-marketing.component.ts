@@ -1,51 +1,51 @@
 import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {FacebookService} from '../../../shared/_services/facebook.service';
-import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
-import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
-import {DashboardService} from '../../../shared/_services/dashboard.service';
-import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
-import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
-import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
-
-import {subDays} from 'date-fns';
-import {FilterActions} from '../redux-filter/filter.actions';
-import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
-import {select} from '@angular-redux/store';
+import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
+import {BreadcrumbActions} from '../../../../core/breadcrumb/breadcrumb.actions';
+import {FacebookMarketingService} from '../../../../shared/_services/facebook-marketing.service';
+import {DashboardData, IntervalDate} from '../../redux-filter/filter.model';
+import {D_TYPE} from '../../../../shared/_models/Dashboard';
 import {forkJoin, Observable, Subject} from 'rxjs';
-import {ApiKeysService} from '../../../shared/_services/apikeys.service';
-
-import * as jsPDF from 'jspdf';
+import {FbmMiniCards, MiniCard} from '../../../../shared/_models/MiniCard';
+import {ChartsCallsService} from '../../../../shared/_services/charts_calls.service';
+import {DashboardCharts} from '../../../../shared/_models/DashboardCharts';
+import {subDays} from "date-fns";
 import html2canvas from 'html2canvas';
-import {User} from '../../../shared/_models/User';
-import {UserService} from '../../../shared/_services/user.service';
-import {ngxLoadingAnimationTypes} from 'ngx-loading';
-import {D_TYPE} from '../../../shared/_models/Dashboard';
-import {FbMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
-import {ToastrService} from 'ngx-toastr';
-import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
-import {ApiKey} from '../../../shared/_models/ApiKeys';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {takeUntil} from 'rxjs/operators';
+import {GlobalEventsManagerService} from '../../../../shared/_services/global-event-manager.service';
+import {DashboardService} from '../../../../shared/_services/dashboard.service';
+import {ToastrService} from 'ngx-toastr';
+import {ApiKey} from '../../../../shared/_models/ApiKeys';
+import {ApiKeysService} from '../../../../shared/_services/apikeys.service';
+import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {select} from '@angular-redux/store';
+import {FilterActions} from '../../redux-filter/filter.actions';
+import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import * as jsPDF from 'jspdf';
+import {User} from '../../../../shared/_models/User';
+import {UserService} from '../../../../shared/_services/user.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {connectableObservableDescriptor} from 'rxjs/internal/observable/ConnectableObservable';
+import {computeStyle} from '@angular/animations/browser/src/util';
+
 
 const PrimaryWhite = '#ffffff';
 
 @Component({
-  selector: 'app-feature-dashboard-facebook',
-  templateUrl: './facebook.component.html'
+  selector: 'app-feature-dashboard-facebook-marketing',
+  templateUrl: './facebook-marketing.component.html'
 })
 
-export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
+export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDestroy {
+  title = 'Facebook Marketing';
+  public miniCards: MiniCard[] = FbmMiniCards;
+  public chartArray$: Array<DashboardCharts> = [];
+  loaded: boolean = false;
+  private pageID = null;
+  public loading = false;
+  public isApiKeySet = true;
 
   @ViewChild('reportWait') reportWait;
   @ViewChild('selectView') selectView;
-
-  public D_TYPE = D_TYPE;
-  public HARD_DASH_DATA = {
-    dashboard_type: D_TYPE.FB,
-    dashboard_id: null
-  };
-
-  private pageID = null;
 
   public FILTER_DAYS = {
     yesterday: 1,
@@ -62,15 +62,15 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     secondaryColour: PrimaryWhite
   };
 
-  public chartArray$: Array<DashboardCharts> = [];
-  public miniCards: MiniCard[] = FbMiniCards;
-  private dashStored: Array<DashboardCharts> = [];
+  firstDateRange: Date;
+  lastDateRange: Date;
+  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+  minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
+  bsRangeValue: Date[];
+  dateChoice: String = 'Ultimi 30 giorni';
 
-  public loading = false;
-  public isApiKeySet = true;
-
-  loaded: boolean = false;
   modalRef: BsModalRef;
+
 
   // Form for init
   selectViewForm: FormGroup;
@@ -80,40 +80,37 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   @select() filter: Observable<any>;
 
-  firstDateRange: Date;
-  lastDateRange: Date;
-  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
-  bsRangeValue: Date[];
-  dateChoice: String = 'Ultimi 30 giorni';
+  public D_TYPE = D_TYPE;
+  public HARD_DASH_DATA = {
+    dashboard_type: D_TYPE.FBM,
+    dashboard_id: null
+  };
+  private dashStored: Array<DashboardCharts> = [];
 
   dashErrors = {
     emptyMiniCards: false,
     noPages: false
   };
 
-  // datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
-
   constructor(
-    private FBService: FacebookService,
-    private apiKeyService: ApiKeysService,
+    private FBMService: FacebookMarketingService,
     private breadcrumbActions: BreadcrumbActions,
-    private DService: DashboardService,
-    private CCService: ChartsCallsService,
     private GEService: GlobalEventsManagerService,
-    private filterActions: FilterActions,
-    private userService: UserService,
+    private DService: DashboardService,
     private toastr: ToastrService,
+    private userService: UserService,
     private formBuilder: FormBuilder,
+    private apiKeyService: ApiKeysService,
+    private localeService: BsLocaleService,
+    private filterActions: FilterActions,
     private modalService: BsModalService,
-    private localeService: BsLocaleService
-  ) {
-
+    private CCService: ChartsCallsService
+) {
   }
 
   async ngOnInit() {
 
-    let existence, fb_page_id, update;
+    let existence, fbm_page_id, update;
     let key: ApiKey;
 
     this.GEService.loadingScreen.subscribe(value => {
@@ -121,7 +118,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     });
 
     this.addBreadcrumb();
-
     try {
       existence = await this.checkExistence();
 
@@ -129,11 +125,10 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         this.isApiKeySet = false;
         return;
       }
-
-      fb_page_id = await this.getPageID();
-
+      fbm_page_id = await this.getPageID();
+      this.pageID = fbm_page_id;
       // We check if the user has already set a preferred page if there is more than one in his permissions.
-      if (!fb_page_id) {
+      if (!fbm_page_id) {
         await this.getPagesList();
 
         if(this.pageList.length === 0) {
@@ -142,13 +137,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         }
 
         if (this.pageList.length === 1) {
-          key = {fb_page_id: this.pageList[0]['id'], service_id: D_TYPE.FB};
+          key = {fb_page_id: this.pageList[0]['id'], service_id: D_TYPE.FBM};
           update = await this.apiKeyService.updateKey(key).toPromise();
 
           if (!update) {
             return;
           }
         } else {
+
           this.selectViewForm = this.formBuilder.group({
             fb_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
           });
@@ -168,9 +164,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         this.loading = value;
       });
 
-      this.filter.subscribe(elements => {
+      this.filter.subscribe(elements => { //QUI
         this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-        const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FB) : -1;
+        const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.FBM) : -1; //Esattamente qua
         this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
       });
 
@@ -215,17 +211,19 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       first: this.minDate,
       last: this.maxDate
     };
+
     let currentData: DashboardData = {
       data: chartsToShow,
       interval: dateInterval,
-      type: D_TYPE.FB,
+      type: D_TYPE.FBM,
     };
 
     this.GEService.loadingScreen.next(true);
 
+
     try {
       // Retrieving dashboard ID
-      dash = await this.DService.getDashboardByType(D_TYPE.FB).toPromise(); // Facebook type
+      dash = await this.DService.getDashboardByType(D_TYPE.FBM).toPromise(); // Facebook type
 
       if (dash.id) {
         this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -233,33 +231,29 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         console.error('Cannot retrieve a page ID for the Facebook dashboard.');
         return;
       }
+
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
-      if (this.dashStored) {
+      if (this.dashStored) { //QUI
         // Ci sono già dati salvati
-        this.filterActions.loadStoredDashboard(D_TYPE.FB);
+        this.filterActions.loadStoredDashboard(D_TYPE.FBM);
         this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
         this.GEService.loadingScreen.next(false);
-
         if (this.chartArray$.length === 0) {
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
         }
       } else {
-
         let ds : Subject<void> = new Subject<void>(); // used to force unsubscription
-
         // Retrieving dashboard charts
         this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
           .subscribe(charts => {
-
             if (charts && charts.length > 0) { // Checking if dashboard is not empty
-
-              charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, this.pageID))); // Retrieves data for each chart
+              charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, null, this.pageID))); // Retrieves data for each chart
 
               forkJoin(observables)
                 .pipe(takeUntil(ds))
                 .subscribe(dataArray => {
-                  for (let i = 0; i < dataArray.length; i++) {
+                  for (let i = 0; i < dataArray.length; i++)  {
 
                     let chart: DashboardCharts = charts[i];
 
@@ -274,7 +268,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                       }
                       else {
                         chart.chartData = dataArray[i];
-                        let date = new Date(chart.chartData[0]['end_time']);
+                        let date = new Date(chart.chartData.data[0]['date_stop']);
                         if (date < this.minDate)
                           this.minDate = date;
                         // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
@@ -286,7 +280,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                       console.error('ERROR in FACEBOOK COMPONENT. Cannot retrieve data from one of the charts. More info:');
                       console.error(dataArray[i]);
                     }
-
+                    chart.chartData = chart.chartData.data;
                     chartsToShow.push(chart); // Original Data
 
                   }
@@ -295,7 +289,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
                   ds.complete();
 
                   currentData.data = chartsToShow;
-
                   this.filterActions.initData(currentData);
                   this.GEService.updateChartList.next(true); // TODO check to remove
 
@@ -342,14 +335,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     };
 
     let pageIDs = {};
+    pageIDs[D_TYPE.FBM] = pageID;
 
-    pageIDs[D_TYPE.FB] = pageID;
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs, null);
-
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FBM, pageIDs, null);
 
     forkJoin(observables).subscribe(miniDatas => {
-      for (const i in miniDatas) {
-        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
+      for (let i = 0; i < this.miniCards.length; i++) {
+
+        results = this.CCService.formatMiniChartData(miniDatas[0].data[0], D_TYPE.FBM, this.miniCards[i].measure, intervalDate);
 
         empty = empty || !results;
 
@@ -363,6 +356,24 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   }
 
+  ngOnDestroy(): void {
+    this.removeBreadcrumb();
+  }
+
+  addBreadcrumb = (): void => {
+    const bread = [] as Breadcrumb[];
+
+    bread.push(new Breadcrumb('Home', '/'));
+    bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
+    bread.push(new Breadcrumb('Facebook Marketing', '/dashboard/facebook-marketing/'));
+
+    this.breadcrumbActions.updateBreadcrumb(bread);
+  };
+
+  removeBreadcrumb = (): void => {
+    this.breadcrumbActions.deleteBreadcrumb();
+  };
+
   async addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
     const intervalDate: IntervalDate = {
@@ -373,15 +384,13 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     let dummySubj : Subject<void> = new Subject<void>(); // used to force unsubscription
 
     try {
-
-        this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
-          .pipe(takeUntil(dummySubj))
-          .subscribe( data => {
-          console.log(data);
+      this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
+        .pipe(takeUntil(dummySubj))
+        .subscribe( data => {
           this.GEService.loadingScreen.next(true);
 
           if (!data['status']) { // Se la chiamata non rende errori
-            chartToPush.chartData = data;
+            chartToPush.chartData = data.data;
             chartToPush.error = false;
 
             this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
@@ -390,7 +399,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
             chartToPush.error = true;
             console.log('Errore recuperando dati per ' + dashChart);
           }
-
           this.filterActions.addChart(chartToPush);
           this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
 
@@ -399,11 +407,34 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
           dummySubj.next();
           dummySubj.complete();
         });
+    }
+    catch (err) {
+      console.log('Error querying the chart');
+      console.log(err);
+    };
+  }
+
+  nChartEven() {
+    return this.chartArray$.length % 2 === 0;
+  }
+
+  async checkExistence() {
+    let response, isPermissionGranted, result = null;
+
+    try {
+      response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FBM).toPromise();
+      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.FBM).toPromise();
+      if(isPermissionGranted.tokenValid) {
+        result = response['exists'] && isPermissionGranted['granted'];
+      } else {
+        this.toastr.error('I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
       }
-      catch (err) {
-        console.log('Error querying the chart');
-        console.log(err);
-      };
+
+    } catch (e) {
+      console.error(e);
+    }
+
+    return result;
   }
 
   onValueChange(value): void {
@@ -444,62 +475,20 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     }
   }
 
-  addBreadcrumb() {
-    const bread = [] as Breadcrumb[];
-
-    bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Dashboard', '/dashboard/'));
-    bread.push(new Breadcrumb('Facebook', '/dashboard/facebook/'));
-
-    this.breadcrumbActions.updateBreadcrumb(bread);
+  closeModal() {
+    this.modalRef.hide();
   }
 
-  removeBreadcrumb() {
-    this.breadcrumbActions.deleteBreadcrumb();
-  }
-
-  async checkExistence() {
-    let response, isPermissionGranted, result = null;
+  async getPageID() {
+    let pageID;
 
     try {
-      response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FB).toPromise();
-      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.FB).toPromise();
-
-      if(isPermissionGranted.tokenValid) {
-        result = response['exists'] && isPermissionGranted['granted'];
-      } else {
-        this.toastr.error('I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
-      }
-
+      pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
     } catch (e) {
-      console.error(e);
+      console.error('getPageID -> error doing the query', e);
     }
 
-    return result;
-  }
-
-  ngOnDestroy() {
-    this.removeBreadcrumb();
-    this.filterActions.removeCurrent();
-  }
-
-  clearDashboard(): void {
-
-    this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
-      this.filterActions.clearDashboard(D_TYPE.FB);
-      this.closeModal();
-    }, error => {
-      if (error.status === 500) {
-        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
-        this.closeModal();
-        console.error(error);
-      } else {
-        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
-        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
-        console.error(error);
-        this.closeModal();
-      }
-    });
+    return pageID;
   }
 
   async htmltoPDF() {
@@ -586,18 +575,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     this.closeModal();
   }
 
-  formatStringDate(date: Date) {
-    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
-  }
-
-  async getUserCompany() {
-    return <User> await this.userService.get().toPromise();
-  }
-
-  nChartEven() {
-    return this.chartArray$.length % 2 === 0;
-  }
-
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
     this.modalRef = this.modalService.show(template, {
       class: 'modal-md modal-dialog-centered',
@@ -606,8 +583,35 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     });
   }
 
-  closeModal() {
-    this.modalRef.hide();
+  formatStringDate(date: Date) {
+    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+  }
+
+  clearDashboard(): void {
+
+    this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
+      this.filterActions.clearDashboard(D_TYPE.FB);
+      this.closeModal();
+    }, error => {
+      if (error.status === 500) {
+        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
+        this.closeModal();
+        console.error(error);
+      } else {
+        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
+        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+        console.error(error);
+        this.closeModal();
+      }
+    });
+  }
+
+  async getPagesList() {
+    try {
+      this.pageList = await this.FBMService.getPages().toPromise();
+    } catch (e) {
+      console.error('getFbmViewList -> Error doing the query');
+    }
   }
 
   async selectViewSubmit() {
@@ -636,28 +640,12 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     }
   }
 
-  async getPageID() {
-    let pageID;
-
-    try {
-      pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
-    } catch (e) {
-      console.error('getPageID -> error doing the query', e);
-    }
-
-    return pageID;
-  }
-
-  async getPagesList() {
-    try {
-      this.pageList = await this.FBService.getPages().toPromise();
-    } catch (e) {
-      console.error('getFbViewList -> Error doing the query');
-    }
-  }
-
   optionModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  async getUserCompany() {
+    return <User> await this.userService.get().toPromise();
   }
 
 }
