@@ -23,6 +23,7 @@ import {GlobalEventsManagerService} from './shared/_services/global-event-manage
 import {JwtInterceptor} from './shared/jwt.interceptor';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ToastContainerModule, ToastrModule} from 'ngx-toastr';
+import {OverlayModule} from '@angular/cdk/overlay';
 
 @NgModule({
   imports: [
@@ -45,6 +46,7 @@ import {ToastContainerModule, ToastrModule} from 'ngx-toastr';
     ToastContainerModule,
     StoreModule,
     DragulaModule.forRoot(),
+    OverlayModule
   ],
   declarations: [
     AppComponent,

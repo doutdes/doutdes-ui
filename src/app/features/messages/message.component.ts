@@ -2,7 +2,7 @@ import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core
 import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../core/breadcrumb/Breadcrumb';
 import {Message} from '../../shared/_models/Message';
-import {MatTableDataSource} from '@angular/material';
+import {MatPaginator, MatTableDataSource} from '@angular/material';
 import {MessageService} from '../../shared/_services/message.service';
 import {forkJoin, Observable} from 'rxjs';
 import * as moment from 'moment';
@@ -23,10 +23,12 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
 
   messageList: Array <UserMessage>;
   dataSource: MatTableDataSource<Message>;
-  displayedColumns: Array<string> = ['notify', 'createdAt', 'title', 'read'];
+  displayedColumns: Array<string> = ['notify', 'createdAt', 'title', 'read', 'delete'];
 
   @ViewChild('openMessage') openMessageTemplate: ElementRef;
   @ViewChild('removeMessage') removeMessageTemplate: ElementRef;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(
     private modalService: BsModalService,
@@ -69,6 +71,7 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
                 item.is_read = aux.is_read;
               }
               this.dataSource = new MatTableDataSource<Message>(data);
+              this.dataSource.paginator = this.paginator;
             });
           }
         },

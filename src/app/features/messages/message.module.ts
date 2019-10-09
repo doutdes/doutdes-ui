@@ -4,7 +4,7 @@ import {CoreModule} from '../../core/core.module';
 import {BreadcrumbActions} from '../../core/breadcrumb/breadcrumb.actions';
 import {FeatureMessageRoutingModule} from './message.routing';
 import {FeatureMessageComponent} from './message.component';
-import {MatTableModule} from '@angular/material';
+import {MatPaginatorModule, MatTableModule} from '@angular/material';
 import {MessageService} from '../../shared/_services/message.service';
 
 
@@ -17,6 +17,7 @@ import {MessageService} from '../../shared/_services/message.service';
     CoreModule,
     FeatureMessageRoutingModule,
     MatTableModule,
+    MatPaginatorModule
   ],
   providers: [
     BreadcrumbActions,
