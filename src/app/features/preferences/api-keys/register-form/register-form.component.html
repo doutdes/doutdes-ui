@@ -1,6 +1,6 @@
 <div class="row rounded p-4 title-header">
   <div class="col-md-12 pl-0">
-    <h2 class="my-auto pl-0">Autorizzazioni esterne</h2>
+    <h2 class="my-auto pl-0">{{ 'REGISTER_FORM.TITLE' | translate }}</h2>
   </div>
 </div>
 
@@ -13,42 +13,42 @@
             <ngx-loading [show]="loading | async" [config]="config"></ngx-loading>
             <div class="row mb-4" *ngIf="!allGranted">
               <div class="col-md-12">
-                <p class="mb-3" style="font-size: 16px;">Per visualizzare i tuoi dati su Doutdes, <b>è necessario accedere</b> con i seguenti servizi esterni.</p>
+                <p class="mb-3" style="font-size: 16px;">{{ 'REGISTER_FORM.INFO_1' | translate }}<b>{{ 'REGISTER_FORM.INFO_2' | translate }}</b>{{ 'REGISTER_FORM.INFO_3' | translate }}</p>
               </div>
 <!--todo-->
               <div class="col-md-12 col-12 h-100"      *ngIf="services$[D_TYPE.GA] && !services$[D_TYPE.GA]['granted']">
-                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati del tuo sito web:</p>
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">{{ 'REGISTER_FORM.IMPORTARE_GOOGLE' | translate }}</p>
                 <a class="btn btn-lg bg-ga-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px;" [href]="gaLoginURL">
-                  <i class="fab fa-google mr-2"></i>Accedi con Google
+                  <i class="fab fa-google mr-2"></i>{{ 'REGISTER_FORM.ACCESSO_GOOGLE' | translate }}
                 </a>
               </div> <!-- Google login -->
               <div class="col-md-12 col-12 h-100 mt-3" *ngIf="services$[D_TYPE.FB] && !services$[D_TYPE.FB]['granted']">
-                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati della tua pagina Facebook:</p>
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">{{ 'REGISTER_FORM.IMPORTARE_FB' | translate }}</p>
                 <a class="btn btn-lg bg-fb-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px" [href]="fbLoginURL">
-                  <i class="fab fa-facebook-square mr-2"></i>Accedi con Facebook
+                  <i class="fab fa-facebook-square mr-2"></i>{{ 'REGISTER_FORM.ACCESSO_FB' | translate }}
                 </a>
               </div> <!-- Facebook login -->
               <div class="col-md-12 col-12 h-100 mt-3" *ngIf="services$[D_TYPE.IG] && !services$[D_TYPE.IG]['granted']">
-                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati della tua pagina Instagram:</p>
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">{{ 'REGISTER_FORM.IMPORTARE_INSTA' | translate }}</p>
                 <a class="btn btn-lg bg-ig-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px" [href]="igLoginURL">
-                  <i class="fab fa-instagram mr-2"></i>Accedi con Instagram
+                  <i class="fab fa-instagram mr-2"></i>{{ 'REGISTER_FORM.ACCESSO_INSTA' | translate }}
                 </a>
               </div>      <!-- Instagram login -->
               <div class="col-md-12 col-12 h-100 mt-3" *ngIf="services$[D_TYPE.YT] && !services$[D_TYPE.YT]['granted']">
-                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">Per importare i dati del tuo canale YouTube:</p>
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">{{ 'REGISTER_FORM.IMPORTARE_YT' | translate }}</p>
                 <a class="btn btn-lg bg-yt-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px" [href]="ytLoginURL">
-                  <i class="fab fa-youtube mr-2"></i>Accedi con YouTube
+                  <i class="fab fa-youtube mr-2"></i>{{ 'REGISTER_FORM.ACCESSO_YT' | translate }}
                 </a>
               </div> <!-- YouTube login -->
 
             </div>
             <div class="row mb-4" *ngIf="allGranted">
               <div class="col-md-12">
-                <p style="font-size: 18px;">Hai già configurato tutti i servizi disponibili!</p>
+                <p style="font-size: 18px;">{{ 'REGISTER_FORM.NO_SERVICE' | translate }}</p>
               </div>
             </div>
             <button class="btn btn-lg btn-danger mt-4" [routerLink]="['/preferences/api-keys']">
-              <i class="fas fa-arrow-circle-left mr-2"></i>Torna a sorgenti dati
+              <i class="fas fa-arrow-circle-left mr-2"></i>{{ 'REGISTER_FORM.GO_TO_SORGENTE' | translate }}
             </button>
           </div>
         </div>

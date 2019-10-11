@@ -1,6 +1,6 @@
 <div class="row rounded p-4 title-header">
   <div class="col-md-12 pl-0">
-    <h2 class="my-auto pl-0">Sorgenti dati</h2>
+    <h2 class="my-auto pl-0">{{ 'API-KEYS.TITLE' | translate }}</h2>
   </div>
 </div>
 <ngx-loading [show]="loading | async" [config]="config"></ngx-loading>
@@ -10,8 +10,8 @@
       <table class="table table-hover mt-4" *ngIf="somethingGranted; else no_content">
         <thead>
           <tr class="border" style="background: #ddd; border: 1px solid #999">
-            <th scope="col" style="width: 20%; font-size: 18px;">Servizio</th>
-            <th scope="col" style="width: 60%; font-size: 18px;">Permessi ricevuti</th>
+            <th scope="col" style="width: 20%; font-size: 18px;">{{ 'API-KEYS.SERVIZIO' | translate }}</th>
+            <th scope="col" style="width: 60%; font-size: 18px;">{{ 'API-KEYS.PERMESSI' | translate }}</th>
             <th scope="col" style="width: 20%;"></th>
           </tr>
         </thead>
@@ -22,7 +22,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.GA].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.GA])"><i class="fas fa-trash-alt mr-2"></i>Elimina</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.GA])"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.ELIMINA' | translate }}</button>
             </td>
           </tr> <!-- Google -->
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.FB] && services$[D_TYPE.FB]['granted']">
@@ -30,7 +30,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.FB].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.FB])"><i class="fas fa-trash-alt mr-2"></i>Elimina</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.FB])"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.ELIMINA' | translate }}</button>
             </td>
           </tr> <!-- Facebook -->
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted']">
@@ -38,7 +38,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.IG].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.IG])"><i class="fas fa-trash-alt mr-2"></i>Elimina</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.IG])"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.ELIMINA' | translate }}</button>
             </td>
           </tr> <!-- Instagram -->
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.YT] && services$[D_TYPE.YT]['granted']">
@@ -46,7 +46,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.YT].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button> TODO restore -->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.YT])"><i class="fas fa-trash-alt mr-2"></i>Elimina</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.YT])"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.ELIMINA' | translate }}</button>
             </td>
           </tr> <!-- YouTube -->
         </tbody>
@@ -57,51 +57,47 @@
 
 <ng-template #no_content>
   <div class="mt-3 mb-5 ml-1">
-    <h5 style="color: #666">Nessuna sorgente dati esterna presente. Per aggiungerne una nuova, accedi col rispettivo account e concedi i permessi.</h5>
+    <h5 style="color: #666">{{ 'API-KEYS.NO_SORG' | translate }}</h5>
   </div>
 </ng-template>
 
 <ng-template #deleteKey> <!-- Modal warning for deletion of service -->
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Elimina permessi di {{serviceToDelete.name}}</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i>{{ 'API-KEYS.ELIMINA_PERM' | translate }} {{serviceToDelete.name}}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    <p>Sei veramente sicuro di voler rimuovere i permessi selezionati?</p>
-    <p style="text-align: justify"><i class="fas fa-exclamation-circle mr-1" style="color: #ad0009; font-size:14pt"></i><b style="color: #ad0009;">Operazione pericolosa</b>: l'eliminazione di una sorgente dati comporta la definitiva rimozione da DoUtDes di tutti i dati associati al servizio.
-      Alcuni dati, non essendo presenti sulla sorgente esterna, <b>non saranno più recuperabili</b>. Non sarà
-    inoltre possibile visualizzare i grafici associati al servizio stesso.</p>
-    <label class="checkbox-inline"><input type="checkbox" value="" (click)="this.check()"> Ho letto con attenzione.</label>
+    <p>{{ 'API-KEYS.ELIMINA_DOM' | translate }}</p>
+    <p style="text-align: justify"><i class="fas fa-exclamation-circle mr-1" style="color: #ad0009; font-size:14pt"></i><b style="color: #ad0009;">{{ 'API-KEYS.OPERAZIONE_PER' | translate }}</b>{{ 'API-KEYS.OPERAZIONE_PER_DESCRIZIONE' | translate }}<b>{{ 'API-KEYS.OPERAZIONE_PER_DESCRIZIONE_1' | translate }}</b>{{ 'API-KEYS.OPERAZIONE_PER_DESCRIZIONE_2' | translate }}</p>
+    <label class="checkbox-inline"><input type="checkbox" value="" (click)="this.check()"> {{ 'API-KEYS.CONFERMA' | translate }}</label>
     <p *ngIf="serviceToDelete.type === D_TYPE.FB && services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted'] ">
-    <i class="fas fa-exclamation-triangle text-warning mr-1" style="font-size:14pt"></i><b class="text-warning">Avviso:</b> l'eliminazione del servizio Facebook comporta l'eliminazione contestuale del servizio Instagram.</p>
+    <i class="fas fa-exclamation-triangle text-warning mr-1" style="font-size:14pt"></i><b class="text-warning">{{ 'API-KEYS.AVVISO' | translate }}</b> {{ 'API-KEYS.AVVISO_1' | translate }}</p>
   </div>
 
   <div class="modal-footer">
 
-    <button *ngIf="this.checkbox" type="button" class="btn btn-danger" (click)="deleteService(serviceToDelete.type)">
-      Sì, elimina
-    </button>
-    <button type="button" class="btn btn-success" (click)="modalRef.hide()">No, mantieni</button>
+    <button *ngIf="this.checkbox" type="button" class="btn btn-danger" (click)="deleteService(serviceToDelete.type)">{{ 'API-KEYS.SI_ELIMINA' | translate }}</button>
+    <button type="button" class="btn btn-success" (click)="modalRef.hide()">{{ 'API-KEYS.MANTIENI' | translate }}</button>
   </div>
 </ng-template>
-<button type="button" class="btn btn-lg btn-success" [routerLink]="['insert']"><i class="fas fa-plus-circle mr-2"></i>Aggiungi nuova sorgente dati</button>
+<button type="button" class="btn btn-lg btn-success" [routerLink]="['insert']"><i class="fas fa-plus-circle mr-2"></i>{{ 'API-KEYS.ADD_SORG' | translate }}</button>
 
 <ng-template #oauthError>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-exclamation-circle mr-2"></i> Errore durante l'accesso</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-exclamation-circle mr-2"></i>{{ 'API-KEYS.ERROR' | translate }}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    <p>Si è verificato un errore durante l'accesso al servizio richiesto. <br/>Riprova più tardi o contatta il supporto tecnico.</p>
+    <p>{{ 'API-KEYS.ERR_DESC' | translate }}<br/>{{ 'API-KEYS.ERR_DESCR_1' | translate }}</p>
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="modalRef.hide()">Chiudi</button>
+    <button type="button" class="btn btn-danger" (click)="modalRef.hide()">{{ 'API-KEYS.CHIUDI' | translate }}</button>
   </div>
 </ng-template>

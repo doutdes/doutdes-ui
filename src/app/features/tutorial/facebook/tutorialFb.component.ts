@@ -2,6 +2,9 @@ import {Component, OnDestroy, OnInit, TemplateRef, ViewEncapsulation} from '@ang
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../../shared/_services/user.service';
+import {User} from '../../../shared/_models/User';
 
 @Component({
   selector: 'app-feature-tutorial-facebook',
@@ -15,10 +18,17 @@ export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
   modalRef: BsModalRef;
   imgSrc: string;
 
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
+
   constructor(
     private breadcrumbActions: BreadcrumbActions,
-    private modalService: BsModalService) {
-  }
+    private modalService: BsModalService,
+    public translate: TranslateService,
+    private userService: UserService
+    ) { }
 
   ngOnInit(): void {
     this.addBreadcrumb();
@@ -50,4 +60,5 @@ export class FeatureTutorialFbComponent implements OnInit, OnDestroy {
   closeModal(): void {
     this.modalRef.hide();
   }
+
 }

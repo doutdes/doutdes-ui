@@ -1,36 +1,34 @@
 <div class="row rounded p-4 title-header">
   <div class="col-md-12 pl-0">
-    <h2 class="my-auto pl-0">Tutorial: importazione dati Facebook</h2>
+    <h2 class="my-auto pl-0">{{ 'TUTORIAL_FB.TITLE' | translate }}</h2>
   </div>
 </div>
 <div class="rounded my-3 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
-  <p>In questa guida, è possibile trovare le istruzioni per importare la chiave API (token di accesso) di Facebook Insights utile a configurare la dashboard personale del vostro sito web su <b>DoUtDes</b>.
-    Ricorda che è possibile cliccare su qualsiasi immagine per poterla ingrandire. Infine, ti informiamo che i primi 4 step sono temporanei e verranno richiesti soltanto agli utenti <i>beta-tester</i>
-    durante la fase di sperimentazione; quando l'applicazione uscirà dalla fase beta, non saranno più necessari.</p>
+  <p>{{ 'TUTORIAL_FB.DESCRIZIONE' | translate }}<b> DoUtDes</b>. {{ 'TUTORIAL_FB.DESCRIZIONE_1' | translate }}<i>beta-tester</i>{{ 'TUTORIAL_FB.DESCRIZIONE_2' | translate }}</p>
 
-  <p class="pt-5">1) Per sperimentare Doutdes, ti invieremo una notifica su Facebook, con una richiesta di autorizzazione. Cliccando sulla notifica, dovrai in primis registrarti come Sviluppatore Facebook:</p>
-  <p><img src="/assets/img/tutorialFacebook/richiesta.png"  (click)="openModal(zooming, 'richiesta.png')" title="Clicca qui per ingrandire"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_FB.STEP_1' | translate }}</p>
+  <p><img src="/assets/img/tutorialFacebook/richiesta.png"  (click)="openModal(zooming, 'richiesta.png')" title="Click here to zoom"/></p>
 
-  <p class="pt-5">2) Procedi cliccando su <b>Avanti</b>:</p>
-  <p><img src="/assets/img/tutorialFacebook/registrazione_dev.png"  (click)="openModal(zooming, 'registrazione_dev.png')" title="Clicca qui per ingrandire"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_FB.STEP_2' | translate }}<b> {{ 'TUTORIAL_FB.STEP_2_AVANTI' | translate }}</b>:</p>
+  <p><img src="/assets/img/tutorialFacebook/registrazione_dev.png"  (click)="openModal(zooming, 'registrazione_dev.png')" title="Click here to zoom"/></p>
 
-  <p class="pt-5">3) Scegli l'opzione che descrive il tuo ruolo sviluppatore nell'app. Ti consigliamo di selezionare <b>Titolare</b>, per non avere limitazioni:</p>
-  <p><img src="/assets/img/tutorialFacebook/scelta_tipo.png"  (click)="openModal(zooming, 'scelta_tipo.png')" title="Clicca qui per ingrandire"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_FB.STEP_3' | translate }}<b>{{ 'TUTORIAL_FB.STEP_3_TIT' | translate }}</b> {{ 'TUTORIAL_FB.STEP_3_CON' | translate }}</p>
+  <p><img src="/assets/img/tutorialFacebook/scelta_tipo.png"  (click)="openModal(zooming, 'scelta_tipo.png')" title="Click here to zoom"/></p>
 
-  <p class="pt-5">4) Terminata la scelta del ruolo, tornerai alla richiesta di autorizzazione che ti abbiamo mandato. Concludi con <b>Conferma</b>:</p>
-  <p><img src="/assets/img/tutorialFacebook/conferma_richiesta.png"  (click)="openModal(zooming, 'conferma_richiesta.png')" title="Clicca qui per ingrandire"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_FB.STEP_4' | translate }}<b> {{ 'TUTORIAL_FB.STEP_4_CONF' | translate }}</b>:</p>
+  <p><img src="/assets/img/tutorialFacebook/conferma_richiesta.png"  (click)="openModal(zooming, 'conferma_richiesta.png')" title="Click here to zoom"/></p>
 
-  <p class="pt-5">5) Vai su <b>Preferenze</b> nella sidebar e clicca su <b>Continue with Facebook</b>:</p>
-  <p><img src="/assets/img/tutorialFacebook/chooseService.PNG"  (click)="openModal(zooming, 'chooseService.PNG')" title="Clicca qui per ingrandire"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_FB.STEP_5' | translate }}<b> {{ 'TUTORIAL_FB.STEP_5_PREFERENZE' | translate }}</b> {{ 'TUTORIAL_FB.STEP_5_CONTINUE' | translate }}<b> {{ 'TUTORIAL_FB.STEP_5_TOFB' | translate }}</b>:</p>
+  <p><img src="/assets/img/tutorialFacebook/chooseService.PNG"  (click)="openModal(zooming, 'chooseService.PNG')" title="Click here to zoom"/></p>
 
-  <p class="pt-5">6) Apparirà un pop-up come nell'immagine sotto. Clicca su <b>Scegli le tue autorizzazioni</b>:</p>
-  <p><img src="/assets/img/tutorialFacebook/auth.PNG"  (click)="openModal(zooming, 'auth.PNG')" title="Clicca qui per ingrandire"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_FB.STEP_6' | translate }}<b> {{ 'TUTORIAL_FB.STEP_6_AUT' | translate }}</b>:</p>
+  <p><img src="/assets/img/tutorialFacebook/auth.PNG"  (click)="openModal(zooming, 'auth.PNG')" title="Click here to zoom"/></p>
 
-  <p class="pt-5">7) Seleziona la pagina (<b>una sola</b>) che vuoi aggiungere su <b>DoUtDes</b> e clicca su <b>Ok</b>:</p>
-  <p><img src="/assets/img/tutorialFacebook/auth2.PNG"  (click)="openModal(zooming, 'auth2.PNG')" title="Clicca qui per ingrandire"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_FB.STEP_7' | translate }}(<b>{{ 'TUTORIAL_FB.STEP_7_CONT_1' | translate }}</b>) {{ 'TUTORIAL_FB.STEP_7_CONT_2' | translate }}<b> DoUtDes</b> {{ 'TUTORIAL_FB.STEP_7_CONT_3' | translate }} <b>Ok</b>:</p>
+  <p><img src="/assets/img/tutorialFacebook/auth2.PNG"  (click)="openModal(zooming, 'auth2.PNG')" title="Click here to zoom"/></p>
 
-  <p class="pt-5">8) Ottimo lavoro! Hai aggiunto il tuo token di Facebook Insights su <b>DoUtDes</b>. Le statistiche sono ora disponibili nella piattaforma!</p>
-  <p><img src="/assets/img/tutorialFacebook/fbDashboard.PNG"  (click)="openModal(zooming, 'fbDashboard.PNG')" title="Clicca qui per ingrandire"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_FB.STEP_8' | translate }}<b> DoUtDes</b>{{ 'TUTORIAL_FB.STEP_8_CONT' | translate }}</p>
+  <p><img src="/assets/img/tutorialFacebook/fbDashboard.PNG"  (click)="openModal(zooming, 'fbDashboard.PNG')" title="Click here to zoom"/></p>
 
 </div>
 <ng-template #zooming>

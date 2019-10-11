@@ -4,16 +4,10 @@
       <span>© {{this.copyrightYear}} DoUtDes</span>
     </div>
     <div class="float-right">
-      <span >
-        A cura del
-        <b>
-          <a *ngIf="!drag" href="http://dmi.unica.it" target="_blank" style="color:#666;">
-          Dip. di Matematica e Informatica
-          </a>
+      <span > {{ 'FOOTER.START' | translate }}<b>
+          <a *ngIf="!drag" href="http://dmi.unica.it" target="_blank" style="color:#666;"> {{ 'FOOTER.DIP' | translate }} </a>
 
-          <a *ngIf="drag" target="_blank" style="color:#666;">
-          Dip. di Matematica e Informatica
-          </a>
+          <a *ngIf="drag" target="_blank" style="color:#666;"> {{ 'FOOTER.DIP' | translate }} </a>
         </b> (UniCA)
       </span>
     </div>

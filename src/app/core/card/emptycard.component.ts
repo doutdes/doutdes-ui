@@ -13,6 +13,9 @@ import {ToastrService} from 'ngx-toastr';
 import {T} from '@angular/core/src/render3';
 import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
+import {User} from '../../shared/_models/User';
 
 @Component({
   selector: 'app-emptycard',
@@ -56,15 +59,19 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   description: string; // Description of the metric shown
 
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
 
   constructor(
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
-    private toastr: ToastrService
-  ) {
-  }
+    private toastr: ToastrService,
+    public translate: TranslateService
+  ) { }
 
   async ngOnInit() {
     const dashData = this.dashboard_data;
@@ -107,7 +114,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     }
   }
 
-
   get form() {
     return this.insertChartForm.controls;
   }
@@ -119,7 +125,9 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       await this.updateDropdownOptions();
 
       if(this.metrics.length === 0) {
-        this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
+
+        this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'FULL_GRAF'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'FULL_GRAF'));
       } else {
         this.modalService.onHide.subscribe(() => {
           this.closeModal();
@@ -185,7 +193,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
 
     } catch (error) {
-      this.toastr.error('Non è stato possibile aggiungere "' + dashChart.title + '" alla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico.');
+      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_ADD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ADD'));
       console.error('Error inserting the Chart in the dashboard');
       console.error(error);
     }
@@ -241,7 +250,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     // Update styles
     this.styles = this.chartRemaining.filter(chart => chart.Title == this.insertChartForm.value.metric && chart.Type == this.insertChartForm.value.channel).map(item => item.format);
     this.insertChartForm.controls['style'].setValue(this.styles[0]);
-
     // Update title
     this.insertChartForm.controls['title'].setValue(this.insertChartForm.value.metric);
 
@@ -264,4 +272,5 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
   }
+
 }

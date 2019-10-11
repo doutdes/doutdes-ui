@@ -17,6 +17,7 @@ export interface User {
   user_type?: string;
   checksum?: string;
   token?: string;
+  lang?: string;
 }
 export interface VerifyResponse {
   verified: boolean;

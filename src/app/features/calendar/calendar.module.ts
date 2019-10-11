@@ -11,6 +11,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BsModalService} from 'ngx-bootstrap';
 import {CalendarService} from '../../shared/_services/calendar.service';
 import localeIt from '@angular/common/locales/it';
+import {TranslateModule} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
 
 registerLocaleData(localeIt);
 
@@ -28,12 +30,14 @@ registerLocaleData(localeIt);
     CalendarModule.forRoot({
       provide: DateAdapter,
       useFactory: adapterFactory
-    })
+    }),
+    TranslateModule
   ],
   providers: [
     BreadcrumbActions,
     CalendarService,
     BsModalService,
+    UserService
   ],
   exports: [
     FeatureCalendarComponent

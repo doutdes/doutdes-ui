@@ -1,22 +1,21 @@
 <div class="row rounded p-4 title-header">
   <div class="col-md-12 pl-0">
-    <h2 class="my-auto pl-0">Tutorial: importazione dati sito web</h2>
+    <h2 class="my-auto pl-0">{{ 'TUTORIAL_GO.TITLE' | translate }}</h2>
   </div>
 </div>
 <div class="rounded my-3 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
-  <p>In questa guida, è possibile trovare le istruzioni per importare la chiave API (token di accesso) di Google Analytics utile a configurare la dashboard personale del vostro sito web su <b>DoUtDes</b>.
-    Inoltre è possibile cliccare su qualsiasi immagine per poterla ingrandire.</p>
+  <p>{{ 'TUTORIAL_GO.DESCRIZIONE' | translate }}<b> DoUtDes</b>. {{ 'TUTORIAL_GO.DESCRIZIONE_1' | translate }}</p>
 
-  <p class="pt-5">1) Vai su <b>Preferenze</b> nella sidebar e clicca su <b>Login with Google</b>:</p>
+  <p class="pt-5">{{ 'TUTORIAL_GO.STEP_1' | translate }}<b> {{ 'TUTORIAL_GO.PREFERENZE' | translate }}</b> {{ 'TUTORIAL_GO.STEP_1_CON' | translate }}<b> Login with Google</b>:</p>
   <p><img src="/assets/img/tutorialGoogle/chooseService.PNG"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">2) Apparirà un pop-up come nell'immagine sotto. Eseguite l'accesso con l'account Google associato al vostro sito web:</p>
+  <p class="pt-5">{{ 'TUTORIAL_GO.STEP_2' | translate }}</p>
   <p><img src="/assets/img/tutorialGoogle/scegli_google.PNG"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">3) Clicca sul bottone <b>Consenti</b>:</p>
+  <p class="pt-5">{{ 'TUTORIAL_GO.STEP_3' | translate }}<b> {{ 'TUTORIAL_GO.CONSENTI' | translate }}</b>:</p>
   <p><img src="/assets/img/tutorialGoogle/scegli_google_2.PNG"  (click)="openModal(zooming, 2)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">4) Ottimo lavoro! Hai aggiunto il tuo token di Google Analytics su <b>DoUtDes</b>. Le statistiche relative al tuo sito web sono ora disponibili nella piattaforma!</p>
+  <p class="pt-5">{{ 'TUTORIAL_GO.STEP_4' | translate }}<b> DoUtDes</b>{{ 'TUTORIAL_GO.STEP_4_CON' | translate }}</p>
   <p><img src="/assets/img/tutorialGoogle/gaDashboard.PNG"  (click)="openModal(zooming, 3)" title="Click here to zoom"/></p>
 </div>
 <ng-template #zooming>

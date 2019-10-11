@@ -9,6 +9,7 @@ import {RouterModule} from '@angular/router';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {ToastrService} from 'ngx-toastr';
 import {StoreService} from '../../../shared/_services/store.service';
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import {StoreService} from '../../../shared/_services/store.service';
   imports: [
     SharedModule,
     RouterModule,
+    TranslateModule,
   ],
   exports: [
     FeatureAuthenticationRegisterFormComponent,

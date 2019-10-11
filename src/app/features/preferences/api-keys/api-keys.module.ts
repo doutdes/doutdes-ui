@@ -14,6 +14,10 @@ import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../../shared/_services/user.service';
+import {AppFooterModule} from '@coreui/angular';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -23,7 +27,10 @@ import {AggregatedDataService} from '../../../shared/_services/aggregated-data.s
   imports: [
     SharedModule,
     CoreModule,
-    NgxLoadingModule.forRoot({})
+    AppFooterModule,
+    HttpClientModule,
+    NgxLoadingModule.forRoot({}),
+    TranslateModule
   ],
   providers: [
     ApiKeysService,
@@ -35,7 +42,8 @@ import {AggregatedDataService} from '../../../shared/_services/aggregated-data.s
     BsModalService,
     BreadcrumbActions,
     FilterActions,
-    ChartsCallsService
+    ChartsCallsService,
+    UserService
   ],
   exports: [
     FeaturePreferencesApiKeysComponent,

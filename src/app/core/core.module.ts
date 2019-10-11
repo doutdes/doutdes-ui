@@ -15,6 +15,15 @@ import {DashboardService} from '../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../shared/_services/global-event-manager.service';
 import {MiniCardComponent} from './card/minicard.component';
 import {FilterActions} from '../features/dashboard/redux-filter/filter.actions';
+import {HttpClient} from '@angular/common/http';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {UserService} from '../shared/_services/user.service';
+
+// AoT requires an exported function for factories
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, '././assets/i18n/', '.json');
+}
 
 @NgModule({
   declarations: [
@@ -33,11 +42,13 @@ import {FilterActions} from '../features/dashboard/redux-filter/filter.actions';
     BsDropdownModule,
     ModalModule.forRoot(),
     SelectDropDownModule,
-    PopoverModule.forRoot()
+    PopoverModule.forRoot(),
+    TranslateModule
   ],
   providers: [
     LoginActions,
     BsModalService,
+    UserService,
     DashboardService,
     FilterActions,
     {provide: 'mapsApiKey', useValue: 'AIzaSyAjKzYOB3pXeI79ONHTp066mDb3xzTtUKc'}

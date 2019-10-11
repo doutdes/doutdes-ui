@@ -34,6 +34,8 @@
     "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "@fortawesome/fontawesome-svg-core": "^1.2.0",
     "@fortawesome/free-solid-svg-icons": "^5.6.0",
+    "@ngx-translate/core": "^11.0.1",
+    "@ngx-translate/http-loader": "^4.0.0",
     "angular-calendar": "^0.26.1",
     "angularx-flatpickr": "^6.1.0",
     "bootstrap": "^4.1.1",
