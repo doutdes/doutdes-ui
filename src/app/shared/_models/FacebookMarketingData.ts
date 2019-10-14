@@ -51,6 +51,9 @@ export const FBM_CHART = {
   HOURLYAUDIENCE_CPC: 98,
   HOURLYAUDIENCE_CPP: 99,
   HOURLYAUDIENCE_CTR: 100,
+  CAMPAIGNS: 101,
+  ADSETS: 102,
+  ADS: 103
 };
 
 export interface FbmAnyData {

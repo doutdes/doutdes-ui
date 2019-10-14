@@ -381,7 +381,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
       last: this.bsRangeValue[1]
     };
 
-    let dummySubj : Subject<void> = new Subject<void>(); // used to force unsubscription
+    const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
 
     try {
       this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
