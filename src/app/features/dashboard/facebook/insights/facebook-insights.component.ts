@@ -30,7 +30,7 @@ import {takeUntil} from 'rxjs/operators';
 const PrimaryWhite = '#ffffff';
 
 @Component({
-  selector: 'app-feature-dashboard-facebook',
+  selector: 'app-feature-dashboard-facebook-insights',
   templateUrl: './facebook-insights.component.html'
 })
 

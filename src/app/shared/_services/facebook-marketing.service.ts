@@ -20,7 +20,7 @@ export class FacebookMarketingService {
       .set('Content-type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`)
 
-  getData(ID, pageID) {
+  getData(ID, pageID, boh) {
     const headers = this.getAuthorization();
     let call;
 
@@ -86,6 +86,15 @@ export class FacebookMarketingService {
       case FBM_CHART.HOURLYAUDIENCE_CPP:
       case FBM_CHART.HOURLYAUDIENCE_CTR:
         call = 'insights/breakdowns/hourlyAudience';
+        break;
+      case FBM_CHART.CAMPAIGNS:
+        call = 'campaigns';
+        break;
+      case FBM_CHART.ADSETS:
+        call = 'adsets/' + boh;
+        break;
+      case FBM_CHART.ADS:
+        call = 'ads/' + boh;
         break;
     }
 

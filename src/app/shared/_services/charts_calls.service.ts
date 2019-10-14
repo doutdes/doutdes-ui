@@ -39,7 +39,7 @@ export class ChartsCallsService {
     return '...';
   }
 
-  public retrieveChartData(ID, intervalDate?, pageID?): Observable<any> {
+  public retrieveChartData(ID, intervalDate?, pageID?, boh?): Observable<any> {
     if (Object.values(FB_CHART).includes(ID)) {
       return this.facebookService.getData(ID, pageID);
     } else if (Object.values(IG_CHART).includes(ID)) {
@@ -49,7 +49,7 @@ export class ChartsCallsService {
     } else if (Object.values(YT_CHART).includes(ID)) {
       return this.youtubeService.getData(ID, intervalDate, pageID);
     } else if (Object.values(FBM_CHART).includes(ID)) {
-      return this.facebookMarketingService.getData(ID, pageID);
+      return this.facebookMarketingService.getData(ID, pageID, boh);
     } else {
       throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
     }
@@ -3784,7 +3784,7 @@ export class ChartsCallsService {
         break;
       case D_TYPE.FBM:
         pageID = pageIDs[D_TYPE.FBM];
-        observables.push(this.facebookMarketingService.getData(FBM_CHART, pageID));
+        observables.push(this.facebookMarketingService.getData(FBM_CHART, pageID, null));
 
         break;
       case D_TYPE.CUSTOM:

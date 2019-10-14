@@ -7,6 +7,7 @@ import {FeatureDashboardInstagramComponent} from './instagram/instagram.componen
 import {FeatureDashboardYoutubeAnalyticsComponent} from './youtube/youtube.component';
 import {FeatureDashboardComponent} from './dashboard.component';
 import {FeatureDashboardFacebookMarketingComponent} from './facebook/marketing/facebook-marketing.component';
+import {FeatureDashboardFacebookCampaignsComponent} from './facebook/campaigns/facebook-campaigns.component';
 
 /** App Components **/
 
@@ -33,7 +34,7 @@ import {FeatureDashboardFacebookMarketingComponent} from './facebook/marketing/f
       },
       {
         path: 'facebook/campaigns',
-        component: FeatureDashboardFacebookMarketingComponent
+        component: FeatureDashboardFacebookCampaignsComponent
       },
       {
         path: 'instagram',

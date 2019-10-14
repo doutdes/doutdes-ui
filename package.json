@@ -15,11 +15,13 @@
   "dependencies": {
     "@angular-redux/store": "^9.0.0",
     "@angular/animations": "6.0.2",
+    "@angular/cdk": "6.4.7",
     "@angular/common": "6.0.2",
     "@angular/compiler": "6.0.2",
     "@angular/core": "6.0.2",
     "@angular/forms": "6.0.2",
     "@angular/http": "7.2.15",
+    "@angular/material": "6.4.7",
     "@angular/platform-browser": "6.0.2",
     "@angular/platform-browser-dynamic": "6.0.2",
     "@angular/router": "6.0.2",

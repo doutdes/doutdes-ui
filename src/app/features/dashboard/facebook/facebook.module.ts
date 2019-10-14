@@ -23,6 +23,7 @@ import {itLocale} from 'ngx-bootstrap/locale';
 import {FacebookMarketingService} from '../../../shared/_services/facebook-marketing.service';
 import {FeatureDashboardFacebookMarketingComponent} from './marketing/facebook-marketing.component';
 import {FeatureDashboardFacebookCampaignsComponent} from './campaigns/facebook-campaigns.component';
+import {MatFormFieldModule, MatInputModule, MatPaginatorModule, MatSortModule, MatTableModule} from '@angular/material';
 
 defineLocale('it', itLocale);
 
@@ -43,6 +44,11 @@ defineLocale('it', itLocale);
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgxLoadingModule.forRoot({}),
+    MatTableModule,
+    MatFormFieldModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatInputModule,
   ],
   providers: [
     ApiKeysService,
