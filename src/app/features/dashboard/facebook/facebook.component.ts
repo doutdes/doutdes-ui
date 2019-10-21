@@ -721,13 +721,14 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     this.loadingForm = true;
 
-    update = await this.apiKeyService.updateKey(key).toPromise();
-
-    if (update) {
-      this.closeModal();
-      await this.ngOnInit();
-    } else {
-      console.error('MANDARE ERRORE');
+    try {
+      update = await this.apiKeyService.updateKey(key).toPromise();
+      if (update) {
+        this.closeModal();
+        location.reload();
+      }
+    } catch (e) {
+      console.log (e);
     }
   }
 
@@ -754,9 +755,9 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   async getPageName(fbPage) {
     let pageName;
     try {
-      pageName = _.find(this.pageList, { 'id': fbPage});
+      pageName = _.find(this.pageList, {'id': fbPage});
       return pageName.name;
-    }catch (e) {
+    } catch (e) {
       console.log(e);
     }
   }
@@ -879,7 +880,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   }
 
-  createForm(){
+  createForm() {
     this.selectViewForm = this.formBuilder.group({
       fb_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
     });
