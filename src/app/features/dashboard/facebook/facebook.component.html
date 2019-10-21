@@ -227,13 +227,13 @@
 
 <ng-template #fbPagePreferences>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fab fa-facebook mr-3"></i>Pagina preferita (da mettere nel json)</h4>
+    <h4 class="modal-title pull-left"><i class="fab fa-facebook mr-3"></i>{{ 'DASHBOARD.FB_PAGINA_PREFERITA' | translate }}</h4>
   </div>
 
   <div class="modal-body">
     <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
       <div class="form-group row">
-        <p class="col-sm-12 text-justify">Qua ci scrivo qualcosa (da mettere nel json)</p>
+        <p class="col-sm-12 text-justify">{{ 'DASHBOARD.FB_DROPDOWN_PAGINA' | translate }}</p>
         <div class="col-sm-12">
           <select class="form-control mx-auto" style="width: 70%;" formControlName="fb_page_id"
                   [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['fb_page_id'].errors }">

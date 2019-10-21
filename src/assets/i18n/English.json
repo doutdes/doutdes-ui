@@ -97,7 +97,9 @@
     "DANGEROUS OPERATION": "Dangerous Operation",
     "CONFIRM_SALVA_ANNULLA_ALERT_TEXT": "The cancellation of the temporary sorting mode will not save the changes made. Therefore the changes made will be lost and will no longer be recoverable.",
     "NO_ANNULLA": "No, do not cancel ",
-    "ANNULLA": "Yes, cancel"
+    "ANNULLA": "Yes, cancel",
+    "FB_PAGINA_PREFERITA": "Select your preferred page",
+    "FB_DROPDOWN_PAGINA": "Select one of the following pages that you have allowed access to Doutdes"
   },
   "CALENDARIO": {
     "TITLE": "Calendar",

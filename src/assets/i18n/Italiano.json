@@ -97,7 +97,9 @@
   	"OPERAZIONE_PERICOLOSO": "Operazione pericolosa",
   	"CONFERMA_SALVA_ANNULLA_ALERT_TEXT": "L'annullamento della modalità temporanea di ordinamento non salverà le modifiche effettuate. Pertanto le modifiche effettuate verranno perse e non saranno più recuperabili.",
 	  "ANNULLA": "Sì, annulla ",
-	  "NO_ANNULLA": "No, non annulare "
+	  "NO_ANNULLA": "No, non annullare ",
+    "FB_PAGINA_PREFERITA": "Seleziona la tua pagina preferita",
+    "FB_DROPDOWN_PAGINA": "Seleziona una delle seguenti pagine alla quale hai consentito l'accesso su Doutdes"
   },
   "CALENDARIO": {
     "TITLE": "Calendario",
