@@ -381,7 +381,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     this.CCService.retrieveChartData(dashChart.type, chartParams, pageID)
       .subscribe(chartData => {
-        console.log('chart data received');
+          console.log('chart data received');
           if (!chartData['status']) { // Se la chiamata non rende errori
             chartToPush.chartData = chartData;
 
@@ -550,35 +550,35 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   async loadMiniCards() {
     // 1. Init intervalData (retrieve data of previous month)
-    /*    let results, pageIDs = {};
-        const permissions = this.HARD_DASH_DATA.permissions;
-        const date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    let results, pageIDs = {};
+    const permissions = this.HARD_DASH_DATA.permissions;
+    const date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
-        const intervalDate: IntervalDate = {
-          first: new Date(y, m - 1, 1),
-          last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
-        };
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
+    };
 
-        pageIDs[D_TYPE.FB] = this.fbPageID;
-        pageIDs[D_TYPE.IG] = this.igPageID;
-        pageIDs[D_TYPE.YT] = this.ytPageID;
+    pageIDs[D_TYPE.FB] = this.fbPageID;
+    pageIDs[D_TYPE.IG] = this.igPageID;
+    pageIDs[D_TYPE.YT] = this.ytPageID;
 
-        const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
 
-        forkJoin(observables).subscribe(miniDatas => {
-          for (const i in miniDatas) {
-            if (Object.entries(miniDatas[i]).length !== 0) {
-              results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
-              this.miniCards[i].value = results['value'];
-              this.miniCards[i].progress = results['perc'] + '%';
-              this.miniCards[i].step = results['step'];
-            } else {
-              this.miniCards[i].value = '-';
-              this.miniCards[i].progress = '0%';
-              this.miniCards[i].step = 0;
-            }
-          }
-        });*/
+    forkJoin(observables).subscribe(miniDatas => {
+      for (const i in miniDatas) {
+        if (Object.entries(miniDatas[i]).length !== 0) {
+          results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
+          this.miniCards[i].value = results['value'];
+          this.miniCards[i].progress = results['perc'] + '%';
+          this.miniCards[i].step = results['step'];
+        } else {
+          this.miniCards[i].value = '-';
+          this.miniCards[i].progress = '0%';
+          this.miniCards[i].step = 0;
+        }
+      }
+    });
   }
 
   async getViewID() {

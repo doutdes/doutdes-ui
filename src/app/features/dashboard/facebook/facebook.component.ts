@@ -126,37 +126,39 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
   }
 
-  // async loadMiniCards(pageID) {
-  //   // 1. Init intervalData (retrieve data of previous month)
-  //   let results;
-  //   let empty = false;
-  //   let date = new Date(), y = date.getFullYear(), m = date.getMonth();
-  //   const intervalDate: IntervalDate = {
-  //     first: new Date(y, m - 1, 1),
-  //     last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
-  //   };
-  //
-  //   let pageIDs = {};
-  //
-  //   pageIDs[D_TYPE.FB] = pageID;
-  //   const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs, null);
-  //
-  //
-  //   forkJoin(observables).subscribe(miniDatas => {
-  //     for (const i in miniDatas) {
-  //       results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
-  //
-  //       empty = empty || !results;
-  //
-  //       this.miniCards[i].value = results['value'];
-  //       this.miniCards[i].progress = results['perc'] + '%';
-  //       this.miniCards[i].step = results['step'];
-  //     }
-  //   });
-  //
-  //   return empty;
-  //
-  // }
+  async loadMiniCards(pageID) {
+    // 1. Init intervalData (retrieve data of previous month)
+    let results;
+    let empty = false;
+    let date = new Date();
+    const y = date.getFullYear();
+    const m = date.getMonth();
+    const intervalDate: IntervalDate = {
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
+    };
+
+    let pageIDs = {};
+
+    pageIDs[D_TYPE.FB] = pageID;
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs, null);
+
+
+    forkJoin(observables).subscribe(miniDatas => {
+      for (const i in miniDatas) {
+        results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
+
+        empty = empty || !results;
+
+        this.miniCards[i].value = results['value'];
+        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].step = results['step'];
+      }
+    });
+
+    return empty;
+
+  }
 
   async loadDashboard() { // TODO get pageID and refactor
     let dash, chartParams: ChartParams = {};
@@ -188,7 +190,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       }
 
       // console.log(this.HARD_DASH_DATA.dashboard_id);
-      // this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
+      this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
       if (this.dashStored) {
         // Ci sono già dati salvati

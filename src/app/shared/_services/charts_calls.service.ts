@@ -14,6 +14,7 @@ import * as moment from 'moment';
 
 import {YT_CHART, YT_PALETTE} from '../_models/YoutubeData';
 import {ChartParams} from '../_models/Chart';
+import {GaChartParams, IgChartParams} from '../_models/MiniCard';
 
 @Injectable()
 export class ChartsCallsService {
@@ -2109,30 +2110,30 @@ export class ChartsCallsService {
         pageID = pageIDs[D_TYPE.FB];
         observables.push(this.facebookService.getData('page_fans', pageID));
         observables.push(this.facebookService.fbposts(pageID));
-        observables.push(this.facebookService.fbpagereactions(pageID));
+        observables.push(this.facebookService.getData('page_actions_post_reactions_total', pageID));
         observables.push(this.facebookService.getData('page_impressions_unique', pageID));
         break;
       case D_TYPE.GA:
-        observables.push(this.googleAnalyticsService.gaUsers());
-        // observables.push(this.googleAnalyticsService.getData(GA_CHART.SESSION_DAY));
-        // observables.push(this.googleAnalyticsService.getData(GA_CHART.BOUNCE_RATE));
-        // observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION));
+        observables.push(this.googleAnalyticsService.getData(GaChartParams.users));
+        observables.push(this.googleAnalyticsService.getData(GaChartParams.sessions));
+        observables.push(this.googleAnalyticsService.getData(GaChartParams.bounceRate));
+        observables.push(this.googleAnalyticsService.getData(GaChartParams.avgSessionDuration));
         break;
       case D_TYPE.IG:
         pageID = pageIDs[D_TYPE.IG];
         observables.push(this.instagramService.getBusinessInfo(pageID));
         observables.push(this.instagramService.getMedia(pageID));
-        // observables.push(this.instagramService.getData(IG_CHART.PROFILE_VIEWS, pageID));
-        // observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
+        observables.push(this.instagramService.getData(IgChartParams.profile_views, pageID));
+        observables.push(this.instagramService.getData(IgChartParams.impressions, pageID));
         break;
       case D_TYPE.YT:
-        // observables.push(this.youtubeService.getSubscribers(obj));
+        observables.push(this.youtubeService.getData('info', pageIDs));
         // observables.push(this.youtubeService.getData(, intervalDate, pageIDs));
         // observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
         // observables.push(this.youtubeService.getVideos(pageIDs));
         break;
       case D_TYPE.CUSTOM:
-        observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
+        observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.getData(GaChartParams.users) : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null
           ? this.facebookService.getData('page_fans', pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null
@@ -2172,19 +2173,22 @@ export class ChartsCallsService {
   }
 
   private getGoogleMiniValue(measure, data) {
-    //let date = new Date(null);
     let value, sum = 0, avg, perc, step;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    let date = new Date();
+    const y = date.getFullYear();
+    const m = date.getMonth();
 
     const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
 
-    data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
+    data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() &&
+      parseDate(el[0]).getTime() <= intervalDate.last.getTime()
+    );
 
-    for (const i in data) {
-      sum += parseInt(data[i][1]);
+    for (const el of data) {
+      sum += parseInt(el[1], 10);
     }
 
     avg = (sum / data.length).toFixed(2);
@@ -2198,11 +2202,11 @@ export class ChartsCallsService {
 
       case 'time':
         date = new Date(null);
-        date.setSeconds(parseInt(avg)); // specify value for SECONDS here
+        date.setSeconds(parseInt(avg, 10)); // specify value for SECONDS here
         value = date.toISOString().substr(11, 8);
         step = this.searchStep(avg, measure);
 
-        perc = parseInt(avg) / step * 100;
+        perc = parseInt(avg, 10) / step * 100;
 
         date.setSeconds(step);
         step = date.toISOString().substr(11, 8);
@@ -2220,29 +2224,57 @@ export class ChartsCallsService {
 
   private getYTMiniValue(measure, data) {
     let value, sum = 0, avg, perc, step;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    const date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
 
-    //if(measure!='subs') //used to avoid date parsing in YT subscribers (that doesn't contain such infos). Expect more elegant sol. in future
-    data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
+    if (measure !== 'subs') {
+      data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime()
+        && parseDate(el.date).getTime() <= intervalDate.last.getTime()
+      );
+    }
 
-    if (measure == 'vids' || measure == 'subs')
+    switch (measure) {
+      case 'subs':
+        value = data[0].subscribers;
+        perc = value;
+        break;
+      case 'views':
+        value = data.reduce((a, b) => a.value + b.value, 0);
+        break;
+      case 'avg_view_time':
+        sum = data.reduce((a, b) => a.value + b.value, 0);
+        value = (sum / data.length).toFixed(2);
+        break;
+      case 'n_videos':
+        break;
+      default:
+        break;
+    }
+
+    step = this.searchStep(value, measure);
+    perc = measure === 'subs' ? value : (value / step * 100);
+
+    /*data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
+
+    if (measure == 'vids' || measure == 'subs') {
       sum = data.length;
-    else {
+    } else {
       for (const i in data) {
         sum += parseInt(data[i].value);
       }
     }
 
     avg = (sum / data.length).toFixed(2);
-    if (isNaN(sum))
+    if (isNaN(sum)) {
       sum = 0;
-    if (isNaN(avg))
+    }
+    if (isNaN(avg)) {
       avg = 0.0;
+    }
 
     switch (measure) {
       case 'subs':
@@ -2275,7 +2307,7 @@ export class ChartsCallsService {
         step = this.searchStep(value);
         perc = value / step * 100;
         break;
-    }
+    }*/
     return {value, perc, step};
   }
 

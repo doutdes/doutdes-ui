@@ -16,7 +16,7 @@ export let GaMiniCards: MiniCard[] = [
     name: 'Utenti tot.',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
-    measure: '',
+    measure: 'users',
     value: '-'
   }, {
     name: 'Visite tot.',
@@ -113,7 +113,7 @@ export let YtMiniCards: MiniCard[] = [
     name: 'Media durata vis.',
     icon: 'icon-action-undo',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
-    measure: 'avg-v-time',
+    measure: 'avg_view_time',
     value: '-',
     type: D_TYPE.YT
 
@@ -121,7 +121,7 @@ export let YtMiniCards: MiniCard[] = [
     name: 'Video caricati',
     icon: 'icon-hourglass',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
-    measure: 'vids',
+    measure: 'n_videos',
     value: '-',
     type: D_TYPE.YT
 
@@ -160,3 +160,35 @@ export let CustomMiniCards: MiniCard[] = [
     type: D_TYPE.YT
   }
 ];
+
+export const GaChartParams = {
+  users: {
+    metric: 'ga:users',
+    dimensions: 'ga:date'
+  },
+  sessions: {
+    metric: 'ga:sessions',
+    dimensions: 'ga:date'
+  },
+  bounceRate: {
+    metric: 'ga:bounceRate',
+    dimensions: 'ga:date'
+  },
+  avgSessionDuration: {
+    metric: 'ga:avgSessionDuration',
+    dimensions: 'ga:date'
+  },
+};
+
+export const IgChartParams = {
+  profile_views: {
+    metric: 'profile_views',
+    period: 'day',
+    interval: 29
+  },
+  impressions: {
+    metric: 'impressions',
+    period: 'day',
+    interval: 29
+  }
+};

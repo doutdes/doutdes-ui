@@ -116,25 +116,28 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     // 1. Init intervalData (retrieve data of previous month)
     let results;
     let empty = false;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    const date = new Date();
+    const y = date.getFullYear();
+    const m = date.getMonth();
     const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
     let pageIDs = {};
 
     pageIDs[D_TYPE.IG] = pageID;
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageIDs, null);
+
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
 
-        empty = empty || !results;
-
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
+
+        empty = empty || !results;
       }
     });
 
@@ -179,7 +182,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     this.pageID = this.pageID[0].id; // TODO to add the choice of the page, now it takes just the first one
 
-    // this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
+    this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
     if (dash.id) {
       this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
@@ -224,8 +227,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                   chart.chartData = dataArray[i];
                   let date = new Date(chart.chartData[0]['end_time']);
 
-                  if (date < this.minDate)
+                  if (date < this.minDate) {
                     this.minDate = date;
+                  }
                   // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
                 } else {
@@ -506,7 +510,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async getUserCompany() {
-    return <User> await this.userService.get().toPromise();
+    return <User>await this.userService.get().toPromise();
   }
 
   nChartEven() {

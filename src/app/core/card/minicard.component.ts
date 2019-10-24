@@ -21,7 +21,8 @@ export class MiniCardComponent implements OnInit {
 
   ngOnInit(): void {
     this.elementClass += this.minicard.padding;
-    this.month = new Date(0, new Date().getMonth(), 0).toLocaleString('it-it', { month: 'long' }); // Previous month
+    this.month = new Date(0, new Date().getMonth() + 1, 0)
+      .toLocaleString('it-it', { month: 'long' }); // This month
 
     switch (this.dtype) {
       case D_TYPE.FB:

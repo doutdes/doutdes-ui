@@ -38,17 +38,17 @@ export class InstagramService {
     return this.http.get<IgData>(this.urlRequest, {headers, params});
   }
 
-  getMedia(pageID, n=20) {
+  getMedia(pageID) {
     const headers = this.getAuthorization();
-    return this.http.get<IgMedia[]>(this.formatURL('media/' + n, pageID), {headers})
+    return this.http.get<IgMedia[]>(this.formatURL('media', pageID), {headers});
   }
 
   getBusinessInfo(pageID) {
     const headers = this.getAuthorization();
-    return this.http.get<IgBusinessInfo>(this.formatURL('businessInfo/', pageID), {headers})
+    return this.http.get<IgBusinessInfo>(this.formatURL('businessInfo/', pageID), {headers});
   }
 
-  private formatURL (call, pageID = null) {
+  private formatURL(call, pageID = null) {
     const aux = pageID ? (pageID + '/' + call) : call;
     return environment.protocol + environment.host + ':' + environment.port + '/ig/' + aux;
   }

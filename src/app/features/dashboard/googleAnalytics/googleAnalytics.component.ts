@@ -231,7 +231,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
-      // this.dashErrors.emptyMiniCards = await this.loadMiniCards();
+      this.dashErrors.emptyMiniCards = await this.loadMiniCards();
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -265,8 +265,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
               chart.chartData = dataArray[i];
               let date = parseDate(chart['chartData'][0][0]);
 
-              if (date < this.minDate)
+              if (date < this.minDate) {
                 this.minDate = date;
+              }
 
               chart.error = false;
             } else {
@@ -309,11 +310,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     // 1. Init intervalData (retrieve data of previous month)
     let results;
     let empty = false;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    const date = new Date();
+    const y = date.getFullYear();
+    const m = date.getMonth();
 
     const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.GA, null, intervalDate);
@@ -322,11 +325,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
 
-        empty = empty || !results;
-
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
+
+        empty = empty || !results;
       }
     });
     return empty;
@@ -511,7 +514,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   }
 
   async getUserCompany() {
-    return <User> await this.userService.get().toPromise();
+    return <User>await this.userService.get().toPromise();
   }
 
   nChartEven() {
