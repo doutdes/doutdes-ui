@@ -99,7 +99,7 @@
     "NO_ANNULLA": "No, do not cancel ",
     "ANNULLA": "Yes, cancel",
     "FB_PAGINA_PREFERITA": "Select your preferred page",
-    "FB_DROPDOWN_PAGINA": "Select one of the following pages that you have allowed access to Doutdes"
+    "FB_DROPDOWN_PAGINA": "Select one of the pages you have granted access:"
   },
   "CALENDARIO": {
     "TITLE": "Calendar",
@@ -323,5 +323,11 @@
     "NEW_ACC": "Create account",
     "EMAIL_INSERT": "Enter a valid email address",
     "PASSWORD_MIN": "The password must contain at least 10 characters"
+  },
+  "MESSAGGI":{
+    "HEADER": "Messages",
+    "ORA_INVIO": "Time",
+    "TITOLO_MESSAGGIO": "Title",
+    "CONFERMA_LETTURA": "Ok, I have read"
   }
 }

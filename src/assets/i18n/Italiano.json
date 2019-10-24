@@ -99,7 +99,7 @@
 	  "ANNULLA": "Sì, annulla ",
 	  "NO_ANNULLA": "No, non annullare ",
     "FB_PAGINA_PREFERITA": "Seleziona la tua pagina preferita",
-    "FB_DROPDOWN_PAGINA": "Seleziona una delle seguenti pagine alla quale hai consentito l'accesso su Doutdes"
+    "FB_DROPDOWN_PAGINA": "Seleziona una delle pagine per la quale hai consentito l'accesso:"
   },
   "CALENDARIO": {
     "TITLE": "Calendario",
@@ -323,5 +323,11 @@
     "NEW_ACC": "Crea account",
     "EMAIL_INSERT": "Inserisci una email valida",
     "PASSWORD_MIN": "La password deve contenere almeno 10 caratteri"
+  },
+  "MESSAGGI":{
+    "HEADER": "Messaggi",
+    "ORA_INVIO": "Ora di invio",
+    "TITOLO_MESSAGGIO": "Titolo",
+    "CONFERMA_LETTURA": "Ok, ho letto"
   }
 }

@@ -211,15 +211,14 @@
     <p>{{ 'DASHBOARD.CONFERMA_SALVA_ANNULLA_ALERT' | translate }}</p>
     <p style="text-align: justify"><i class="fas fa-exclamation-circle mr-1" style="color: #ad0009; font-size:14pt"></i><b
       style="color: #ad0009;">{{ 'DASHBOARD.OPERAZIONE_PERICOLOSO' | translate }}</b>: {{
-      'DASHBOARD.CONFERMA_SALVA_ANNULLA_ALLERT_TEXT' | translate }}
+      'DASHBOARD.CONFERMA_SALVA_ANNULLA_ALERT_TEXT' | translate }}
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-success" (click)="checkDrag(); closeModal()">{{ 'DASHBOARD.ANNULLA' | translate
+    <button type="button" class="btn btn-danger" (click)="checkDrag(); closeModal()">{{ 'DASHBOARD.ANNULLA' | translate
       }}
     </button>
-    <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'DASHBOARD.NO_ANNULLA' | translate }}No, non
-      annulare
+    <button type="button" class="btn btn-success" (click)="closeModal()">{{ 'DASHBOARD.NO_ANNULLA' | translate }}
     </button>
   </div>
 
