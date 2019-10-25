@@ -560,14 +560,15 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     };
 
     pageIDs[D_TYPE.FB] = this.fbPageID;
-    pageIDs[D_TYPE.IG] = this.igPageID;
-    pageIDs[D_TYPE.YT] = this.ytPageID;
+    pageIDs[D_TYPE.IG] = this.igPageID[0].id; // TODO change this when the multiple choice works
+    pageIDs[D_TYPE.YT] = this.ytPageID[0].id; // TODO change this when the multiple choice works
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
-        if (Object.entries(miniDatas[i]).length !== 0) {
+        console.warn(miniDatas[i]);
+        if (Object.keys(miniDatas[i]).length !== 0) {
           results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
           this.miniCards[i].value = results['value'];
           this.miniCards[i].progress = results['perc'] + '%';

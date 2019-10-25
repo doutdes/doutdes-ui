@@ -2101,9 +2101,7 @@ export class ChartsCallsService {
 
   public retrieveMiniChartData(serviceID: number, pageIDs?, intervalDate?: IntervalDate, permissions?) {
     const observables: Array<Observable<any>> = [];
-    const obj = {};
     let pageID;
-
 
     switch (serviceID) {
       case D_TYPE.FB:
@@ -2127,19 +2125,28 @@ export class ChartsCallsService {
         observables.push(this.instagramService.getData(IgChartParams.impressions, pageID));
         break;
       case D_TYPE.YT:
-        observables.push(this.youtubeService.getData('info', pageIDs));
-        // observables.push(this.youtubeService.getData(, intervalDate, pageIDs));
-        // observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
-        // observables.push(this.youtubeService.getVideos(pageIDs));
+        observables.push(this.youtubeService.getData('info', pageIDs)); // todo to finish
+        observables.push(this.youtubeService.getData('views', pageIDs));
+        observables.push(this.youtubeService.getData('averageViewDuration', pageIDs));
+        observables.push(this.youtubeService.getData('videos', pageIDs));
         break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.getData(GaChartParams.users) : of({}));
-        observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null
-          ? this.facebookService.getData('page_fans', pageIDs[D_TYPE.FB]) : of({}));
-        observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null
-          ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
-        // observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null
-        // ? this.youtubeService.getSubscribers(pageIDs[D_TYPE.YT]) : of({}));
+        observables.push(
+          permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null
+            ? this.facebookService.getData('page_fans', pageIDs[D_TYPE.FB])
+            : of({})
+        );
+        observables.push(
+          permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null
+            ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG])
+            : of({})
+        );
+        observables.push(
+          permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null
+            ? this.youtubeService.getData('info', pageIDs[D_TYPE.YT])
+            : of({})
+        );
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
@@ -2223,7 +2230,7 @@ export class ChartsCallsService {
   }
 
   private getYTMiniValue(measure, data) {
-    let value, sum = 0, avg, perc, step;
+    let value, sum = 0, perc, step, key;
     const date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
@@ -2232,82 +2239,31 @@ export class ChartsCallsService {
     };
 
     if (measure !== 'subs') {
-      data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime()
-        && parseDate(el.date).getTime() <= intervalDate.last.getTime()
+      key = measure === 'n_videos' ? 'publishedAt' : 'date'; //  The key for the filter using the date is different for n_videos
+      data = data.filter(el => parseDate(el[key]).getTime() >= intervalDate.first.getTime()
+        && parseDate(el[key]).getTime() <= intervalDate.last.getTime()
       );
     }
 
     switch (measure) {
       case 'subs':
         value = data[0].subscribers;
-        perc = value;
         break;
       case 'views':
-        value = data.reduce((a, b) => a.value + b.value, 0);
+        value = data.map(el => el.value).reduce((a, b) => a + b, 0);
         break;
       case 'avg_view_time':
-        sum = data.reduce((a, b) => a.value + b.value, 0);
+        sum = data.map(el => el.value).reduce((a, b) => a + b, 0);
         value = (sum / data.length).toFixed(2);
         break;
       case 'n_videos':
-        break;
-      default:
+        value = data.length;
         break;
     }
 
     step = this.searchStep(value, measure);
     perc = measure === 'subs' ? value : (value / step * 100);
 
-    /*data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
-
-    if (measure == 'vids' || measure == 'subs') {
-      sum = data.length;
-    } else {
-      for (const i in data) {
-        sum += parseInt(data[i].value);
-      }
-    }
-
-    avg = (sum / data.length).toFixed(2);
-    if (isNaN(sum)) {
-      sum = 0;
-    }
-    if (isNaN(avg)) {
-      avg = 0.0;
-    }
-
-    switch (measure) {
-      case 'subs':
-        value = sum;
-        step = this.searchStep(value, measure);
-        perc = value;
-        break;
-
-      case 'views':
-        value = sum;
-        step = this.searchStep(value, measure);
-        perc = value / step * 100;
-        break;
-
-      case 'avg-v-time':
-        value = avg;
-        step = this.searchStep(value, measure);
-        perc = value / step * 100;
-        break;
-
-      case 'vids':
-        value = sum;
-        step = this.searchStep(value, measure);
-        perc = value / step * 100;
-        break;
-
-
-      default:
-        value = sum;
-        step = this.searchStep(value);
-        perc = value / step * 100;
-        break;
-    }*/
     return {value, perc, step};
   }
 
@@ -2401,6 +2357,7 @@ export class ChartsCallsService {
         break;
       case 'ig-follower':
         value = data['followers_count'];
+        console.log(value);
         break;
       case 'ga-tot-user':
         value = 0;
@@ -2410,8 +2367,8 @@ export class ChartsCallsService {
         }
         break;
       case 'subs':
-        data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
-        value = data.length;
+        data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
+        value = data[0].subscribers;
         break;
     }
 
