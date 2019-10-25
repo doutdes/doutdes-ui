@@ -2107,7 +2107,7 @@ export class ChartsCallsService {
       case D_TYPE.FB:
         pageID = pageIDs[D_TYPE.FB];
         observables.push(this.facebookService.getData('page_fans', pageID));
-        observables.push(this.facebookService.fbposts(pageID));
+        observables.push(this.facebookService.fbPosts(pageID));
         observables.push(this.facebookService.getData('page_actions_post_reactions_total', pageID));
         observables.push(this.facebookService.getData('page_impressions_unique', pageID));
         break;

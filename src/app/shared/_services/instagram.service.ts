@@ -11,51 +11,46 @@ import {StoreService} from './store.service';
 import {FbData} from '../_models/FacebookData';
 import {ChartParams} from '../_models/Chart';
 
-// TODO Capire perché queste chiamate non vengano intercettate dall'interceptor
-
 @Injectable()
 export class InstagramService {
-  private urlRequest = `${environment.protocol}${environment.host}:${environment.port}/ig/data`;
+  private urlRequest = `${environment.protocol}${environment.host}:${environment.port}/ig`;
 
-  constructor(private http: HttpClient, private storeService: StoreService) {
+  constructor(
+    private http: HttpClient,
+    private storeService: StoreService
+  ) {
   }
 
   getPages() {
     const headers = this.getAuthorization();
-    return this.http.get<IgPage[]>(this.formatURL('pages'), {headers});
+    return this.http.get<IgPage[]>(`${this.urlRequest}/pages`, {headers});
   }
 
   getData(chartParams: ChartParams, pageID: string) {
     const headers = this.getAuthorization();
     const params = {
+      ...chartParams,
       page_id: pageID,
-      metric: chartParams.metric,
-      period: chartParams.period,
-      interval: `${chartParams.interval}`
+      interval: `${chartParams.interval}`,
     };
 
 
-    return this.http.get<IgData>(this.urlRequest, {headers, params});
+    return this.http.get<IgData>(`${this.urlRequest}/data`, {headers, params});
   }
 
   getMedia(pageID) {
     const headers = this.getAuthorization();
-    return this.http.get<IgMedia[]>(this.formatURL('media', pageID), {headers});
+    const path = pageID ? `${pageID}/media` : 'media';
+    return this.http.get<IgMedia[]>(`${this.urlRequest}/${path}`, {headers});
   }
 
   getBusinessInfo(pageID) {
     const headers = this.getAuthorization();
-    return this.http.get<IgBusinessInfo>(this.formatURL('businessInfo/', pageID), {headers});
+    const params = {page_id: pageID};
+    return this.http.get<IgBusinessInfo>(`${this.urlRequest}/businessInfo`, {headers, params});
   }
 
-  private formatURL(call, pageID = null) {
-    const aux = pageID ? (pageID + '/' + call) : call;
-    return environment.protocol + environment.host + ':' + environment.port + '/ig/' + aux;
-  }
-
-  private getAuthorization() {
-    return new HttpHeaders()
-      .set('Content-type', 'application/json')
-      .set('Authorization', `Bearer ${this.storeService.getToken()}`);
-  }
+  private getAuthorization = () => new HttpHeaders()
+    .set('Content-type', 'application/json')
+    .set('Authorization', `Bearer ${this.storeService.getToken()}`);
 }

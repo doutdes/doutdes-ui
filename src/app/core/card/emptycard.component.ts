@@ -172,7 +172,6 @@ export class EmptycardComponent implements OnInit {
 
     try {
       await this.dashboardService.addChartToDashboard(dashChart).toPromise();
-      console.log('todo done')
       this.closeModal();
 
       this.GEService.showChartInDashboard.next(dashChart);

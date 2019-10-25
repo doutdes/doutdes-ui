@@ -173,7 +173,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     // Retrieving the page ID
     this.pageID = (await this.IGService.getPages().toPromise());
-    console.log(this.pageID);
 
     if (this.pageID.length === 0) {
       this.dashErrors.noPages = true;
