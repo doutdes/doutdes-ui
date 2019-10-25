@@ -10,6 +10,7 @@ import * as moment from 'moment';
 import {UserMessage} from '../../shared/_models/UserMessage';
 import {ToastrService} from 'ngx-toastr';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-feature-messages',
@@ -22,7 +23,7 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
   modalRef: BsModalRef;
   modalMessage: Message;
 
-  messageList: Array <UserMessage>;
+  messageList: Array<UserMessage>;
   dataSource: MatTableDataSource<Message>;
   displayedColumns: Array<string> = ['notify', 'createdAt', 'title', 'read', 'delete'];
 
@@ -35,7 +36,8 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
     private modalService: BsModalService,
     private breadcrumbActions: BreadcrumbActions,
     private messageService: MessageService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public translate: TranslateService
   ) {
   }
 
@@ -47,9 +49,11 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
   openModal(modal: ElementRef, message?: Message) {
     this.modalMessage = message;
     this.modalRef = this.modalService.show(modal,
-      {class: 'modal-md modal-dialog-centered',
+      {
+        class: 'modal-md modal-dialog-centered',
         backdrop: 'static',
-        keyboard: false});
+        keyboard: false
+      });
   }
 
   decline = (): void => {
@@ -66,8 +70,8 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
               observables.push(this.messageService.getMessageByID(message.message_id));
             }
             forkJoin(observables).subscribe((data: Array<Message>) => {
-              data = data.sort((a,b)=> new Date(a.createdAt).getTime() - new Date (b.createdAt).getTime());
-              for(let item of data) {
+              data = data.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+              for (let item of data) {
                 aux = messageList.find(el => el.message_id === item.id);
                 item.is_read = aux.is_read;
               }
@@ -83,13 +87,13 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
   }
 
   setAsRead(message) {
-    if (!message.is_read){
-    this.messageService.setMessageAsRead(message.id)
-      .subscribe(data => {
-        this.getMessages();
-      }, error => {
-        console.log(error);
-      });
+    if (!message.is_read) {
+      this.messageService.setMessageAsRead(message.id)
+        .subscribe(data => {
+          this.getMessages();
+        }, error => {
+          console.log(error);
+        });
     }
   }
 

@@ -6,6 +6,7 @@ import {FeatureMessageRoutingModule} from './message.routing';
 import {FeatureMessageComponent} from './message.component';
 import {MatPaginatorModule, MatTableModule} from '@angular/material';
 import {MessageService} from '../../shared/_services/message.service';
+import {TranslateModule} from '@ngx-translate/core';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import {MessageService} from '../../shared/_services/message.service';
     CoreModule,
     FeatureMessageRoutingModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    TranslateModule
   ],
   providers: [
     BreadcrumbActions,

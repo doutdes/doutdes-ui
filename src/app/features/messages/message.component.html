@@ -1,6 +1,6 @@
 <div class="row rounded py-sm-4 title-header">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
-    <h2 class="my-auto float-left">Messaggi</h2>
+    <h2 class="my-auto float-left">{{ 'MESSAGGI.HEADER' | translate }}</h2>
   </div>
 </div>
 
@@ -15,7 +15,7 @@
     </ng-container>
 
     <ng-container matColumnDef="createdAt">
-      <th mat-header-cell *matHeaderCellDef style="width: 35%">Ora di invio</th>
+      <th mat-header-cell *matHeaderCellDef style="width: 35%">{{ 'MESSAGGI.ORA_INVIO' | translate }}</th>
       <td mat-cell *matCellDef="let message">
         <span [ngStyle]="{'font-weight': !message.is_read ? 'bold': 'normal'}" style="font-size: 15px;">{{this.formatDate(message.createdAt)}}</span> <br/>
       </td>
@@ -23,7 +23,7 @@
 
     <!-- Title Column -->
     <ng-container matColumnDef="title">
-      <th mat-header-cell *matHeaderCellDef style="width: 45%">Titolo</th>
+      <th mat-header-cell *matHeaderCellDef style="width: 45%">{{ 'MESSAGGI.TITOLO_MESSAGGIO' | translate }}</th>
       <td mat-cell *matCellDef="let message">
         <span title="Leggi il messaggio" [ngStyle]="{'font-weight': !message.is_read ? 'bold': 'normal'}" style="font-size: 15px; cursor: pointer;" (click)="openModal(openMessage, message); setAsRead(message)">{{message.title}}</span> <br/>
       </td>
@@ -48,11 +48,10 @@
 
   </table>
 
-
 </div>
 <mat-paginator #MatPaginator [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true"></mat-paginator>
 <div *ngIf="!dataSource || dataSource.data.length === 0" class="container-fluid d-none d-md-block">
-  <h3>Nessun nuovo messaggio</h3>
+  <h3>{{ 'MESSAGGI.NESSUN_MESSAGGIO' | translate }}</h3>
 </div>
 <ng-template #openMessage>
   <div class="modal-header">
@@ -64,7 +63,7 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-success" (click)="decline()">Ok, ho letto</button>
+    <button type="button" class="btn btn-success" (click)="decline()">{{ 'MESSAGGI.CONFERMA_LETTURA' | translate }}</button>
   </div>
 
 </ng-template>
@@ -72,18 +71,18 @@
 <!-- Modal deletion template -->
 <ng-template #removeMessage>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Cancellazione di <b>{{modalMessage.title}}</b></h4>
+    <h4 class="modal-title pull-left">{{ 'MESSAGGI.HEADER_ELIM' | translate }} <b>{{modalMessage.title}}</b></h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    Sei sicuro di voler cancellare questo messaggio? Questa operazione è irreversibile!
+    {{ 'MESSAGGI.TEXT_ELIM' | translate }}
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="decline()">No</button>
-    <button type="button" class="btn btn-success" (click)="deleteMessage(modalMessage.id)">Si, elimina</button>
+    <button type="button" class="btn btn-danger" (click)="decline()">{{ 'MESSAGGI.ANNULLA_ELIM' | translate }}</button>
+    <button type="button" class="btn btn-success" (click)="deleteMessage(modalMessage.id)">{{ 'MESSAGGI.CONFERMA_ELIM' | translate }}</button>
   </div>
 </ng-template>

@@ -317,7 +317,7 @@
     "USERNAME_LUNG": "The username must be a maximum of 40 characters",
     "EMAIL_O": "Email is required",
     "EMAIL_LUNG": "The password must be a maximum of 40 characters",
-    "PASSWORD_O": "The password is mandatory",
+    "PASSWORD_O": "The password is required",
     "PASSWORD_LUNG": "The password must be a maximum of 40 characters",
     "PASS_NO_COIN": "Passwords do not match",
     "NEW_ACC": "Create account",
@@ -328,6 +328,11 @@
     "HEADER": "Messages",
     "ORA_INVIO": "Time",
     "TITOLO_MESSAGGIO": "Title",
-    "CONFERMA_LETTURA": "Ok, I have read"
+    "CONFERMA_LETTURA": "Ok, I have read",
+    "CONFERMA_ELIM": "Yes, delete",
+    "ANNULLA_ELIM": "No, don't delete",
+    "TEXT_ELIM": "Are you sure do you want to delete this message? This operation is irreversible!",
+    "HEADER_ELIM": "Deletion of",
+    "NESSUN_MESSAGGIO": "You don't have any new messages"
   }
 }
