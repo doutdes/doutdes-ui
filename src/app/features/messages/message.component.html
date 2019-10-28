@@ -45,13 +45,11 @@
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-
   </table>
-
 </div>
-<mat-paginator #MatPaginator [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true"></mat-paginator>
-<div *ngIf="!dataSource || dataSource.data.length === 0" class="container-fluid d-none d-md-block">
-  <h3>{{ 'MESSAGGI.NESSUN_MESSAGGIO' | translate }}</h3>
+<mat-paginator *ngIf="dataSource && dataSource.data.length > 0" #MatPaginator [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true"></mat-paginator> <!--TODO Da Fixare-->
+<div *ngIf="!dataSource || dataSource.data.length === 0" class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5>{{ 'MESSAGGI.NESSUN_MESSAGGIO' | translate }}</h5>
 </div>
 <ng-template #openMessage>
   <div class="modal-header">
