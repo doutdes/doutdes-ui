@@ -290,7 +290,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
               chart.chartData = dataArray[i];
               let date = parseDate(chart['chartData'][0][0]);
 
-              if(date < this.minDate)
+              if (date < this.minDate) {
                 this.minDate = date;
               }
 
@@ -315,6 +315,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
           this.GEService.loadingScreen.next(false);
 
+
         } else {
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
@@ -323,7 +324,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
-
+      }
 
       this.loaded = true;
 

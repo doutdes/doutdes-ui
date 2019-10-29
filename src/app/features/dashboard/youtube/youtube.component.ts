@@ -251,8 +251,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.YT, pageID, intervalDate);
 

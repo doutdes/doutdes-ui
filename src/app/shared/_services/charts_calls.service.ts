@@ -1416,7 +1416,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
+              minValue: 0,//this.getMinChartStep(D_TYPE.GA, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -2074,26 +2074,27 @@ export class ChartsCallsService {
   }
 
   private getMinChartStep(type, data, perc = 0.8) {
-    let min, length;
+    let min = 0, length;
 
     data = data.slice(1);
 
-    switch (type) {
-      case D_TYPE.FB:
-      case D_TYPE.IG:
-        if (data.length > 0) {
-          min = data.map(x => x[1]).reduce((c, p) => c < p ? c : p) * perc;
+    if (data) {
+      switch (type) {
+        case D_TYPE.FB:
+        case D_TYPE.IG:
+          if (data.length > 0) {
+            min = data.map(x => x[1]).reduce((c, p) => c < p ? c : p) * perc;
+            break;
+          }
           break;
-        }
-        break;
-      case D_TYPE.GA:
-        length = data[0].length;
-        min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
-        break;
-      case D_TYPE.YT:
-        length = data[0].length;
-        min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
-        break;
+        case D_TYPE.GA:
+        case D_TYPE.YT:
+          // if (data[0] && data[0].length) {
+            length = data[0].length;
+            min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
+          // }
+          break;
+      }
     }
 
     return min;

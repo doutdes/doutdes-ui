@@ -70,7 +70,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   private dashStored: Array<DashboardCharts> = [];
   public tmpArray: Array<DashboardCharts> = [];
 
-  loaded: boolean = false;
+  loaded = false;
   public loading = false;
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
@@ -220,8 +220,8 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
       //this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.getFbPageID()) : null;
-      this.igPageID = (this.HARD_DASH_DATA.permissions[D_TYPE.IG]) ? await this.IGService.getPages().toPromise() : null;
-      this.ytPageID = (this.HARD_DASH_DATA.permissions[D_TYPE.YT]) ? await this.YTService.getChannels().toPromise() : null;
+      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise()) : null;
+      this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] ? (await this.YTService.getChannels().toPromise()) : null;
 
       this.firstDateRange = subDays(new Date(), 30); // this.minDate;
       this.lastDateRange = this.maxDate;
@@ -297,7 +297,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       } else {
         //this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_INIZ'),
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_INIZ'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_INIZ'));
         return;
       }
@@ -311,14 +311,14 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         if (this.chartArray$.length === 0) {
           //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
 
-          this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+          this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
-          charts.forEach(async (chart: DashboardCharts) => {
+          charts.forEach((chart: DashboardCharts) => {
             chartParams = {};
             // If the permission for the service is granted
             if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
@@ -332,6 +332,9 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
               };
 
               pageID = this.getPageID(chart.type);
+              if (chart.type === D_TYPE.IG) {
+                console.log(pageID);
+              }
               observables.push(this.CCService.retrieveChartData(chart.type, chartParams, pageID));
             }
           }); // Retrieves data for each chart
@@ -379,7 +382,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           this.GEService.loadingScreen.next(false);
           //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
 
-          this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+          this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       }
@@ -388,7 +391,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     } catch (e) {
       console.error(e);
-      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_INIZ'),
+      this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_INIZ'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_INIZ'));
     }
   }
@@ -412,56 +415,56 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     this.CCService.retrieveChartData(dashChart.type, chartParams, pageID)
       .subscribe(chartData => {
-          console.log('chart data received');
-          if (!chartData['status']) { // Se la chiamata non rende errori
-            chartToPush.chartData = chartData;
+        console.log('chart data received');
+        if (!chartData['status']) { // Se la chiamata non rende errori
+          chartToPush.chartData = chartData;
 
-            // getting the minDate of the chart, depending on its type
-            switch (dashChart.type) {
-              case D_TYPE.FB :
-              case D_TYPE.IG:
-                this.minSet.push({
-                  id: dashChart.chart_id,
-                  minDate: new Date(dashChart.chartData[0]['end_time'])
-                });
-                break;
-              case D_TYPE.GA:
-                this.minSet.push({
-                  id: dashChart.chart_id,
-                  minDate: (parseDate(dashChart['chartData'][0][0]))
-                });
-                break;
-              case D_TYPE.YT:
-                this.minSet.push({
-                  id: dashChart.chart_id,
-                  minDate: (parseDate(dashChart.chartData[0]['date']))
-                });
-                break;
+          // getting the minDate of the chart, depending on its type
+          switch (dashChart.type) {
+            case D_TYPE.FB :
+            case D_TYPE.IG:
+              this.minSet.push({
+                id: dashChart.chart_id,
+                minDate: new Date(dashChart.chartData[0]['end_time'])
+              });
+              break;
+            case D_TYPE.GA:
+              this.minSet.push({
+                id: dashChart.chart_id,
+                minDate: (parseDate(dashChart['chartData'][0][0]))
+              });
+              break;
+            case D_TYPE.YT:
+              this.minSet.push({
+                id: dashChart.chart_id,
+                minDate: (parseDate(dashChart.chartData[0]['date']))
+              });
+              break;
+          }
+          this.minSet.forEach(el => {
+            if (el.minDate < this.minDate) {
+              this.minDate = el.minDate;
             }
-            this.minSet.forEach(el => {
-              if (el.minDate < this.minDate) {
-                this.minDate = el.minDate;
-              }
-            });
+          });
 
-            chartToPush.error = false;
+          chartToPush.error = false;
 
-            const date = parseDate(chartToPush['chartData'][0][0]);
-            if (date < this.minDate) {
-              this.minDate = date;
-            }
+          const date = parseDate(chartToPush['chartData'][0][0]);
+          if (date < this.minDate) {
+            this.minDate = date;
+          }
 
           //this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
 
-          this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ADD'),
+          this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
 
-         // this.toastr.error('"' + dashChart.title + ' contiene dati che non potrebbero essere sufficienti', 'Errore durante l\'aggiunta del grafico');
+          // this.toastr.error('"' + dashChart.title + ' contiene dati che non potrebbero essere sufficienti', 'Errore durante l\'aggiunta del grafico');
 
-          this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_DATI'),
+          this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_DATI'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI'));
 
         }
@@ -473,7 +476,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
         //this.toastr.error('"' + dashChart.title + ': C\'è stato un errore recuperando i dati per il grafico . Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
 
-        this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_DATI_1'),
+        this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_DATI_1'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI_1'));
       });
   }
@@ -561,12 +564,12 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.userService.get().subscribe(value => {
         this.user = value;
 
-        this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+        this.http.get('./assets/langSetting/langBreadcrumb/' + this.conversionSetDefaultLang() + '.json')
           .subscribe(file => {
             this.GEService.langBread.next(file);
             bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('SITO_WEB'), '/dashboard/google'));
-          })
-      })
+          });
+      });
 
     } else {
       bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('SITO_WEB'), '/dashboard/google'));
@@ -593,15 +596,15 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   getPageID(type: number) {
     let pageID;
 
-    switch (type) {
+    switch (type) { // TODO edit
       case D_TYPE.FB:
         pageID = this.fbPageID;
         break;
       case D_TYPE.IG:
-        pageID = this.igPageID;
+        pageID = this.igPageID[0].id;
         break;
       case D_TYPE.YT:
-        pageID = this.ytPageID;
+        pageID = this.ytPageID[0].id;
         break;
       default:
         pageID = null;
@@ -726,7 +729,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.closeModal();
       await this.ngOnInit();
     } else {
-      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_AGG'),
+      this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ERR_AGG'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_AGG'));
     }
   }
@@ -739,14 +742,14 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       this.closeModal();
     }, error => {
       if (error.status === 500) {
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_CLEAR'),
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_CLEAR'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_CLEAR'));
         this.closeModal();
         console.error(error);
       } else {
-      //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_RIMOZIONE'),
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_RIMOZIONE'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
         console.error(error);
         this.closeModal();
@@ -864,7 +867,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     }
 
     if (this.drag === true) {
-      this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'MOD_ORD'),
+      this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'MOD_ORD'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MOD_ORD'));
     }
 
@@ -902,11 +905,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.drag = false;
         this.GEService.dragAndDrop.next(this.drag);
 
-        this.toastr.success(this.GEService.getStringToastr(false, true, "DASHBOARD", 'SUC_ORD'),
+        this.toastr.success(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'SUC_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
       }, error => {
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_ORD'),
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ERR_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
         console.log('Error updating the Dashboard');
         console.log(error);
@@ -919,43 +922,43 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.GEService.dragAndDrop.next(this.drag);
   }
 
-  conversionSetDefaultLang () {
+  conversionSetDefaultLang() {
 
     switch (this.user.lang) {
-      case "it" :
-        this.value = "Italiano";
+      case 'it' :
+        this.value = 'Italiano';
         break;
-      case "en" :
-        this.value = "English";
+      case 'en' :
+        this.value = 'English';
         break;
       default:
-        this.value = "Italiano";
+        this.value = 'Italiano';
     }
 
     return this.value;
   }
 
-  getNameMinicard (id_minicard) {
+  getNameMinicard(id_minicard) {
 
     this.userService.get().subscribe(data => {
       this.user = data;
 
-      this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+      this.http.get('./assets/langSetting/langStringVarious/' + this.conversionSetDefaultLang() + '.json')
         .subscribe(file => {
           this.GEService.langFilterDate.next(file);
 
           switch (id_minicard) {
             case '0' :
-              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("CUSTOM", "UT_TOT");
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('CUSTOM', 'UT_TOT');
               break;
             case '1' :
-              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("CUSTOM", "FAN");
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('CUSTOM', 'FAN');
               break;
             case '2' :
-              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("CUSTOM", "FOLLOWER");
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('CUSTOM', 'FOLLOWER');
               break;
             case '3' :
-              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("CUSTOM", "ISCR");
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('CUSTOM', 'ISCR');
               break;
           }
 

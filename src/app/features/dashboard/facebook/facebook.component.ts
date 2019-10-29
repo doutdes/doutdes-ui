@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FacebookService} from '../../../shared/_services/facebook.service';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
@@ -8,16 +8,14 @@ import {GlobalEventsManagerService} from '../../../shared/_services/global-event
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
 
 import {DragulaService} from 'ng2-dragula';
-import {merge} from 'rxjs';
-import {mapTo, startWith, switchMap} from 'rxjs/operators';
-import {mapTo, startWith} from 'rxjs/operators';
+import {forkJoin, Observable, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import * as _ from 'lodash';
 
 import {subDays} from 'date-fns';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {DashboardData, IntervalDate} from '../redux-filter/filter.model';
 import {select} from '@angular-redux/store';
-import {forkJoin, Observable, Subject, Subscription} from 'rxjs';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 
 import * as jsPDF from 'jspdf';
@@ -31,10 +29,6 @@ import {ToastrService} from 'ngx-toastr';
 import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {takeUntil} from 'rxjs/operators';
-import {container} from '@angular/core/src/render3/instructions';
-
-import * as _ from 'lodash';
 import {ChartParams} from '../../../shared/_models/Chart';
 import {TranslateService} from '@ngx-translate/core';
 import {AppComponent} from '../../../app.component';
@@ -480,7 +474,7 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-
+    let fb_page_id;
     let existence, update;
     let key: ApiKey;
 
@@ -530,6 +524,8 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
           return;
         }
+      } else {
+        this.pageID = fb_page_id;
       }
 
       this.firstDateRange = this.minDate;

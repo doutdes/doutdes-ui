@@ -44,6 +44,7 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.addBreadcrumb();
     this.getMessages();
+    this.dataSource = new MatTableDataSource<Message>([]);
   }
 
   openModal(modal: ElementRef, message?: Message) {
@@ -61,7 +62,7 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
   };
 
   getMessages() {
-    let observables: Observable<any>[] = [];
+    const observables: Observable<any>[] = [];
     let message, aux: UserMessage;
     this.messageService.getMessageForUser()
       .subscribe(messageList => {
@@ -71,7 +72,7 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
             }
             forkJoin(observables).subscribe((data: Array<Message>) => {
               data = data.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-              for (let item of data) {
+              for (const item of data) {
                 aux = messageList.find(el => el.message_id === item.id);
                 item.is_read = aux.is_read;
               }
