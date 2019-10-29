@@ -1,7 +1,7 @@
 <div class="row rounded py-sm-4 title-header">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
-    <h2 class="my-auto float-left">La mia dashboard</h2>
-  </div> <!-- title -->
+    <h2 class="my-auto float-left">{{ 'DASHBOARD.CUSTOM' | translate }}</h2>
+  </div> <!-- Title -->
   <div *ngIf="somethingGranted && loaded && !this.drag" class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
@@ -13,15 +13,15 @@
           aria-labelledby="button-settings">
 
         <li class="dropdown-item cursor-pointer" (click)="optionModal(deleteCharts)">
-          <i class="fas fa-trash-alt mr-2"></i> Pulisci la dashboard
+          <i class="fas fa-trash-alt mr-2"></i>{{ 'DASHBOARD.CLEAR' | translate }}
         </li>
 
         <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()">
-          <i class="fas fa-file-pdf mr-2"></i>Esporta in PDF
+          <i class="fas fa-file-pdf mr-2"></i>{{ 'DASHBOARD.ESPORT' | translate }}
         </li>
 
         <li class="dropdown-item cursor-pointer" (click)="dragAndDrop()">
-          <i class="fas fa-arrows-alt mr-2"></i>Ordina la dashboard
+          <i class="fas fa-arrows-alt mr-2"></i>{{ 'DASHBOARD.ORDER' | translate }}
         </li>
 
       </ul>
@@ -33,9 +33,9 @@
 
       <ul id="dropdown-date-filter" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
           aria-labelledby="button-date-filter">
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">Ultimi 7 giorni</li>
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">Ultimi 30 giorni</li>
-        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">Ultimi 90 giorni</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.seven)">{{ 'DASHBOARD.LAST7' | translate }}</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.thirty)">{{ 'DASHBOARD.LAST30' | translate }}</li>
+        <li class="dropdown-item" (click)="changeData(FILTER_DAYS.ninety)">{{ 'DASHBOARD.LAST90' | translate }}</li>
       </ul>
     </div> <!-- TODO Create a component custom like card -->
     <input type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker"
@@ -55,9 +55,9 @@
 
 <div *ngIf="this.drag" class="alert alert-primary mt-3 mb-0 py-sm-4" role="alert">
   <i class="fas fa-2x fa-people-carry mr-3" style=""></i>
-  <h5 class="mb-0 d-inline-block mr-auto">Modalità ordinamento</h5>
-  <button type="button" class="btn btn-success ml-lg-1 ml-sm-2 d-md-inline-block d-none float-right" (click)="optionModal(save)">Salva</button>
-  <button type="button" class="btn btn-secondary ml-lg-1 ml-sm-2 d-md-inline-block d-none float-right" (click)="optionModal(deactivates)">Annulla</button>
+  <h5 class="mb-0 d-inline-block mr-auto">{{ 'DASHBOARD.MODAL_ORDER' | translate }}</h5>
+  <button type="button" class="btn btn-success ml-lg-1 ml-sm-2 d-md-inline-block d-none float-right" (click)="optionModal(save)">{{ 'LANGUAGE.SAVE' | translate }}</button>
+  <button type="button" class="btn btn-secondary ml-lg-1 ml-sm-2 d-md-inline-block d-none float-right" (click)="optionModal(deactivates)">{{ 'LANGUAGE.ANNULLA' | translate }}</button>
 </div> <!-- Drag And Drop -->
 
 <div *ngIf="somethingGranted && loaded && !drag" class="row" style="padding-bottom: 30px">
@@ -68,7 +68,7 @@
   </ng-container>
 
   <ng-template *ngIf="!loading && chartArray$.length == 0">
-    <h5 class="col-md-12 mt-3">The dashboard is empty. Start adding the first chart!</h5>
+    <h5 class="col-md-12 mt-3">{{ 'DASHBOARD.ALERT_3' | translate }}</h5>
   </ng-template>
 
   <app-emptycard
@@ -87,14 +87,14 @@
 
 <ng-template #selectView>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>Seleziona dati da importare</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>{{ 'DASHBOARD.SELECT_IMPORT' | translate }}</h4>
   </div>
 
   <div class="modal-body">
     <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit(D_TYPE.GA)">
       <div class="form-group row">
         <p class="col-sm-12 text-justify">
-          Il tuo account Google Analytics è associato a più siti web. Quale vuoi includere in Doutdes?
+          {{ 'DASHBOARD.GOOGLE_PAGE' | translate }}
         </p>
         <div class="col-sm-12">
           <select class="form-control mx-auto" style="width: 70%;" formControlName="view_id" [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['view_id'].errors }">
@@ -103,13 +103,13 @@
           </select>
 
           <div *ngIf="this.submitted && selectViewForm.controls['view_id'].errors" class="invalid-feedback">
-            <div>Devi obbligatoriamente selezionare un sito</div>
+            <div>{{ 'DASHBOARD.GOOGLE_PAGE_ALERT' | translate }}</div>
           </div>
         </div>
       </div>
 
       <div class="modal-footer pr-0 pb-0">
-        <button type="submit" class="btn btn-success">Conferma</button>
+        <button type="submit" class="btn btn-success">{{ 'LANGUAGE.CONFERMA' | translate }}</button>
       </div>
     </form>
   </div>
@@ -117,14 +117,12 @@
 
 <ng-template #selectViewFb>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>Seleziona dati da importare</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>{{ 'DASHBOARD.SELECT_IMPORT' | translate }}</h4>
   </div>
   <div class="modal-body">
     <form [formGroup]="selectViewFormFb" (ngSubmit)="selectViewSubmit(D_TYPE.FB)">
       <div class="form-group row">
-        <p class="col-sm-12 text-justify">
-          Il tuo account Facebook è associato a più pagine. Quale vuoi includere in Doutdes?
-        </p>
+        <p class="col-sm-12 text-justify">{{ 'DASHBOARD.FACEBOOK_PAGE' | translate }}</p>
         <div class="col-sm-12">
           <select class="form-control mx-auto" style="width: 70%;" formControlName="fb_page_id"
                   [ngClass]="{ 'is-invalid': submitted && selectViewFormFb.controls['fb_page_id'].errors }">
@@ -132,12 +130,12 @@
           </select>
 
           <div *ngIf="this.submitted && selectViewFormFb.controls['fb_page_id'].errors" class="invalid-feedback">
-            <div>Devi obbligatoriamente selezionare una pagina</div>
+            <div>{{ 'DASHBOARD.FACEBOOK_PAGE_ALERT' | translate }}</div>
           </div>
         </div>
       </div>
       <div class="modal-footer pr-0 pb-0">
-        <button type="submit" class="btn btn-success">Conferma</button>
+        <button type="submit" class="btn btn-success">{{ 'LANGUAGE.CONFERMA' | translate }}</button>
       </div>
     </form>
   </div>
@@ -148,8 +146,8 @@
     <div class="card-group">
       <div class="card p-2" style="background-color: #eee;">
         <div class="card-body">
-          <i class="fas fa-crow mr-1" style="font-size:30pt"></i><h5 class="mt-3"> Qua non c'è niente! Prima di poter visualizzare i dati, devi aggiungere almeno una <b>sorgente dati</b>.</h5><br/>
-          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys/insert']">Aggiungi una sorgente dati</button>
+          <i class="fas fa-crow mr-1" style="font-size:30pt"></i><h5 class="mt-3">{{ 'DASHBOARD.ALERT_2' | translate }}<b>{{ 'DASHBOARD.SORGENTE' | translate }}</b>.</h5><br/>
+          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys/insert']">{{ 'DASHBOARD.ADD_SORGENTE' | translate }}</button>
         </div>
       </div>
     </div>
@@ -158,71 +156,62 @@
 
 <ng-template #reportWait>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-hourglass-half"></i> Esporta il report</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-hourglass-half"></i> {{ 'DASHBOARD.ESPORTA' | translate }}</h4>
   </div>
 
-  <div class="modal-body">
-    Stiamo creando il tuo report, attendi...
-  </div>
+  <div class="modal-body">{{ 'DASHBOARD.NEW_REPORT' | translate }}</div>
 </ng-template>
 
 <ng-template #deleteCharts>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Eliminazione di tutti i grafici</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> {{ 'DASHBOARD.DELETE' | translate }}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
-  <div class="modal-body">
-    Sei veramente sicuro di voler tutti i grafici?
-  </div>
+  <div class="modal-body">{{ 'DASHBOARD.CLEAR_CONFERMA' | translate }}</div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="clearDashboard()">
-      Sì, rimuovili
-    </button>
-    <button type="button" class="btn btn-success" (click)="closeModal()">No, lasciali </button>
+    <button type="button" class="btn btn-danger" (click)="clearDashboard()">{{ 'DASHBOARD.CLEAR_CONFERMA_OK' | translate }}</button>
+    <button type="button" class="btn btn-success" (click)="closeModal()">{{ 'DASHBOARD.CLEAR_CONFERMA_NO' | translate }}</button>
   </div>
 
 </ng-template> <!-- Clear Dashboard -->
 
 <ng-template #save>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-save mr-3"></i> Salvataggio modifiche</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-save mr-3"></i>{{ 'DASHBOARD.SAVE' | translate }}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
-  <div class="modal-body">
-    Sei veramente sicuro di voler salvare tutte le modifiche?
-  </div>
+  <div class="modal-body">{{ 'DASHBOARD.CONFERMA_SALVA' | translate }}</div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="closeModal()">No, non salvare </button>
-    <button type="button" class="btn btn-success" (click)="onMovement(null, true)">Sì, salva </button>
+    <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'DASHBOARD.CONFERMA_SALVA_NO' | translate }}</button>
+    <button type="button" class="btn btn-success" (click)="onMovement(null, true)">{{ 'DASHBOARD.CONFERMA_SALVA_NO' | translate }}</button>
   </div>
 
 </ng-template> <!-- Save Drag And Drop -->
 
 <ng-template #deactivates>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i>Annullare la modalità temporaneo di ordinamento</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i>{{ 'DASHBOARD.CONFERMA_SALVA_ANNULLA' | translate }}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    <p>Sei veramente sicuro di voler annullare la modalità ordinamento?</p>
-    <p style="text-align: justify"><i class="fas fa-exclamation-circle mr-1" style="color: #ad0009; font-size:14pt"></i><b style="color: #ad0009;">Operazione pericolosa</b>: L'annullamento della modalità temporanea di ordinamento non salverà le modifiche effettuate.
-      Pertanto le modifiche effettuate verranno perse e non saranno più recuperabili.
+    <p>{{ 'DASHBOARD.CONFERMA_SALVA_ANNULLA_ALERT' | translate }}</p>
+    <p style="text-align: justify"><i class="fas fa-exclamation-circle mr-1" style="color: #ad0009; font-size:14pt"></i><b style="color: #ad0009;">{{ 'DASHBOARD.OPEREZIONE_PERICOLOSO' | translate }}</b>:{{ 'DASHBOARD.CONFERMA_SALVA_ANNULLA_ALERT_TEXT' | translate }}
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-success" (click)="checkDrag(); closeModal()">Sì, annulla </button>
-    <button type="button" class="btn btn-danger" (click)="closeModal()">No, non annulare </button>
+    <button type="button" class="btn btn-danger" (click)="checkDrag(); closeModal()">{{ 'DASHBOARD.ANNULLA' | translate }}</button>
+    <button type="button" class="btn btn-success" (click)="closeModal()">{{ 'DASHBOARD.NO_ANNULLA' | translate }}</button>
   </div>
 
 </ng-template> <!-- Deactivates Drag And Drop -->

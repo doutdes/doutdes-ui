@@ -14,6 +14,9 @@ import {T} from '@angular/core/src/render3';
 import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {Chart} from '../../shared/_models/Chart';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
+import {User} from '../../shared/_models/User';
 
 @Component({
   selector: 'app-emptycard',
@@ -57,13 +60,18 @@ export class EmptycardComponent implements OnInit {
 
   description: string; // Description of the metric shown
 
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
 
   constructor(
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public translate: TranslateService
   ) {
   }
 
@@ -119,7 +127,8 @@ export class EmptycardComponent implements OnInit {
       await this.updateDropdownOptions();
 
       if (this.metrics.length === 0) {
-        this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
+        this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'FULL_GRAF'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'FULL_GRAF'));
       } else {
         this.modalService.onHide.subscribe(() => {
           this.closeModal();
@@ -182,10 +191,8 @@ export class EmptycardComponent implements OnInit {
       await this.updateDropdownOptions();
 
     } catch (error) {
-      this.toastr.error(
-        `Non è stato possibile aggiungere ${dashChart.title} alla dashboard. Riprova più tardi oppure contatta il supporto.`,
-        'Errore durante l\'aggiunta del grafico.'
-      );
+      this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_ADD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ADD'));
       console.error('Error inserting the Chart in the dashboard');
       console.error(error);
     }
@@ -251,18 +258,16 @@ export class EmptycardComponent implements OnInit {
       .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10))
       .map(item => item.format);
     this.insertChartForm.controls['style'].setValue(this.styles[0]);
-
     // Update title
     this.insertChartForm.controls['title'].setValue(this.insertChartForm.value.metric);
   };
 
-  getUnique = (arr, comp) =>
-    arr.map(e => e[comp])
+  getUnique = (arr, comp) => arr.map(e => e[comp])
 
     // store the keys of the unique objects
-      .map((e, i, final) => final.indexOf(e) === i && i)
+    .map((e, i, final) => final.indexOf(e) === i && i)
 
-      // eliminate the dead keys & store unique objects
-      .filter(e => arr[e]).map(e => arr[e]);
+    // eliminate the dead keys & store unique objects
+    .filter(e => arr[e]).map(e => arr[e]);
 
 }

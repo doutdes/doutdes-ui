@@ -1,0 +1,102 @@
+{
+  "DASHBOARD": {
+    "VUOTA": {
+      "TITLE": "La tua dashboard è vuota",
+      "MESSAGE": "Puoi iniziare aggiungendo un nuovo grafico."
+    },
+    "ADD": {
+      "TITLE": "Grafico aggiunto!",
+      "MESSAGE": " è stato correttamente aggiunto alla dashboard."
+    },
+    "NO_PERMESSI": {
+      "TITLE": "Permessi non validi!",
+      "MESSAGE": "I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli."
+    },
+    "NO_RIMOZIONE": {
+      "TITLE": "Errore durante la rimozione dei grafici.",
+      "MESSAGE": "Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto."
+    },
+    "NO_ORDINAMENTO": {
+      "TITLE": "Operazione non riuscita.",
+      "MESSAGE": "Non è possibile attivare la \"modalità ordinamento\" perchè la dashboard è vuota."
+    },
+    "MOD_ORD": {
+      "TITLE": "Sei in modalità ordinamento.",
+      "MESSAGE": "Molte funzioni sono limitate."
+    },
+    "SUC_ORD": {
+      "TITLE": "Dashboard ordinata",
+      "MESSAGE": "La dashboard è stata ordinata con successo!"
+    },
+    "ERR_ORD": {
+      "TITLE": "Errore durante l'ordinazione della dashboard",
+      "MESSAGE": "Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto."
+    },
+    "ERR_CARICAMENTO": {
+      "TITLE": "Errore nel carimento della dashboard",
+      "MESSAGE": "È stato riscontrato un errore durante il carimento della dashboard. Per favore, riprova oppure contatta il supporto."
+    },
+    "NO_INIZ": {
+      "TITLE": "Errore durante l'inizializzazione della dashboard.",
+      "MESSAGE": "Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto."
+    },
+    "ERR_AGG": {
+      "TITLE": "Errore durante l'aggiornamento",
+      "MESSAGE": "Qualcosa è andato storto scegliendo i dati da visualizzare. Per favore, riprova."
+    },
+    "NO_CLEAR": {
+      "TITLE": "Errore durante la pulizia della dashboard.",
+      "MESSAGE": "Non vi sono grafici da eliminare."
+    },
+    "ERR_PERMESSI": {
+      "TITLE": "Permessi non validi",
+      "MESSAGE": "I permessi di accesso ai tuoi dati del sito web sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli."
+    },
+    "NO_DATI": {
+      "TITLE": "Errore durante l'aggiunta del grafico",
+      "MESSAGE": " contiene dati che non potrebbero essere sufficienti"
+    },
+    "NO_DATI_1": {
+      "TITLE": "Errore durante l'aggiunta del grafico",
+      "MESSAGE": ": C'è stato un errore recuperando i dati per il grafico. Per favore, riprova più tardi oppure contatta il supporto."
+    },
+    "NO_ADD": {
+      "TITLE": " : Non è stato possibile aggiungere il grafico alla dashboard.",
+      "MESSAGE": "Errore durante l'aggiunta del grafico."
+    },
+    "FULL_GRAF": {
+      "TITLE": "Nessun grafico disponibile",
+      "MESSAGE": "Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard."
+    }
+  },
+  "PREFERENCES": {
+    "NO_ACCESSO": {
+      "TITLE": "Errore durante l'accesso ai dati!",
+      "MESSAGE": "Si è verificato un errore durante l'accesso ai dati. Per favore, riprova oppure contatta il supporto."
+    },
+    "OK_ACCESSO": {
+      "TITLE": "Servizio configurato correttamente!",
+      "MESSAGE": "La configurazione del servizio scelto è andata a buon fine."
+    },
+    "NO_AGG": {
+      "TITLE": "Errore di aggiornamento",
+      "MESSAGE": "Si è verificato un errore durante l'aggiornamento della lingua della piattaforma"
+    },
+    "OK_AGG": {
+      "TITLE": "Lingua aggiornata con successo!",
+      "MESSAGE": "La lingua della piattaforma è stata aggiornata come da te richiesto"
+    },
+    "NO_PROFILO": {
+      "TITLE": "Errore di aggiornamento",
+      "MESSAGE": "Si è verificato un errore durante l'aggiornamento delle informazioni del profilo"
+    },
+    "OK_PROFILO": {
+      "TITLE": "Profilo aggiornato con successo!",
+      "MESSAGE": "Occorre ripetere il login."
+    },
+    "STOP_ACCESSO": {
+      "TITLE": ": sorgente eliminata",
+      "MESSAGE": "Da adesso non potrai più accedere alle dashboard collegate a "
+    }
+  }
+}

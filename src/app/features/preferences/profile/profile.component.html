@@ -3,227 +3,189 @@
   <div class="col-12">
     <div class="card">
       <div class="card-body ">
-        <h1 class="text-center mb-0 mt-3">Aggiorna le informazioni personali</h1>
+        <h1 class="text-center mb-0 mt-3">{{ 'PROFILO.AGG' | translate }}</h1>
       </div>
+
       <div class="p-4" *ngIf="user !== null">
         <form [formGroup]="updateRegistration" (ngSubmit)="onSubmit()">
 
-          <div *ngIf="this.selectedUser === 1"> <!-- If the user is a company -->
+          <!--<div class="form-inline my-1 mr-2 mb-5">-->
+            <!--<label class="my-1 mr-2" for="language">{{ 'PROFILO.LANGUAGE' | translate }}</label>-->
+            <!--<select #langSelect class="custom-select my-1 mr-sm-2" (change)="checkSelect($event)" id="language"> &lt;!&ndash;(change)="translate.use(langSelect.value)" &ndash;&gt;-->
+              <!--<option *ngFor="let lang of translate.getLangs()" [selected]="lang === translate.currentLang" [value]="lang">{{ lang }}</option>-->
+            <!--</select>-->
+          <!--</div>-->
+
+          <div *ngIf="this.selectedUser === 0"> <!-- If the user is a company -->
+            <h5 class="py-3">{{ 'PROFILO.DATI_IMP' | translate }}</h5>
+
             <div class="form-row">
-              <div class="input-group mb-3 col-md-6">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto mx-auto icon-briefcase"></i></span>
+                </div>
+                <input type="text" formControlName="company_name" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','RAG_SOC')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.company_name.errors }"/>
+
+                <div *ngIf="this.submitted && f.company_name.errors" class="invalid-feedback">
+                  <div *ngIf="f.company_name.errors.required">{{ 'PROFILO.RAG_SOC' | translate }}</div>
+                </div>
+              </div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto icon-chart"></i></span>
+                </div>
+                <input type="text" formControlName="vat_number" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','PART_IVA')}}" required
+                       [ngClass]="{ 'is-invalid': submitted && f.vat_number.errors }"/>
+
+                <div *ngIf="this.submitted && f.vat_number.errors" class="invalid-feedback">
+                  <div *ngIf="f.vat_number.errors.required">{{ 'PROFILO.PART_IVA_O' | translate }}</div>
+                </div>
+              </div>
+            </div> <!-- Company name and Vat Number -->
+            <div class="form-row">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-map-marker"></i></span>
+                </div>
+                <input type="text" formControlName="address" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','IND_SEDE')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.address.errors }"/>
+
+                <div *ngIf="this.submitted && f.address.errors" class="invalid-feedback">
+                  <div *ngIf="f.address.errors.required">{{ 'REGISTER.IND_SOC_O' | translate }}</div>
+                </div>
+              </div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-globe"></i></span>
+                </div>
+                <input type="text" formControlName="city" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','CITTA')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.city.errors }"/>
+
+                <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
+                  <div *ngIf="f.city.errors.required">{{ 'PROFILO.CITTA_RIC' | translate }}</div>
+                  <div *ngIf="f.city.errors.maxlength">{{ 'PROFILO.CITTA_LUNG' | translate }}</div>
+                </div>
+              </div>
+            </div> <!-- Address and Residence City -->
+            <div class="form-row mb-4">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-map"></i></span>
+                </div>
+                <input type="text" formControlName="province" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','PROVINCIA')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.province.errors }" maxlength="2"/>
+
+                <div *ngIf="submitted && f.province.errors" class="invalid-feedback">
+                  <div *ngIf="f.province.errors.required">{{ 'PROFILO.SIGLA_PRO' | translate }}</div>
+                  <div *ngIf="f.province.errors.maxlength">{{ 'PROFILO.SIGLA_PRO_LUNG' | translate }}</div>
+                </div>
+              </div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-code"></i></span>
+                </div>
+                <input type="text" formControlName="zip" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','CAP')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.zip.errors }" maxlength="5"/>
+
+                <div *ngIf="submitted && f.zip.errors" class="invalid-feedback">
+                  <div *ngIf="f.zip.errors.required">{{ 'PROFILO.CAP_O' | translate }}</div>
+                  <div *ngIf="f.zip.errors.maxlength">{{ 'PROFILO.CAP_ALERT' | translate }}</div>
+                </div>
+              </div>
+            </div> <!-- Province and Zip Code-->
+
+            <h5 class="pb-3">{{ 'PROFILO.DATI_ACC' | translate }}</h5>
+
+            <div class="form-row">
+              <div class="input-group mb-4 col-md-6">
                 <div class="d-block w-100">
-                  <label for="company_name" class="label-tiny">Nome azienda</label>
+                  <label for="first_name" class="label-tiny"></label>
                 </div>
                 <div class="input-group-prepend">
                   <span class="input-group-text"><i class="icon-briefcase"></i></span>
                 </div>
-                <input type="text" formControlName="company_name" class="form-control"
-                       placeholder="Nome azienda" id="company_name" maxlength="100"
-                       [ngClass]="{ 'is-invalid': submitted && f.company_name.errors }"/>
+                <input type="text" formControlName="first_name" class="form-control"
+                       placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','NOME_TIT')}}" id="first_name" maxlength="100"
+                       [ngClass]="{ 'is-invalid': submitted && f.first_name.errors }"/>
 
-                <div *ngIf="this.submitted && f.company_name.errors" class="invalid-feedback">
-                  <div *ngIf="f.company_name.errors.required">Nome azienda obbligatoria</div>
+                <div *ngIf="this.submitted && f.first_name.errors" class="invalid-feedback">
+                  <div *ngIf="f.first_name.errors.required"></div>
                 </div>
               </div>
-              <div class="input-group mb-3 col-md-6">
+              <div class="input-group mb-5 col-md-6">
                 <div class="d-block w-100">
-                  <label for="vat_number" class="label-tiny">Partita Iva</label>
+                  <label for="last_name" class="label-tiny"></label>
                 </div>
                 <div class="input-group-prepend">
-                  <span class="input-group-text"><i class="icon-chart"></i></span>
+                  <span class="input-group-text"><i class="icon-briefcase"></i></span>
                 </div>
-                <input type="text" formControlName="vat_number" class="form-control"
-                       placeholder="Partita Iva" id="vat_number" maxlength="11"
-                       [ngClass]="{ 'is-invalid': submitted && f.vat_number.errors }" required/>
-                <div *ngIf="this.submitted && f.vat_number.errors" class="invalid-feedback">
-                  <div *ngIf="f.vat_number.errors.required">Partita Iva obbligatoria</div>
+                <input type="text" formControlName="last_name" class="form-control"
+                       placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','COGN_TIT')}}" id="last_name" maxlength="100"
+                       [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
+
+                <div *ngIf="this.submitted && f.last_name.errors" class="invalid-feedback">
+                  <div *ngIf="f.last_name.errors.required">{{ 'PROFILO.COGNOME_TIT' | translate }}</div>
                 </div>
               </div>
+            </div> <!-- First name and last name -->
+            <div class="form-row">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-user-tie"></i></span>
+                </div>
+                <input type="text" formControlName="username" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','USERNAME')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.username.errors }"/>
+
+                <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+                  <div *ngIf="f.username.errors.required">{{ 'REGISTER.USERNAME_O' | translate }}</div>
+                  <div *ngIf="f.username.errors.maxlength">{{ 'REGISTER.USERNAME_LUNG' | translate }}</div>
+                </div>
+              </div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-at"></i></span>
+                </div>
+                <input type="email" formControlName="email" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','EMAIL')}}" [email]="true"
+                       [ngClass]="{ 'is-invalid': submitted && f.email.errors }"/>
+
+                <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                  <div *ngIf="f.email.errors.required">{{ 'REGISTER.EMAIL_O' | translate }}/div>
+                  <div *ngIf="f.email.errors.email">{{ 'REGISTER.EMAIL_INSERT' | translate }}</div>
+                </div>
+
+              </div>
+            </div> <!-- Email and Username -->
             </div>
-          </div> <!-- Vat Number and Company Name only for companies users -->
-          <div class="form-row">
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="first_name" class="label-tiny">Nome</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="icon-user"></i></span>
-              </div>
-              <input type="text" formControlName="first_name" class="form-control"
-                     placeholder="Nome" id="first_name" maxlength="40"
-                     [ngClass]="{ 'is-invalid': submitted && f.first_name.errors }"/>
+            <div class="form-row">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto icon-lock"></i></span>
+                </div>
+                <input type="password" formControlName="password" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','PASSWORD')}}" minlength="10"
+                       [ngClass]="{ 'is-invalid': submitted && f.password.errors }"/>
 
-              <div *ngIf="submitted && f.first_name.errors" class="invalid-feedback">
-                <div *ngIf="f.first_name.errors.required">Nome obbligatorio</div>
-                <div *ngIf="f.first_name.errors.maxlength">Il nome deve essere lungo al massimo 40 caratteri</div>
+                <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                  <div *ngIf="f.password.errors.required">{{ 'REGISTER.PASSWORD_O' | translate }}</div>
+                  <div *ngIf="f.password.errors.minlength">{{ 'REGISTER.PASSWORD_MIN' | translate }}</div>
+                </div>
               </div>
-            </div>
-            <div class="input-group mb-5 ml-auto col-md-6">
-              <div class="d-block w-100">
-                <label for="last_name" class="label-tiny">Cognome</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="icon-user"></i></span>
-              </div>
-              <input type="text" formControlName="last_name" class="form-control"
-                     placeholder="Cognome" id="last_name" maxlength="40"
-                     [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
-
-              <div *ngIf="this.submitted && f.last_name.errors" class="invalid-feedback">
-                <div *ngIf="f.last_name.errors.required">Il cognome è obbligatorio</div>
-                <div *ngIf="f.last_name.errors.maxlength">Il cognome deve essere lungo al massimo 40 caratteri</div>
-              </div>
-            </div>
-
-          </div> <!-- First and last name -->
-          <div class="form-row">
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="birth_place" class="label-tiny">Luogo di Nascita</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="icon-location-pin"></i></span>
-              </div>
-              <input type="text" formControlName="birth_place" class="form-control" placeholder="Luogo di Nascita"
-                     id="birth_place"
-                     [ngClass]="{ 'is-invalid': submitted && f.birth_place.errors }"/>
-
-              <div *ngIf="submitted && f.birth_place.errors" class="invalid-feedback">
-                <div *ngIf="f.birth_place.errors.required">Luogo di Nascita obbligatorio</div>
-                <div *ngIf="f.birth_place.errors.maxlength">Il luogo di nascita non deve superare 50 caratteri</div>
-              </div>
-            </div>
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="birth_date" class="label-tiny">Data di Nascita</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="icon-calendar"></i></span>
-              </div>
-              <input type="date" formControlName="birth_date" class="form-control" placeholder="Data di Nascita"
-                     id="birth_date"
-                     [ngClass]="{ 'is-invalid': submitted && f.birth_date.errors }"/>
-
-              <div *ngIf="submitted && f.birth_date.errors" class="invalid-feedback">
-                <div *ngIf="f.birth_date.errors.required">Data di Nascita obbligatorio</div>
-              </div>
-            </div>
-          </div> <!-- Birth place and birth date -->
-          <div class="form-row">
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="fiscal_code" class="label-tiny">Codice fiscale</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fas fa-barcode"></i></span>
-              </div>
-              <input type="text" formControlName="fiscal_code" class="form-control" placeholder="Codice fiscale"
-                     id="fiscal_code"
-                     [ngClass]="{ 'is-invalid': submitted && f.fiscal_code.errors }"/>
-
-              <div *ngIf="submitted && f.fiscal_code.errors" class="invalid-feedback">
-                <div *ngIf="f.fiscal_code.errors.required">Codice fiscale obbligatorio</div>
-                <div *ngIf="f.fiscal_code.errors.maxlength">Il codice fiscale deve avere 16 caratteri</div>
-                <div *ngIf="f.fiscal_code.errors.InvalidFiscalCode">Codice fiscale non valido</div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto icon-lock"></i></span>
+                </div>
+                <input type="password" formControlName="r_password" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','RIP_PASS')}}"
+                       minlength="10">
               </div>
 
-            </div>
-          </div> <!-- Fiscal code and Paypal mail -->
-          <div class="form-row">
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="address" class="label-tiny">Indirizzo</label>
+              <div class="alert alert-danger col-md-12"
+                   *ngIf="submitted && f.r_password.errors?.MatchPassword">{{ 'REGISTER.PASS_NO_COIN' | translate }}
               </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
-              </div>
-              <input type="text" formControlName="address" class="form-control" placeholder="Indirizzo" id="address"
-                     [ngClass]="{ 'is-invalid': submitted && f.address.errors }"/>
+            </div> <!-- Password and repeat password -->
 
-              <div *ngIf="submitted && f.address.errors" class="invalid-feedback">
-                <div *ngIf="f.address.errors.required">Indirizzo obbligatorio</div>
-                <div *ngIf="f.address.errors.maxlength">L'indirizzo non deve superare i 50 caratteri</div>
-              </div>
-            </div>
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="city" class="label-tiny">Città</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fas fa-globe"></i></span>
-              </div>
-              <input type="text" formControlName="city" class="form-control" placeholder="Città" id="city"
-                     [ngClass]="{ 'is-invalid': submitted && f.city.errors }"/>
+            <button class="btn btn-block btn-success mx-auto " style="width:40%;" (click)="openModal(updateInfo)">{{ 'PROFILO.SAVE_UP' | translate }}</button>
 
-              <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
-                <div *ngIf="f.city.errors.required">Città obbligatoria</div>
-                <div *ngIf="f.city.errors.maxlength">La Città non deve superare i 50 caratteri</div>
-              </div>
             </div>
-          </div> <!-- Address and Residence City -->
-          <div class="form-row">
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="province" class="label-tiny">Provincia</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fas fa-map"></i></span>
-              </div>
-              <input type="text" formControlName="province" class="form-control" placeholder="Provincia" id="province"
-                     [ngClass]="{ 'is-invalid': submitted && f.province.errors }" maxlength="2"/>
-
-              <div *ngIf="submitted && f.province.errors" class="invalid-feedback">
-                <div *ngIf="f.province.errors.required">Provincia obbligatoria</div>
-                <div *ngIf="f.province.errors.maxlength">La provincia non deve superare i 2 caratteri</div>
-              </div>
-            </div>
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="zip_code" class="label-tiny">Cap</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="fas fa-code"></i></span>
-              </div>
-              <input type="text" formControlName="zip" class="form-control" placeholder="Cap" id="zip_code"
-                     [ngClass]="{ 'is-invalid': submitted && f.zip.errors }" maxlength="5"/>
-
-              <div *ngIf="submitted && f.zip.errors" class="invalid-feedback">
-                <div *ngIf="f.zip.errors.required">Cap obbligatorio</div>
-                <div *ngIf="f.zip.errors.maxlength">Il cap non deve superare i 5 caratteri</div>
-              </div>
-            </div>
-          </div> <!-- Province and Zip Code-->
-          <div class="form-row">
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="password" class="label-tiny">Password</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="icon-lock"></i></span>
-              </div>
-              <input type="password" formControlName="password" class="form-control" placeholder="Password"
-                     [ngClass]="{ 'is-invalid': submitted && f.password.errors }" id="password"/>
-
-              <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
-                <div *ngIf="f.password.errors.required">Password obbligatoria</div>
-                <div *ngIf="f.password.errors.minlength">La password deve avere almeno 10 caratteri</div>
-              </div>
-            </div>
-            <div class="input-group mb-5 col-md-6">
-              <div class="d-block w-100">
-                <label for="r_password" class="label-tiny">Conferma Password</label>
-              </div>
-              <div class="input-group-prepend">
-                <span class="input-group-text"><i class="icon-lock"></i></span>
-              </div>
-              <input type="password" formControlName="r_password" class="form-control" placeholder="Conferma Password"
-                     id="r_password">
-            </div>
-            <div class="alert alert-danger col-md-12"
-                 *ngIf="submitted && f.r_password.errors?.MatchPassword">Password non valida
-            </div>
-            <button class="btn btn-success btn-lg" style="margin: 0 auto;">Salva dati aggiornati</button>
-          </div> <!-- Password and repeated password -->
         </form>
       </div>
     </div>
@@ -233,20 +195,18 @@
 
 <ng-template #updateInfo>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Sei sicuro?</h4>
+    <h4 class="modal-title pull-left">{{ 'PROFILO.UPDATE_CONF' | translate }}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    Vuoi veramente aggiornare le tue informazioni? Sarai disconnesso dalla piattaforma.
+    {{ 'PROFILO.UPDATE_DOM' | translate }}
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="closeModal()">No</button>
-    <button type="button" class="btn btn-success" (click)="updateUser()">
-      Si
-    </button>
+    <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'PROFILO.NO' | translate }}</button>
+    <button type="button" class="btn btn-success" (click)="updateUser()">{{ 'PROFILO.SI' | translate }}</button>
   </div>
 </ng-template>

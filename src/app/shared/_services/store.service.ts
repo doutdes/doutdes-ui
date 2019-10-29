@@ -51,6 +51,10 @@ export class StoreService {
     return localStorage.getItem('usernames');
   }
 
+  getLang () {
+    return localStorage.getItem('lang');
+  }
+
   removeUserNames() {
     localStorage.removeItem('usernames');
   }

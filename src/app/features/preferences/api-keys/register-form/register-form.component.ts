@@ -12,6 +12,7 @@ import {Service} from '../../../../shared/_models/ApiKeys';
 import {GlobalEventsManagerService} from '../../../../shared/_services/global-event-manager.service';
 import {forkJoin} from 'rxjs';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import {TranslateService} from '@ngx-translate/core';
 
 const PrimaryWhite = '#ffffff';
 
@@ -50,7 +51,8 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     private fbService: FacebookService,
     private router: Router,
     private breadcrumbActions: BreadcrumbActions,
-    private geManager: GlobalEventsManagerService
+    private geManager: GlobalEventsManagerService,
+    public translate: TranslateService
   ) {
     this.loading = this.geManager.loadingScreen.asObservable();
   }

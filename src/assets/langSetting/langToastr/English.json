@@ -1,0 +1,102 @@
+{
+  "DASHBOARD": {
+    "VUOTA": {
+      "TITLE": "Your dashboard is empty",
+      "MESSAGE": "You can start by adding a new chart."
+    },
+    "ADD": {
+      "TITLE": "Graphic added!",
+      "MESSAGE": " has been successfully added to the dashboard."
+    },
+    "NO_PERMESSI": {
+      "TITLE": "Invalid permissions!",
+      "MESSAGE": "The access permissions to your Facebook data are invalid or expired. Add the data source to update them."
+    },
+    "NO_RIMOZIONE": {
+      "TITLE": "Error removing graphics.",
+      "MESSAGE": "It was not possible to remove all the graphs. Please try again later or contact support."
+    },
+    "NO_ORDINAMENTO": {
+      "TITLE": "Operation failed.",
+      "MESSAGE": "It is not possible to activate the \"sort mode\" because the dashboard is empty. "
+    },
+    "MOD_ORD": {
+      "TITLE": "You are in sort mode.",
+      "MESSAGE": "Many functions are limited."
+    },
+    "SUC_ORD": {
+      "TITLE": "Dashboard ordered",
+      "MESSAGE": "The dashboard has been successfully ordered!"
+    },
+    "ERR_ORD": {
+      "TITLE": "Error when ordering the dashboard",
+      "MESSAGE": "The dashboard could not be ordered. Please try again later or contact support."
+    },
+    "ERR_CARICAMENTO": {
+      "TITLE": "Error in dashboard upload",
+      "MESSAGE": "An error was encountered while loading the dashboard. Please, try again or contact support."
+    },
+    "NO_INIZ": {
+      "TITLE": "Error initializing the dashboard.",
+      "MESSAGE": "The dashboard could not be recovered. Please contact support."
+    },
+    "ERR_AGG": {
+      "TITLE": "Error during update",
+      "MESSAGE": "Something went wrong choosing the data to be displayed. Please, try again."
+    },
+    "NO_CLEAR": {
+      "TITLE": "Error cleaning the dashboard.",
+      "MESSAGE": "There are no graphs to delete."
+    },
+    "ERR_PERMESSI": {
+      "TITLE": "Invalid permissions",
+      "MESSAGE": "The permissions to access your website data are invalid or expired. Add the data source to update them."
+    },
+    "NO_DATI": {
+      "TITLE": "Error adding chart",
+      "MESSAGE": "contains data that could not be sufficient"
+    },
+    "NO_DATI_1": {
+      "TITLE": "Error adding chart",
+      "MESSAGE": ": There was an error retrieving the data for the chart. Please try again later or contact support."
+    },
+    "NO_ADD": {
+      "TITLE": " : The chart could not be added to the dashboard.",
+      "MESSAGE": "Error adding chart."
+    },
+    "FULL_GRAF": {
+      "TITLE": "No graphic available",
+      "MESSAGE": "You have already added all the charts currently available for this dashboard."
+    }
+  },
+  "PREFERENCES": {
+    "NO_ACCESSO": {
+      "TITLE": "Error accessing data!",
+      "MESSAGE": "An error occurred while accessing data. Please, try again or contact support."
+    },
+    "OK_ACCESSO": {
+      "TITLE": "Service configured correctly!",
+      "MESSAGE": "The configuration of the chosen service was successful."
+    },
+    "NO_AGG": {
+      "TITLE": "Update error",
+      "MESSAGE": "An error occurred while updating the language of the platform"
+    },
+    "OK_AGG": {
+      "TITLE": "Language updated successfully!",
+      "MESSAGE": "The platform language has been updated as requested by you"
+    },
+    "NO_PROFILO": {
+      "TITLE": "Update error",
+      "MESSAGE": "An error occurred while updating the profile information"
+    },
+    "OK_PROFILO": {
+      "TITLE": "Profile updated successfully!",
+      "MESSAGE": "You need to log in again."
+    },
+    "STOP_ACCESSO": {
+      "TITLE": ": source deleted",
+      "MESSAGE": "From now on you will no longer be able to access the dashboards connected to"
+    }
+  }
+}

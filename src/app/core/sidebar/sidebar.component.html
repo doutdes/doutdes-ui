@@ -2,7 +2,7 @@
   <ul class="list-group sticky-top sticky-offset" style="margin-top:13px">
     <!-- Separator with title -->
     <li class="list-group-item sidebar-separator-title d-flex align-items-center menu-collapsed">
-      <small class="font-weight-bold text-uppercase">Contenuti</small>
+      <small class="font-weight-bold text-uppercase">{{'SIDEBAR.CONTENUTI' | translate }}</small>
     </li>
     <!-- /END Separator -->
     <!-- Menu with submenu -->
@@ -10,13 +10,13 @@
          class="list-group-item list-group-item-action flex-column align-items-start" style="background-color: #eeeeee;">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-tachometer-alt mr-3"></span>
-        <span class="menu-collapsed text-black">Le mie dashboard</span>
+        <span class="menu-collapsed text-black">{{'SIDEBAR.MY_DASHBOARD' | translate }}</span>
       </div>
     </div>
     <!-- Submenu content -->
     <div id="submenu1" class="sidebar-submenu" >
       <a [routerLink]="[drag ? '#' : '/dashboard/google']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Sito web</span>
+        <span class="menu-collapsed">{{'MENU.SITO_WEB' | translate }}</span>
       </a>
       <a [routerLink]="[drag ? '#' : '/dashboard/facebook']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Facebook</span>
@@ -28,35 +28,36 @@
         <span class="menu-collapsed">Youtube</span>
       </a>
       <a [routerLink]="[drag ? '#' : '/dashboard/custom']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Personalizzata</span>
+        <span class="menu-collapsed">{{'MENU.PERSONALIZZATA' | translate }}</span>
       </a>
     </div>
     <a href="#submenu2" data-toggle="collapse" aria-expanded="false"
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-user fa-fw mr-3"></span>
-        <span class="menu-collapsed">Preferenze</span>
+        <span class="menu-collapsed">{{'MENU.PREFERENZE' | translate }}</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
     <!-- Submenu content -->
     <div id="submenu2" class="collapse sidebar-submenu">
       <!--<a [routerLink]="['/preferences/profile']" class="list-group-item list-group-item-action">-->
-      <!--<span class="menu-collapsed">Profilo</span>-->
+      <!--<span class="menu-collapsed">{{ 'SIDEBAR.PROFILO' | translate }}</span>-->
       <!--</a>-->
       <a [routerLink]="[drag ? '#' : '/preferences/api-keys']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Configura sorgenti dati</span>
+        <span class="menu-collapsed">{{'SIDEBAR.CONFIGURA_SORGENTI_DATI' | translate }}</span>
       </a>
-      <!--<a *ngIf="userType === 0" [routerLink]="['/authentication/register']" class="list-group-item list-group-item-action">-->
-      <!--<span class="menu-collapsed">Crea account</span>-->
-      <!--</a>-->
+
+      <a [routerLink]="[drag ? '#' : '/preferences/language']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed">{{'SIDEBAR.CONFIGURA_LINGUA' | translate }}</span>
+      </a>
     </div>
 
     <a *ngIf="userType === 0" href="#submenu4" data-toggle="collapse" aria-expanded="false"
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-star fa-fw mr-3"></span>
-        <span class="menu-collapsed">Super admin</span>
+        <span class="menu-collapsed">{{'SIDEBAR.ADMIN' | translate }}</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
@@ -64,7 +65,7 @@
     <!-- Submenu content -->
     <div *ngIf="userType === 0" id="submenu4" class="collapse sidebar-submenu">
       <a [routerLink]="[drag ? '#' : '/authentication/register']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed">Crea account</span>
+        <span class="menu-collapsed">{{'SIDEBAR.CREA_ACCOUNT' | translate }}</span>
       </a>
     </div>
 
@@ -77,19 +78,19 @@
     </a>
     <!-- Separator with title -->
     <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
-      <small class="font-weight-bold text-uppercase">Strumenti</small>
+      <small class="font-weight-bold text-uppercase">{{'SIDEBAR.STRUMENTI' | translate }}</small>
     </li>
     <!-- /END Separator -->
     <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/calendar']">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-calendar-alt fa-fw mr-3"></span>
-        <span class="menu-collapsed">Calendario</span>
+        <span class="menu-collapsed">{{'MENU.CALENDARIO' | translate }}</span>
       </div>
     </a>
-    <a class="list-group-item list-group-item-action">
-      <div class="d-flex w-100 justify-content-start align-items-center" style="color: #777">
+    <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/messages']">
+      <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-envelope fa-fw mr-3"></span>
-        <span class="menu-collapsed">Notifiche</span>
+        <span class="menu-collapsed">{{'MENU.MESSAGGI' | translate }}</span>
       </div>
     </a>
 
@@ -97,7 +98,7 @@
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-question fa-fw mr-3"></span>
-        <span class="menu-collapsed">Guide d'uso</span>
+        <span class="menu-collapsed">{{'SIDEBAR.GUIDE' | translate }}</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>

@@ -17,12 +17,9 @@ import {FilterActions} from '../redux-filter/filter.actions';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {UserService} from '../../../shared/_services/user.service';
 import {NgxLoadingModule} from 'ngx-loading';
-
-import {defineLocale} from 'ngx-bootstrap';
-import {itLocale} from 'ngx-bootstrap/locale';
 import {DragulaModule} from 'ng2-dragula';
-
-defineLocale('it', itLocale);
+import {TranslateModule} from '@ngx-translate/core';
+import {BrowserModule} from '@angular/platform-browser';
 
 @NgModule({
   declarations: [
@@ -40,6 +37,7 @@ defineLocale('it', itLocale);
     BsDropdownModule.forRoot(),
     NgxLoadingModule.forRoot({}),
     DragulaModule,
+    TranslateModule
   ],
   providers: [
     ApiKeysService,
@@ -48,8 +46,8 @@ defineLocale('it', itLocale);
     ChartsCallsService,
     BreadcrumbActions,
     FilterActions,
-    UserService,
-    BsLocaleService
+    BsLocaleService,
+    UserService
   ],
   exports: [
     FeatureDashboardFacebookComponent

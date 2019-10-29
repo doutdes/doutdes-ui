@@ -84,15 +84,9 @@
     <div class="align-middle d-table-cell">
       <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
         <h4 class="text-center mb-0" style="font-size: 17px;">
-          <i class="fas fa-exclamation-triangle text-warning mr-1 d-block"></i>
-          Non è stato possibile recuperare i dati del grafico.
-        </h4>
-        <p *ngIf="dashChart.type === D_TYPE.IG" class="mt-3 text-justify">
-          A causa di limitazioni di Instagram, alcuni dati non potrebbero essere disponibili nell'intervallo di dati selezionati, ma solo per il giorno corrente.
-        </p>
-        <p *ngIf="dashChart.type === D_TYPE.FB" class="mt-3 text-justify">
-         Dati non disponibili nell'intervallo di date selezionate.
-        </p>
+          <i class="fas fa-exclamation-triangle text-warning mr-1 d-block"></i>{{ 'CARD.PROBLEM' | translate }}</h4>
+        <p *ngIf="dashChart.type === D_TYPE.IG" class="mt-3 text-justify">{{ 'CARD.LIMIT' | translate }}</p>
+        <p *ngIf="dashChart.type === D_TYPE.FB" class="mt-3 text-justify">{{ 'CARD.NO_DATI' | translate }}</p>
       </div>
     </div>
   </div>
@@ -100,26 +94,22 @@
 
 <ng-template #deleteChart>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Eliminazione di '{{dashChart.title}}'</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i>{{ 'CARD.TEXT_EL' | translate }} '{{dashChart.title}}'</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
-  <div class="modal-body">
-    Sei veramente sicuro di voler eliminare il grafico selezionato?
-  </div>
+  <div class="modal-body">{{ 'CARD.DOM' | translate }}</div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-success" (click)="closeModal()">No, lascialo</button>
-    <button type="button" class="btn btn-danger" (click)="removeChart(dashChart.dashboard_id, dashChart.chart_id)">
-      Sì, rimuovilo
-    </button>
+    <button type="button" class="btn btn-success" (click)="closeModal()">{{ 'CARD.NO_LASC' | translate }}</button>
+    <button type="button" class="btn btn-danger" (click)="removeChart(dashChart.dashboard_id, dashChart.chart_id)">{{ 'CARD.SI_RIM' | translate }}</button>
   </div>
 </ng-template>
 <ng-template #updateChart>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="far fa-edit mr-3"></i>Modifica titolo di '{{dashChart.title}}'</h4>
+    <h4 class="modal-title pull-left"><i class="far fa-edit mr-3"></i>{{ 'CARD.MOD_TIT' | translate }}'{{dashChart.title}}'</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -128,20 +118,20 @@
   <div class="modal-body">
     <form [formGroup]="updateChartForm" (ngSubmit)="onSubmit()">
       <div class="form-group row">
-        <label class="col-sm-3 col-form-label">Nuovo titolo:</label>
+        <label class="col-sm-3 col-form-label">{{ 'CARD.NEW_TIT' | translate }}</label>
         <div class="col-sm-9">
           <input type="text" class="form-control" formControlName="chartTitle" placeholder="Titolo del grafico"
                  [ngClass]="{ 'is-invalid': submitted && form.chartTitle.errors }">
           <div *ngIf="submitted && form['chartTitle'].errors" class="invalid-feedback">
-            <div *ngIf="form['chartTitle'].errors['required']">Il titolo del grafico è obbligatorio.</div>
-            <div *ngIf="form['chartTitle'].errors['maxlength']">La lunghezza del titolo non può superare i 30 caratteri.</div>
+            <div *ngIf="form['chartTitle'].errors['required']">{{ 'CARD.TIT_O' | translate }}</div>
+            <div *ngIf="form['chartTitle'].errors['maxlength']">{{ 'CARD.TIT_LUNG' | translate }}</div>
           </div>
 
         </div>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-success">Aggiorna</button>
-        <button type="button" class="btn btn-danger" (click)="closeModal()">Annulla</button>
+        <button type="submit" class="btn btn-success">{{ 'CARD.UPDATE' | translate }}</button>
+        <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'CARD.ANNULLA' | translate }}</button>
       </div>
     </form>
   </div>

@@ -1,0 +1,86 @@
+<div class="row rounded py-sm-4 title-header">
+  <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
+    <h2 class="my-auto float-left">{{ 'MESSAGGI.HEADER' | translate }}</h2>
+  </div>
+</div>
+
+<div *ngIf="dataSource && dataSource.data.length > 0" class="container-fluid d-none d-md-block">
+  <table mat-table [dataSource]="dataSource" matSort class="table-striped w-100 ">
+
+    <ng-container matColumnDef="notify">
+      <th mat-header-cell *matHeaderCellDef style="width: 5%" ></th>
+      <td style="text-align: center" *matCellDef="let message" >
+        <i *ngIf="!message.is_read" class="fas fa-exclamation-circle text-warning" ></i>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef style="width: 35%">{{ 'MESSAGGI.ORA_INVIO' | translate }}</th>
+      <td mat-cell *matCellDef="let message">
+        <span [ngStyle]="{'font-weight': !message.is_read ? 'bold': 'normal'}" style="font-size: 15px;">{{this.formatDate(message.createdAt)}}</span> <br/>
+      </td>
+    </ng-container>
+
+    <!-- Title Column -->
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef style="width: 45%">{{ 'MESSAGGI.TITOLO_MESSAGGIO' | translate }}</th>
+      <td mat-cell *matCellDef="let message">
+        <span title="Leggi il messaggio" [ngStyle]="{'font-weight': !message.is_read ? 'bold': 'normal'}" style="font-size: 15px; cursor: pointer;" (click)="openModal(openMessage, message); setAsRead(message)">{{message.title}}</span> <br/>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="read">
+      <th mat-header-cell *matHeaderCellDef style="width: 7.5%"></th>
+      <td style="text-align: center" mat-cell *matCellDef="let message">
+        <i *ngIf="!message.is_read" title="Segna come letto" class="far fa-envelope" style="cursor: pointer" (click)="setAsRead(message)"></i>
+        <!--<i *ngIf="message.is_read" class="far fa-envelope-open"></i>-->
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef style="width: 7.5%"></th>
+      <td style="text-align: center" mat-cell *matCellDef="let message">
+        <i title="Elimina" class="far fa-trash-alt" style="cursor: pointer" (click)="openModal(removeMessage, message)"></i>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>
+<mat-paginator *ngIf="dataSource && dataSource.data.length > 0" #MatPaginator [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true"></mat-paginator> <!--TODO Da Fixare-->
+<div *ngIf="!dataSource || dataSource.data.length === 0" class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5>{{ 'MESSAGGI.NESSUN_MESSAGGIO' | translate }}</h5>
+</div>
+<ng-template #openMessage>
+  <div class="modal-header">
+  <h4 class="modal-title pull-left"> <i class="far fa-envelope-open" style="padding-right: 10px "></i><b>{{this.modalMessage.title}}</b></h4>
+  </div>
+
+  <div class="modal-body">
+    <span>{{this.modalMessage.text}}</span>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success" (click)="decline()">{{ 'MESSAGGI.CONFERMA_LETTURA' | translate }}</button>
+  </div>
+
+</ng-template>
+
+<!-- Modal deletion template -->
+<ng-template #removeMessage>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">{{ 'MESSAGGI.HEADER_ELIM' | translate }} <b>{{modalMessage.title}}</b></h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    {{ 'MESSAGGI.TEXT_ELIM' | translate }}
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="decline()">{{ 'MESSAGGI.ANNULLA_ELIM' | translate }}</button>
+    <button type="button" class="btn btn-success" (click)="deleteMessage(modalMessage.id)">{{ 'MESSAGGI.CONFERMA_ELIM' | translate }}</button>
+  </div>
+</ng-template>
