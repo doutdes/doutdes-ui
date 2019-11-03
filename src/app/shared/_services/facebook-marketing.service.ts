@@ -3,7 +3,6 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {StoreService} from './store.service';
 import {environment} from '../../../environments/environment';
 import {FBM_CHART, FbmAnyData, FbmPage} from '../_models/FacebookMarketingData';
-import {FbPage} from '../_models/FacebookData';
 
 @Injectable()
 export class FacebookMarketingService {
@@ -20,7 +19,7 @@ export class FacebookMarketingService {
       .set('Content-type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`)
 
-  getData(ID, pageID, boh) {
+  getData(ID, pageID) {
     const headers = this.getAuthorization();
     let call;
 
@@ -86,15 +85,6 @@ export class FacebookMarketingService {
       case FBM_CHART.HOURLYAUDIENCE_CPP:
       case FBM_CHART.HOURLYAUDIENCE_CTR:
         call = 'insights/breakdowns/hourlyAudience';
-        break;
-      case FBM_CHART.CAMPAIGNS:
-        call = 'campaigns';
-        break;
-      case FBM_CHART.ADSETS:
-        call = 'adsets/' + boh;
-        break;
-      case FBM_CHART.ADS:
-        call = 'ads/' + boh;
         break;
     }
 

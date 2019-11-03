@@ -16,20 +16,23 @@ import * as _ from 'lodash';
 
 import {YT_CHART} from '../_models/YoutubeData';
 import {FacebookMarketingService} from './facebook-marketing.service';
+import {FacebookCampaignsService} from './facebook-campaigns.service';
 import {FBM_CHART} from '../_models/FacebookMarketingData';
 import NumberFormat = Intl.NumberFormat;
 import {computeStyle} from '@angular/animations/browser/src/util';
 import {parse} from 'ts-node';
+import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
 @Injectable()
-export class ChartsCallsService {
+  export class ChartsCallsService {
 
   constructor(
     private facebookService: FacebookService,
     private googleAnalyticsService: GoogleAnalyticsService,
     private instagramService: InstagramService,
     private youtubeService: YoutubeService,
-    private facebookMarketingService: FacebookMarketingService) {
+    private facebookMarketingService: FacebookMarketingService,
+    private facebookCampaignsService: FacebookCampaignsService) {
   }
 
   public static cutString(str, maxLength) {
@@ -39,7 +42,7 @@ export class ChartsCallsService {
     return '...';
   }
 
-  public retrieveChartData(ID, intervalDate?, pageID?, boh?): Observable<any> {
+  public retrieveChartData(ID, intervalDate?, pageID?, idCampaign?): Observable<any> {
     if (Object.values(FB_CHART).includes(ID)) {
       return this.facebookService.getData(ID, pageID);
     } else if (Object.values(IG_CHART).includes(ID)) {
@@ -49,7 +52,9 @@ export class ChartsCallsService {
     } else if (Object.values(YT_CHART).includes(ID)) {
       return this.youtubeService.getData(ID, intervalDate, pageID);
     } else if (Object.values(FBM_CHART).includes(ID)) {
-      return this.facebookMarketingService.getData(ID, pageID, boh);
+      return this.facebookMarketingService.getData(ID, pageID);
+    } else if (Object.values(FBC_CHART).includes(ID)) {
+      return this.facebookCampaignsService.getData(ID, pageID, idCampaign); // idCampaign for retrieve data of a certain campaign
     } else {
       throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
     }
@@ -216,17 +221,17 @@ export class ChartsCallsService {
         header = [['Reazione', 'numero reaz.']];
         myMap = new Map();
         for (let el of data) {
-           if(el['value']) {
-               let reacts = el['value'];
-               for(let i in reacts) {
-                 let value = parseInt(reacts[i], 10);
-                 if (myMap.has(i)) {
-                   myMap.set(i, myMap.get(i) + value);
-                 } else {
-                   myMap.set(i, value);
-                 }
-               }
-           }
+          if(el['value']) {
+            let reacts = el['value'];
+            for(let i in reacts) {
+              let value = parseInt(reacts[i], 10);
+              if (myMap.has(i)) {
+                myMap.set(i, myMap.get(i) + value);
+              } else {
+                myMap.set(i, value);
+              }
+            }
+          }
         }
 
         var key = myMap.keys();
@@ -867,11 +872,11 @@ export class ChartsCallsService {
         data.forEach(d => d.gender === 'male' ? male.push(d.reach) : 0);
 
         for (let i = 0; i < 6; i++) {
-            chartData.push([
-              age[i],
-              parseFloat(female[i]), '#B22222', age[i],
-              parseFloat(male[i]), '#0000CD', ''
-            ]);
+          chartData.push([
+            age[i],
+            parseFloat(female[i]), '#B22222', age[i],
+            parseFloat(male[i]), '#0000CD', ''
+          ]);
         }
         break;
       case FBM_CHART.GENDER_AGE_IMPRESSIONS:
@@ -2265,7 +2270,7 @@ export class ChartsCallsService {
             areaOpacity: 0.1
           }
         };
-      break;
+        break;
       case YT_CHART.VIEWS:
         formattedData = {
           chartType: 'AreaChart',
@@ -2722,7 +2727,7 @@ export class ChartsCallsService {
                 {v: 0, f: '0'},
                 {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
                 {v: this.searchStep(val), f: this.searchStep(val).toString()}
-                ],
+              ],
               format: ';',
             }, // horizontal label
             vAxis: {
@@ -3210,30 +3215,30 @@ export class ChartsCallsService {
         break;
 
       case FBM_CHART.COUNTRYREGION_REACH:
-       /* formattedData = {
-          chartType: 'GeoChart',
-          dataTable: [
-            ['City',   'Population', 'Area'],
-            ['Rome',      2761477,    1285.31],
-            ['Milan',     1324110,    181.76],
-            ['Naples',    959574,     117.27],
-            ['Turin',     907563,     130.17],
-            ['Palermo',   655875,     158.9],
-            ['Genoa',     607906,     243.60],
-            ['Bologna',   380181,     140.7],
-            ['Florence',  371282,     102.41],
-            ['Fiumicino', 67370,      213.44],
-            ['Anzio',     52192,      43.43],
-            ['Ciampino',  38262,      11]
-          ],
-          containerId: 'chart_div',
-          options: {
-            region: 'IT',
-            displayMode: 'markers',
-            resolution: 'provinces',
-            colorAxis: {colors: ['green', 'blue']}
-          }
-        };*/
+        /* formattedData = {
+           chartType: 'GeoChart',
+           dataTable: [
+             ['City',   'Population', 'Area'],
+             ['Rome',      2761477,    1285.31],
+             ['Milan',     1324110,    181.76],
+             ['Naples',    959574,     117.27],
+             ['Turin',     907563,     130.17],
+             ['Palermo',   655875,     158.9],
+             ['Genoa',     607906,     243.60],
+             ['Bologna',   380181,     140.7],
+             ['Florence',  371282,     102.41],
+             ['Fiumicino', 67370,      213.44],
+             ['Anzio',     52192,      43.43],
+             ['Ciampino',  38262,      11]
+           ],
+           containerId: 'chart_div',
+           options: {
+             region: 'IT',
+             displayMode: 'markers',
+             resolution: 'provinces',
+             colorAxis: {colors: ['green', 'blue']}
+           }
+         };*/
         formattedData = {
           chartType: 'Table',
           dataTable: data,
@@ -3784,7 +3789,7 @@ export class ChartsCallsService {
         break;
       case D_TYPE.FBM:
         pageID = pageIDs[D_TYPE.FBM];
-        observables.push(this.facebookMarketingService.getData(FBM_CHART, pageID, null));
+        observables.push(this.facebookMarketingService.getData(FBM_CHART, pageID));
 
         break;
       case D_TYPE.CUSTOM:
@@ -3884,7 +3889,7 @@ export class ChartsCallsService {
     };
 
     //if(measure!='subs') //used to avoid date parsing in YT subscribers (that doesn't contain such infos). Expect more elegant sol. in future
-      data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
+    data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
 
     if(measure=='vids' || measure=='subs')
       sum = data.length;
@@ -3988,7 +3993,6 @@ export class ChartsCallsService {
 
     switch (measure) {
       case 'reach':
-
         value = data.reach;
 
         break;
@@ -4063,7 +4067,7 @@ export class ChartsCallsService {
         }
         break;
       case 'subs':
-         value = data.length;
+        value = data.length;
         break;
     }
 
@@ -4180,6 +4184,20 @@ export class ChartsCallsService {
     }
 
     return keys.length;
+  }
+
+  public formatTable(data, marketing) {
+    let supportArray = [];
+    if (marketing) {
+      data.data.forEach(d =>
+        d['insights'] !== null && d['insights'] !== undefined
+          ? supportArray.push(Object.assign({}, d, d['insights'].data[0]))
+          : null
+      );
+    } else {
+      supportArray = data.data;
+    }
+    return supportArray;
   }
 
 }

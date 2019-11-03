@@ -432,12 +432,12 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
     const cards = document.querySelectorAll('app-card');
     const firstCard = await html2canvas(cards[0]);
-
     const user = await this.getUserCompany();
 
     let dimRatio = firstCard['width'] > 400 ? 3 : 2;
     let graphsRow = 2;
     let graphsPage = firstCard['width'] > 400 ? 6 : 4;
+
     let x = 40, y = 40;
     let offset = y - 10;
 
@@ -484,7 +484,6 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
     this.closeModal();
   }
-
   formatStringDate(date: Date) {
     return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
   }

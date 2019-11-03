@@ -24,6 +24,7 @@ import {FacebookMarketingService} from '../../../shared/_services/facebook-marke
 import {FeatureDashboardFacebookMarketingComponent} from './marketing/facebook-marketing.component';
 import {FeatureDashboardFacebookCampaignsComponent} from './campaigns/facebook-campaigns.component';
 import {MatFormFieldModule, MatInputModule, MatPaginatorModule, MatSortModule, MatTableModule} from '@angular/material';
+import {FacebookCampaignsService} from '../../../shared/_services/facebook-campaigns.service';
 
 defineLocale('it', itLocale);
 
@@ -53,6 +54,8 @@ defineLocale('it', itLocale);
   providers: [
     ApiKeysService,
     FacebookService,
+    FacebookMarketingService,
+    FacebookCampaignsService,
     DashboardService,
     ChartsCallsService,
     BreadcrumbActions,
@@ -60,7 +63,6 @@ defineLocale('it', itLocale);
     UserService,
     GlobalEventsManagerService,
     BsLocaleService,
-    FacebookMarketingService
   ],
   exports: [
     FeatureDashboardFacebookInsightComponent,

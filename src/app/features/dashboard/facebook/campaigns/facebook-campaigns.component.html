@@ -1,54 +1,142 @@
 <div class="row rounded py-sm-4 title-header">
-  <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
+  <div class="col-xl-6 col-md-6 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 class="my-auto float-left"> {{title}} </h2>
   </div>
+
+  <div *ngIf="loaded" class="col-xl-6 col-sm-6 col-md-8 col-12 my-md-auto">
+    <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
+      <button id="button-settings" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="button-settings"><span class="caret"><i class="fas fa-cog"></i></span>
+      </button>
+
+      <ul id="dropdown-settings" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-settings">
+        <li class="dropdown-item cursor-pointer" (click)="closeTable()">
+          <i class="fas fa-trash-alt mr-2"></i> Chiudi Adset ed Ads
+        </li>
+        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()">
+          <i class="fas fa-file-pdf mr-2"></i> Esporta in PDF
+        </li>
+        <li class="dropdown-item cursor-pointer" (click)="changeData()">
+          <i class="fas fa-chart-line mr-2"></i> {{changeDataTitle}}
+        </li>
+
+      </ul>
+    </div> <!-- PDF export -->
+  </div>
+  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>
 
-
-
-<div class="example-container">
+<div *ngIf="loaded" class="table-campaigns">
   <mat-form-field>
     <label>
-      <input matInput (keyup)="applyFilter($event.target.value, 'c')" placeholder="Filter">
+      <input matInput (keyup)="applyFilter($event.target.value, 'filterCampaings')" placeholder="Cerca">
     </label>
   </mat-form-field>
 
-  <table mat-table #MatSort='matSort' [dataSource]="dataCampaigns" matSort>
+  <table id="campaigns-table" mat-table #MatSort='matSort' [dataSource]="dataCampaigns" matSort class="table-striped w-100">
 
     <ng-container *ngFor="let d of displayedColumnsCampaigns" matColumnDef={{d}}>
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{d}} </th>
-      <td mat-cell *matCellDef="let element" (click) = "showAdsets(element['id'])"> {{element[d]}} </td>
+      <th *matHeaderCellDef mat-sort-header> {{dictTranslate[d].toUpperCase()}} </th>
+      <td *matCellDef="let element">
+        <i *ngIf= "d === 'name' && clickedCamp == element['id']" (click) = "showAdsets(element['id'], element['name'])" class="far fa-folder fa-2x col_hover"></i>
+        <i *ngIf= "d === 'name' && clickedCamp != element['id']" (click) = "showAdsets(element['id'], element['name'])" class="fas fa-folder fa-2x col_hover"></i>
+        <div *ngIf="dictTranslate[element[d]]; else elseBlock">
+          {{dictTranslate[element[d]]}}
+        </div>
+        <ng-template #elseBlock>
+          {{element[d]}}
+        </ng-template>
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumnsCampaigns; sticky: true"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumnsCampaigns;"></tr>
   </table>
-  <mat-paginator #MatPaginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  <div *ngIf="dataCampaigns.filteredData.length === 0" class="empty-elem">Nessun elemento trovato</div>
+  <mat-paginator #MatPaginator [pageSizeOptions]="[5, 10]" showFirstLastButtons></mat-paginator>
 </div>
 
-
-<div *ngIf="adSets" class="example-container">
+<div *ngIf="adSets && !this.marketing" class="table-adsets  mt-5">
+  <h4 class="my-auto float-left"> Dettagli {{titleCamp}} </h4>
   <mat-form-field>
     <label>
-      <input matInput (keyup)="applyFilter($event.target.value, 'a')" placeholder="Filter">
+      <input matInput (keyup)="applyFilter($event.target.value, 'filterAdsets')" placeholder="Cerca">
     </label>
   </mat-form-field>
 
-  <table mat-table #MatSort2='matSort' [dataSource]="dataAdsets" matSort>
+  <table mat-table #MatSort2='matSort' [dataSource]="dataAdsets" matSort class="table-striped w-100">
 
     <ng-container *ngFor="let d of displayedColumnsAdsets" matColumnDef={{d}}>
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{d}} </th>
-      <td mat-cell *matCellDef="let element"> {{element[d]}} </td>
+      <th *matHeaderCellDef mat-sort-header>  {{dictTranslate[d].toUpperCase()}} </th>
+      <td *matCellDef="let element">
+        <i *ngIf= "d === 'name' && clickedAdset == element['id']" (click) = "showAds(element['id'], element['name'])" class="far fa-folder fa-2x col_hover"></i>
+        <i *ngIf= "d === 'name' && clickedAdset != element['id']" (click) = "showAds(element['id'], element['name'])" class="fas fa-folder fa-2x col_hover"></i>
+        <div *ngIf="dictTranslate[element[d]]; else elseBlock">
+          {{dictTranslate[element[d]]}}
+        </div>
+        <ng-template #elseBlock>
+          {{element[d]}}
+        </ng-template>
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumnsAdsets; sticky: true"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumnsAdsets;"></tr>
   </table>
-  <mat-paginator #MatPaginator2 [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  <div *ngIf="dataCampaigns.filteredData.length === 0">No data found</div>
+  <mat-paginator #MatPaginator2 [pageSizeOptions]="[5, 10]" showFirstLastButtons></mat-paginator>
 </div>
 
+<div *ngIf="adSets && this.marketing" class="table-adsets2 mt-5">
+  <h4 class="my-auto float-left"> Dettagli {{titleCamp}} </h4>
+  <mat-form-field>
+    <label>
+      <input matInput (keyup)="applyFilter($event.target.value, 'filterAdsets')" placeholder="Cerca">
+    </label>
+  </mat-form-field>
 
+  <table mat-table #MatSort2='matSort' [dataSource]="dataAdsets" matSort class="table-striped w-100"> <!--[ngClass]="{'font-weight': true ? 'bold' : '400'}"-->
 
-<!-- Copyright 2019 Google Inc. All Rights Reserved.
-    Use of this source code is governed by an MIT-style license that
-    can be found in the LICENSE file at http://angular.io/license -->
+    <ng-container *ngFor="let d of displayedColumnsAdsets" matColumnDef={{d}}>
+      <th *matHeaderCellDef mat-sort-header>  {{dictTranslate[d].toUpperCase()}} </th>
+      <td *matCellDef="let element">
+        <i *ngIf= "d === 'name' && clickedAdset == element['id']" (click) = "showAdsets(idCamp,titleCamp)" class="far fa-folder fa-2x col_hover"></i>
+        <i *ngIf= "d === 'name' && clickedAdset != element['id'] && !clickedAds" (click) = "showAds(element['id'], element['name'])" class="fas fa-folder fa-2x col_hover"></i>
+        <div *ngIf="dictTranslate[element[d]]; else elseBlock">
+          {{dictTranslate[element[d]]}}
+        </div>
+        <ng-template #elseBlock>
+          {{element[d]}}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsAdsets; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsAdsets;"></tr>
+  </table>
+  <div *ngIf="dataCampaigns.filteredData.length === 0">No data found</div>
+  <mat-paginator #MatPaginator2 [pageSizeOptions] = "[5, 10]" showFirstLastButtons></mat-paginator>
+</div>
+
+<div *ngIf="ads && !this.marketing" class="table-ads mt-5">
+  <h4 class="my-auto float-left"> Dettagli {{titleAdset}} </h4>
+
+  <table mat-table #MatSort3='matSort' [dataSource] = "dataAds" matSort class="table-striped w-100">
+
+    <ng-container *ngFor="let d of displayedColumnsAds" matColumnDef = {{d}}>
+      <th *matHeaderCellDef mat-sort-header> {{dictTranslate[d].toUpperCase()}} </th>
+      <td *matCellDef="let element">
+        <div *ngIf="dictTranslate[element[d]]; else elseBlock">
+          {{dictTranslate[element[d]]}}
+        </div>
+        <ng-template #elseBlock>
+          {{element[d]}}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsAds; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsAds;"></tr>
+  </table>
+</div>
