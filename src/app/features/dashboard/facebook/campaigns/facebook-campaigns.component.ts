@@ -307,7 +307,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     this.breadcrumbActions.deleteBreadcrumb();
   };
 
-  async htmltoPDF() {
+  /*async htmltoPDF() {
     const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
     const user = await this.getUserCompany();
 
@@ -336,9 +336,9 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     y += 20;
 
     pdf.setFontSize(14);
-/*
+/!*
     pdf.text('Periodo: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y - 8);
-*/
+*!/
     y += 40;
 
     // Numero grafici per riga dipendente da dimensioni grafico
@@ -364,7 +364,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     pdf.save('report_sito_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
 
     this.closeModal();
-  } // TODO pdf
+  } // TODO pdf*/
 
   async getUserCompany() {
     return <User> await this.userService.get().toPromise();
