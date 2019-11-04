@@ -4,6 +4,7 @@
     <h2 *ngIf="pageList.length !== 0 && loaded" (click)="openModal(fbPagePreferences)" class="cursor-pointer">
       {{currentNamePage}} <i class="fas fa-sort-down" style="font-size: 1.5em"></i>
     </h2>
+    <h2 *ngIf = "!loaded" class="my-auto float-left">Facebook</h2>
   </div>
   <div *ngIf="isApiKeySet && loaded && !drag" class="col-xl-8 col-sm-6 col-md-8 col-12 my-md-auto">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>

@@ -649,7 +649,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     };
 
     pageIDs[D_TYPE.FB] = this.fbPageID;
-    pageIDs[D_TYPE.IG] = this.igPageID[0].id; // TODO change this when the multiple choice works
+    pageIDs[D_TYPE.IG] = this.igPageID; // TODO change this when the multiple choice works
     pageIDs[D_TYPE.YT] = this.ytPageID[0].id; // TODO change this when the multiple choice works
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
