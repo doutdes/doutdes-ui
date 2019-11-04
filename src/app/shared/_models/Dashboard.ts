@@ -6,10 +6,11 @@ export interface Dashboard {
 
 export const D_TYPE = {
   CUSTOM: 0,
-  FB: 1,
-  GA: 2,
-  IG: 3,
-  YT: 4
+  FB:  1,
+  GA:  2,
+  IG:  3,
+  YT:  4,
+  FBM: 5
 };
 
 export const DS_TYPE = {
@@ -17,5 +18,6 @@ export const DS_TYPE = {
   1: 'Facebook',
   2: 'Google Analytics',
   3: 'Instagram',
-  4: 'YouTube'
+  4: 'YouTube',
+  5: 'FacebookMarketing'
 };

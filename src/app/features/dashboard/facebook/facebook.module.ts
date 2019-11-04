@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {AppFooterModule} from '@coreui/angular';
 import {SharedModule} from '../../../shared/shared.module';
 import {CoreModule} from '../../../core/core.module';
-import {FeatureDashboardFacebookComponent} from './facebook.component';
+import {FeatureDashboardFacebookInsightComponent} from './insights/facebook-insights.component';
 import {RouterModule} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
 import {FacebookService} from '../../../shared/_services/facebook.service';
@@ -20,13 +20,19 @@ import {NgxLoadingModule} from 'ngx-loading';
 
 import {defineLocale} from 'ngx-bootstrap';
 import {itLocale} from 'ngx-bootstrap/locale';
-import {DragulaModule} from 'ng2-dragula';
+import {FacebookMarketingService} from '../../../shared/_services/facebook-marketing.service';
+import {FeatureDashboardFacebookMarketingComponent} from './marketing/facebook-marketing.component';
+import {FeatureDashboardFacebookCampaignsComponent} from './campaigns/facebook-campaigns.component';
+import {MatFormFieldModule, MatInputModule, MatPaginatorModule, MatSortModule, MatTableModule} from '@angular/material';
+import {FacebookCampaignsService} from '../../../shared/_services/facebook-campaigns.service';
 
 defineLocale('it', itLocale);
 
 @NgModule({
   declarations: [
-    FeatureDashboardFacebookComponent
+    FeatureDashboardFacebookInsightComponent,
+    FeatureDashboardFacebookCampaignsComponent,
+    FeatureDashboardFacebookMarketingComponent
   ],
   imports: [
     SharedModule,
@@ -39,20 +45,29 @@ defineLocale('it', itLocale);
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgxLoadingModule.forRoot({}),
-    DragulaModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatInputModule,
   ],
   providers: [
     ApiKeysService,
     FacebookService,
+    FacebookMarketingService,
+    FacebookCampaignsService,
     DashboardService,
     ChartsCallsService,
     BreadcrumbActions,
     FilterActions,
     UserService,
-    BsLocaleService
+    GlobalEventsManagerService,
+    BsLocaleService,
   ],
   exports: [
-    FeatureDashboardFacebookComponent
+    FeatureDashboardFacebookInsightComponent,
+    FeatureDashboardFacebookCampaignsComponent,
+    FeatureDashboardFacebookMarketingComponent
   ]
 })
 

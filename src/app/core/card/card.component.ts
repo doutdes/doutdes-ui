@@ -73,9 +73,9 @@ export class CardComponent implements OnInit {
   ngOnInit() {
 
     this.aggregated = !!this.dashChart.aggregated;
-
     // Handling icon nicknames
     switch (this.dashChart.type) {
+      case D_TYPE.FBM:
       case D_TYPE.FB: {
         this.icon = 'fa-facebook-f';
         this.color = '#407CA5';
@@ -107,7 +107,6 @@ export class CardComponent implements OnInit {
     if (this.aggregated) {
       this.handleAggregated();
     }
-
     this.updateChartForm = this.formBuilder.group({
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });

@@ -14,6 +14,7 @@ import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
+import {FacebookMarketingService} from '../../../shared/_services/facebook-marketing.service';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import {AggregatedDataService} from '../../../shared/_services/aggregated-data.s
     BsModalService,
     BreadcrumbActions,
     FilterActions,
-    ChartsCallsService
+    ChartsCallsService,
+    FacebookMarketingService
   ],
   exports: [
     FeaturePreferencesApiKeysComponent,

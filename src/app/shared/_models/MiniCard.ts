@@ -65,6 +65,33 @@ export let FbMiniCards: MiniCard[] = [
     measure: ''
   },
 ];
+export let FbmMiniCards: MiniCard[] = [
+  {
+    name: 'Reach',
+    icon: 'far fa-user',
+    padding: 'pl-0 pr-2',
+    value: '-',
+    measure: 'Copertura'
+  }, {
+    name: 'Impression',
+    icon: 'far fa-eye',
+    padding: 'pl-2 pr-sm-2 pr-0',
+    value: '-',
+    measure: 'impressions'
+  }, {
+    name: 'Spesa',
+    icon: 'fas fa-euro-sign',
+    padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
+    value: '-',
+    measure: 'spend'
+  }, {
+    name: 'Click',
+    icon: 'fas fa-mouse-pointer',
+    padding: 'pl-2 pr-0 pt-sm-0 pt-3',
+    value: '-',
+    measure: 'click'
+  },
+];
 export let IgMiniCards: MiniCard[] = [
   {
     name: 'Follower',

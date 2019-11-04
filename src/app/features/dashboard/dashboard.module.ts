@@ -16,15 +16,15 @@ import {FeatureDashboardInstagramModule} from './instagram/instagram.module';
     FeatureDashboardComponent
   ],
   imports: [
-    SharedModule,
     CoreModule,
+    SharedModule,
     AppFooterModule,
+    FeatureDashboardCustomModule,
+    FeatureDashboardRoutingModule,
     FeatureDashboardFacebookModule,
     FeatureDashboardInstagramModule,
     FeatureDashboardGoogleAnalyticsModule,
     FeatureDashboardYoutubeAnalyticsModule,
-    FeatureDashboardCustomModule,
-    FeatureDashboardRoutingModule
   ],
   providers: [
     AggregatedDataService

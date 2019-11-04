@@ -1,7 +1,7 @@
 export interface Chart {
   ID: number;
-  Type: number;
-  Title: string;
+  type: number;
+  title: string;
   format: string;
   description: string;
 }

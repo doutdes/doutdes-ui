@@ -1,11 +1,13 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
-import {FeatureDashboardFacebookComponent} from './facebook/facebook.component';
+import {FeatureDashboardFacebookInsightComponent} from './facebook/insights/facebook-insights.component';
 import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics/googleAnalytics.component';
 import {FeatureDashboardCustomComponent} from './custom/custom.component';
 import {FeatureDashboardInstagramComponent} from './instagram/instagram.component';
 import {FeatureDashboardYoutubeAnalyticsComponent} from './youtube/youtube.component';
 import {FeatureDashboardComponent} from './dashboard.component';
+import {FeatureDashboardFacebookMarketingComponent} from './facebook/marketing/facebook-marketing.component';
+import {FeatureDashboardFacebookCampaignsComponent} from './facebook/campaigns/facebook-campaigns.component';
 
 /** App Components **/
 
@@ -23,8 +25,16 @@ import {FeatureDashboardComponent} from './dashboard.component';
         component: FeatureDashboardGoogleAnalyticsComponent
       },
       {
-        path: 'facebook',
-        component: FeatureDashboardFacebookComponent
+        path: 'facebook/insights',
+        component: FeatureDashboardFacebookInsightComponent
+      },
+      {
+        path: 'facebook/marketing',
+        component: FeatureDashboardFacebookMarketingComponent
+      },
+      {
+        path: 'facebook/campaigns',
+        component: FeatureDashboardFacebookCampaignsComponent
       },
       {
         path: 'instagram',
