@@ -2358,7 +2358,6 @@ export class ChartsCallsService {
         break;
       case 'ig-follower':
         value = data['followers_count'];
-        console.log(value);
         break;
       case 'ga-tot-user':
         value = 0;

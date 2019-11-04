@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {HashLocationStrategy, LocationStrategy} from '@angular/common';
+import {CommonModule, HashLocationStrategy, LocationStrategy} from '@angular/common';
 
 import {DragulaModule} from 'ng2-dragula';
 
@@ -34,7 +34,6 @@ export function HttpLoaderFactory(http: HttpClient) {
 
 @NgModule({
   imports: [
-    // BrowserModule,
     BrowserAnimationsModule,
     CoreModule,
     ReactiveFormsModule,
@@ -48,7 +47,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ToastrModule.forRoot({
       timeOut: 5000,
       positionClass: 'toast-top-right',
-      //progressBar: true
+      progressBar: true
     }),
     ToastContainerModule,
     StoreModule,

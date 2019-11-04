@@ -8,9 +8,6 @@ import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {P404Component} from '../errors/404.component';
 import {P500Component} from '../errors/500.component';
 import {NgxLoadingModule} from 'ngx-loading';
-import {GlobalEventsManagerService} from '../shared/_services/global-event-manager.service';
-import {IsNotAuthenticatedGuard} from '../shared/_guards/is-not-authenticated.guard';
-
 @NgModule({
   declarations: [
     FeatureComponent,
@@ -25,7 +22,7 @@ import {IsNotAuthenticatedGuard} from '../shared/_guards/is-not-authenticated.gu
     NgxLoadingModule.forRoot({})
   ],
   providers: [
-    IsAuthenticatedGuard,
+    IsAuthenticatedGuard
   ],
   exports: [
   ]

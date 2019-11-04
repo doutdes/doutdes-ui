@@ -415,7 +415,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
     this.CCService.retrieveChartData(dashChart.type, chartParams, pageID)
       .subscribe(chartData => {
-        console.log('chart data received');
         if (!chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;
 
@@ -649,7 +648,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     };
 
     pageIDs[D_TYPE.FB] = this.fbPageID;
-    pageIDs[D_TYPE.IG] = this.igPageID; // TODO change this when the multiple choice works
+    pageIDs[D_TYPE.IG] = this.igPageID[0].id; // TODO change this when the multiple choice works
     pageIDs[D_TYPE.YT] = this.ytPageID[0].id; // TODO change this when the multiple choice works
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
