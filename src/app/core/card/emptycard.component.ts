@@ -180,7 +180,6 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       this.insertChartForm.reset();
 
       this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
-
       await this.updateDropdownOptions();
 
 
@@ -202,7 +201,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
           ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type).toPromise()
           : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
 
-
+        this.chartRemaining.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
           if (this.chartRemaining && this.chartRemaining.length > 0) {
 
             // Update channels
@@ -231,12 +230,10 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   }
 
   filterDropdown(updateChannel = false) {
-
     if (updateChannel) {
       this.metrics = this.getUnique(this.chartRemaining.filter(chart => chart.type == this.insertChartForm.value.channel), 'title');
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].title);
     }
-
     this.description = (this.chartRemaining.find(chart => chart.title == this.insertChartForm.value.metric && chart.type == this.insertChartForm.value.channel)).description;
 
     // Update styles

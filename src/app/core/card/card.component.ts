@@ -107,6 +107,7 @@ export class CardComponent implements OnInit {
     if (this.aggregated) {
       this.handleAggregated();
     }
+
     this.updateChartForm = this.formBuilder.group({
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });

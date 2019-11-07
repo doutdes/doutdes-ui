@@ -107,6 +107,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   dataCampaigns;
   dataAdsets;
   dataAds;
+  supportArray = [];
 
   modalRef: BsModalRef;
   public config = {
@@ -120,7 +121,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   loaded = false;
 
   fbm_page_id;
-  idTables = [101, 102, 103]; // campaign, adset, ad
+  idTables = [101, 102, 103]; //TODO service campaign, adset, ad
 
   /* flags */
   adSets = false;
@@ -212,7 +213,6 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   }
 
   showAds = (id: string, name: string): void => {
-    const supportArray = [];
     this.clickedAdset = id;
     this.ads = true;
     const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
@@ -259,11 +259,14 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
       this.displayedColumnsAdsets = this.marketingColumns;
       this.displayedColumnsAds = this.marketingColumns;
 
-      this.dataCampaigns.data = this.CCService.formatTable(this.dataCampaigns, this.marketing);
+      this.supportArray = [];
+      this.dataCampaigns.data = this.CCService.formatTable(this.dataCampaigns, this.marketing, this.supportArray);
     } else {
       this.marketing = false;
       this.changeDataTitle = 'Dati marketing campagne';
-
+      console.log(this.supportArray);
+      this.dataCampaigns.data = this.dataCampaigns.data.concat(this.supportArray);
+      console.log(this.dataCampaigns.data);
       this.displayedColumnsCampaigns = ['name', 'effective_status', 'daily_budget', 'budget_remaining', 'objective', 'buying_type', 'bid_strategy'];
       this.displayedColumnsAdsets = ['name', 'effective_status', 'bid_amount' , 'billing_event', 'optimization_goal'];
       this.displayedColumnsAds = ['name', 'effective_status'];
