@@ -67,11 +67,11 @@ export let FbMiniCards: MiniCard[] = [
 ];
 export let FbmMiniCards: MiniCard[] = [
   {
-    name: 'Reach',
+    name: 'Copertura',
     icon: 'far fa-user',
     padding: 'pl-0 pr-2',
     value: '-',
-    measure: 'Copertura'
+    measure: 'reach'
   }, {
     name: 'Impression',
     icon: 'far fa-eye',

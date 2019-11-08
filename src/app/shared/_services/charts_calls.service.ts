@@ -412,7 +412,6 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
          * 2 - value
          **/
         header = [['Pagina', 'Visite']];
-        console.log(data);
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
 
@@ -427,7 +426,6 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-        console.log(chartData);
         chartData = this.addPaddindRows(chartData);
         break;  // Google List Referral
       case GA_CHART.SOURCES_COLUMNS:
@@ -899,13 +897,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;
 
       case FBM_CHART.GENDER_AGE_REACH:
-        data = this.formatDataFbm(data, 'genderAge');
+        data = this.formatDataFbm(data, 'gender', 'age');
 
         header = [['Età', 'Copertura-Donna', {role: 'style'}, {role: 'annotation'}, 'Copertura-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.genderAge === 'unknown' ? age.push(d.genderAge) : 0);
-        data.forEach(d => d.genderAge === 'female' ? female.push(d.reach * -1) : 0);
-        data.forEach(d => d.genderAge === 'male' ? male.push(d.reach) : 0);
+        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? female.push(d.reach * -1) : 0);
+        data.forEach(d => d.gender === 'male' ? male.push(d.reach) : 0);
 
         for (let i = 0; i < 6; i++) {
           chartData.push([
@@ -914,14 +912,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             parseFloat(male[i]), '#0000CD', ''
           ]);
         }
-        console.log(female);
         break;
       case FBM_CHART.GENDER_AGE_IMPRESSIONS:
         data = this.formatDataFbm(data, 'gender', 'age');
 
         header = [['Età', 'Impression-Donna', {role: 'style'}, {role: 'annotation'}, 'Impression-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
         data.forEach(d => d.gender === 'female' ? female.push(d.impressions * -1) : 0);
         data.forEach(d => d.gender === 'male' ? male.push(d.impressions) : 0);
 
@@ -930,11 +927,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.GENDER_AGE_SPEND:
-        data = this.formatDataFbm(data, 'genderAge');
+        data = this.formatDataFbm(data, 'gender', 'age');
 
         header = [['Età', 'Costo-Donna', {role: 'style'}, {role: 'annotation'}, 'Costo-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
         data.forEach(d => d.gender === 'female' ? female.push(d.spend * -1) : 0);
         data.forEach(d => d.gender === 'male' ? male.push(d.spend) : 0);
 
@@ -943,11 +940,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.GENDER_AGE_CLICKS:
-        data = this.formatDataFbm(data, 'genderAge');
+        data = this.formatDataFbm(data, 'gender', 'age');
 
         header = [['Age', 'Click-Donna', {role: 'style'}, {role: 'annotation'}, 'Click-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
         data.forEach(d => d.gender === 'female' ? female.push(d.clicks * -1) : 0);
         data.forEach(d => d.gender === 'male' ? male.push(d.clicks) : 0);
 
@@ -956,11 +953,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.GENDER_AGE_INLINE:
-        data = this.formatDataFbm(data, 'genderAge');
+        data = this.formatDataFbm(data, 'gender', 'age');
 
         header = [['Età', 'Click link-Donna', {role: 'style'}, {role: 'annotation'}, 'Click link-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
         data.forEach(d => d.gender === 'female' ? female.push(d.inline_link_clicks * -1) : 0);
         data.forEach(d => d.gender === 'male' ? male.push(d.inline_link_clicks) : 0);
 
@@ -969,11 +966,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.GENDER_AGE_CPC:
-        data = this.formatDataFbm(data, 'genderAge');
+        data = this.formatDataFbm(data, 'gender', 'age');
 
         header = [['Age', 'CPC-FEMALE', {role: 'style'}, {role: 'annotation'}, 'CPC-MALE', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
         data.forEach(d => d.gender === 'female' ? female.push(d.cpc * -1) : 0);
         data.forEach(d => d.gender === 'male' ? male.push(d.cpc) : 0);
 
@@ -982,11 +979,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.GENDER_AGE_CTR:
-        data = this.formatDataFbm(data, 'genderAge');
+        data = this.formatDataFbm(data, 'gender', 'age');
 
         header = [['Age', 'CTR-FEMALE', {role: 'style'}, {role: 'annotation'}, 'CTR-MALE', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
         data.forEach(d => d.gender === 'female' ? female.push(d.ctr * -1) : 0);
         data.forEach(d => d.gender === 'male' ? male.push(d.ctr) : 0);
 
@@ -995,11 +992,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.GENDER_AGE_CPP:
-        data = this.formatDataFbm(data, 'genderAge');
+        data = this.formatDataFbm(data, 'gender', 'age');
 
         header = [['Age', 'CPP-FEMALE', {role: 'style'}, {role: 'annotation'}, 'CPP-MALE', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'unknown' ? age.push(d.age) : 0);
+        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
         data.forEach(d => d.gender === 'female' ? female.push(d.cpp * -1) : 0);
         data.forEach(d => d.gender === 'male' ? male.push(d.cpp) : 0);
 
@@ -1009,72 +1006,72 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;
 
       case FBM_CHART.COUNTRYREGION_REACH:
-        data = this.formatDataFbm(data, 'countryRegion');
+        data = this.formatDataFbm(data, 'country', 'region');
 
         header = [['Paese-Regione', 'Copertura']];
         for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].countryRegion), parseInt(data[i].reach, 10)]);
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].reach, 10)]);
         }
         break;
       case FBM_CHART.COUNTRYREGION_IMPRESSIONS:
-        data = this.formatDataFbm(data, 'countryRegion');
+        data = this.formatDataFbm(data, 'country', 'region');
 
         header = [['Paese-Regione', 'Impression']];
         for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].countryRegion), parseInt(data[i].impressions, 10)]);
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].impressions, 10)]);
         }
         break;
       case FBM_CHART.COUNTRYREGION_SPEND:
-        data = this.formatDataFbm(data, 'countryRegion');
+        data = this.formatDataFbm(data, 'country', 'region');
 
         header = [['Paese-Regione', 'Costo']];
         for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].countryRegion), parseInt(data[i].spend, 10)]);
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].spend, 10)]);
         }
         break;
       case FBM_CHART.COUNTRYREGION_CPC:
-        data = this.formatDataFbm(data, 'countryRegion');
+        data = this.formatDataFbm(data, 'country', 'region');
 
         header = [['Paese-Regione', 'CPC']];
         for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].countryRegion), parseFloat(data[i].cpc)]);
+          chartData.push([(data[i].country + '-' + data[i].region), parseFloat(data[i].cpc)]);
         }
         break;
       case FBM_CHART.COUNTRYREGION_CTR:
-        data = this.formatDataFbm(data, 'countryRegion');
+        data = this.formatDataFbm(data, 'country', 'region');
 
         header = [['Paese-Regione', 'CTR']];
         for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].countryRegion), parseInt(data[i].ctr, 10)]);
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].ctr, 10)]);
         }
         break;
       case FBM_CHART.COUNTRYREGION_CPP:
-        data = this.formatDataFbm(data, 'countryRegion');
+        data = this.formatDataFbm(data, 'country', 'region');
 
         header = [['Paese-Regione', 'CPP']];
         for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].countryRegion), parseInt(data[i].cpp, 10)]);
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].cpp, 10)]);
         }
         break;
       case FBM_CHART.COUNTRYREGION_CLICKS:
-        data = this.formatDataFbm(data, 'countryRegion');
+        data = this.formatDataFbm(data, 'country', 'region');
 
         header = [['Paese-Regione', 'Click']];
         for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].countryRegion), parseInt(data[i].clicks, 10)]);
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].clicks, 10)]);
         }
         break;
       case FBM_CHART.COUNTRYREGION_INLINE:
-        data = this.formatDataFbm(data, 'countryRegion');
+        data = this.formatDataFbm(data, 'country', 'region');
 
         header = [['Paese-Regione', 'Click link']];
         for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].countryRegion), parseInt(data[i].inline_link_clicks, 10)]);
+          chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].inline_link_clicks, 10)]);
         }
         break;
 
       case FBM_CHART.HOURLYADVERTISER_IMPRESSIONS:
-        data = this.formatDataFbm(data, 'hourlyAdvertiser');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_advertiser_time_zone');
 
         header = [['Orario', 'Impression']];
         for (let i = 0; i < time.length; i++) {
@@ -1086,7 +1083,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_SPEND:
-        data = this.formatDataFbm(data, 'hourlyAdvertiser');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_advertiser_time_zone');
 
         header = [['Orario', 'Spend']];
         for (let i = 0; i < time.length; i++) {
@@ -1098,7 +1095,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_CPC:
-        data = this.formatDataFbm(data, 'hourlyAdvertiser');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_advertiser_time_zone');
 
         header = [['Orario', 'CPC']];
         for (let i = 0; i < time.length; i++) {
@@ -1110,7 +1107,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_CTR:
-        data = this.formatDataFbm(data, 'hourlyAdvertiser');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_advertiser_time_zone');
 
         header = [['Orario', 'CTR']];
         for (let i = 0; i < time.length; i++) {
@@ -1122,7 +1119,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_CLICKS:
-        data = this.formatDataFbm(data, 'hourlyAdvertiser');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_advertiser_time_zone');
 
         header = [['Orario', 'Click']];
         for (let i = 0; i < time.length; i++) {
@@ -1134,7 +1131,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_INLINE:
-        data = this.formatDataFbm(data, 'hourlyAdvertiser');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_advertiser_time_zone');
 
         header = [['Orario', 'Click link']];
         for (let i = 0; i < time.length; i++) {
@@ -1147,7 +1144,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;
 
       case FBM_CHART.HOURLYAUDIENCE_REACH:
-        data = this.formatDataFbm(data, 'hourlyAudience');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
         header = [['Orario', 'Copertura']];
         for (let i = 0; i < time.length; i++) {
@@ -1159,7 +1156,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_IMPRESSIONS:
-        data = this.formatDataFbm(data, 'hourlyAudience');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
         header = [['Orario', 'Impression']];
         for (let i = 0; i < time.length; i++) {
@@ -1171,7 +1168,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_SPEND:
-        data = this.formatDataFbm(data, 'hourlyAudience');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
         header = [['Orario', 'Costo']];
         for (let i = 0; i < time.length; i++) {
@@ -1183,7 +1180,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_CPC:
-        data = this.formatDataFbm(data, 'hourlyAudience');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
         header = [['Orario', 'CPC']];
         for (let i = 0; i < time.length; i++) {
@@ -1195,7 +1192,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_CTR:
-        data = this.formatDataFbm(data, 'hourlyAudience');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
         header = [['Orario', 'CTR']];
         for (let i = 0; i < time.length; i++) {
@@ -1207,7 +1204,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_CPP:
-        data = this.formatDataFbm(data, 'hourlyAudience');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
         header = [['Orario', 'CPP']];
         for (let i = 0; i < time.length; i++) {
@@ -1219,7 +1216,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_CLICKS:
-        data = this.formatDataFbm(data, 'hourlyAudience');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
         header = [['Orario', 'Click']];
         for (let i = 0; i < time.length; i++) {
@@ -1231,7 +1228,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_INLINE:
-        data = this.formatDataFbm(data, 'hourlyAudience');
+        data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
         header = [['Orario', 'Click link']];
         for (let i = 0; i < time.length; i++) {
@@ -1250,7 +1247,6 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     let formattedData;
     let type;
     let val = 0;
-    const copyData = data;
 
     data = this.initFormatting(ID, data);
 
@@ -2785,7 +2781,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;
 
       case FBM_CHART.GENDER_AGE_REACH:
-        copyData.forEach(d => parseInt(d.reach) > val ? val = parseInt(d.reach) : val); //val is the value of the ticks (hAxis)
+        data.forEach(d => d[4] > val ? val = d[4] : val);
 
         formattedData = {
           chartType: 'BarChart',
@@ -2852,8 +2848,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         break;
       case FBM_CHART.GENDER_AGE_IMPRESSIONS:
-        copyData.forEach(d => parseInt(d.impressions) > val ? val = parseInt(d.impressions) : val);
-        console.log(val);
+        data.forEach(d => d[4] > val ? val = d[4] : val);
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
@@ -2918,7 +2913,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         break;
       case FBM_CHART.GENDER_AGE_SPEND:
-        copyData.forEach(d => parseInt(d.spend) > val ? val = parseInt(d.spend) : val);
+        data.forEach(d => d[4] > val ? val = d[4] : val);
 
         formattedData = {
           chartType: 'BarChart',
@@ -2983,7 +2978,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         };
         break;
       case FBM_CHART.GENDER_AGE_INLINE:
-        copyData.forEach(d => parseInt(d.inline_link_clicks) > val ? val = parseInt(d.inline_link_clicks) : val);
+        data.forEach(d => d[4] > val ? val = d[4] : val);
 
         formattedData = {
           chartType: 'BarChart',
@@ -3048,7 +3043,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         };
         break;
       case FBM_CHART.GENDER_AGE_CLICKS:
-        copyData.forEach(d => parseInt(d.clicks) > val ? val = parseInt(d.clicks) : val);
+        data.forEach(d => d[4] > val ? val = d[4] : val);
 
         formattedData = {
           chartType: 'BarChart',
@@ -3113,7 +3108,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         };
         break;
       case FBM_CHART.GENDER_AGE_CPC:
-        copyData.forEach(d => parseInt(d.cpc) > val ? val = parseInt(d.cpc) : val);
+        data.forEach(d => d[4] > val ? val = d[4] : val);
 
         formattedData = {
           chartType: 'BarChart',
@@ -3179,7 +3174,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         };
         break;
       case FBM_CHART.GENDER_AGE_CPP:
-        copyData.forEach(d => parseInt(d.cpp) > val ? val = parseInt(d.cpp) : val);
+        data.forEach(d => d[4] > val ? val = d[4] : val);
 
         formattedData = {
           chartType: 'BarChart',
@@ -3244,7 +3239,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         };
         break;
       case FBM_CHART.GENDER_AGE_CTR:
-        copyData.forEach(d => parseInt(d.ctr) > val ? val = parseInt(d.ctr) : val);
+        data.forEach(d => d[4] > val ? val = d[4] : val);
 
         formattedData = {
           chartType: 'BarChart',
@@ -3892,6 +3887,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
         observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs) : of({}));
+        //observables.push(permissions[D_TYPE.FBM] && pageIDs[D_TYPE.FBM] !== null ? this.facebookMarketingService.getData(FBM_CHART, pageIDs[D_TYPE.FBM]) : of({}));
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
@@ -4084,28 +4080,24 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
   }
 
   private getFacebookMarketingMiniValue(measure, data, intervalDate) {
-    let value, perc, sum = 0, avg, max, aux, step;
+    let value = 0, perc, step;
+    data = data.filter(el => parseDate(el.date_stop).getTime() >= intervalDate.first.getTime() && parseDate(el.date_stop).getTime() <= intervalDate.last.getTime());
 
     switch (measure) {
       case 'reach':
-        value = data.reach;
-
+        data.forEach(d => value += parseInt(d.reach,10));
         break;
       case 'spend':
-        value = data.spend;
-
+        data.forEach(d => value += parseInt(d.spend,10));
         break;
       case 'click':
-        value = data.clicks;
-
+        data.forEach(d => value += parseInt(d.clicks,10));
         break;
       case 'impressions':
-        value = data.impressions;
-
+        data.forEach(d => value += parseInt(d.impressions,10));
         break;
       default:
-        value = data.reach;
-
+        data.forEach(d => value += parseInt(d.reach,10));
         break;
     }
 
@@ -4299,27 +4291,17 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     const array = [];
     let temp;
 
-    /*if (breaks === 'genderAge' || breaks === 'countryRegion') {
-      const breakArray = breaks.split(/(?=[A-Z])/);
-      data.forEach(d => (
-        d[breaks] = d[breakArray[0]] + '-' + d[breakArray[1].toLowerCase()],
-          delete d[breakArray[0]],
-          delete d[breakArray[1].toLowerCase()]
-      ));
-    }*/
-    console.log(data);
-
     data.forEach(d => array.find(el => el[breaks] === d[breaks] && el[breaks2] === d[breaks2]) !== undefined
       ? (
           temp = array.find(el => el[breaks] === d[breaks] && el[breaks2] === d[breaks2]),
           temp.reach = parseInt(temp.reach, 10) + parseInt(d.reach, 10),
           temp.impressions = parseInt(temp.impressions, 10) + parseInt(d.impressions, 10),
           temp.clicks = parseInt(temp.clicks, 10) + parseInt(d.clicks, 10),
-          d.cpc ? temp.cpc = parseFloat(temp.cpc) + parseFloat(d.cpc) : 0,
-          d.cpp ? temp.cpp = parseFloat(temp.cpp) + parseFloat(d.cpp) : 0,
-          d.ctr ? temp.ctr = parseFloat(temp.ctr) + parseFloat(d.ctr) : 0,
+          d.cpc ? temp.cpc = temp.cpc + parseFloat(Number(d.cpc).toPrecision(2)) : 0,
+          d.cpp ? temp.cpp = temp.cpp + parseFloat(Number(d.cpp).toPrecision(2)) : 0,
+          d.ctr ? temp.ctr = temp.ctr + parseFloat(Number(d.ctr).toPrecision(2)) : 0,
           temp.inline_link_clicks = parseInt(temp.inline_link_clicks, 10) + parseInt(d.inline_link_clicks, 10),
-          temp.spend = parseFloat(temp.spend) + parseFloat(d.spend))
+          temp.spend = parseFloat(temp.spend) + parseFloat(Number(d.spend).toPrecision(2)))
       : array.push({
         [breaks]: d[breaks],
         [breaks2]: d[breaks2],
@@ -4327,15 +4309,14 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         date_stop: d.date_stop,
         reach: parseInt(d.reach, 10),
         impressions: parseInt(d.impressions, 10),
-        spend: parseFloat(d.spend),
-        cpc: parseFloat(d.cpc) ? parseFloat(d.cpc) : 0,
-        cpp: parseFloat(d.cpp) ? parseFloat(d.cpp) : 0,
-        ctr: parseFloat(d.ctr) ? parseFloat(d.ctr) : 0,
+        spend: parseFloat(d.spend).toFixed(2),
+        cpc: parseFloat(d.cpc) ? parseFloat(Number(d.cpc).toPrecision(2)) : 0,
+        cpp: parseFloat(d.cpp) ? parseFloat(Number(d.cpp).toPrecision(2)) : 0,
+        ctr: parseFloat(d.ctr) ? parseFloat(Number(d.ctr).toPrecision(2)) : 0,
         clicks: parseInt(d.clicks, 10),
         inline_link_clicks: parseInt(d.inline_link_clicks, 10)
       })
     ); //da rendere generale e più decente
-    console.log(array);
     return array;
   }
 }
