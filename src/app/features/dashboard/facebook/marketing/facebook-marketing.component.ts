@@ -338,11 +338,9 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     pageIDs[D_TYPE.FBM] = pageID;
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.FBM, pageIDs, null);
-
     forkJoin(observables).subscribe(miniDatas => {
       for (let i = 0; i < this.miniCards.length; i++) {
-
-        results = this.CCService.formatMiniChartData(miniDatas[0].data[0], D_TYPE.FBM, this.miniCards[i].measure, intervalDate);
+        results = this.CCService.formatMiniChartData(miniDatas[0].data, D_TYPE.FBM, this.miniCards[i].measure, intervalDate);
 
         empty = empty || !results;
 
