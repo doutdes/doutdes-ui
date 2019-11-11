@@ -78,7 +78,6 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
               }
               this.dataSource = new MatTableDataSource<Message>(data);
               this.dataSource.paginator = this.paginator;
-              console.log(this.paginator);
             });
           }
         },

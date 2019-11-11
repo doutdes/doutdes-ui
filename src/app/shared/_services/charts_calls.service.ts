@@ -406,7 +406,7 @@ export class ChartsCallsService {
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 10), parseInt(data[i][2], 10)]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
         }
 
@@ -533,8 +533,8 @@ export class ChartsCallsService {
             (tmpArray[indexFound][1])++;
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 12), parseFloat(data[i][2])]);
-            tmpArray.push([ChartsCallsService.cutString(data[i][1], 12), 1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseFloat(data[i][2])]);
+            tmpArray.push([ChartsCallsService.cutString(data[i][1], 30), 1]);
           }
         }
 
