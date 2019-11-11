@@ -196,14 +196,14 @@ export class ChartsCallsService {
         }
 
         break; // Facebook Post visualizzati
-      case FB_CHART.VIDEO_ADS:
-        header = [['Data', 'Annunci pub. visti']];
-
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
-        }
-
-        break; // Facebook Annunci pub. visualizzati
+      // case FB_CHART.VIDEO_ADS:
+      //   header = [['Data', 'Annunci pub. visti']];
+      //
+      //   for (let i = 0; i < data.length; i++) {
+      //     chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
+      //   }
+      //
+      //   break; // Facebook Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
         header = [['Reazione', 'numero reaz.']];
         myMap = new Map();
@@ -1165,31 +1165,31 @@ export class ChartsCallsService {
           }
         };
         break; // Fb Post visualizzati
-      case FB_CHART.VIDEO_ADS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.TURQUOISE.C8],
-            areaOpacity: 0.1
-          }
-        };
-        break; // Fb Annunci pub. visualizzati
+      // case FB_CHART.VIDEO_ADS:
+      //   formattedData = {
+      //     chartType: 'AreaChart',
+      //     dataTable: data,
+      //     chartClass: 5,
+      //     options: {
+      //       chartArea: {left: 0, right: 0, height: 192, top: 0},
+      //       legend: {position: 'none'},
+      //       lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+      //       height: 210,
+      //       pointSize: data.length > 15 ? 0 : 7,
+      //       pointShape: 'circle',
+      //       hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+      //       vAxis: {
+      //         grindLines: {color: '#eaeaea', count: 5},
+      //         minorGridlines: {color: 'transparent'},
+      //         minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+      //         textPosition: 'in',
+      //         textStyle: {color: '#999'}
+      //       },
+      //       colors: [FB_PALETTE.TURQUOISE.C8],
+      //       areaOpacity: 0.1
+      //     }
+      //   };
+      //   break; // Fb Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
         formattedData = {
           chartType: 'PieChart',
