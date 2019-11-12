@@ -232,7 +232,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
 
-          this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
+          this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       }
