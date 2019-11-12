@@ -493,8 +493,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
       await this.getPagesList();
       this.createForm();
       fb_page_id = await this.getPageID();
-      this.currentNamePage = await this.getPageName(fb_page_id);
-
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!fb_page_id) {
         // await this.getPagesList();
@@ -507,26 +505,18 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
         if (this.pageList.length === 1) {
           key = {fb_page_id: this.pageList[0]['id'], service_id: D_TYPE.FB};
           update = await this.apiKeyService.updateKey(key).toPromise();
-
+          this.pageID = key.fb_page_id;
           if (!update) {
             return;
           }
         } else {
-
-          // this.selectViewForm = this.formBuilder.group({
-          //   fb_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
-          // });
-          //
-          // this.selectViewForm.controls['fb_page_id'].setValue(this.pageList[0].id);
-
           this.openModal(this.selectView, true);
-
           return;
         }
       } else {
         this.pageID = fb_page_id;
       }
-
+      this.currentNamePage = await this.getPageName(this.pageID);
       this.firstDateRange = this.minDate;
       this.lastDateRange = this.maxDate;
       this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
