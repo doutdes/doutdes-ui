@@ -455,7 +455,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
           //this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
 
-          this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD'),
+          this.toastr.success(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
         } else {
           chartToPush.error = true;
