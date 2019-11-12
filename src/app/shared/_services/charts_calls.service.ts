@@ -2090,8 +2090,8 @@ export class ChartsCallsService {
         case D_TYPE.GA:
         case D_TYPE.YT:
           // if (data[0] && data[0].length) {
-            length = data[0].length;
-            min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
+          length = data[0].length;
+          min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
           // }
           break;
       }
@@ -2110,7 +2110,8 @@ export class ChartsCallsService {
         observables.push(this.facebookService.getData('page_fans', pageID));
         observables.push(this.facebookService.fbPosts(pageID));
         observables.push(this.facebookService.getData('page_actions_post_reactions_total', pageID));
-        observables.push(this.facebookService.getData('page_impressions_unique', pageID));
+        //observables.push(this.facebookService.getData('page_impressions_unique', pageID));
+        observables.push(this.facebookService.getData('page_views_total', pageID));
         break;
       case D_TYPE.GA:
         observables.push(this.googleAnalyticsService.getData(GaChartParams.users));
@@ -2273,7 +2274,6 @@ export class ChartsCallsService {
 
     switch (measure) {
       case 'post-sum':
-
         //console.log('FB', data);
         data['data'] = data['data'].filter(el => (moment(el['created_time'])) >= intervalDate.first && (moment(el['created_time'])) <= intervalDate.last);
         value = data['data'].length;
@@ -2309,8 +2309,14 @@ export class ChartsCallsService {
         break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
       default:
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
-        value = data[data.length - 1].value;
-
+        aux = 0;
+        for (const i in data) {
+          if (data[i]['value']) {
+            aux += data[i]['value'] || 0;
+          }
+        }
+        //value = data[data.length - 1].value;
+        value = aux;
         break; // default take the last value as the good one, the perc is calculated dividing the avg for the max value
     }
 

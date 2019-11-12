@@ -171,7 +171,6 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
-
         empty = empty || !results;
 
         this.getNameMinicard(i);
