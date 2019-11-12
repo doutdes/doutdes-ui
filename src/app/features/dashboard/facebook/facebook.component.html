@@ -1,8 +1,8 @@
 <div class="row rounded py-sm-4 title-header">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
 <!--    <h2 class="my-auto float-left mr-3">Facebook</h2>-->
-    <h2 *ngIf="pageList.length !== 0 && loaded" (click)="openModal(fbPagePreferences)" class="cursor-pointer">
-      {{currentNamePage}} <i class="fas fa-sort-down" style="font-size: 1.5em"></i>
+    <h2 *ngIf="pageList.length !== 0 && loaded"> {{currentNamePage}}
+      <i *ngIf="pageList.length > 1" class="fas fa-sort-down cursor-pointer" (click)="openModal(fbPagePreferences)" style="font-size: 1.5em"></i>
     </h2>
     <h2 *ngIf = "!loaded" class="my-auto float-left">Facebook</h2>
   </div>
