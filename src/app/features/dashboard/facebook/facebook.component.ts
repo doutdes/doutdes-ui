@@ -601,33 +601,15 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
   }
 
   async htmltoPDF() {
-
-    let windowW;
-    let windowH;
-
-    let cardW = window.innerWidth;
-    let cardH;
-
-    if (cardW < 990) {
-      cardW /= 1.081;
-    } else {
-      if (cardW > 1300) {
-        cardW /= 3.951;
-      } else {
-        cardW /= 2.73;
-      }
-    }
-
-    windowW = cardW * 2.5;
-    windowH = windowW * 1.415; // a4 format
-    cardH = cardW / 1.1;
-
-    const pdf = new jsPDF('p', 'em', [windowW, windowH]);// 595w x 842h
+    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
     const cards = document.querySelectorAll('app-card');
+    const firstCard = await html2canvas(cards[0]);
 
     const user = await this.getUserCompany();
 
-    let graphsPage = 6;
+    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
+    let graphsRow = 2;
+    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
     let x = 40, y = 40;
     let offset = y - 10;
 
@@ -635,47 +617,39 @@ export class FeatureDashboardFacebookComponent implements OnInit, OnDestroy {
 
     this.openModal(this.reportWait, true);
 
-    pdf.setFontSize(200);
+    pdf.setFontSize(8);
     pdf.text(user.company_name, 320, offset);
     pdf.text('P. IVA: ' + user.vat_number, 320, offset + 10);
     pdf.text(user.first_name + ' ' + user.last_name, 320, offset + 20);
     pdf.text(user.address, 320, offset + 30);
     pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
 
-    pdf.setFontSize(200);
+    pdf.setFontSize(18);
     pdf.text('REPORT DASHBOARD FACEBOOK', x, y - 5);
     y += 20;
 
-    pdf.setFontSize(200);
+    pdf.setFontSize(14);
     pdf.text('Periodo: ' + this.formatStringDate(this.bsRangeValue[0]) + ' - ' + this.formatStringDate(this.bsRangeValue[1]), x, y - 8);
-
-    x = 0;
-    y = cardH / 2;
+    y += 40;
 
     // Numero grafici per riga dipendente da dimensioni grafico
     for (let i = 0; i < cards.length; i++) {
-      const canvas = await html2canvas(cards[i], {scale: 1, width: cardW});
+      const canvas = await html2canvas(cards[i]);
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-      // Determines offset
-      if (i % 2) { // odd
-        x = 80 + cardW;
-      } else {
+      if (i !== 0 && i % graphsRow === 0 && i !== graphsPage) {
+        y += canvas.height / dimRatio + 20;
         x = 40;
-
-        if (i > 0) {
-          y += cardH;
-        }
       }
 
-      // Changes page
-      if (i > 0 && i % graphsPage === 0) {
+      if (i !== 0 && i % graphsPage === 0) {
         pdf.addPage();
         x = 40;
-        y = 40;
+        y = 20;
       }
 
-      pdf.addImage(imgData, x, y, canvas.width, canvas.height);
+      pdf.addImage(imgData, x, y, canvas.width / dimRatio, canvas.height / dimRatio);
+      x += canvas.width / dimRatio + 10;
     }
 
     pdf.save('report_fb_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');

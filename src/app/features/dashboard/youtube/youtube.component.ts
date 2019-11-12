@@ -546,7 +546,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
 
     pdf.setFontSize(18);
-    pdf.text('REPORT DASHBOARD SITO', x, y - 5);
+    pdf.text('REPORT DASHBOARD YOUTUBE', x, y - 5);
     y += 20;
 
     pdf.setFontSize(14);
@@ -573,7 +573,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       x += canvas.width / dimRatio + 10;
     }
 
-    pdf.save('report_sito_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
+    pdf.save('report_yt_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
 
     this.closeModal();
   }

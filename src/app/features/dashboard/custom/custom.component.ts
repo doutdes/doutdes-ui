@@ -758,19 +758,19 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async htmltoPDF() {
-    const pdf = new jsPDF('p', 'px', 'a4'); // 595w x 842h
+    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
     const cards = document.querySelectorAll('app-card');
     const firstCard = await html2canvas(cards[0]);
 
     const user = await this.getUserCompany();
 
-    const dimRatio = firstCard['width'] > 400 ? 3 : 2;
-    const graphsRow = 2;
-    const graphsPage = firstCard['width'] > 400 ? 6 : 4;
+    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
+    let graphsRow = 2;
+    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
     let x = 40, y = 40;
-    const offset = y - 10;
+    let offset = y - 10;
 
-    const dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
+    let dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
 
     this.openModal(this.reportWait, true);
 
@@ -782,7 +782,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
 
     pdf.setFontSize(18);
-    pdf.text('REPORT PERSONALIZZATO', x, y - 5);
+    pdf.text('REPORT DASHBOARD PERSONALIZZATA', x, y - 5);
     y += 20;
 
     pdf.setFontSize(14);
@@ -809,7 +809,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       x += canvas.width / dimRatio + 10;
     }
 
-    pdf.save('report_personalizzato_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
+    pdf.save('report_personalizzata_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
 
     this.closeModal();
   }
