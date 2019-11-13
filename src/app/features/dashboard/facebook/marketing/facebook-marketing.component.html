@@ -100,11 +100,11 @@
           Il tuo account Facebook è associato a più pagine. Quale vuoi includere in Doutdes?
         </p>
         <div class="col-sm-12">
-          <select class="form-control mx-auto" style="width: 70%;" formControlName="fb_page_id" [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['fb_page_id'].errors }">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="fbm_page_id" [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['fbm_page_id'].errors }">
             <option *ngFor="let page of pageList" [value]="page.id">{{page.name}}</option>
           </select>
 
-          <div *ngIf="this.submitted && selectViewForm.controls['fb_page_id'].errors" class="invalid-feedback">
+          <div *ngIf="this.submitted && selectViewForm.controls['fbm_page_id'].errors" class="invalid-feedback">
             <div>Devi obbligatoriamente selezionare una pagina</div>
           </div>
         </div>
