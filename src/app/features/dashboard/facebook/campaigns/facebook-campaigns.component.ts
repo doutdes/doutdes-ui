@@ -16,6 +16,11 @@ import {UserService} from '../../../../shared/_services/user.service';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {GlobalEventsManagerService} from '../../../../shared/_services/global-event-manager.service';
 import {ToastrService} from 'ngx-toastr';
+import {ApiKey} from '../../../../shared/_models/ApiKeys';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {D_TYPE} from '../../../../shared/_models/Dashboard';
+import {FacebookMarketingService} from '../../../../shared/_services/facebook-marketing.service';
+import {FacebookCampaignsService} from '../../../../shared/_services/facebook-campaigns.service';
 
 const PrimaryWhite = '#ffffff';
 
@@ -38,6 +43,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   @ViewChild('MatPaginator3') paginator3: MatPaginator;
 
   @ViewChild('reportWait') reportWait;
+  @ViewChild('selectView') selectView;
 
   @ViewChild('MatSort') sort: MatSort;
   @ViewChild('MatSort2') sort2: MatSort;
@@ -119,9 +125,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   };
   public loading = false;
   loaded = false;
-
   fbm_page_id;
-  idTables = [101, 102, 103]; //TODO service campaign, adset, ad
 
   /* flags */
   adSets = false;
@@ -132,7 +136,23 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   clickedAdset = '';
   idCamp = '';
 
+  public D_TYPE = D_TYPE;
+  public isApiKeySet = true;
+
+  dashErrors = {
+    emptyMiniCards: false,
+    noPages: false
+  };
+
+  // Form for init
+  selectViewForm: FormGroup;
+  loadingForm: boolean;
+  pageList;
+  submitted: boolean;
+
   constructor(
+    private FBCService: FacebookCampaignsService,
+    private formBuilder: FormBuilder,
     private CCService: ChartsCallsService,
     private apiKeyService: ApiKeysService,
     private breadcrumbActions: BreadcrumbActions,
@@ -143,12 +163,45 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   ) {}
 
   async ngOnInit() {
+    let key: ApiKey, update, existence;
     this.loading = true;
 
     this.addBreadcrumb();
     try {
-      this.fbm_page_id = await this.getPageID();
+      existence = await this.checkExistence();
 
+      if (!existence) { // If the Api Key has not been set yet, then a message is print
+        this.isApiKeySet = false;
+        return;
+      }
+      this.fbm_page_id = await this.getPageID();
+      if (!this.fbm_page_id) {
+        await this.getPagesList();
+
+        if (this.pageList.length === 0) {
+          this.dashErrors.noPages = true;
+          return;
+        }
+
+        if (this.pageList.length === 1) {
+          key = {fbm_page_id: this.pageList[0]['id'], service_id: D_TYPE.FBM};
+          update = await this.apiKeyService.updateKey(key).toPromise();
+
+          if (!update) {
+            return;
+          }
+        } else {
+          this.loading = false;
+          this.selectViewForm = this.formBuilder.group({
+            fbm_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+          });
+
+          this.selectViewForm.controls['fbm_page_id'].setValue(this.pageList[0].id);
+
+          this.openModal(this.selectView, true);
+          return;
+        }
+      }
       await this.loadCampaigns();
     } catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
@@ -162,7 +215,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   async loadCampaigns() {
     const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
     try {
-      this.CCService.retrieveChartData(this.idTables[0], null, this.fbm_page_id)
+      this.CCService.retrieveChartData(this.CCService.chooseTable('campaigns'), null, this.fbm_page_id)
         .pipe(takeUntil(dummySubj))
         .subscribe( data => {
           data = this.CCService.formatTable(data, this.marketing);
@@ -197,7 +250,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
     const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
     try {
-      this.CCService.retrieveChartData(this.idTables[1], null, this.fbm_page_id, id)
+      this.CCService.retrieveChartData(this.CCService.chooseTable('adSets'), null, this.fbm_page_id, id)
         .pipe(takeUntil(dummySubj))
         .subscribe( data => {
           data = this.CCService.formatTable(data, this.marketing);
@@ -220,7 +273,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     this.titleAdset = name;
 
     try {
-      this.CCService.retrieveChartData(this.idTables[2], null, this.fbm_page_id, id)
+      this.CCService.retrieveChartData(this.CCService.chooseTable('ads'), null, this.fbm_page_id, id)
         .pipe(takeUntil(dummySubj))
         .subscribe( data => {
           if (this.marketing === true) {
@@ -284,7 +337,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     let pageID;
 
     try {
-      pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
+      pageID = (await this.apiKeyService.getAllKeys().toPromise()).fbm_page_id;
     } catch (e) {
       console.error('getPageID -> error doing the query', e);
     }
@@ -385,6 +438,62 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   closeModal() {
     this.modalRef.hide();
   }
+
+  async selectViewSubmit() {
+    let update;
+    this.submitted = true;
+
+    if (this.selectViewForm.invalid) {
+      this.loadingForm = false;
+      return;
+    }
+
+    const key: ApiKey = {
+      fbm_page_id: this.selectViewForm.value.fbm_page_id,
+      service_id: D_TYPE.FB
+    };
+
+    this.loadingForm = true;
+
+    update = await this.apiKeyService.updateKey(key).toPromise();
+
+    if (update) {
+      this.closeModal();
+      await this.ngOnInit();
+    } else {
+      console.error('MANDARE ERRORE');
+    }
+  }
+
+  async getPagesList() {
+    try {
+      this.pageList = await this.FBCService.getPages().toPromise();
+    } catch (e) {
+      console.error('getFbmViewList -> Error doing the query');
+    }
+  }
+
+  async checkExistence() {
+    let response, isPermissionGranted, result = null;
+
+    try {
+      this.loading = false;
+      response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FBM).toPromise();
+      isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.FBM).toPromise();
+      if (isPermissionGranted.tokenValid) {
+        result = response['exists'] && isPermissionGranted['granted'];
+      } else {
+        this.toastr.error('I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!');
+      }
+      this.loading = true;
+
+    } catch (e) {
+      console.error(e);
+    }
+
+    return result;
+  }
+
 }
 
 

@@ -131,13 +131,13 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
       if (!fbm_page_id) {
         await this.getPagesList();
 
-        if(this.pageList.length === 0) {
+        if (this.pageList.length === 0) {
           this.dashErrors.noPages = true;
           return;
         }
 
         if (this.pageList.length === 1) {
-          key = {fb_page_id: this.pageList[0]['id'], service_id: D_TYPE.FBM};
+          key = {fbm_page_id: this.pageList[0]['id'], service_id: D_TYPE.FBM};
           update = await this.apiKeyService.updateKey(key).toPromise();
 
           if (!update) {
@@ -146,15 +146,17 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
         } else {
 
           this.selectViewForm = this.formBuilder.group({
-            fb_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+            fbm_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
           });
 
-          this.selectViewForm.controls['fb_page_id'].setValue(this.pageList[0].id);
+          this.selectViewForm.controls['fbm_page_id'].setValue(this.pageList[0].id);
 
           this.openModal(this.selectView, true);
           return;
         }
       }
+      await this.getPagesName();
+      console.log(this.title);
 
       this.firstDateRange = this.minDate;
       this.lastDateRange = this.maxDate;
@@ -481,7 +483,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     let pageID;
 
     try {
-      pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
+      pageID = (await this.apiKeyService.getAllKeys().toPromise()).fbm_page_id;
     } catch (e) {
       console.error('getPageID -> error doing the query', e);
     }
@@ -585,6 +587,15 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     }
   }
 
+  async getPagesName() {
+    try {
+      this.pageList = await this.FBMService.getPages().toPromise();
+      this.title = this.pageList.filter(el => el.id === this.pageID)[0].name;
+    } catch (e) {
+      console.error('getFbmViewList -> Error doing the query');
+    }
+  }
+
   async selectViewSubmit() {
     let update;
     this.submitted = true;
@@ -595,7 +606,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     }
 
     const key: ApiKey = {
-      fb_page_id: this.selectViewForm.value.fb_page_id,
+      fbm_page_id: this.selectViewForm.value.fbm_page_id,
       service_id: D_TYPE.FB
     };
 

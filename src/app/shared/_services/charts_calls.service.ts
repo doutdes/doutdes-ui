@@ -4319,4 +4319,20 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     ); //da rendere generale e più decente
     return array;
   }
+
+  public chooseTable (type) {
+    let value;
+    switch (type) {
+      case 'campaigns':
+        value = 101;
+        break;
+      case 'adSets':
+        value = 102;
+        break;
+      case 'ads':
+        value = 103;
+        break;
+    }
+    return value;
+  }
 }
