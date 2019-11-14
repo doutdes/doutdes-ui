@@ -1701,7 +1701,7 @@ export class ChartsCallsService {
           chartClass: 2,
           options: {
             region: 'world',
-            colors: [IG_PALETTE.FUCSIA.C9],
+            colors: [IG_PALETTE.FUCSIA.C5],
             colorAxis: {colors: [IG_PALETTE.FUCSIA.C1, IG_PALETTE.FUCSIA.C2]},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
@@ -1720,7 +1720,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: [IG_PALETTE.FUCSIA.C5, '#ff96db'],
+            colors: [IG_PALETTE.FUCSIA.C3, '#ff96db'],
             areaOpacity: 0.4,
           }
         };
@@ -1821,12 +1821,12 @@ export class ChartsCallsService {
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C11, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7],
+            colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C3, IG_PALETTE.LAVENDER.C1, IG_PALETTE.AMARANTH.C11],
             areaOpacity: 0.2
           }
         };
         if (data.filter(e => e[1] === true).length == 0) {
-          formattedData.options.colors = [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C11, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7];
+          formattedData.options.colors = [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C2, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7];
           formattedData.dataTable = data;
         } else {
           formattedData.options.colors = ['#D3D3D3'];
