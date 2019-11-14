@@ -1701,8 +1701,8 @@ export class ChartsCallsService {
           chartClass: 2,
           options: {
             region: 'world',
-            colors: [IG_PALETTE.FUCSIA.C5],
-            colorAxis: {colors: [IG_PALETTE.FUCSIA.C1, IG_PALETTE.FUCSIA.C2]},
+            colors: [IG_PALETTE.AMARANTH.C5],
+            colorAxis: {colors: [IG_PALETTE.AMARANTH.C4, IG_PALETTE.AMARANTH.C9]},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
             defaultColor: '#333',
@@ -1720,7 +1720,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.FUCSIA.C5],
+            colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10],
             areaOpacity: 0.4,
           }
         };
@@ -1735,7 +1735,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: [IG_PALETTE.AMARANTH.C11],
+            colors: [IG_PALETTE.FUCSIA.C5],
             areaOpacity: 0.4,
           }
         };
@@ -1777,7 +1777,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [IG_PALETTE.LAVENDER.C1],
+            colors: [IG_PALETTE.LAVENDER.C3],
             areaOpacity: 0.1
           }
         };
@@ -1802,7 +1802,7 @@ export class ChartsCallsService {
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [IG_PALETTE.FUCSIA.C4],
+            colors: [IG_PALETTE.FUCSIA.C3],
             areaOpacity: 0.1
           }
         };
