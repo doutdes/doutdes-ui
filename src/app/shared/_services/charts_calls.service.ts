@@ -1720,7 +1720,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: [IG_PALETTE.FUCSIA.C3, '#ff96db'],
+            colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.FUCSIA.C5],
             areaOpacity: 0.4,
           }
         };
@@ -1735,7 +1735,7 @@ export class ChartsCallsService {
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: [IG_PALETTE.AMARANTH.C4],
+            colors: [IG_PALETTE.AMARANTH.C6],
             areaOpacity: 0.4,
           }
         };
