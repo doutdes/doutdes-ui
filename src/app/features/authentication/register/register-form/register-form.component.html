@@ -92,31 +92,60 @@
     </div> <!-- Province and Zip Code-->
 
     <h5 class="pb-3">{{ 'PROFILO.DATI_ACC' | translate }}</h5>
-    <div class="form-row">
+
+    <div class="form-row mb-3">
       <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="mx-auto icon-location-pin"></i></span>
+          <span class="input-group-text"><i class="mx-auto icon-user"></i></span>
         </div>
-        <input type="text" formControlName="birth_place" class="form-control" placeholder="{{this.GEService.getStringFilterDate('PLACEHOLDER','LUOGO_NASC')}}"
-               [ngClass]="{ 'is-invalid': submitted && f.birth_place.errors }"/>
+        <input type="text" formControlName="first_name" class="form-control" placeholder="Nome del titolare"
+               [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
 
-        <div *ngIf="submitted && f.birth_place.errors" class="invalid-feedback">
-          <div *ngIf="f.birth_place.errors.required">{{ 'PROFILO.LUOGO' | translate }}</div>
-          <div *ngIf="f.birth_place.errors.maxlength">{{ 'PROFILO.ALERT' | translate }}</div>
+        <div *ngIf="submitted && f.first_name.errors" class="invalid-feedback">
+          <div *ngIf="f.first_name.errors.required">Nome obbligatorio</div>
+          <div *ngIf="f.first_name.errors.maxlength">Il nome deve essere di massimo 40 caratteri</div>
         </div>
       </div>
-      <div class="input-group mb-4 col-md-6">
+      <div class="input-group mb-4 ml-auto col-md-6">
         <div class="input-group-prepend">
-          <span class="input-group-text"><i class="mx-auto icon-calendar"></i></span>
+          <span class="input-group-text"><i class="mx-auto icon-user"></i></span>
         </div>
-        <input type="date" formControlName="birth_date" class="form-control" placeholder="{{this.GEService.getStringFilterDate('PLACEHOLDER','DATA_NAS')}}"
-               [ngClass]="{ 'is-invalid': submitted && f.birth_date.errors }"/>
+        <input type="text" formControlName="last_name" class="form-control" placeholder="Cognome del titolare"
+               [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
 
-        <div *ngIf="submitted && f.birth_date.errors" class="invalid-feedback">
-          <div *ngIf="f.birth_date.errors.required">{{ 'PROFILO.DATA_NASCITA_O' | translate }}</div>
+        <div *ngIf="this.submitted && f.last_name.errors" class="invalid-feedback">
+          <div *ngIf="f.last_name.errors.required">Cognome obbligatorio</div>
+          <div *ngIf="f.last_name.errors.maxlength">Il cognome deve essere di massimo 40 caratteri</div>
         </div>
       </div>
-    </div> <!-- Birth place and birth date --
+    </div>
+
+    <!--<div class="form-row">-->
+      <!--<div class="input-group mb-4 col-md-6">-->
+        <!--<div class="input-group-prepend">-->
+          <!--<span class="input-group-text"><i class="mx-auto icon-location-pin"></i></span>-->
+        <!--</div>-->
+        <!--<input type="text" formControlName="birth_place" class="form-control" placeholder="{{this.GEService.getStringFilterDate('PLACEHOLDER','LUOGO_NASC')}}"-->
+               <!--[ngClass]="{ 'is-invalid': submitted && f.birth_place.errors }"/>-->
+
+        <!--<div *ngIf="submitted && f.birth_place.errors" class="invalid-feedback">-->
+          <!--<div *ngIf="f.birth_place.errors.required">{{ 'PROFILO.LUOGO' | translate }}</div>-->
+          <!--<div *ngIf="f.birth_place.errors.maxlength">{{ 'PROFILO.ALERT' | translate }}</div>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<div class="input-group mb-4 col-md-6">-->
+        <!--<div class="input-group-prepend">-->
+          <!--<span class="input-group-text"><i class="mx-auto icon-calendar"></i></span>-->
+        <!--</div>-->
+        <!--<input type="date" formControlName="birth_date" class="form-control" placeholder="{{this.GEService.getStringFilterDate('PLACEHOLDER','DATA_NAS')}}"-->
+               <!--[ngClass]="{ 'is-invalid': submitted && f.birth_date.errors }"/>-->
+
+        <!--<div *ngIf="submitted && f.birth_date.errors" class="invalid-feedback">-->
+          <!--<div *ngIf="f.birth_date.errors.required">{{ 'PROFILO.DATA_NASCITA_O' | translate }}</div>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div> -->
+    <!-- Birth place and birth date --
     <div class="form-row">
       <div class="input-group mb-4 col-md-6">
         <div class="input-group-prepend">
@@ -171,7 +200,7 @@
 
         <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
           <div *ngIf="f.password.errors.required">{{ 'REGISTER.PASSWORD_O' | translate }}</div>
-          <div *ngIf="f.password.errors.minlength">{{ 'REGISTER.PASSWORD_LUNG' | translate }}</div>
+          <div *ngIf="f.password.errors.minlength">{{ 'REGISTER.PASSWORD_MIN' | translate }}</div>
         </div>
       </div>
       <div class="input-group mb-4 col-md-6">

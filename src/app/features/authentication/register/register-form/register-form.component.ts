@@ -126,7 +126,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
 
     // If the registration form is invalid, return
     if (this.registrationForm.invalid) {
-
+      console.log (this.registrationForm);
       console.log('Some fields are invalid!');
       this.loading = false;
       return;

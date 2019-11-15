@@ -315,7 +315,7 @@
     "CITTA_LUNG": "Il nome della città deve essere di massimo 50 caratteri",
     "USERNAME_O": "Username obbligatorio",
     "USERNAME_LUNG": "L'username deve essere di massimo 40 caratteri",
-    "EMAIL_O": "L'email è obbligatorio",
+    "EMAIL_O": "L'email è obbligatoria",
     "EMAIL_LUNG": "La password deve essere di massimo 40 caratteri",
     "PASSWORD_O": "La password è obbligatoria",
     "PASSWORD_LUNG": "La password deve essere di massimo 40 caratteri",
