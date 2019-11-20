@@ -72,7 +72,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     let temp, index;
     let myMap;
 
-    const age = []; const female = []; const male = []; const hourlyVar = [];
+    const female = []; const male = []; const supportArray = []; const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24']; //temporal range for some fbm charts
 
     // console.warn('ID: ' + ID + ' - ', data);
@@ -768,66 +768,106 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
       case FBM_CHART.AGE_REACH:
         data = this.formatDataFbm(data, 'age');
-
         header = [['Età', 'Copertura']];
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].age), parseInt(data[i].reach, 10)]);
+
+        age.forEach(a =>
+          data.filter(d => d.age === a).length !== 0
+            ? (v = data.filter(d => d.age === a), supportArray.push(v[0].reach))
+            : supportArray.push(0));
+
+        for (let i = 0; i < supportArray.length; i++) {
+          chartData.push([(age[i]), parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.AGE_IMPRESSIONS:
         data = this.formatDataFbm(data, 'age');
-
         header = [['Età', 'Impression']];
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].age), parseInt(data[i].impressions, 10)]);
+
+        age.forEach(a =>
+          data.filter(d => d.age === a).length !== 0
+            ? (v = data.filter(d => d.age === a), supportArray.push(v[0].impressions))
+            : supportArray.push(0));
+
+        for (let i = 0; i < supportArray.length; i++) {
+          chartData.push([(age[i]), parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.AGE_SPEND:
         data = this.formatDataFbm(data, 'age');
-
         header = [['Età', 'Costo']];
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].age), parseInt(data[i].spend, 10)]);
+
+        age.forEach(a =>
+          data.filter(d => d.age === a).length !== 0
+            ? (v = data.filter(d => d.age === a), supportArray.push(v[0].spend))
+            : supportArray.push(0));
+
+        for (let i = 0; i < supportArray.length; i++) {
+          chartData.push([(age[i]), parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.AGE_INLINE:
         data = this.formatDataFbm(data, 'age');
-
         header = [['Età', 'Click link']];
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].age), parseInt(data[i].inline_link_clicks, 10)]);
+
+        age.forEach(a =>
+          data.filter(d => d.age === a).length !== 0
+            ? (v = data.filter(d => d.age === a), supportArray.push(v[0].inline_link_clicks))
+            : supportArray.push(0));
+
+        for (let i = 0; i < supportArray.length; i++) {
+          chartData.push([(age[i]), parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.AGE_CLICKS:
         data = this.formatDataFbm(data, 'age');
-
         header = [['Età', 'Click']];
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].age), parseInt(data[i].clicks, 10)]);
+
+        age.forEach(a =>
+          data.filter(d => d.age === a).length !== 0
+            ? (v = data.filter(d => d.age === a), supportArray.push(v[0].clicks))
+            : supportArray.push(0));
+
+        for (let i = 0; i < supportArray.length; i++) {
+          chartData.push([(age[i]), parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.AGE_CPC:
         data = this.formatDataFbm(data, 'age');
-
         header = [['Età', 'CPC']];
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].age), parseFloat(data[i].cpc)]);
+
+        age.forEach(a =>
+          data.filter(d => d.age === a).length !== 0
+            ? (v = data.filter(d => d.age === a), supportArray.push(v[0].cpc))
+            : supportArray.push(0));
+
+        for (let i = 0; i < supportArray.length; i++) {
+          chartData.push([(age[i]), parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.AGE_CPP:
         data = this.formatDataFbm(data, 'age');
-
         header = [['Età', 'CPP']];
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].age), parseFloat(data[i].cpp)]);
+
+        age.forEach(a =>
+          data.filter(d => d.age === a).length !== 0
+            ? (v = data.filter(d => d.age === a), supportArray.push(v[0].cpp))
+            : supportArray.push(0));
+
+        for (let i = 0; i < supportArray.length; i++) {
+          chartData.push([(age[i]), parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.AGE_CTR:
         data = this.formatDataFbm(data, 'age');
-
         header = [['Età', 'CTR']];
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([(data[i].age), parseFloat(data[i].ctr)]);
+
+        age.forEach(a =>
+          data.filter(d => d.age === a).length !== 0
+            ? (v = data.filter(d => d.age === a), supportArray.push(v[0].ctr))
+            : supportArray.push(0));
+
+        for (let i = 0; i < supportArray.length; i++) {
+          chartData.push([(age[i]), parseFloat(supportArray[i])]);
         }
         break;
 
@@ -901,15 +941,23 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Età', 'Copertura-Donna', {role: 'style'}, {role: 'annotation'}, 'Copertura-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
-        data.forEach(d => d.gender === 'female' ? female.push(d.reach * -1) : 0);
-        data.forEach(d => d.gender === 'male' ? male.push(d.reach) : 0);
+        age.forEach(a =>
+          data.filter(d => d.gender === 'female' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'female' && d.age === a),
+              female.push(v[0]['reach'] * -1))
+            : female.push(0));
+
+        age.forEach(a =>
+          data.filter(d => d.gender === 'male' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'male' && d.age === a),
+              male.push(v[0]['reach']))
+            : male.push(0));
 
         for (let i = 0; i < 6; i++) {
           chartData.push([
             age[i],
-            parseFloat(female[i]), '#B22222', age[i],
-            parseFloat(male[i]), '#0000CD', ''
+            parseFloat(female[i]), '#FF19FF', age[i],
+            parseFloat(male[i]), '#1940FF', ''
           ]);
         }
         break;
@@ -918,12 +966,20 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Età', 'Impression-Donna', {role: 'style'}, {role: 'annotation'}, 'Impression-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
-        data.forEach(d => d.gender === 'female' ? female.push(d.impressions * -1) : 0);
-        data.forEach(d => d.gender === 'male' ? male.push(d.impressions) : 0);
+        age.forEach(a =>
+          data.filter(d => d.gender === 'female' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'female' && d.age === a),
+              female.push(v[0]['impressions'] * -1))
+            : female.push(0));
+
+        age.forEach(a =>
+          data.filter(d => d.gender === 'male' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'male' && d.age === a),
+              male.push(v[0]['impressions']))
+            : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
         }
         break;
       case FBM_CHART.GENDER_AGE_SPEND:
@@ -931,12 +987,20 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Età', 'Costo-Donna', {role: 'style'}, {role: 'annotation'}, 'Costo-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
-        data.forEach(d => d.gender === 'female' ? female.push(d.spend * -1) : 0);
-        data.forEach(d => d.gender === 'male' ? male.push(d.spend) : 0);
+        age.forEach(a =>
+          data.filter(d => d.gender === 'female' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'female' && d.age === a),
+              female.push(v[0]['spend'] * -1))
+            : female.push(0));
+
+        age.forEach(a =>
+          data.filter(d => d.gender === 'male' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'male' && d.age === a),
+              male.push(v[0]['spend']))
+            : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
         }
         break;
       case FBM_CHART.GENDER_AGE_CLICKS:
@@ -944,12 +1008,20 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Age', 'Click-Donna', {role: 'style'}, {role: 'annotation'}, 'Click-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
-        data.forEach(d => d.gender === 'female' ? female.push(d.clicks * -1) : 0);
-        data.forEach(d => d.gender === 'male' ? male.push(d.clicks) : 0);
+        age.forEach(a =>
+          data.filter(d => d.gender === 'female' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'female' && d.age === a),
+              female.push(v[0]['clicks'] * -1))
+            : female.push(0));
+
+        age.forEach(a =>
+          data.filter(d => d.gender === 'male' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'male' && d.age === a),
+              male.push(v[0]['clicks']))
+            : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
         }
         break;
       case FBM_CHART.GENDER_AGE_INLINE:
@@ -957,25 +1029,41 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Età', 'Click link-Donna', {role: 'style'}, {role: 'annotation'}, 'Click link-Uomo', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
-        data.forEach(d => d.gender === 'female' ? female.push(d.inline_link_clicks * -1) : 0);
-        data.forEach(d => d.gender === 'male' ? male.push(d.inline_link_clicks) : 0);
+        age.forEach(a =>
+          data.filter(d => d.gender === 'female' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'female' && d.age === a),
+              female.push(v[0]['inline_link_clicks'] * -1))
+            : female.push(0));
+
+        age.forEach(a =>
+          data.filter(d => d.gender === 'male' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'male' && d.age === a),
+              male.push(v[0]['inline_link_clicks']))
+            : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
         }
         break;
       case FBM_CHART.GENDER_AGE_CPC:
+        let v;
         data = this.formatDataFbm(data, 'gender', 'age');
-
         header = [['Age', 'CPC-FEMALE', {role: 'style'}, {role: 'annotation'}, 'CPC-MALE', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
-        data.forEach(d => d.gender === 'female' ? female.push(d.cpc * -1) : 0);
-        data.forEach(d => d.gender === 'male' ? male.push(d.cpc) : 0);
+        age.forEach(a =>
+          data.filter(d => d.gender === 'female' && d.age === a).length !== 0
+          ? (v = data.filter(d => d.gender === 'female' && d.age === a),
+              female.push(v[0]['cpc'] * -1))
+          : female.push(0));
+
+        age.forEach(a =>
+          data.filter(d => d.gender === 'male' && d.age === a).length !== 0
+          ? (v = data.filter(d => d.gender === 'male' && d.age === a),
+              male.push(v[0]['cpc']))
+          : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
         }
         break;
       case FBM_CHART.GENDER_AGE_CTR:
@@ -983,12 +1071,20 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Age', 'CTR-FEMALE', {role: 'style'}, {role: 'annotation'}, 'CTR-MALE', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
-        data.forEach(d => d.gender === 'female' ? female.push(d.ctr * -1) : 0);
-        data.forEach(d => d.gender === 'male' ? male.push(d.ctr) : 0);
+        age.forEach(a =>
+          data.filter(d => d.gender === 'female' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'female' && d.age === a),
+              female.push(v[0]['ctr'] * -1))
+            : female.push(0));
+
+        age.forEach(a =>
+          data.filter(d => d.gender === 'male' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'male' && d.age === a),
+              male.push(v[0]['ctr']))
+            : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
         }
         break;
       case FBM_CHART.GENDER_AGE_CPP:
@@ -996,12 +1092,20 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Age', 'CPP-FEMALE', {role: 'style'}, {role: 'annotation'}, 'CPP-MALE', {role: 'style'}, {role: 'annotation'}]];
 
-        data.forEach(d => d.gender === 'female' ? age.push(d.age) : 0);
-        data.forEach(d => d.gender === 'female' ? female.push(d.cpp * -1) : 0);
-        data.forEach(d => d.gender === 'male' ? male.push(d.cpp) : 0);
+        age.forEach(a =>
+          data.filter(d => d.gender === 'female' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'female' && d.age === a),
+              female.push(v[0]['cpp'] * -1))
+            : female.push(0));
+
+        age.forEach(a =>
+          data.filter(d => d.gender === 'male' && d.age === a).length !== 0
+            ? (v = data.filter(d => d.gender === 'male' && d.age === a),
+              male.push(v[0]['cpp']))
+            : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#B22222', age[i], parseFloat(male[i]), '#0000CD', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
         }
         break;
 
@@ -1075,11 +1179,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Impression']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseInt(data[i].impressions, 10) + parseInt(data[i+1].impressions, 10) + parseInt(data[i+2].impressions, 10)); //fascia oraria con 3 elementi
+          supportArray.push(parseInt(data[i].impressions, 10) + parseInt(data[i+1].impressions, 10) + parseInt(data[i+2].impressions, 10)); //fascia oraria con 3 elementi
 
           chartData.push([
             time[i],
-            parseInt(hourlyVar[i], 10)]);
+            parseInt(supportArray[i], 10)]);
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_SPEND:
@@ -1087,11 +1191,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Spend']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseInt(data[i].spend, 10) + parseInt(data[i+1].spend, 10) + parseInt(data[i+2].spend,10));
+          supportArray.push(parseInt(data[i].spend, 10) + parseInt(data[i+1].spend, 10) + parseInt(data[i+2].spend,10));
 
           chartData.push([
             time[i],
-            parseInt(hourlyVar[i], 10)]);
+            parseInt(supportArray[i], 10)]);
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_CPC:
@@ -1099,11 +1203,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CPC']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseFloat(data[i].cpc) + parseFloat(data[i+1].cpc) + parseFloat(data[i+2].cpc));
+          supportArray.push(parseFloat(data[i].cpc) + parseFloat(data[i+1].cpc) + parseFloat(data[i+2].cpc));
 
           chartData.push([
             time[i],
-            parseFloat(hourlyVar[i])]);
+            parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_CTR:
@@ -1111,11 +1215,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CTR']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseFloat(data[i].ctr) + parseFloat(data[i+1].ctr) + parseFloat(data[i+2].ctr));
+          supportArray.push(parseFloat(data[i].ctr) + parseFloat(data[i+1].ctr) + parseFloat(data[i+2].ctr));
 
           chartData.push([
             time[i],
-            parseFloat(hourlyVar[i])]);
+            parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_CLICKS:
@@ -1123,11 +1227,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Click']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseInt(data[i].clicks, 10) + parseInt(data[i+1].clicks, 10) + parseInt(data[i+2].clicks,10));
+          supportArray.push(parseInt(data[i].clicks, 10) + parseInt(data[i+1].clicks, 10) + parseInt(data[i+2].clicks,10));
 
           chartData.push([
             time[i],
-            parseInt(hourlyVar[i], 10)]);
+            parseInt(supportArray[i], 10)]);
         }
         break;
       case FBM_CHART.HOURLYADVERTISER_INLINE:
@@ -1135,11 +1239,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Click link']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i+1].inline_link_clicks, 10) + parseInt(data[i+2].inline_link_clicks, 10));
+          supportArray.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i+1].inline_link_clicks, 10) + parseInt(data[i+2].inline_link_clicks, 10));
 
           chartData.push([
             time[i],
-            parseInt(hourlyVar[i], 10)]);
+            parseInt(supportArray[i], 10)]);
         }
         break;
 
@@ -1148,11 +1252,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Copertura']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseInt(data[i].reach, 10) + parseInt(data[i+1].reach, 10) + parseInt(data[i+2].reach, 10));
+          supportArray.push(parseInt(data[i].reach, 10) + parseInt(data[i+1].reach, 10) + parseInt(data[i+2].reach, 10));
 
           chartData.push([
             time[i],
-            parseInt(hourlyVar[i], 10)]);
+            parseInt(supportArray[i], 10)]);
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_IMPRESSIONS:
@@ -1160,11 +1264,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Impression']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseInt(data[i].impressions,10) + parseInt(data[i+1].impressions, 10) + parseInt(data[i+2].impressions, 10));
+          supportArray.push(parseInt(data[i].impressions,10) + parseInt(data[i+1].impressions, 10) + parseInt(data[i+2].impressions, 10));
 
           chartData.push([
             time[i],
-            parseInt(hourlyVar[i], 10)]);
+            parseInt(supportArray[i], 10)]);
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_SPEND:
@@ -1172,11 +1276,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Costo']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseInt(data[i].spend, 10) + parseInt(data[i+1].spend, 10) + parseInt(data[i+2].spend, 10));
+          supportArray.push(parseInt(data[i].spend, 10) + parseInt(data[i+1].spend, 10) + parseInt(data[i+2].spend, 10));
 
           chartData.push([
             time[i],
-            parseInt(hourlyVar[i], 10)]);
+            parseInt(supportArray[i], 10)]);
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_CPC:
@@ -1184,11 +1288,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CPC']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseFloat(data[i].cpc) + parseFloat(data[i+1].cpc) + parseFloat(data[i+2].cpc));
+          supportArray.push(parseFloat(data[i].cpc) + parseFloat(data[i+1].cpc) + parseFloat(data[i+2].cpc));
 
           chartData.push([
             time[i],
-            parseFloat(hourlyVar[i])]);
+            parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_CTR:
@@ -1196,11 +1300,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CTR']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseFloat(data[i].ctr) + parseFloat(data[i+1].ctr) + parseFloat(data[i+2].ctr));
+          supportArray.push(parseFloat(data[i].ctr) + parseFloat(data[i+1].ctr) + parseFloat(data[i+2].ctr));
 
           chartData.push([
             time[i],
-            parseFloat(hourlyVar[i])]);
+            parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_CPP:
@@ -1208,11 +1312,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CPP']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseFloat(data[i].cpp) + parseFloat(data[i+1].cpp) + parseFloat(data[i+2].cpp));
+          supportArray.push(parseFloat(data[i].cpp) + parseFloat(data[i+1].cpp) + parseFloat(data[i+2].cpp));
 
           chartData.push([
             time[i],
-            parseFloat(hourlyVar[i])]);
+            parseFloat(supportArray[i])]);
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_CLICKS:
@@ -1220,11 +1324,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Click']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseInt(data[i].clicks, 10) + parseInt(data[i+1].clicks, 10) + parseInt(data[i+2].clicks, 10));
+          supportArray.push(parseInt(data[i].clicks, 10) + parseInt(data[i+1].clicks, 10) + parseInt(data[i+2].clicks, 10));
 
           chartData.push([
             time[i],
-            parseInt(hourlyVar[i], 10)]);
+            parseInt(supportArray[i], 10)]);
         }
         break;
       case FBM_CHART.HOURLYAUDIENCE_INLINE:
@@ -1232,11 +1336,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Click link']];
         for (let i = 0; i < time.length; i++) {
-          hourlyVar.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i+1].inline_link_clicks, 10) + parseInt(data[i+2].inline_link_clicks, 10));
+          supportArray.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i+1].inline_link_clicks, 10) + parseInt(data[i+2].inline_link_clicks, 10));
 
           chartData.push([
             time[i],
-            parseInt(hourlyVar[i], 10)]);
+            parseInt(supportArray[i], 10)]);
         }
         break;
     }
@@ -2661,121 +2765,153 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
       case FBM_CHART.GENDER_REACH:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'PieChart',
           dataTable: data,
-          chartClass: 9,
+          chartClass: 8,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
+            sliceVisibilityThreshold: 0.05,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         break;
       case FBM_CHART.GENDER_IMPRESSIONS:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'PieChart',
           dataTable: data,
-          chartClass: 9,
+          chartClass: 8,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
+            sliceVisibilityThreshold: 0.05,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         break;
       case FBM_CHART.GENDER_SPEND:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'PieChart',
           dataTable: data,
-          chartClass: 9,
+          chartClass: 8,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
+            sliceVisibilityThreshold: 0.05,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         break;
       case FBM_CHART.GENDER_INLINE:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'PieChart',
           dataTable: data,
-          chartClass: 9,
+          chartClass: 8,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
+            sliceVisibilityThreshold: 0.05,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         break;
       case FBM_CHART.GENDER_CLICKS:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'PieChart',
           dataTable: data,
-          chartClass: 9,
+          chartClass: 8,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
+            sliceVisibilityThreshold: 0.05,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         break;
       case FBM_CHART.GENDER_CPC:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'PieChart',
           dataTable: data,
-          chartClass: 9,
+          chartClass: 8,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
+            sliceVisibilityThreshold: 0.05,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         break;
       case FBM_CHART.GENDER_CPP:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'PieChart',
           dataTable: data,
-          chartClass: 9,
+          chartClass: 8,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
+            sliceVisibilityThreshold: 0.05,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         break;
       case FBM_CHART.GENDER_CTR:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'PieChart',
           dataTable: data,
-          chartClass: 9,
+          chartClass: 8,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
+            sliceVisibilityThreshold: 0.05,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
+            areaOpacity: 0.2
           }
         };
         break;
@@ -2836,11 +2972,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
                 bold: true,
                 italic: true,
                 // The color of the text.
-                color: '#871b47',
+                color: '#000000',
                 // The color of the text outline.
-                auraColor: '#d799ae',
+                auraColor: '#FFFFFF',
                 // The transparency of the text.
-                opacity: 0.8
+                opacity: 1.4
               }
             }
           }
@@ -2901,11 +3037,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
                 bold: true,
                 italic: true,
                 // The color of the text.
-                color: '#871b47',
+                color: '#000000',
                 // The color of the text outline.
-                auraColor: '#d799ae',
+                auraColor: '#FFFFFF',
                 // The transparency of the text.
-                opacity: 0.8
+                opacity: 1.4
               }
             }
           }
@@ -2967,11 +3103,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
                 bold: true,
                 italic: true,
                 // The color of the text.
-                color: '#871b47',
+                color: '#000000',
                 // The color of the text outline.
-                auraColor: '#d799ae',
+                auraColor: '#FFFFFF',
                 // The transparency of the text.
-                opacity: 0.8
+                opacity: 1.4
               }
             }
           }
@@ -3032,11 +3168,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
                 bold: true,
                 italic: true,
                 // The color of the text.
-                color: '#871b47',
+                color: '#000000',
                 // The color of the text outline.
-                auraColor: '#d799ae',
+                auraColor: '#FFFFFF',
                 // The transparency of the text.
-                opacity: 0.8
+                opacity: 1.4
               }
             }
           }
@@ -3097,11 +3233,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
                 bold: true,
                 italic: true,
                 // The color of the text.
-                color: '#871b47',
+                color: '#000000',
                 // The color of the text outline.
-                auraColor: '#d799ae',
+                auraColor: '#FFFFFF',
                 // The transparency of the text.
-                opacity: 0.8
+                opacity: 1.4
               }
             }
           }
@@ -3163,11 +3299,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
                 bold: true,
                 italic: true,
                 // The color of the text.
-                color: '#871b47',
+                color: '#000000',
                 // The color of the text outline.
-                auraColor: '#d799ae',
+                auraColor: '#FFFFFF',
                 // The transparency of the text.
-                opacity: 0.8
+                opacity: 1.4
               }
             }
           }
@@ -3228,11 +3364,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
                 bold: true,
                 italic: true,
                 // The color of the text.
-                color: '#871b47',
+                color: '#000000',
                 // The color of the text outline.
-                auraColor: '#d799ae',
+                auraColor: '#FFFFFF',
                 // The transparency of the text.
-                opacity: 0.8
+                opacity: 1.4
               }
             }
           }
@@ -3293,11 +3429,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
                 bold: true,
                 italic: true,
                 // The color of the text.
-                color: '#871b47',
+                color: '#000000',
                 // The color of the text outline.
-                auraColor: '#d799ae',
+                auraColor: '#FFFFFF',
                 // The transparency of the text.
-                opacity: 0.8
+                opacity: 1.4
               }
             }
           }
@@ -3880,14 +4016,16 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
       case D_TYPE.FBM:
         pageID = pageIDs[D_TYPE.FBM];
         observables.push(this.facebookMarketingService.getData(FBM_CHART, pageID));
-
+        break;
+      case D_TYPE.FBC:
+        pageID = pageIDs[D_TYPE.FBC];
+        observables.push(this.facebookCampaignsService.getData(FBC_CHART.CAMPAIGNS, pageID, this.chooseTable('campaigns')));
         break;
       case D_TYPE.CUSTOM:
         observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
         observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
         observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
         observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs) : of({}));
-        //observables.push(permissions[D_TYPE.FBM] && pageIDs[D_TYPE.FBM] !== null ? this.facebookMarketingService.getData(FBM_CHART, pageIDs[D_TYPE.FBM]) : of({}));
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
@@ -3914,6 +4052,9 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break
       case D_TYPE.FBM :
         result = this.getFacebookMarketingMiniValue(measure, data, intervalDate);
+        break
+      case D_TYPE.FBC :
+        result = this.getFacebookCampaignsMiniValue(measure, data);
         break
       case D_TYPE.CUSTOM:
         result = this.getCustomMiniValue(measure, data, intervalDate);
@@ -4098,6 +4239,43 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;
       default:
         data.forEach(d => value += parseInt(d.reach,10));
+        break;
+    }
+
+    step = this.searchStep(value);
+    perc = value / step * 100;
+
+    return {value, perc, step};
+  }
+
+  private getFacebookCampaignsMiniValue(measure, data) {
+    let value, support = 0, perc, step, supportArray = [], media = 0;
+
+    data.forEach(d =>
+      d['insights'] !== null && d['insights'] !== undefined
+        ? supportArray.push(Object.assign({}, d, d['insights'].data[0]))
+        : supportArray.push(d)
+    );
+
+    switch (measure) {
+      case 'budget':
+        media = supportArray.filter(d => d.effective_status === 'ACTIVE').length;
+        supportArray.forEach(d => d.daily_budget ? support +=  parseInt(d.daily_budget, 10) : null);
+        value = Number(support / media).toFixed(2) + ' €';
+        break;
+      case 'campaigns_status':
+        value = supportArray.filter(d => d.effective_status === 'ACTIVE').length.toString();
+        break;
+      case 'spend':
+        supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend,10)) : null);
+        value = Number(support / media).toFixed(2) + ' €';
+        break;
+      case 'reach':
+        supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach,10)) : null);
+        value = Math.round(support / media).toString();
+        break;
+      default:
+        value = supportArray.filter(d => d.effective_status === 'ACTIVE').length.toString();
         break;
     }
 
@@ -4316,7 +4494,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         clicks: parseInt(d.clicks, 10),
         inline_link_clicks: parseInt(d.inline_link_clicks, 10)
       })
-    ); //da rendere generale e più decente
+    ); // TODO IMPROVE
     return array;
   }
 

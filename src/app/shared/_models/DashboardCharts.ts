@@ -3,6 +3,7 @@ export interface DashboardCharts {
   chart_id: number;
   title: string;
   format: string;
+  description: string;
   color?: string;
   chartData?: any;
   position?: number;

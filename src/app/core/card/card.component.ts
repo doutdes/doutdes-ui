@@ -64,6 +64,7 @@ export class CardComponent implements OnInit {
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
+    private DService: DashboardService,
     private toastr: ToastrService,
     private filterActions: FilterActions
   ) {
@@ -76,6 +77,7 @@ export class CardComponent implements OnInit {
     // Handling icon nicknames
     switch (this.dashChart.type) {
       case D_TYPE.FBM:
+      case D_TYPE.FBC:
       case D_TYPE.FB: {
         this.icon = 'fa-facebook-f';
         this.color = '#407CA5';
@@ -125,12 +127,12 @@ export class CardComponent implements OnInit {
       this.loading = false;
       return;
     }
-
     const chart: DashboardCharts = {
       dashboard_id: this.dashChart.dashboard_id,
       chart_id: this.dashChart.chart_id,
       title: this.updateChartForm.value.chartTitle,
       format: this.dashChart.format,
+      description: this.dashChart.description
       //position: this.dashChart.position
     };
 

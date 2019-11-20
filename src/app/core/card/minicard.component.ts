@@ -24,6 +24,7 @@ export class MiniCardComponent implements OnInit {
     this.month = new Date(0, new Date().getMonth(), 0).toLocaleString('it-it', { month: 'long' }); // Previous month
 
     switch (this.dtype) {
+      case D_TYPE.FBC:
       case D_TYPE.FBM:
       case D_TYPE.FB:
         this.progressClassColor = 'bg-fb-color';

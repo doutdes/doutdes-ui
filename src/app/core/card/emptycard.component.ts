@@ -53,6 +53,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   metrics = [];
   styles = [];
   type = [];
+  breakdowns = ['Copertura', 'Impression', 'Spesa', 'click link', 'Click', 'CPC', 'CPP', 'CTR'];
 
   description: string; // Description of the metric shown
 
@@ -73,6 +74,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     this.insertChartForm = this.formBuilder.group({
       channel: [this.dashboard_data.dashboard_type],
+      break: [null, Validators.required],
       metric: [[], Validators.required],
       style: [null, Validators.required],
       title: [null, Validators.compose([Validators.maxLength(30), Validators.required])],
@@ -118,7 +120,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     try {
       await this.updateDropdownOptions();
-      if(this.metrics.length === 0) {
+      if (this.metrics.length === 0) {
         this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
       } else {
         this.modalService.onHide.subscribe(() => {
@@ -162,13 +164,13 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     }
 
     this.loading = true;
-
     dashChart = {
       chart_id: selected.ID,
       dashboard_id: this.dashboard_data.dashboard_id,
       title: selected.title,
       type: selected.type,
-      format: selected.format
+      format: selected.format,
+      description: selected.description
     };
 
 
@@ -214,6 +216,8 @@ export class EmptycardComponent implements OnInit, OnDestroy {
             }
 
             this.insertChartForm.controls['channel'].setValue(this.channels[0].value);
+            this.insertChartForm.controls['break'].setValue(this.breakdowns[0]);
+            this.breakdowns = this.breakdowns.filter(b => this.chartRemaining.filter(chart => chart.title.includes(b)).length > 0);
 
             this.filterDropdown(true);
 
@@ -232,8 +236,10 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   filterDropdown(updateChannel = false) {
     if (updateChannel) {
       this.metrics = this.getUnique(this.chartRemaining.filter(chart => chart.type == this.insertChartForm.value.channel), 'title');
+      this.insertChartForm.value.channel === 5 ? this.metrics = this.metrics.filter(chart => chart.title.includes(this.insertChartForm.controls['break'].value)) : null;
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].title);
     }
+
     this.description = (this.chartRemaining.find(chart => chart.title == this.insertChartForm.value.metric && chart.type == this.insertChartForm.value.channel)).description;
 
     // Update styles

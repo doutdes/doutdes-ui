@@ -1,6 +1,9 @@
 <div class="row rounded py-sm-4 title-header">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 class="my-auto float-left"> {{title}} </h2>
+<!--
+    <i *ngIf="pageList.length > 1" class="fas fa-sort-down cursor-pointer" (click)="openModal(fbPagePreferences)" style="font-size: 1.5em"></i>
+-->
   </div>
   <div *ngIf="isApiKeySet && loaded" class="col-xl-8 col-sm-6 col-md-8 col-12 my-md-auto">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
@@ -148,3 +151,32 @@
 
 </ng-template>
 
+<ng-template #fbPagePreferences>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fab fa-facebook mr-3"></i>{{ title }}</h4>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
+      <div class="form-group row">
+        <p class="col-sm-12 text-justify">{{ 'Cambia pagina:'  }}</p>
+        <div class="col-sm-12">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="fbm_page_id"
+                  [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['fbm_page_id'].errors }">
+            <option *ngFor="let page of pageList" [value]="page.id">{{page.name}}</option>
+          </select>
+
+          <div *ngIf="submitted && selectViewForm.controls['fbm_page_id'].errors" class="invalid-feedback">
+            <div>{{ 'Errore'  }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pr-0 pb-0">
+        <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'ANNULLA'  }}</button>
+        <button type="submit" class="btn btn-success">{{ 'CONFERMA'  }}</button>
+      </div>
+    </form>
+  </div>
+
+</ng-template>
