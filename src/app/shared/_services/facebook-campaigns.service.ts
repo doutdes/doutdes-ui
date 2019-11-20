@@ -12,8 +12,6 @@ export class FacebookCampaignsService {
     private storeService: StoreService) {
   }
 
-  // Here they will be the various back-end calls (insights, campaings, etc.)
-
   private getAuthorization = (): HttpHeaders =>
     new HttpHeaders()
       .set('Content-type', 'application/json')

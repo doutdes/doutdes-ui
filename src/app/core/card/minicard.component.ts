@@ -46,6 +46,7 @@ export class MiniCardComponent implements OnInit {
     });
 
     switch (this.dtype) {
+      case D_TYPE.FBC:
       case D_TYPE.FBM:
       case D_TYPE.FB:
         this.progressClassColor = 'bg-fb-color';

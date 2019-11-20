@@ -14,9 +14,11 @@
 
   <!-- CARD WITH CHART -->
   <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length> 0" [ngClass]="" [ngStyle]="{'backgroundColor': '#fff', 'color': color, 'border-bottom' : '2px solid ' + color}"
-       style="padding:10px; border-top: 1px solid #ccc; border-right: 1px solid #ccc; border-left: 1px solid #ccc">
+       style="padding:10px; border-top: 1px solid #ccc; border-right: 1px solid #ccc; border-left: 1px solid #ccc" (mouseenter)="pop.show()" (mouseleave)="pop.hide()">
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
-    <span style="font-size:14pt">{{dashChart.title}}</span><span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart.format}})</span>
+    <span style="font-size:14pt">{{dashChart.title}}</span>
+    <span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart.format}})</span>
+    <span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="far fa-question-circle" #pop="bs-popover" [popover]="popTemplate"></span>
   </div>
   <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
 
@@ -91,6 +93,10 @@
     </div>
   </div>
 </div>
+
+<ng-template #popTemplate> <!-- *ngIf="minicard.step || minicard.step >= 0"  -->
+  <p style="font-size: 14px; margin: 0;">{{dashChart.description}}</p>
+</ng-template>
 
 <ng-template #deleteChart>
   <div class="modal-header">

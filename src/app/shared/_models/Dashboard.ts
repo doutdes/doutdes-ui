@@ -10,7 +10,8 @@ export const D_TYPE = {
   GA:  2,
   IG:  3,
   YT:  4,
-  FBM: 5
+  FBM: 5,
+  FBC: 6
 };
 
 export const DS_TYPE = {

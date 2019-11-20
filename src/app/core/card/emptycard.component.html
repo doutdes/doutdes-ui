@@ -25,6 +25,16 @@
           </div>
         </div>
 
+        <div *ngIf="insertChartForm.value.channel === 5" class="row mb-2">
+          <label class="col-sm-2 col-form-label">Cerca per:</label>
+          <div class="col-sm-10">
+            <select class="form-control" formControlName="break" (change)="filterDropdown(true)">
+              <option *ngFor="let b of breakdowns" [value]="b">{{b}}</option>
+            </select>
+
+          </div>
+        </div>
+
         <div class="row mb-2">
           <label class="col-sm-2 col-form-label">{{ 'EMPTYCARD.METRICA' | translate }}</label>
           <div class="col-sm-10">

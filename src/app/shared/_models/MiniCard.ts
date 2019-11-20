@@ -57,6 +57,35 @@ export let FbMiniCards: MiniCard[] = [
     measure: ''
   },
 ];
+
+export let FbcMiniCards: MiniCard[] = [
+   {
+    name: 'Campagne attive',
+    icon: 'fas fa-toggle-on',
+    padding: 'pl-2 pr-sm-2 pr-0',
+    value: '-',
+    measure: 'campaigns_status'
+  }, {
+    name: 'Media budget (attive)',
+    icon: 'fas fa-euro-sign',
+    padding: 'pl-0 pr-2',
+    value: '-',
+    measure: 'budget'
+  }, {
+    name: 'Media spesa',
+    icon: 'fas fa-euro-sign',
+    padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
+    value: '-',
+    measure: 'spend'
+  }, {
+    name: 'Media copertura',
+    icon: 'fas fa-eye',
+    padding: 'pl-2 pr-0 pt-sm-0 pt-3',
+    value: '-',
+    measure: 'reach'
+  },
+];
+
 export let FbmMiniCards: MiniCard[] = [
   {
     name: 'Copertura',

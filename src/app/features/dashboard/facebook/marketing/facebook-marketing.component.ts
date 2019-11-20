@@ -16,7 +16,7 @@ import {DashboardService} from '../../../../shared/_services/dashboard.service';
 import {ToastrService} from 'ngx-toastr';
 import {ApiKey} from '../../../../shared/_models/ApiKeys';
 import {ApiKeysService} from '../../../../shared/_services/apikeys.service';
-import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
 import {select} from '@angular-redux/store';
 import {FilterActions} from '../../redux-filter/filter.actions';
 import {ngxLoadingAnimationTypes} from 'ngx-loading';
@@ -46,6 +46,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
 
   @ViewChild('reportWait') reportWait;
   @ViewChild('selectView') selectView;
+  @ViewChild('fbPagePreferences') fbPagePreferences;
 
   public FILTER_DAYS = {
     yesterday: 1,
@@ -127,6 +128,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
       }
       fbm_page_id = await this.getPageID();
       this.pageID = fbm_page_id;
+
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!fbm_page_id) {
         await this.getPagesList();
@@ -156,7 +158,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
         }
       }
       await this.getPagesName();
-      console.log(this.title);
+      this.createForm();
 
       this.firstDateRange = this.minDate;
       this.lastDateRange = this.maxDate;
@@ -219,7 +221,6 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
       interval: dateInterval,
       type: D_TYPE.FBM,
     };
-
     this.GEService.loadingScreen.next(true);
 
 
@@ -630,4 +631,10 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     return <User> await this.userService.get().toPromise();
   }
 
+  createForm() {
+    this.selectViewForm = this.formBuilder.group({
+      fbm_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+    });
+    this.selectViewForm.controls['fbm_page_id'].setValue(this.pageList[0].id);
+  }
 }

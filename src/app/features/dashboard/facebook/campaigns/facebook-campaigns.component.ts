@@ -4,7 +4,7 @@ import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {takeUntil} from 'rxjs/operators';
 import {ChartsCallsService} from '../../../../shared/_services/charts_calls.service';
-import {Subject} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
 import {ApiKeysService} from '../../../../shared/_services/apikeys.service';
 import {Breadcrumb} from '../../../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../../../core/breadcrumb/breadcrumb.actions';
@@ -21,6 +21,8 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {D_TYPE} from '../../../../shared/_models/Dashboard';
 import {FacebookMarketingService} from '../../../../shared/_services/facebook-marketing.service';
 import {FacebookCampaignsService} from '../../../../shared/_services/facebook-campaigns.service';
+import {FbcMiniCards, MiniCard} from '../../../../shared/_models/MiniCard';
+import {IntervalDate} from '../../redux-filter/filter.model';
 
 const PrimaryWhite = '#ffffff';
 
@@ -37,6 +39,12 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   titleCamp: string;
   titleAdset: string;
   changeDataTitle = 'Dati marketing campagne';
+  public miniCards: MiniCard[] = FbcMiniCards;
+
+  dashErrors = {
+    emptyMiniCards: false,
+    noPages: false
+  };
 
   @ViewChild('MatPaginator') paginator: MatPaginator;
   @ViewChild('MatPaginator2') paginator2: MatPaginator;
@@ -139,11 +147,6 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   public D_TYPE = D_TYPE;
   public isApiKeySet = true;
 
-  dashErrors = {
-    emptyMiniCards: false,
-    noPages: false
-  };
-
   // Form for init
   selectViewForm: FormGroup;
   loadingForm: boolean;
@@ -164,8 +167,9 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
   async ngOnInit() {
     let key: ApiKey, update, existence;
-    this.loading = true;
-
+    this.GEService.loadingScreen.subscribe(value => {
+      this.loading = value;
+    });
     this.addBreadcrumb();
     try {
       existence = await this.checkExistence();
@@ -202,18 +206,28 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
           return;
         }
       }
+      this.GEService.loadingScreen.subscribe(value => {
+        this.loading = value;
+      });
+      this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.fbm_page_id);
+
       await this.loadCampaigns();
+      this.GEService.loadingScreen.next(false);
+
     } catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
       this.toastr.error(
         'Il caricamento delle campagne non è andato a buon fine. Per favore, riprova oppure contatta il supporto tecnico.',
         'Qualcosa è andato storto!');
-      this.loading = false;
+      this.GEService.loadingScreen.next(false);
+
     }
   }
 
   async loadCampaigns() {
     const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
+    this.GEService.loadingScreen.next(true);
+
     try {
       this.CCService.retrieveChartData(this.CCService.chooseTable('campaigns'), null, this.fbm_page_id)
         .pipe(takeUntil(dummySubj))
@@ -224,12 +238,14 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
           setTimeout(() => this.dataCampaigns.paginator = this.paginator);
           setTimeout(() => this.dataCampaigns.sort = this.sort);
         });
-      this.loading = false;
+      this.GEService.loadingScreen.next(false);
+
       this.loaded = true;
     } catch (err) {
       console.log('Error querying the campaigns');
       console.log(err);
-      this.loading = false;
+      this.GEService.loadingScreen.next(false);
+
     }
   }
 
@@ -494,6 +510,32 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     return result;
   }
 
+  async loadMiniCards(pageID) {
+    // 1. Init intervalData (retrieve data of previous month)
+    let results;
+    let empty = false;
+    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+
+
+    let pageIDs = {};
+    pageIDs[D_TYPE.FBC] = pageID;
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FBC, pageIDs, null);
+    forkJoin(observables).subscribe(miniDatas => {
+
+      for (let i = 0; i < this.miniCards.length; i++) {
+        results = this.CCService.formatMiniChartData(miniDatas[0].data, D_TYPE.FBC, this.miniCards[i].measure);
+
+        empty = empty || !results;
+
+        this.miniCards[i].value = results['value'];
+        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].step = results['step'];
+      }
+    });
+
+    return empty;
+
+  }
 }
 
 
