@@ -16,22 +16,13 @@
 
             <div class="col-md-8">
 
-              <h3>Benvenuto in Doutdes!</h3><br/>
+              <h3>{{ 'HOME.TITLE' | translate }}</h3>
 
-              <p>Doutdes è una piattaforma di analisi dati per imprese. Attraverso Doutdes, è possibile integrare i <i>dati
-                di servizi esterni</i> come Google Analytics, Facebook e Instagram Insights, Youtube Studio e non solo.
-              </p>
+              <p>{{ 'HOME.DESCRIPTION' | translate }}<i> {{ 'HOME.DESCRIPTION_1' | translate }}</i> {{ 'HOME.DESCRIPTION_2' | translate }}</p>
 
-              <p>Grazie a Doutdes, dunque, potrai semplificare e centralizzare la gestione tue performance
-                sui canali web e social, finalmente da un'unica interfaccia. L'intuitività e la facilità di utilizzo,
-                inoltre, ti consentiranno
-                di imparare rapidamente a <i>personalizzare gli strumenti</i> di Doutdes per le tue esigenze.</p>
+              <p>{{ 'HOME.DESCRIPTION2' | translate }} <i> {{ 'HOME.DESCRIPTION2_1' | translate }}</i> {{ 'HOME.DESCRIPTION2_2' | translate }} </p>
 
-              <p>Doutdes è finanziato da Sardegna Ricerche e realizzato dal Dipartimento
-                di Matematica
-                e Informatica dell'Università di Cagliari, ed è in continua evoluzione. Periodicamente vengono integrate
-                nuove
-                funzionalità, grazie ai suggerimenti e feedback delle imprese che collaborano allo sviluppo.</p>
+              <p>{{ 'HOME.DESCRIPTION3' | translate }}</p>
 
             </div>
 
@@ -42,24 +33,24 @@
 
               <div class="card p-3" style="min-height:350px; background: #fbfbfb">
                 <img src="/assets/img/home-card-1.png" class="img-fluid border bg-white"/>
-                <h6 class="mt-3"><b>Dashboard e report </b></h6>
-                <div>Doutdes offre la possibilità di configurare dashboard predefinite e personalizzate, con tutti i grafici necessari ad analizzare le performance dei propri canali, generando i report associati. <a [routerLink]="['/dashboard']">Vai ora &raquo;</a></div>
+                <h6 class="mt-3"><b>{{ 'HOME.DASHBOARD_REPORT' | translate }}</b></h6>
+                <div>{{ 'HOME.DASHBOARD_REPORT_1' | translate }} <a [routerLink]="['/dashboard']">{{ 'HOME.GO_TO' | translate }}  &raquo;</a></div>
               </div>
             </div>
 
             <div class="col-md-4">
               <div class="card p-3" style="min-height:350px; background: #fbfbfb">
                 <img src="/assets/img/home-card-2.png" class="img-fluid border bg-white"/>
-                <h6 class="mt-3"><b>Importazione semplice</b></h6>
-                <div>Importare sulla piattaforma Doutdes i dati di sorgenti esterne come Google Analytics o Facebook Insights è estremamente semplice. Autorizza l'operazione in totale sicurezza dai tuoi account. <a [routerLink]="['/preferences/api-keys']">Vai ora &raquo;</a></div>
+                <h6 class="mt-3"><b>{{ 'HOME.IMPO_EASY' | translate }}</b></h6>
+                <div>{{ 'HOME.IMPO_EASY_1' | translate }}<a [routerLink]="['/preferences/api-keys']">{{ 'HOME.GO_TO' | translate }} &raquo;</a></div>
               </div>
             </div>
 
             <div class="col-md-4">
               <div class="card p-3" style="min-height:350px;  background: #fbfbfb">
                 <img src="/assets/img/home-card-3.png" class="img-fluid border"/>
-                <h6 class="mt-3"><b>Guide d'uso</b></h6>
-                <div>Se riscontri problemi nella configurazione delle tue dashboard, nessun problema! Un'apposita sezione è dedicata ai tutorial passo-passo per aiutarti a prendere confidenza con gli strumenti. <a [routerLink]="['/tutorial/google']">Vai ora &raquo;</a></div>
+                <h6 class="mt-3"><b>{{ 'HOME.USO' | translate }}</b></h6>
+                <div>{{ 'HOME.USO_1' | translate }} <a [routerLink]="['/tutorial/google']">{{ 'HOME.GO_TO' | translate }} &raquo;</a></div>
               </div>
             </div>
           </div>

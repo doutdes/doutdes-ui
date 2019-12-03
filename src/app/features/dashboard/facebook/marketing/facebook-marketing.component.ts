@@ -24,15 +24,21 @@ import * as jsPDF from 'jspdf';
 import {User} from '../../../../shared/_models/User';
 import {UserService} from '../../../../shared/_services/user.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
 import {connectableObservableDescriptor} from 'rxjs/internal/observable/ConnectableObservable';
 import {computeStyle} from '@angular/animations/browser/src/util';
+import {ChartParams} from '../../../../shared/_models/Chart';
+import {DragulaService} from 'ng2-dragula';
+import {HttpClient} from '@angular/common/http';
+import * as _ from 'lodash';
 
 
 const PrimaryWhite = '#ffffff';
 
 @Component({
   selector: 'app-feature-dashboard-facebook-marketing',
-  templateUrl: './facebook-marketing.component.html'
+  templateUrl: './facebook-marketing.component.html',
+  styleUrls: ['../../../../../assets/css/dragula.css']
 })
 
 export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDestroy {
@@ -72,6 +78,10 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
 
   modalRef: BsModalRef;
 
+  drag: boolean;
+  user: User;
+  value: any;
+  public tmpArray: Array<DashboardCharts> = [];
 
   // Form for init
   selectViewForm: FormGroup;
@@ -105,8 +115,36 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     private localeService: BsLocaleService,
     private filterActions: FilterActions,
     private modalService: BsModalService,
-    private CCService: ChartsCallsService
-) {
+    private CCService: ChartsCallsService,
+    private dragulaService: DragulaService,
+    public translate: TranslateService,
+    private http: HttpClient
+  ) {
+    this.dragulaService.createGroup('REVERT', {
+      revertOnSpill: false,
+    });
+
+    this.userService.get().subscribe(value => {
+      this.user = value;
+
+      this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+        .subscribe(file => {
+          this.GEService.langObj.next(file);
+        }, error => {
+          console.error(error);
+        });
+
+      if (this.GEService.getStringFilterDate('FILTER_DATE', 'LAST_30') == null) {
+        this.http.get('./assets/langSetting/langStringVarious/' + this.conversionSetDefaultLang() + '.json')
+          .subscribe(file => {
+            this.GEService.langFilterDate.next(file);
+            this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE', 'LAST_30');
+          });
+
+      } else {
+        this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE', 'LAST_30');
+      }
+    });
   }
 
   async ngOnInit() {
@@ -198,17 +236,14 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
 
       this.localeService.use('it');
       await this.loadDashboard();
-      this.GEService.loadingScreen.next(false);
     }
     catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
-      this.toastr.error('Il caricamento della dashboard non è andato a buon fine. Per favore, riprova oppure contatta il supporto tecnico.', 'Qualcosa è andato storto!');
-      this.GEService.loadingScreen.next(false);
     }
   }
 
   async loadDashboard() { // TODO get pageID and refactor
-    let dash;
+    let dash, chartParams: ChartParams = {};
     let observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
@@ -223,6 +258,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     };
     this.GEService.loadingScreen.next(true);
 
+    this.dragulaService.find('REVERT');
 
     try {
       // Retrieving dashboard ID
@@ -243,15 +279,25 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
         this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
         this.GEService.loadingScreen.next(false);
         if (this.chartArray$.length === 0) {
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+          this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       } else {
         let ds : Subject<void> = new Subject<void>(); // used to force unsubscription
         // Retrieving dashboard charts
         this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
           .subscribe(charts => {
+
             if (charts && charts.length > 0) { // Checking if dashboard is not empty
-              charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, null, this.pageID))); // Retrieves data for each chart
+              charts.forEach(chart => {
+                chartParams = {
+                  metric: chart.metric,
+                  breakdowns: chart.breakdowns,
+                  domain: chart.domain
+                };
+
+                observables.push(this.CCService.retrieveChartData(chart.type, chartParams, this.pageID));
+              });
 
               forkJoin(observables)
                 .pipe(takeUntil(ds))
@@ -306,24 +352,21 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
               this.filterActions.initData(currentData);
               this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
               this.GEService.loadingScreen.next(false);
-              this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+              this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
+                this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
             }
 
           }, err => {
             console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
             console.warn(err);
-            this.toastr.error('Il caricamento della dashboard non è andato a buon fine. Per favore, riprova oppure contatta il supporto tecnico.', 'Qualcosa è andato storto!');
-            this.GEService.loadingScreen.next(false);
           });
       }
 
       this.loaded = true;
 
     } catch (e) {
-      this.toastr.error('Il caricamento della dashboard non è andato a buon fine. Per favore, riprova oppure contatta il supporto tecnico.', 'Qualcosa è andato storto!');
       console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
       console.error(e);
-      this.GEService.loadingScreen.next(false);
     }
   }
 
@@ -359,6 +402,9 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
 
   ngOnDestroy(): void {
     this.removeBreadcrumb();
+    this.filterActions.removeCurrent();
+
+    this.dragulaService.destroy('REVERT');
   }
 
   addBreadcrumb = (): void => {
@@ -383,9 +429,14 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     };
 
     const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
+    const chartParams: ChartParams = {
+      metric: dashChart.metric,
+      breakdowns: dashChart.breakdowns,
+      domain: dashChart.domain
+    };
 
     try {
-      this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
+      this.CCService.retrieveChartData(dashChart.type, chartParams, this.pageID)
         .pipe(takeUntil(dummySubj))
         .subscribe( data => {
           this.GEService.loadingScreen.next(true);
@@ -394,7 +445,8 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
             chartToPush.chartData = data.data;
             chartToPush.error = false;
 
-            this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
+            this.toastr.success(dashChart.title + this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD'),
+              this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
 
           } else {
             chartToPush.error = true;
@@ -425,10 +477,11 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.FBM).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.FBM).toPromise();
-      if(isPermissionGranted.tokenValid) {
+      if (isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        this.toastr.error('I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_PERMESSI'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_PERMESSI'));
       }
 
     } catch (e) {
@@ -550,6 +603,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
   }
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
+    this.drag = false;
     this.modalRef = this.modalService.show(template, {
       class: 'modal-md modal-dialog-centered',
       ignoreBackdropClick: ignoreBackdrop,
@@ -568,7 +622,8 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
       this.closeModal();
     }, error => {
       if (error.status === 500) {
-        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_CLEAR'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_CLEAR'));
         this.closeModal();
         console.error(error);
       } else {
@@ -636,5 +691,84 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
       fbm_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
     });
     this.selectViewForm.controls['fbm_page_id'].setValue(this.pageList[0].id);
+  }
+
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
+        break;
+      case "en" :
+        this.value = "English";
+        break;
+      default:
+        this.value = "Italiano";
+    }
+
+    return this.value;
+  }
+
+  dragAndDrop() {
+    if (this.chartArray$.length === 0) {
+      this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_ORDINAMENTO'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ORDINAMENTO'));
+    } else {
+      this.drag = true;
+      this.GEService.dragAndDrop.next(this.drag);
+    }
+
+    if (this.drag === true) {
+      this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'MOD_ORD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MOD_ORD'));
+    }
+
+  }
+
+  onMovement($event, value) {
+
+    if (!value) {
+      let i = 0;
+      this.tmpArray = $event;
+      this.chartArray$ = this.tmpArray;
+
+      for (i = 0; i < this.chartArray$.length; i++) {
+        this.chartArray$[i].position = i + 1;
+      }
+
+    } else {
+      this.updateChartPosition(this.chartArray$);
+      this.GEService.loadingScreen.next(false);
+    }
+
+  }
+
+  updateChartPosition(toUpdate): void {
+
+    toUpdate = _.map(toUpdate, function (el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position};
+    });
+
+    this.DService.updateChartPosition(toUpdate)
+      .subscribe(() => {
+        // this.GEService.updateChartInDashboard.next(toUpdate);
+        this.filterActions.updateChartPosition(toUpdate, this.D_TYPE.FBM);
+        this.closeModal();
+        this.drag = false;
+        this.GEService.dragAndDrop.next(this.drag);
+        this.toastr.success(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'SUC_ORD'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
+      }, error => {
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ERR_ORD'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
+        console.log('Error updating the Dashboard');
+        console.log(error);
+      });
+
+  }
+
+  checkDrag() {
+    this.drag = false;
+    this.GEService.dragAndDrop.next(this.drag);
   }
 }

@@ -1,7 +1,7 @@
 import {D_TYPE} from './Dashboard';
 
 export interface MiniCard {
-  name: string;
+  name?: string;
   icon: string;
   padding: string;
   measure?: string;
@@ -13,25 +13,21 @@ export interface MiniCard {
 
 export let GaMiniCards: MiniCard[] = [
   {
-    name: 'Utenti tot.',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
-    measure: '',
+    measure: 'users',
     value: '-'
   }, {
-    name: 'Visite tot.',
     icon: 'icon-screen-desktop',
     padding: 'pl-2 pr-sm-2 pr-0',
     measure: '',
     value: '-'
   }, {
-    name: 'Freq. rimb.',
     icon: 'icon-action-undo',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     measure: 'bounce-rate',
     value: '-'
   }, {
-    name: 'Durata sess.',
     icon: 'icon-hourglass',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     measure: 'time',
@@ -40,25 +36,21 @@ export let GaMiniCards: MiniCard[] = [
 ];
 export let FbMiniCards: MiniCard[] = [
   {
-    name: 'Fan',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     value: '-',
     measure: 'count'
   }, {
-    name: 'Post',
     icon: 'icon-speech',
     padding: 'pl-2 pr-sm-2 pr-0',
     value: '-',
     measure: 'post-sum'
   }, {
-    name: 'Reazioni',
     icon: 'icon-heart',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
     measure: 'reactions'
   }, {
-    name: 'Visite',
     icon: 'icon-screen-desktop',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     value: '-',
@@ -123,43 +115,35 @@ export let FbmMiniCards: MiniCard[] = [
 ];
 export let IgMiniCards: MiniCard[] = [
   {
-    name: 'Follower',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     value: '-',
     measure: 'count'
   }, {
-    name: 'Post',
     icon: 'icon-speech',
     padding: 'pl-2 pr-sm-2 pr-0',
     value: '-',
     measure: 'post-sum'
   }, {
-    name: 'Visite profilo',
     icon: 'icon-eye',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
     measure: 'prof-views'
   }, {
-    name: 'Visual. post',
     icon: 'icon-screen-smartphone',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     value: '-',
     measure: ''
   }
 ];
-
 export let YtMiniCards: MiniCard[] = [
   {
-
-    name: 'Iscritti',
     icon: 'icon-people',
     padding: 'pl-0 pr-2',
     measure: 'subs',
     value: '-',
     type: D_TYPE.YT
   }, {
-    name: 'Visualizzazioni',
     icon: 'icon-screen-desktop',
     padding: 'pl-2 pr-sm-2 pr-0',
     measure: 'views',
@@ -167,28 +151,24 @@ export let YtMiniCards: MiniCard[] = [
     type: D_TYPE.YT
 
   }, {
-    name: 'Media durata vis.',
     icon: 'icon-action-undo',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
-    measure: 'avg-v-time',
+    measure: 'avg_view_time',
     value: '-',
     type: D_TYPE.YT
 
   }, {
-    name: 'Video caricati',
     icon: 'icon-hourglass',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
-    measure: 'vids',
+    measure: 'n_videos',
     value: '-',
     type: D_TYPE.YT
 
   },
 ];
 
-
 export let CustomMiniCards: MiniCard[] = [
   {
-    name: 'Utenti tot.',
     icon: 'fab fa-google',
     padding: 'pl-0 pr-2',
     measure: 'ga-tot-user',
@@ -196,21 +176,18 @@ export let CustomMiniCards: MiniCard[] = [
     type: D_TYPE.GA
   },
   {
-    name: 'Fan',
     icon: 'fab fa-facebook',
     padding: 'pl-2 pr-sm-2 pr-0',
     value: '-',
     measure: 'fb-fan-count',
     type: D_TYPE.FB
   }, {
-    name: 'Followers',
     icon: 'fab fa-instagram',
     padding: 'pl-sm-2 pl-0 pr-2 pt-sm-0 pt-3',
     value: '-',
     measure: 'ig-follower',
     type: D_TYPE.IG
   }, {
-    name: 'Iscritti',
     icon: 'fab fa-youtube',
     padding: 'pl-2 pr-0 pt-sm-0 pt-3',
     measure: 'subs',
@@ -218,3 +195,35 @@ export let CustomMiniCards: MiniCard[] = [
     type: D_TYPE.YT
   }
 ];
+
+export const GaChartParams = {
+  users: {
+    metric: 'ga:users',
+    dimensions: 'ga:date'
+  },
+  sessions: {
+    metric: 'ga:sessions',
+    dimensions: 'ga:date'
+  },
+  bounceRate: {
+    metric: 'ga:bounceRate',
+    dimensions: 'ga:date'
+  },
+  avgSessionDuration: {
+    metric: 'ga:avgSessionDuration',
+    dimensions: 'ga:date'
+  },
+};
+
+export const IgChartParams = {
+  profile_views: {
+    metric: 'profile_views',
+    period: 'day',
+    interval: 29
+  },
+  impressions: {
+    metric: 'impressions',
+    period: 'day',
+    interval: 29
+  }
+};

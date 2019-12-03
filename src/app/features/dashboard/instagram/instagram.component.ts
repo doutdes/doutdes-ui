@@ -26,6 +26,9 @@ import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootst
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as _ from 'lodash';
+import {ChartParams} from '../../../shared/_models/Chart';
+import {TranslateService} from '@ngx-translate/core';
+import {HttpClient} from '@angular/common/http';
 
 const PrimaryWhite = '#ffffff';
 
@@ -62,7 +65,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   public loading = false;
   public isApiKeySet = true;
-
+  dateChoice: String = null;
   loaded: boolean = false;
 
   public config = {
@@ -80,7 +83,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.thirty);
   bsRangeValue: Date[];
-  dateChoice: String = 'Ultimi 30 giorni';
   datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
 
   dashErrors = {
@@ -91,6 +93,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   modalRef: BsModalRef;
 
   drag: boolean;
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
 
   constructor(
     private IGService: InstagramService,
@@ -104,33 +110,62 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private modalService: BsModalService,
     private localeService: BsLocaleService,
-    private dragulaService: DragulaService
+    private dragulaService: DragulaService,
+    public translate: TranslateService,
+    private http: HttpClient
   ) {
-    this.dragulaService.createGroup("REVERT", {
+    this.dragulaService.createGroup('REVERT', {
       revertOnSpill: false,
     });
+
+    this.userService.get().subscribe(value => {
+      this.user = value;
+
+      this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+        .subscribe(file => {
+          this.GEService.langObj.next(file);
+        }, error => {
+          console.error(error);
+        });
+
+      if (this.GEService.getStringFilterDate('FILTER_DATE','LAST_30') == null){
+        this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.GEService.langFilterDate.next(file);
+            this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
+          })
+
+      } else {
+        this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
+      }
+    });
+    //this.dateChoice = this.dateChoiceCheck();
   }
 
   async loadMiniCards(pageID) {
     // 1. Init intervalData (retrieve data of previous month)
     let results;
     let empty = false;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    const date = new Date();
+    const y = date.getFullYear();
+    const m = date.getMonth();
     const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
     let pageIDs = {};
 
     pageIDs[D_TYPE.IG] = pageID;
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.IG, pageIDs, null);
+
     forkJoin(observables).subscribe(miniDatas => {
-      for(const i in miniDatas) {
+      for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
 
         empty = empty || !results;
 
+        this.getNameMinicard(i);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
@@ -141,6 +176,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async loadDashboard() {
+    let chartParams: ChartParams = {};
     const existence = await this.checkExistence();
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
@@ -161,16 +197,15 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     this.GEService.loadingScreen.next(true);
 
-    this.dragulaService.find("REVERT");
+    this.dragulaService.find('REVERT');
 
     // Retrieving dashboard ID
     const dash = await this.DService.getDashboardByType(3).toPromise(); // Instagram type
 
     // Retrieving the page ID
     this.pageID = (await this.IGService.getPages().toPromise());
-    console.log(this.pageID);
 
-    if(this.pageID.length === 0) {
+    if (this.pageID.length === 0) {
       this.dashErrors.noPages = true;
       return;
     }
@@ -193,7 +228,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.datePickerEnabled = true;
 
       if (this.chartArray$.length === 0) {
-        this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+
+        this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
       }
 
     } else {
@@ -202,7 +239,14 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
           // Retrieves data for each chart
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, null, this.pageID)));
+          charts.forEach(chart => {
+            chartParams = {
+              metric: chart.metric,
+              period: chart.period,
+              interval: chart.interval
+            };
+            observables.push(this.CCService.retrieveChartData(chart.type, chartParams, this.pageID));
+          });
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -215,8 +259,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                   chart.chartData = dataArray[i];
                   let date = new Date(chart.chartData[0]['end_time']);
 
-                  if(date < this.minDate)
+                  if (date < this.minDate) {
                     this.minDate = date;
+                  }
                   // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
                   chart.error = false;
                 } else {
@@ -245,10 +290,14 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
           this.filterActions.initData(currentData);
           this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
           this.GEService.loadingScreen.next(false);
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
+
+          this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       }, err => {
-        this.toastr.error('Il caricamento della dashboard non è andato a buon fine. Per favore, riprova oppure contatta il supporto tecnico.', 'Qualcosa è andato storto!');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_CARICAMENTO'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_CARICAMENTO'));
         console.error('ERROR in INSTAGRAM COMPONENT, when fetching charts.');
         console.warn(err);
       });
@@ -263,8 +312,13 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
     };
+    const chartParams: ChartParams = {
+      metric: dashChart.metric,
+      period: dashChart.period,
+      interval: dashChart.interval
+    };
 
-    this.CCService.retrieveChartData(dashChart.chart_id, null, this.pageID)
+    this.CCService.retrieveChartData(dashChart.type, chartParams, this.pageID)
       .subscribe(data => {
 
         this.GEService.loadingScreen.next(true);
@@ -273,7 +327,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
           chartToPush.chartData = data;
           chartToPush.error = false;
 
-          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
+          this.toastr.success( dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'ADD'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
         } else {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
@@ -314,16 +369,52 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     switch (days) {
       case this.FILTER_DAYS.seven:
-        this.dateChoice = 'Ultimi 7 giorni';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Ultimi 7 giorni';
+            break;
+          case 'en':
+            this.dateChoice = 'Last 7 days';
+            break;
+          default:
+            this.dateChoice = 'Ultimi 7 giorni';
+        }
         break;
       case this.FILTER_DAYS.thirty:
-        this.dateChoice = 'Ultimi 30 giorni';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Ultimi 30 giorni';
+            break;
+          case 'en':
+            this.dateChoice = 'Last 30 days';
+            break;
+          default:
+            this.dateChoice = 'Ultimi 30 giorni';
+        }
         break;
       case this.FILTER_DAYS.ninety:
-        this.dateChoice = 'Ultimi 90 giorni';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Ultimi 90 giorni';
+            break;
+          case 'en':
+            this.dateChoice = 'Last 90 days';
+            break;
+          default:
+            this.dateChoice = 'Ultimi 90 giorni';
+        }
         break;
       default:
-        this.dateChoice = 'Personalizzato';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Personalizzato';
+            break;
+          case 'en':
+            this.dateChoice = 'Customized';
+            break;
+          default:
+            this.dateChoice = 'Personalizzato';
+        }
         break;
     }
   }
@@ -349,10 +440,12 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.IG).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise();
 
-      if(isPermissionGranted.tokenValid) {
+      if (isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        this.toastr.error('I permessi di accesso ai tuoi dati Instagram sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_PERMESSI'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_PERMESSI'));
       }
 
     } catch (e) {
@@ -398,7 +491,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.GEService.addSubscriber(dash_type);
     }
 
-    this.localeService.use('it');
     this.addBreadcrumb();
     await this.loadDashboard();
   }
@@ -407,7 +499,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
 
-    this.dragulaService.destroy("REVERT");
+    this.dragulaService.destroy('REVERT');
   }
 
   clearDashboard(): void {
@@ -418,11 +510,15 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.closeModal();
     }, error => {
       if (error.status === 500) {
-        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_CLEAR'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_CLEAR'));
         this.closeModal();
         console.error(error);
       } else {
-        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_RIMOZIONE'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
         //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
         console.error(error);
         this.closeModal();
@@ -492,7 +588,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async getUserCompany() {
-    return <User> await this.userService.get().toPromise();
+    return <User>await this.userService.get().toPromise();
   }
 
   nChartEven() {
@@ -501,7 +597,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   openModal(template: TemplateRef<any> | ElementRef, ignoreBackdrop: boolean = false) {
     this.drag = false;
-    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered', ignoreBackdropClick: ignoreBackdrop, keyboard: !ignoreBackdrop});
+    this.modalRef = this.modalService.show(template, {
+      class: 'modal-md modal-dialog-centered',
+      ignoreBackdropClick: ignoreBackdrop,
+      keyboard: !ignoreBackdrop
+    });
   }
 
   closeModal() {
@@ -512,16 +612,20 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 
-  dragAndDrop () {
-    if (this.chartArray$.length == 0) {
-      this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
+  dragAndDrop() {
+    if (this.chartArray$.length === 0) {
+
+      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_ORDINAMENTO'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ORDINAMENTO'));
     } else {
       this.drag = true;
       this.GEService.dragAndDrop.next(this.drag);
     }
 
-    if (this.drag == true) {
-      this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
+    if (this.drag === true) {
+
+      this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'MOD_ORD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MOD_ORD'));
     }
 
   }
@@ -534,7 +638,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       this.chartArray$ = this.tmpArray;
 
       for (i = 0; i < this.chartArray$.length; i++) {
-        this.chartArray$[i].position = i+1;
+        this.chartArray$[i].position = i + 1;
       }
 
     } else {
@@ -546,8 +650,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   updateChartPosition(toUpdate): void {
 
-    toUpdate = _.map(toUpdate, function(el) {
-      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position}
+    toUpdate = _.map(toUpdate, function (el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position};
     });
 
     this.DService.updateChartPosition(toUpdate)
@@ -557,18 +661,72 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         this.closeModal();
         this.drag = false;
         this.GEService.dragAndDrop.next(this.drag);
-        this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
+
+        this.toastr.success(this.GEService.getStringToastr(false, true, "DASHBOARD", 'SUC_ORD'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
       }, error => {
-        this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_ORD'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
         console.log('Error updating the Dashboard');
         console.log(error);
       });
 
   }
 
-  checkDrag () {
+  checkDrag() {
     this.drag = false;
     this.GEService.dragAndDrop.next(this.drag);
   }
 
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
+        break;
+      case "en" :
+        this.value = "English";
+        break;
+      default:
+        this.value = "Italiano";
+    }
+
+    return this.value;
+  }
+
+  getNameMinicard (id_minicard) {
+
+    this.userService.get().subscribe(data => {
+      this.user = data;
+
+      this.http.get('./assets/langSetting/langStringVarious/' + this.conversionSetDefaultLang() + '.json')
+        .subscribe(file => {
+          this.GEService.langFilterDate.next(file);
+
+          switch (id_minicard) {
+            case '0' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('INSTAGRAM', 'FOLL');
+              break;
+            case '1' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('INSTAGRAM', 'POST');
+              break;
+            case '2' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('INSTAGRAM', 'VIEW_PRO');
+              break;
+            case '3' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('INSTAGRAM', 'VIS_POST');
+              break;
+          }
+
+        }, err => {
+          console.error(err);
+        });
+
+    }, err => {
+      console.error(err);
+    });
+
+
+  }
 }

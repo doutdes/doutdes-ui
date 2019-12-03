@@ -11,6 +11,7 @@ import {parseDate} from 'ngx-bootstrap';
 import {until} from 'selenium-webdriver';
 import elementIsSelected = until.elementIsSelected;
 import * as moment from 'moment';
+import {Chart} from '../../../shared/_models/Chart';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -54,7 +55,7 @@ export class FilterActions {
 
     if (filteredDashboard) {
       for (let i in filteredDashboard.data) {
-        if(!filteredDashboard.data[i].error) { // If there was not error during the retrieving of the chart data
+        if (!filteredDashboard.data[i].error) { // If there was not error during the retrieving of the chart data
           chart_id = filteredDashboard.data[i].chart_id;
 
           dateInterval = this.getIntervalDate(filteredDashboard.data[i].chartData, filteredDashboard.data[i].type);
@@ -103,10 +104,10 @@ export class FilterActions {
     });
   }
 
-  updateChartPosition (arrayChart$: DashboardCharts, type: number) {
+  updateChartPosition(arrayChart$: DashboardCharts, type: number) {
     const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === type);
 
-    for(let i = 0; i < this.currentDashboard.data.length; i++){
+    for (let i = 0; i < this.currentDashboard.data.length; i++) {
       this.currentDashboard.data.find(el => el.chart_id === arrayChart$[i].chart_id).position = arrayChart$[i].position;
       this.filteredDashboard.data.find(el => el.chart_id === arrayChart$[i].chart_id).position = arrayChart$[i].position;
       this.storedDashboards[storedIndex].data.find(el => el.chart_id === arrayChart$[i].chart_id).position = arrayChart$[i].position;
@@ -184,7 +185,7 @@ export class FilterActions {
 
         // If the type of the chart is known
         if (DS_TYPE.hasOwnProperty(chart.type)) {
-          if(!chart.error) {
+          if (!chart.error) {
             switch (chart.type) {
               case D_TYPE.GA:
                 chart.chartData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime());
@@ -199,11 +200,11 @@ export class FilterActions {
                 chart.chartData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
                 break;
             }
-/* YT chart has "date", not [0], so a switch instead of the old method was required
-            chart.chartData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
-              ? chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime())
-              : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
-*/
+            /* YT chart has "date", not [0], so a switch instead of the old method was required
+                        chart.chartData = chart.type === D_TYPE.GA || chart.type === D_TYPE.YT
+                          ? chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime())
+                          : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
+            */
             chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
             chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i], filterInterval);
           }
@@ -218,12 +219,18 @@ export class FilterActions {
       dashToFilter.data = filtered;
     }
     // else {
-      // console.warn('Error in FILTER_ACTIONS. No unfiltered data found.');
-      // console.warn(dashToFilter);
+    // console.warn('Error in FILTER_ACTIONS. No unfiltered data found.');
+    // console.warn(dashToFilter);
     // }
 
     return dashToFilter;
   }
+
+  addMetric = (oldChart: DashboardCharts, newMetric: Chart) => {
+    console.warn('old', oldChart);
+    console.warn('new', newMetric);
+
+  };
 
   clear() {
     this.Redux.dispatch({type: FILTER_CLEAR});
@@ -241,7 +248,7 @@ export class FilterActions {
       storedDashboards: this.storedDashboards,
       currentDashboard: this.currentDashboard,
       filteredDashboard: this.filteredDashboard,
-    })
+    });
   }
 
   // This method is been called if and only if a dashboard was already stored on the variable model called storedDashboards
@@ -260,7 +267,7 @@ export class FilterActions {
 
     this.storedDashboards = this.storedDashboards.filter((el: DashboardData) => el.type === dashboard_type);
 
-    if(index >= 0 && this.storedDashboards[index]) {
+    if (index >= 0 && this.storedDashboards[index]) {
       this.storedDashboards[index].data = this.storedDashboards[index].data.filter(chart => chart.type === dashboard_type);
     }
   }

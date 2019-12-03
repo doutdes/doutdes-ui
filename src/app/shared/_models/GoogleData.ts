@@ -14,7 +14,7 @@ export const GA_CHART = {
 };
 
 export const GA_PALETTE = {
-  //orange that becomes a little pink-ish
+  // orange that becomes a little pink-ish
   'ORANGE' : {
     C1: '#8f3200',
     C2: '#a33900',
@@ -29,7 +29,7 @@ export const GA_PALETTE = {
     C11: '#ff955c',
     C12: '#ffa270',
   },
-  //soft yellow
+  // soft yellow
   'OCHER' : {
     C1: '#a38300',
     C2: '#b89300',
@@ -45,7 +45,7 @@ export const GA_PALETTE = {
     C12: '#ffe785',
   },
 
-  //soft green
+  // soft green
   'LIME': {
     C1: '#4d721d',
     C2: '#588221',

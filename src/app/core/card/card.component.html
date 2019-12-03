@@ -6,36 +6,23 @@
     </button>
     <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
         role="menu" aria-labelledby="button-basic">
-      <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Elimina</li>
+      <!--<li class="dropdown-item" (click)="getMetricsAvailable()"><i class="fas fa-plus-circle"></i>Aggiungi metrica</li>-->
       <li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Modifica titolo</li>
+      <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Elimina</li>
     </ul>
   </div>
 
   <!-- CARD WITH CHART -->
   <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length> 0" [ngClass]="" [ngStyle]="{'backgroundColor': '#fff', 'color': color, 'border-bottom' : '2px solid ' + color}"
-       style="padding:10px; border-top: 1px solid #ccc; border-right: 1px solid #ccc; border-left: 1px solid #ccc" (mouseenter)="pop.show()" (mouseleave)="pop.hide()">
+       style="padding:10px; border-top: 1px solid #ccc; border-right: 1px solid #ccc; border-left: 1px solid #ccc" >
     <i class="fab" [ngClass]="icon" style="padding-bottom:3px; padding-left:10px; padding-right:10px"></i>
     <span style="font-size:14pt">{{dashChart.title}}</span>
     <span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;">({{dashChart.format}})</span>
-    <span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="far fa-question-circle" #pop="bs-popover" [popover]="popTemplate"></span>
+    <span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="far fa-question-circle" #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()"></span>
   </div>
   <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
 
-    <!--*ngIf="this.type == 'ga_bounce' || this.type == 'ga_impressions' || this.type == 'ga_sessions' || this.type == 'ga_avgsessionduration'"-->
-    <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="areAggregatedDataAvailable(dashChart.format)">
-<!--
-      <ng-container *ngIf="this.avgTrend > 0">
-        <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>(<b style="color:#267F00">{{this.avgShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#bbb"></span><br />
-      </ng-container>
-      <ng-container *ngIf="this.avgTrend < 0">
-        <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>(<b style="color:#7F0200">{{this.avgShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#7F0200"></span>)<span style="color:#bbb"></span><br />
-      </ng-container>
-      <ng-container *ngIf="this.avgTrend === 0">
-        <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>(<b style="color:#000000">{{this.avgShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#000000"></span>)<span style="color:#bbb"></span><br />
-      </ng-container>
-
-!-->
-
+    <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea'">
       <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>
       <ng-container *ngIf="this.avgTrend > 0">
         (<b style="color:#267F00">{{this.avgShift}}</b>
@@ -80,10 +67,6 @@
         </ng-container>
 
       </div>
-        <!--
-        <i class="fas fa-arrow-up" style="margin-right: 9px; color:#9f2548"></i> Max: <b>{{this.high}}</b>(<b style="color:#267F00">{{this.highShift}}</b> <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#bbb"></span><br />
-      !-->
-      <!--<div style="font-size:11px; font-variant:none; color:#bbb">{{this.interval}}</div>-->
     </div>
 
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
@@ -103,19 +86,12 @@
     <div class="align-middle d-table-cell">
       <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
         <h4 class="text-center mb-0" style="font-size: 17px;">
-          <i class="fas fa-exclamation-triangle text-warning mr-1 d-block"></i>
-          Non è stato possibile recuperare i dati del grafico.
-        </h4>
-        <p *ngIf="dashChart.type === D_TYPE.IG" class="mt-3 text-justify">
-          A causa di limitazioni di Instagram, alcuni dati non potrebbero essere disponibili nell'intervallo di dati selezionati, ma solo per il giorno corrente.
-        </p>
-        <p *ngIf="dashChart.type === D_TYPE.FB" class="mt-3 text-justify">
-         Dati non disponibili nell'intervallo di date selezionate.
-        </p>
+          <i class="fas fa-exclamation-triangle text-warning mr-1 d-block"></i>{{ 'CARD.PROBLEM' | translate }}</h4>
+        <p *ngIf="dashChart.type === D_TYPE.IG" class="mt-3 text-justify">{{ 'CARD.LIMIT' | translate }}</p>
+        <p *ngIf="dashChart.type === D_TYPE.FB" class="mt-3 text-justify">{{ 'CARD.NO_DATI' | translate }}</p>
       </div>
     </div>
   </div>
-
 </div>
 
 <ng-template #popTemplate> <!-- *ngIf="minicard.step || minicard.step >= 0"  -->
@@ -124,26 +100,22 @@
 
 <ng-template #deleteChart>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i> Eliminazione di '{{dashChart.title}}'</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i>{{ 'CARD.TEXT_EL' | translate }} '{{dashChart.title}}'</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
-  <div class="modal-body">
-    Sei veramente sicuro di voler eliminare il grafico selezionato?
-  </div>
+  <div class="modal-body">{{ 'CARD.DOM' | translate }}</div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-success" (click)="closeModal()">No, lascialo</button>
-    <button type="button" class="btn btn-danger" (click)="removeChart(dashChart.dashboard_id, dashChart.chart_id)">
-      Sì, rimuovilo
-    </button>
+    <button type="button" class="btn btn-success" (click)="closeModal()">{{ 'CARD.NO_LASC' | translate }}</button>
+    <button type="button" class="btn btn-danger" (click)="removeChart(dashChart.dashboard_id, dashChart.chart_id)">{{ 'CARD.SI_RIM' | translate }}</button>
   </div>
 </ng-template>
 <ng-template #updateChart>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="far fa-edit mr-3"></i>Modifica titolo di '{{dashChart.title}}'</h4>
+    <h4 class="modal-title pull-left"><i class="far fa-edit mr-3"></i>{{ 'CARD.MOD_TIT' | translate }}'{{dashChart.title}}'</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -152,19 +124,44 @@
   <div class="modal-body">
     <form [formGroup]="updateChartForm" (ngSubmit)="onSubmit()">
       <div class="form-group row">
-        <label class="col-sm-3 col-form-label">Nuovo titolo:</label>
+        <label class="col-sm-3 col-form-label">{{ 'CARD.NEW_TIT' | translate }}</label>
         <div class="col-sm-9">
           <input type="text" class="form-control" formControlName="chartTitle" placeholder="Titolo del grafico"
                  [ngClass]="{ 'is-invalid': submitted && form.chartTitle.errors }">
           <div *ngIf="submitted && form['chartTitle'].errors" class="invalid-feedback">
-            <div *ngIf="form['chartTitle'].errors['required']">Il titolo del grafico è obbligatorio.</div>
-            <div *ngIf="form['chartTitle'].errors['maxlength']">La lunghezza del titolo non può superare i 30 caratteri.</div>
+            <div *ngIf="form['chartTitle'].errors['required']">{{ 'CARD.TIT_O' | translate }}</div>
+            <div *ngIf="form['chartTitle'].errors['maxlength']">{{ 'CARD.TIT_LUNG' | translate }}</div>
           </div>
 
         </div>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-success">Aggiorna</button>
+        <button type="submit" class="btn btn-success">{{ 'CARD.UPDATE' | translate }}</button>
+        <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'CARD.ANNULLA' | translate }}</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+<ng-template #addMetric>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>Aggiungi metrica al grafico '{{dashChart.title}}'</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="addMetricForm" (ngSubmit)="addMetricToChart()">
+      <div class="form-group row">
+        <label class="col-sm-5 col-form-label">Metrica aggiuntiva:</label>
+        <div class="col-sm-7">
+          <select class="form-control" formControlName="metricControl">
+            <option *ngFor="let metric of metrics" [ngValue]="metric">{{metric.title}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Aggiungi</button>
         <button type="button" class="btn btn-danger" (click)="closeModal()">Annulla</button>
       </div>
     </form>

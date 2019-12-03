@@ -27,6 +27,9 @@ import {MatFormFieldModule, MatInputModule, MatPaginatorModule, MatSortModule, M
 import {FacebookCampaignsService} from '../../../shared/_services/facebook-campaigns.service';
 
 defineLocale('it', itLocale);
+import {DragulaModule} from 'ng2-dragula';
+import {TranslateModule} from '@ngx-translate/core';
+import {BrowserModule} from '@angular/platform-browser';
 
 @NgModule({
   declarations: [
@@ -45,6 +48,8 @@ defineLocale('it', itLocale);
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgxLoadingModule.forRoot({}),
+    DragulaModule,
+    TranslateModule,
     MatTableModule,
     MatFormFieldModule,
     MatSortModule,
@@ -60,6 +65,8 @@ defineLocale('it', itLocale);
     ChartsCallsService,
     BreadcrumbActions,
     FilterActions,
+    BsLocaleService,
+    UserService,
     UserService,
     GlobalEventsManagerService,
     BsLocaleService,

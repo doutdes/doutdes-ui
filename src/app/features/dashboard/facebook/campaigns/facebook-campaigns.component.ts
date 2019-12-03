@@ -23,6 +23,7 @@ import {FacebookMarketingService} from '../../../../shared/_services/facebook-ma
 import {FacebookCampaignsService} from '../../../../shared/_services/facebook-campaigns.service';
 import {FbcMiniCards, MiniCard} from '../../../../shared/_models/MiniCard';
 import {IntervalDate} from '../../redux-filter/filter.model';
+import {ChartParams} from '../../../../shared/_models/Chart';
 
 const PrimaryWhite = '#ffffff';
 
@@ -38,7 +39,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   title = 'Facebook Campaigns';
   titleCamp: string;
   titleAdset: string;
-  changeDataTitle = 'Dati marketing campagne';
+  changeDataTitle = 'MARKETING';
   public miniCards: MiniCard[] = FbcMiniCards;
 
   dashErrors = {
@@ -57,63 +58,9 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   @ViewChild('MatSort2') sort2: MatSort;
   @ViewChild('MatSort3') sort3: MatSort;
 
-  dictTranslate = {
-    'name': 'Nome',
-    'effective_status': 'Stato',
-    'daily_budget': 'Budget giornaliero',
-    'budget_remaining': 'Budget rimanente',
-    'objective': 'Obiettivo',
-    'buying_type': 'Tipo acquisto',
-    'bid_strategy': 'Strategia di offerta',
-    'bid_amount': 'Ammontare offerto',
-    'billing_event': 'Fatturazione evento',
-    'optimization_goal': 'Obiettivo di ottimizzazione',
+  displayedColumnsCampaigns: string[] =
+    ['name', 'effective_status', 'daily_budget', 'budget_remaining', 'objective', 'buying_type', 'bid_strategy'];
 
-    'reach': 'Copertura',
-    'impressions': 'Impression',
-    'spend': 'Spesa',
-    'clicks': 'Numero click',
-    'inline_link_clicks': 'Click link',
-    'cpc': 'Costo medio per click',
-    'cpp': 'Costo medio per copertura',
-    'ctr': 'Tasso click su link',
-
-    'ACTIVE': 'Attivo',
-    'PAUSED': 'In pausa',
-    'DELETED': 'Cancellato',
-    'ARCHIVED': 'Archiviato',
-    'IN_PROCESS': 'In corso',
-    'WITH_ISSUES': 'Con problemi',
-    'CAMPAIGN_PAUSED': 'Campagna in pausa',
-    'ADSET_PAUSED': 'Adset in pausa',
-    'DISAPPROVED': 'Disapprovato',
-    'PENDING_REVIEW': 'In attesa di esame',
-
-    'MESSAGES': 'Messaggi',
-    'BRAND_AWARENESS': 'Notorietà del brand',
-    'REACH': 'Copertura',
-    'POST_ENGAGEMENT': 'Interazione post',
-    'LINK_CLICKS': 'Click link',
-    'LEAD_GENERATION': 'Generazione di contatti',
-    'IMPRESSIONS': 'Impression',
-    'REPLIES': 'Risposte',
-    'PAGE_LIKES': 'Mi piace alla pagina',
-    'AD_RECALL_LIFT': 'Notorietà del brand',
-    'ENGAGED_REACH': 'Copertura raggiunta', // Da rivedere
-
-    'AUCTION': 'Asta',
-    'RESERVED': 'Copertura e frequenza',
-
-    'LOWEST_COST_WITHOUT_CAP': 'Minor costo senza limite offerta',
-    'LOWEST_COST_WITH_BID_CAP': 'Minor costo con limite offerta',
-    'TARGET_COST': 'Limite costo stabilito',
-    'CONVERSIONS': 'Conversioni',
-    'VIDEO_VIEWS': 'Visualizzazioni video',
-    'EVENT_RESPONSES': 'Reazioni evento',
-    'THRUPLAY': 'Visualizzazione effettiva',
-  };
-
-  displayedColumnsCampaigns: string[] = ['name', 'effective_status', 'daily_budget', 'budget_remaining', 'objective', 'buying_type', 'bid_strategy'];
   displayedColumnsAdsets: string[] = ['name', 'effective_status', 'bid_amount' , 'billing_event', 'optimization_goal'];
   displayedColumnsAds: string[] = ['name', 'effective_status'];
   marketingColumns: string[] = ['name', 'reach', 'impressions', 'spend', 'clicks', 'inline_link_clicks', 'cpc', 'cpp', 'ctr'];
@@ -170,7 +117,9 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     this.GEService.loadingScreen.subscribe(value => {
       this.loading = value;
     });
+
     this.addBreadcrumb();
+
     try {
       existence = await this.checkExistence();
 
@@ -216,20 +165,26 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
     } catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
-      this.toastr.error(
+      /*this.toastr.error(
         'Il caricamento delle campagne non è andato a buon fine. Per favore, riprova oppure contatta il supporto tecnico.',
-        'Qualcosa è andato storto!');
+        'Qualcosa è andato storto!');*/
       this.GEService.loadingScreen.next(false);
 
     }
   }
 
   async loadCampaigns() {
+    let chartParams: ChartParams = {};
     const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
     this.GEService.loadingScreen.next(true);
 
     try {
-      this.CCService.retrieveChartData(this.CCService.chooseTable('campaigns'), null, this.fbm_page_id)
+      chartParams = {
+        campaignsId: null,
+        domain: 'campaigns'
+      };
+
+      this.CCService.retrieveChartData(D_TYPE.FBC, chartParams, this.fbm_page_id)
         .pipe(takeUntil(dummySubj))
         .subscribe( data => {
           data = this.CCService.formatTable(data, this.marketing);
@@ -237,7 +192,13 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
           this.dataCampaigns = new MatTableDataSource(data);
           setTimeout(() => this.dataCampaigns.paginator = this.paginator);
           setTimeout(() => this.dataCampaigns.sort = this.sort);
+
+          if (this.dataCampaigns.length === 0) {
+            this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_DATI_TAB'),
+              this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI_TAB'));
+          }
         });
+
       this.GEService.loadingScreen.next(false);
 
       this.loaded = true;
@@ -256,6 +217,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   }
 
   showAdsets = (id: string, name: string): void => {
+    let chartParams: ChartParams = {};
     this.clickedCamp = id;
     this.clickedAdset = '';
     this.clickedAds = false;
@@ -266,7 +228,12 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
     const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
     try {
-      this.CCService.retrieveChartData(this.CCService.chooseTable('adSets'), null, this.fbm_page_id, id)
+      chartParams = {
+        campaignsId: id,
+        domain: 'adsets'
+      };
+
+      this.CCService.retrieveChartData(D_TYPE.FBC, chartParams, this.fbm_page_id)
         .pipe(takeUntil(dummySubj))
         .subscribe( data => {
           data = this.CCService.formatTable(data, this.marketing);
@@ -274,6 +241,10 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
           this.dataAdsets = new MatTableDataSource(data);
           this.dataAdsets.paginator = this.paginator2;
           this.dataAdsets.sort = this.sort2;
+          if (this.dataAdsets.length === 0) {
+            this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_DATI_TAB'),
+              this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI_TAB'));
+          }
         });
     } catch (err) {
       console.log('Error querying the campaigns');
@@ -282,6 +253,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   }
 
   showAds = (id: string, name: string): void => {
+    let chartParams: ChartParams = {};
     this.clickedAdset = id;
     this.ads = true;
     const dummySubj: Subject<void> = new Subject<void>(); // used to force unsubscription
@@ -289,7 +261,11 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     this.titleAdset = name;
 
     try {
-      this.CCService.retrieveChartData(this.CCService.chooseTable('ads'), null, this.fbm_page_id, id)
+      chartParams = {
+        campaignsId: id,
+        domain: 'ads'
+      };
+      this.CCService.retrieveChartData(D_TYPE.FBC, chartParams, this.fbm_page_id)
         .pipe(takeUntil(dummySubj))
         .subscribe( data => {
           if (this.marketing === true) {
@@ -322,7 +298,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
     if (this.marketing === false) {
       this.marketing = true;
-      this.changeDataTitle = 'Dati stato campagne';
+      this.changeDataTitle = 'STATO';
 
       this.displayedColumnsCampaigns = this.marketingColumns;
       this.displayedColumnsAdsets = this.marketingColumns;
@@ -332,10 +308,10 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
       this.dataCampaigns.data = this.CCService.formatTable(this.dataCampaigns, this.marketing, this.supportArray);
     } else {
       this.marketing = false;
-      this.changeDataTitle = 'Dati marketing campagne';
-      console.log(this.supportArray);
+      this.changeDataTitle = 'MARKETING';
+
       this.dataCampaigns.data = this.dataCampaigns.data.concat(this.supportArray);
-      console.log(this.dataCampaigns.data);
+
       this.displayedColumnsCampaigns = ['name', 'effective_status', 'daily_budget', 'budget_remaining', 'objective', 'buying_type', 'bid_strategy'];
       this.displayedColumnsAdsets = ['name', 'effective_status', 'bid_amount' , 'billing_event', 'optimization_goal'];
       this.displayedColumnsAds = ['name', 'effective_status'];
@@ -499,8 +475,8 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
       if (isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        this.toastr.error('I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!');
-      }
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_PERMESSI'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_PERMESSI'));      }
       this.loading = true;
 
     } catch (e) {
@@ -519,7 +495,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
     let pageIDs = {};
     pageIDs[D_TYPE.FBC] = pageID;
-    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FBC, pageIDs, null);
+    const observables = this.CCService.retrieveMiniChartData(D_TYPE.FBC, pageIDs);
     forkJoin(observables).subscribe(miniDatas => {
 
       for (let i = 0; i < this.miniCards.length; i++) {

@@ -7,14 +7,14 @@ import {YoutubeService} from './youtube.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {D_TYPE} from '../_models/Dashboard';
-import {GA_CHART} from '../_models/GoogleData';
-import {FB_CHART} from '../_models/FacebookData';
-import {IG_CHART} from '../_models/InstagramData';
+import {GA_CHART, GA_PALETTE} from '../_models/GoogleData';
+import {FB_CHART, FB_PALETTE} from '../_models/FacebookData';
+import {IG_CHART, IG_PALETTE} from '../_models/InstagramData';
 import * as moment from 'moment';
-import _date = moment.unitOfTime._date;
-import * as _ from 'lodash';
 
-import {YT_CHART} from '../_models/YoutubeData';
+import {YT_CHART, YT_PALETTE} from '../_models/YoutubeData';
+import {ChartParams} from '../_models/Chart';
+import {GaChartParams, IgChartParams} from '../_models/MiniCard';
 import {FacebookMarketingService} from './facebook-marketing.service';
 import {FacebookCampaignsService} from './facebook-campaigns.service';
 import {FBM_CHART} from '../_models/FacebookMarketingData';
@@ -42,24 +42,25 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     return '...';
   }
 
-  public retrieveChartData(ID, intervalDate?, pageID?, idCampaign?): Observable<any> {
-    if (Object.values(FB_CHART).includes(ID)) {
-      return this.facebookService.getData(ID, pageID);
-    } else if (Object.values(IG_CHART).includes(ID)) {
-      return this.instagramService.getData(ID, pageID);
-    } else if (Object.values(GA_CHART).includes(ID)) {
-      return this.googleAnalyticsService.getData(ID);
-    } else if (Object.values(YT_CHART).includes(ID)) {
-      return this.youtubeService.getData(ID, intervalDate, pageID);
-    } else if (Object.values(FBM_CHART).includes(ID)) {
-      return this.facebookMarketingService.getData(ID, pageID);
-    } else if (Object.values(FBC_CHART).includes(ID)) {
-      return this.facebookCampaignsService.getData(ID, pageID, idCampaign); // idCampaign for retrieve data of a certain campaign
-    } else {
-      throw new Error('chartCallService.retrieveChartData -> ID doesn\'t exist');
+  public retrieveChartData(type: number, params: ChartParams, pageID?: any): Observable<any> { // TODO change with params instead of ID
+
+    switch (type) {
+      case D_TYPE.FB:
+        return this.facebookService.getData(params.metric, pageID);
+      case D_TYPE.GA:
+        return this.googleAnalyticsService.getData(params);
+      case D_TYPE.IG:
+        return this.instagramService.getData(params, pageID);
+      case D_TYPE.YT:
+        return this.youtubeService.getData(params.metric, pageID);
+      case D_TYPE.FBM:
+        return this.facebookMarketingService.getData(params, pageID);
+      case D_TYPE.FBC:
+        return this.facebookCampaignsService.getData(params, pageID); // idCampaign for retrieve data of a certain campaign
+      default:
+        throw new Error(`chartCallService.retrieveChartData -> chart type n.${type} does not exist!`);
     }
   }
-
 
   public initFormatting(ID, data) {
     let header;
@@ -71,11 +72,10 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     let interval;
     let temp, index;
     let myMap;
+    let limit;
 
     const female = []; const male = []; const supportArray = []; const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24']; //temporal range for some fbm charts
-
-    // console.warn('ID: ' + ID + ' - ', data);
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -87,6 +87,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;  // FB Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
         header = [['Paese', 'Numero fan']];
+
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [k, data[data.length - 1].value[k]];
@@ -210,21 +211,21 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
 
         break; // Facebook Post visualizzati
-      case FB_CHART.VIDEO_ADS:
-        header = [['Data', 'Annunci pub. visti']];
-
-        for (let i = 0; i < data.length; i++) {
-          chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
-        }
-
-        break; // Facebook Annunci pub. visualizzati
+      // case FB_CHART.VIDEO_ADS:
+      //   header = [['Data', 'Annunci pub. visti']];
+      //
+      //   for (let i = 0; i < data.length; i++) {
+      //     chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
+      //   }
+      //
+      //   break; // Facebook Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
         header = [['Reazione', 'numero reaz.']];
         myMap = new Map();
         for (let el of data) {
-          if(el['value']) {
+          if (el['value']) {
             let reacts = el['value'];
-            for(let i in reacts) {
+            for (let i in reacts) {
               let value = parseInt(reacts[i], 10);
               if (myMap.has(i)) {
                 myMap.set(i, myMap.get(i) + value);
@@ -244,7 +245,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         break; // Facebook Reazioni torta
       case FB_CHART.REACTIONS_LINEA:
-        header = [['Data','Reazioni']];
+        header = [['Data', 'Reazioni']];
 
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
@@ -253,7 +254,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
               sum = Object.values(el.value).reduce((a: Number, b: Number) => {
                 // @ts-ignore
-                return a + b
+                return a + b;
               }, 0);
 
               chartData.push([moment(el.end_time).toDate(), sum]);
@@ -273,9 +274,9 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         myMap = new Map();
         for (let el of data) {
-          if(el['value']) {
+          if (el['value']) {
             let reacts = el['value'];
-            for(let i in reacts) {
+            for (let i in reacts) {
               let value = parseInt(reacts[i], 10);
               if (myMap.has(i)) {
                 myMap.set(i, myMap.get(i) + value);
@@ -315,7 +316,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             if (el && (el.value != undefined)) {
               sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
                 // @ts-ignore
-                return a + b
+                return a + b;
               }, 0);
               chartData.push([moment(el.end_time).toDate(), sum]);
             } else {
@@ -353,7 +354,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
 
-        chartData = chartData.slice(0,15);
+        chartData = chartData.slice(0, 15);
 
         break; // Facebook Vista contenuti per città (geomappa)
       case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
@@ -412,6 +413,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
          * 2 - value
          **/
         header = [['Pagina', 'Visite']];
+
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
 
@@ -419,7 +421,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             chartData[indexFound][1] += parseInt(data[i][2], 10);
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 50), parseInt(data[i][2], 10)]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
           }
         }
 
@@ -546,8 +548,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             (tmpArray[indexFound][1])++;
           } else {
             keys.push(data[i][1]);
-            chartData.push([ChartsCallsService.cutString(data[i][1], 12), parseFloat(data[i][2])]);
-            tmpArray.push([ChartsCallsService.cutString(data[i][1], 12), 1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseFloat(data[i][2])]);
+            tmpArray.push([ChartsCallsService.cutString(data[i][1], 30), 1]);
           }
         }
 
@@ -565,11 +567,16 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
           });
 
-          paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+          chartData.sort(function (obj1, obj2) {
+            return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+          });
 
-          for (let i = 0; i < paddingRows; i++) {
-            chartData.push(['', null]);
-          }
+          // paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+          chartData = this.addPaddindRows(chartData);
+
+          // for (let i = 0; i < paddingRows; i++) {
+          //   chartData.push(['', null]);
+          // }
         }
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
@@ -628,51 +635,52 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
 
         break; // IG Audience Locale
-      case IG_CHART.ONLINE_FOLLOWERS:
-
-        interval = 3; // Interval of hours to show
-        header = [['Follower online', 'Min', 'Media', 'Max']];
-
-        for (let i = 0; i < data.length; i++)
-          keys.push(data[i]['value']);
-
-        for (let i = 0; i < 24; i += interval) {
-          // MIN | AVG | MAX
-          chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, 0]);
-        }
-
-        // putting a unique entry in chartData for every existent age range
-        for (let day = 0; day < keys.length; day++) {
-
-          let limit = keys[day] ? Object.keys(keys[day]).length : 0;
-
-          for (let h_interval = 0; h_interval < limit; h_interval += interval) {
-            temp = 0;
-            index = 0;
-            for (let hour = h_interval; hour < (h_interval + interval); hour++) {
-              temp += isNaN(parseInt(keys[day][hour], 10)) ? 0 : parseInt(keys[day][hour]);
-              index = (hour + 1) / interval;
-            }
-
-            chartData[index - 1][2] += temp;
-
-            if (temp < chartData[index - 1][1]) {
-              chartData[index - 1][1] = temp;
-            }
-
-            if (temp > chartData[index - 1][3]) {
-              chartData[index - 1][3] = temp;
-            }
-          }
-        }
-
-
-        for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
-          chartData[i][2] /= keys.length;
-          chartData[i][1] = chartData[i][1] === Number.MAX_SAFE_INTEGER ? 0 : chartData[i][1];
-        }
-
-        break; // IG Online followers
+      // case IG_CHART.ONLINE_FOLLOWERS:
+      //
+      //   interval = 3; // Interval of hours to show
+      //   header = [['Follower online', 'Min', 'Media', 'Max']];
+      //
+      //   for (let i = 0; i < data.length; i++) {
+      //     keys.push(data[i]['value']);
+      //   }
+      //
+      //   for (let i = 0; i < 24; i += interval) {
+      //     // MIN | AVG | MAX
+      //     chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, 0]);
+      //   }
+      //
+      //   // putting a unique entry in chartData for every existent age range
+      //   for (let day = 0; day < keys.length; day++) {
+      //
+      //     limit = keys[day] ? Object.keys(keys[day]).length : 0;
+      //
+      //     for (let h_interval = 0; h_interval < limit; h_interval += interval) {
+      //       temp = 0;
+      //       index = 0;
+      //       for (let hour = h_interval; hour < (h_interval + interval); hour++) {
+      //         temp += isNaN(parseInt(keys[day][hour], 10)) ? 0 : parseInt(keys[day][hour], 10);
+      //         index = (hour + 1) / interval;
+      //       }
+      //
+      //       chartData[index - 1][2] += temp;
+      //
+      //       if (temp < chartData[index - 1][1]) {
+      //         chartData[index - 1][1] = temp;
+      //       }
+      //
+      //       if (temp > chartData[index - 1][3]) {
+      //         chartData[index - 1][3] = temp;
+      //       }
+      //     }
+      //   }
+      //
+      //
+      //   for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
+      //     chartData[i][2] /= keys.length;
+      //     chartData[i][1] = chartData[i][1] === Number.MAX_SAFE_INTEGER ? 0 : chartData[i][1];
+      //   }
+      //
+      //   break; // IG Online followers
       case IG_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
 
@@ -1111,7 +1119,6 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
       case FBM_CHART.COUNTRYREGION_REACH:
         data = this.formatDataFbm(data, 'country', 'region');
-
         header = [['Paese-Regione', 'Copertura']];
         for (let i = 0; i < data.length; i++) {
           chartData.push([(data[i].country + '-' + data[i].region), parseInt(data[i].reach, 10)]);
@@ -1375,7 +1382,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#8cd0bd'],
+            colors: [FB_PALETTE.BLUE.C1],
             areaOpacity: 0.1
           }
         };
@@ -1388,7 +1395,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           chartClass: 2,
           options: {
             region: 'world',
-            colors: ['#63c2de'],
+            colors: [FB_PALETTE.BLUE.C1],
             colorAxis: {colors: ['#9EDEEF', '#63c2de']},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
@@ -1418,7 +1425,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#63c2de'],
+            colors: [FB_PALETTE.TURQUOISE.C10],
             areaOpacity: 0.1
           }
         };
@@ -1444,7 +1451,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#9c8372'],
+            colors: [FB_PALETTE.BLUE.C7],
             areaOpacity: 0.1
           }
         };
@@ -1490,7 +1497,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#58A5BC', '#3F9AA2', '#F1C85B', '#D9C9B6'],
+            colors: [FB_PALETTE.BLUE.C2, FB_PALETTE.BLUE.C3, FB_PALETTE.TURQUOISE.C1, FB_PALETTE.STIFFKEY.C2],
             areaOpacity: 0.2
           }
         };
@@ -1515,7 +1522,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#8cd0bd'],
+            colors: [FB_PALETTE.BLUE.C4],
             areaOpacity: 0.1
           }
         };
@@ -1541,7 +1548,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#8a74e1'],
+            colors: [FB_PALETTE.TURQUOISE.C4],
             areaOpacity: 0.1
           }
         };
@@ -1566,7 +1573,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['f26767'],
+            colors: [FB_PALETTE.STIFFKEY.C4],
             areaOpacity: 0.1
           }
         };
@@ -1591,7 +1598,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#f998e3'],
+            colors: [FB_PALETTE.BLUE.C7],
             areaOpacity: 0.1
           }
         };
@@ -1616,7 +1623,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#259526'],
+            colors: [FB_PALETTE.TURQUOISE.C7],
             areaOpacity: 0.1
           }
         };
@@ -1643,7 +1650,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#5befeb'],
+            colors: [FB_PALETTE.STIFFKEY.C7],
             areaOpacity: 0.1
           }
         };
@@ -1669,7 +1676,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#443fe9'],
+            colors: [FB_PALETTE.BLUE.C10],
             areaOpacity: 0.1
           }
         };
@@ -1695,7 +1702,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#1ee503'],
+            colors: [FB_PALETTE.TURQUOISE.C10],
             areaOpacity: 0.1
           }
         };
@@ -1720,7 +1727,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#f36424'],
+            colors: [FB_PALETTE.STIFFKEY.C10],
             areaOpacity: 0.1
           }
         };
@@ -1745,36 +1752,36 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#075eee'],
+            colors: [FB_PALETTE.BLUE.C8],
             areaOpacity: 0.1
           }
         };
         break; // Fb Post visualizzati
-      case FB_CHART.VIDEO_ADS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#027500'],
-            areaOpacity: 0.1
-          }
-        };
-        break; // Fb Annunci pub. visualizzati
+      // case FB_CHART.VIDEO_ADS:
+      //   formattedData = {
+      //     chartType: 'AreaChart',
+      //     dataTable: data,
+      //     chartClass: 5,
+      //     options: {
+      //       chartArea: {left: 0, right: 0, height: 192, top: 0},
+      //       legend: {position: 'none'},
+      //       lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+      //       height: 210,
+      //       pointSize: data.length > 15 ? 0 : 7,
+      //       pointShape: 'circle',
+      //       hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+      //       vAxis: {
+      //         grindLines: {color: '#eaeaea', count: 5},
+      //         minorGridlines: {color: 'transparent'},
+      //         minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+      //         textPosition: 'in',
+      //         textStyle: {color: '#999'}
+      //       },
+      //       colors: [FB_PALETTE.TURQUOISE.C8],
+      //       areaOpacity: 0.1
+      //     }
+      //   };
+      //   break; // Fb Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
         formattedData = {
           chartType: 'PieChart',
@@ -1789,7 +1796,9 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#7cf3e0', '#0670f3', '#f31900', '#a4958a', '#F30DA6', '#0AA41F', '#F3ED00', '#00F3E5', '#9549F3'],
+            colors: [FB_PALETTE.BLUE.C3, FB_PALETTE.BLUE.C8, FB_PALETTE.BLUE.C6, FB_PALETTE.TURQUOISE.C12, FB_PALETTE.TURQUOISE.C4, FB_PALETTE.TURQUOISE.C9, FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9],
+
+
             areaOpacity: 0.2
           }
         };
@@ -1814,7 +1823,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#81b9f6'],
+            colors: [FB_PALETTE.STIFFKEY.C8],
             areaOpacity: 0.1
           }
         };
@@ -1829,7 +1838,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
+            colors: [FB_PALETTE.TURQUOISE.C6, FB_PALETTE.TURQUOISE.C8, FB_PALETTE.TURQUOISE.C10],
             areaOpacity: 0.4,
           }
         };
@@ -1880,7 +1889,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#2224ef'],
+            colors: [FB_PALETTE.TURQUOISE.C3],
             areaOpacity: 0.1
           }
         };
@@ -1919,7 +1928,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           options: {
             region: 'IT',
             displayMode: 'markers',
-            colors: ['#63c2de'],
+            colors: [FB_PALETTE.BLUE.C3],
             colorAxis: {colors: ['#9EDEEF', '#63c2de']},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
@@ -1978,7 +1987,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#FFA647'],
+            colors: [GA_PALETTE.LIME.C6],
             areaOpacity: 0.1
           }
         };
@@ -1999,11 +2008,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
+              minValue: 0,//this.getMinChartStep(D_TYPE.GA, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#01B8AA'],
+            colors: [GA_PALETTE.OCHER.C8],
             areaOpacity: 0.05
           }
         };
@@ -2021,7 +2030,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#A790A5', '#875C74', '#AFD0BE', '#54414E'],
+            colors: [GA_PALETTE.ORANGE.C12, GA_PALETTE.LIME.C7, GA_PALETTE.OCHER.C9, GA_PALETTE.ORANGE.C11],
             areaOpacity: 0.2
           }
         };
@@ -2069,7 +2078,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffdda4'],
+            colors: [GA_PALETTE.ORANGE.C9],
             bar: {groupWidth: '70%'},
             areaOpacity: 0.3
           }
@@ -2097,7 +2106,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#dd738a'],
+            colors: [GA_PALETTE.OCHER.C11],
             areaOpacity: 0.05
           }
         };
@@ -2125,7 +2134,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#52b4de'],
+            colors: [GA_PALETTE.ORANGE.C3],
             areaOpacity: 0.05
           }
         };
@@ -2177,7 +2186,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffc423'],
+            colors: [GA_PALETTE.OCHER.C11],
             areaOpacity: 0.1
           }
         };
@@ -2222,7 +2231,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#fd8f8d', '#c96565'],
+            colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7],
             areaOpacity: 0.2
           }
         };
@@ -2242,7 +2251,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#000'}
             },
-            colors: ['#A0D8C5'],
+            colors: [GA_PALETTE.LIME.C6],
             bar: {groupWidth: '10%'},
             areaOpacity: 0.3
           }
@@ -2284,8 +2293,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           chartClass: 2,
           options: {
             region: 'world',
-            colors: ['#ff00a7'],
-            colorAxis: {colors: ['#ff96db', '#ff00a7']},
+            colors: [IG_PALETTE.AMARANTH.C5],
+            colorAxis: {colors: [IG_PALETTE.AMARANTH.C4, IG_PALETTE.AMARANTH.C9]},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
             defaultColor: '#333',
@@ -2303,7 +2312,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#388aff', '#ff96db'],
+            colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10],
             areaOpacity: 0.4,
           }
         };
@@ -2318,28 +2327,28 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             legend: {position: 'none'},
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#ff96db'],
+            colors: [IG_PALETTE.FUCSIA.C5],
             areaOpacity: 0.4,
           }
         };
         break; // IG Audience Locale
-      case IG_CHART.ONLINE_FOLLOWERS:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#FFCDEE', '#FF88E1', '#F33DFF'],
-            areaOpacity: 0.4,
-            legend: {position: 'top', maxLines: 3},
-            bar: {groupWidth: '75%'},
-            isStacked: true,
-          }
-        };
-        break; // IG Online followers
+      // case IG_CHART.ONLINE_FOLLOWERS:
+      //   formattedData = {
+      //     chartType: 'ColumnChart',
+      //     dataTable: data,
+      //     chartClass: 9,
+      //     options: {
+      //       chartArea: {left: 0, right: 0, height: 290, top: 0},
+      //       height: 310,
+      //       vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+      //       colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
+      //       areaOpacity: 0.4,
+      //       legend: {position: 'top', maxLines: 3},
+      //       bar: {groupWidth: '75%'},
+      //       isStacked: true,
+      //     }
+      //   };
+      //   break; // IG Online followers
       case IG_CHART.IMPRESSIONS:
         formattedData = {
           chartType: 'AreaChart',
@@ -2360,7 +2369,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96db'],
+            colors: [IG_PALETTE.LAVENDER.C3],
             areaOpacity: 0.1
           }
         };
@@ -2385,7 +2394,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96db'],
+            colors: [IG_PALETTE.FUCSIA.C3],
             areaOpacity: 0.1
           }
         };
@@ -2404,12 +2413,12 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             pieHole: 0.55,
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#58A5BC', '#3F9AA2', '#F1C85B', '#D9C9B6'],
+            colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C3, IG_PALETTE.LAVENDER.C1, IG_PALETTE.AMARANTH.C11],
             areaOpacity: 0.2
           }
         };
         if (data.filter(e => e[1] === true).length == 0) {
-          formattedData.options.colors = ['#BC16FF', '#FF5AF5', '#FF7DF9', '#FFABF7'];
+          formattedData.options.colors = [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C2, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7];
           formattedData.dataTable = data;
         } else {
           formattedData.options.colors = ['#D3D3D3'];
@@ -2436,7 +2445,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96bd'],
+            colors: [IG_PALETTE.AMARANTH.C5],
             areaOpacity: 0.1
           }
         };
@@ -2461,11 +2470,12 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ff96bd'],
+            colors: [IG_PALETTE.FUCSIA.C3],
             areaOpacity: 0.1
           }
         };
         break;
+
       case YT_CHART.VIEWS:
         formattedData = {
           chartType: 'AreaChart',
@@ -2486,7 +2496,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#ffbe5b'],
+            colors: [YT_PALETTE.RED.C11],
             areaOpacity: 0.1
           }
         };
@@ -2511,7 +2521,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#61b4ff'],
+            colors: [YT_PALETTE.OPAL.C2],
             areaOpacity: 0.1
           }
         };
@@ -2536,7 +2546,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#33b362'],
+            colors: [YT_PALETTE.BROWN.C9],
             areaOpacity: 0.1
           }
         };
@@ -2561,7 +2571,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#88372b'],
+            colors: [YT_PALETTE.RED.C12],
             areaOpacity: 0.1
           }
         };
@@ -2586,7 +2596,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#dc852b'],
+            colors: [YT_PALETTE.OPAL.C8],
             areaOpacity: 0.1
           }
         };
@@ -2611,7 +2621,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#a195cc'],
+            colors: [YT_PALETTE.BROWN.C10],
             areaOpacity: 0.1
           }
         };
@@ -2636,7 +2646,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: ['#a195cc'],
+            colors: [YT_PALETTE.RED.C3],
             areaOpacity: 0.1
           }
         };
@@ -3945,9 +3955,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     return formattedData;
   }
 
-  public addPaddindRows (chartData) {
-
-    let paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+  public addPaddindRows(chartData) {
+    const paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
     for (let i = 0; i < paddingRows; i++) {
       chartData.push(['', null]);
@@ -3957,75 +3966,93 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
   }
 
   private getMinChartStep(type, data, perc = 0.8) {
-    let min, length;
+    let min = 0, length;
 
     data = data.slice(1);
 
-    switch (type) {
-      case D_TYPE.FB:
-      case D_TYPE.FBM:
-      case D_TYPE.IG:
-        if (data.length > 0) {
-          min = data.map(x => x[1]).reduce((c,p) => c < p ? c : p);
+    if (data) {
+      switch (type) {
+        case D_TYPE.FBM:
+        case D_TYPE.FB:
+        case D_TYPE.IG:
+          if (data.length > 0) {
+            min = data.map(x => x[1]).reduce((c, p) => c < p ? c : p) * perc;
+            break;
+          }
           break;
-        }
-        break;
-      case D_TYPE.GA:
-        length = data[0].length;
-        min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
-        break;
-      case D_TYPE.YT:
-        length = data[0].length;
-        min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
-        break;
+        case D_TYPE.GA:
+        case D_TYPE.YT:
+          // if (data[0] && data[0].length) {
+          length = data[0].length;
+          min = data.reduce((p, c) => p[length - 1] < c[length - 1] ? p[length - 1] : c[length - 1]) * perc;
+          // }
+          break;
+      }
     }
 
     return min;
   }
 
   public retrieveMiniChartData(serviceID: number, pageIDs?, intervalDate?: IntervalDate, permissions?) {
-    let observables: Observable<any>[] = [], pageID;
+    const observables: Array<Observable<any>> = [];
+    let params: ChartParams = {};
+    let pageID;
 
     switch (serviceID) {
       case D_TYPE.FB:
         pageID = pageIDs[D_TYPE.FB];
-        observables.push(this.facebookService.getData(FB_CHART.FANS_DAY, pageID));
-        observables.push(this.facebookService.fbposts(pageID));
-        observables.push(this.facebookService.fbpagereactions(pageID));
-        observables.push(this.facebookService.getData(FB_CHART.IMPRESSIONS, pageID));
+        observables.push(this.facebookService.getData('page_fans', pageID));
+        observables.push(this.facebookService.fbPosts(pageID));
+        observables.push(this.facebookService.getData('page_actions_post_reactions_total', pageID));
+        //observables.push(this.facebookService.getData('page_impressions_unique', pageID));
+        observables.push(this.facebookService.getData('page_views_total', pageID));
         break;
       case D_TYPE.GA:
-        observables.push(this.googleAnalyticsService.gaUsers());
-        observables.push(this.googleAnalyticsService.getData(GA_CHART.SESSION_DAY));
-        observables.push(this.googleAnalyticsService.getData(GA_CHART.BOUNCE_RATE));
-        observables.push(this.googleAnalyticsService.getData(GA_CHART.AVG_SESS_DURATION));
+        observables.push(this.googleAnalyticsService.getData(GaChartParams.users));
+        observables.push(this.googleAnalyticsService.getData(GaChartParams.sessions));
+        observables.push(this.googleAnalyticsService.getData(GaChartParams.bounceRate));
+        observables.push(this.googleAnalyticsService.getData(GaChartParams.avgSessionDuration));
         break;
       case D_TYPE.IG:
         pageID = pageIDs[D_TYPE.IG];
         observables.push(this.instagramService.getBusinessInfo(pageID));
         observables.push(this.instagramService.getMedia(pageID));
-        observables.push(this.instagramService.getData(IG_CHART.PROFILE_VIEWS, pageID));
-        observables.push(this.instagramService.getData(IG_CHART.IMPRESSIONS, pageID));
+        observables.push(this.instagramService.getData(IgChartParams.profile_views, pageID));
+        observables.push(this.instagramService.getData(IgChartParams.impressions, pageID));
         break;
       case D_TYPE.YT:
-        observables.push(this.youtubeService.getSubscribers(pageIDs));
-        observables.push(this.youtubeService.getData(YT_CHART.VIEWS, intervalDate, pageIDs));
-        observables.push(this.youtubeService.getData(YT_CHART.AVGVIEW, intervalDate, pageIDs));
-        observables.push(this.youtubeService.getVideos(pageIDs));
+        observables.push(this.youtubeService.getData('info', pageIDs)); // todo to finish
+        observables.push(this.youtubeService.getData('views', pageIDs));
+        observables.push(this.youtubeService.getData('averageViewDuration', pageIDs));
+        observables.push(this.youtubeService.getData('videos', pageIDs));
         break;
       case D_TYPE.FBM:
+        params = {domain: 'insights'};
         pageID = pageIDs[D_TYPE.FBM];
-        observables.push(this.facebookMarketingService.getData(FBM_CHART, pageID));
+        observables.push(this.facebookMarketingService.getData(params, pageID));
         break;
       case D_TYPE.FBC:
+        params = {domain: 'campaigns'};
         pageID = pageIDs[D_TYPE.FBC];
-        observables.push(this.facebookCampaignsService.getData(FBC_CHART.CAMPAIGNS, pageID, this.chooseTable('campaigns')));
+        observables.push(this.facebookCampaignsService.getData(params, pageID));
         break;
       case D_TYPE.CUSTOM:
-        observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.gaUsers() : of({}));
-        observables.push(permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null ? this.facebookService.getData(FB_CHART.FANS_DAY, pageIDs[D_TYPE.FB]) : of({}));
-        observables.push(permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG]) : of({}));
-        observables.push(permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null ? this.youtubeService.getSubscribers(pageIDs) : of({}));
+        observables.push(permissions[D_TYPE.GA] ? this.googleAnalyticsService.getData(GaChartParams.users) : of({}));
+        observables.push(
+          permissions[D_TYPE.FB] && pageIDs[D_TYPE.FB] !== null
+            ? this.facebookService.getData('page_fans', pageIDs[D_TYPE.FB])
+            : of({})
+        );
+        observables.push(
+          permissions[D_TYPE.IG] && pageIDs[D_TYPE.IG] !== null
+            ? this.instagramService.getBusinessInfo(pageIDs[D_TYPE.IG])
+            : of({})
+        );
+        observables.push(
+          permissions[D_TYPE.YT] && pageIDs[D_TYPE.YT] !== null
+            ? this.youtubeService.getData('info', pageIDs[D_TYPE.YT])
+            : of({})
+        );
         break;
       default:
         throw new Error('retrieveMiniChartData -> Service ID ' + serviceID + ' not found');
@@ -4049,13 +4076,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;
       case D_TYPE.YT :
         result = this.getYTMiniValue(measure, data);
-        break
+        break;
       case D_TYPE.FBM :
         result = this.getFacebookMarketingMiniValue(measure, data, intervalDate);
-        break
+        break;
       case D_TYPE.FBC :
         result = this.getFacebookCampaignsMiniValue(measure, data);
-        break
+        break;
       case D_TYPE.CUSTOM:
         result = this.getCustomMiniValue(measure, data, intervalDate);
         break;
@@ -4065,19 +4092,22 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
   }
 
   private getGoogleMiniValue(measure, data) {
-    //let date = new Date(null);
     let value, sum = 0, avg, perc, step;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    let date = new Date();
+    const y = date.getFullYear();
+    const m = date.getMonth();
 
     const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
 
-    data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
+    data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() &&
+      parseDate(el[0]).getTime() <= intervalDate.last.getTime()
+    );
 
-    for (const i in data) {
-      sum += parseInt(data[i][1]);
+    for (const el of data) {
+      sum += parseInt(el[1], 10);
     }
 
     avg = (sum / data.length).toFixed(2);
@@ -4091,11 +4121,11 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
       case 'time':
         date = new Date(null);
-        date.setSeconds(parseInt(avg)); // specify value for SECONDS here
+        date.setSeconds(parseInt(avg, 10)); // specify value for SECONDS here
         value = date.toISOString().substr(11, 8);
         step = this.searchStep(avg, measure);
 
-        perc = parseInt(avg) / step * 100;
+        perc = parseInt(avg, 10) / step * 100;
 
         date.setSeconds(step);
         step = date.toISOString().substr(11, 8);
@@ -4112,59 +4142,40 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
   }
 
   private getYTMiniValue(measure, data) {
-    let value, sum = 0, avg, perc, step;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
+    let value, sum = 0, perc, step, key;
+    const date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
 
-    //if(measure!='subs') //used to avoid date parsing in YT subscribers (that doesn't contain such infos). Expect more elegant sol. in future
-    data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
-
-    if(measure=='vids' || measure=='subs')
-      sum = data.length;
-    else {
-      for (const i in data) {
-        sum += parseInt(data[i].value);
-      }
+    if (measure !== 'subs') {
+      key = measure === 'n_videos' ? 'publishedAt' : 'date'; //  The key for the filter using the date is different for n_videos
+      data = data.filter(el => parseDate(el[key]).getTime() >= intervalDate.first.getTime()
+        && parseDate(el[key]).getTime() <= intervalDate.last.getTime()
+      );
     }
 
-    avg = (sum / data.length).toFixed(2);
-
-    switch (measure) {
+      switch (measure) {
       case 'subs':
-        value = sum;
-        step = this.searchStep(value, measure);
-        perc = value;
+        value = data[0].subscribers;
         break;
-
       case 'views':
-        value = sum;
-        step = this.searchStep(value, measure);
-        perc = value / step * 100;
+        value = data.map(el => el.value).reduce((a, b) => a + b, 0);
         break;
-
-      case 'avg-v-time':
-        value = avg;
-        step = this.searchStep(value, measure);
-        perc = value / step * 100;
+      case 'avg_view_time':
+        sum = data.map(el => el.value).reduce((a, b) => a + b, 0);
+        value = (sum / data.length).toFixed(2);
         break;
-
-      case 'vids':
-        value = sum;
-        step = this.searchStep(value, measure);
-        perc = value / step * 100;
-        break;
-
-
-      default:
-        value = sum;
-        step = this.searchStep(value);
-        perc = value / step * 100;
+      case 'n_videos':
+        value = data.length;
         break;
     }
+
+    step = this.searchStep(value, measure);
+    perc = measure === 'subs' ? value : (value / step * 100);
+
     return {value, perc, step};
   }
 
@@ -4173,7 +4184,6 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
     switch (measure) {
       case 'post-sum':
-
         //console.log('FB', data);
         data['data'] = data['data'].filter(el => (moment(el['created_time'])) >= intervalDate.first && (moment(el['created_time'])) <= intervalDate.last);
         value = data['data'].length;
@@ -4209,8 +4219,14 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
       default:
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
-        value = data[data.length - 1].value;
-
+        aux = 0;
+        for (const i in data) {
+          if (data[i]['value']) {
+            aux += data[i]['value'] || 0;
+          }
+        }
+        //value = data[data.length - 1].value;
+        value = aux;
         break; // default take the last value as the good one, the perc is calculated dividing the avg for the max value
     }
 
@@ -4249,7 +4265,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
   }
 
   private getFacebookCampaignsMiniValue(measure, data) {
-    let value, support = 0, perc, step, supportArray = [], media = 0;
+    let value, support = 0, perc, step, media = 0, value2;
+    const supportArray = [];
 
     data.forEach(d =>
       d['insights'] !== null && d['insights'] !== undefined
@@ -4261,44 +4278,51 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
       case 'budget':
         media = supportArray.filter(d => d.effective_status === 'ACTIVE').length;
         supportArray.forEach(d => d.daily_budget ? support +=  parseInt(d.daily_budget, 10) : null);
-        value = Number(support / media).toFixed(2) + ' €';
+        value2 = Number(support / media).toFixed(2);
+        value =  value2 + ' €';
         break;
       case 'campaigns_status':
         value = supportArray.filter(d => d.effective_status === 'ACTIVE').length.toString();
+        value2 = value;
         break;
       case 'spend':
         supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend,10)) : null);
-        value = Number(support / media).toFixed(2) + ' €';
+        value2 = Number(support / media).toFixed(2);
+        value = value2 + ' €';
         break;
       case 'reach':
         supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach,10)) : null);
         value = Math.round(support / media).toString();
+        value2 = value;
         break;
       default:
         value = supportArray.filter(d => d.effective_status === 'ACTIVE').length.toString();
+        value2 = value;
         break;
     }
 
-    step = this.searchStep(value);
-    perc = value / step * 100;
+    step = this.searchStep(value2);
+    perc = value2 / step * 100;
 
     return {value, perc, step};
   }
 
   private getInstagramMiniValue(measure, data, intervalDate) {
-    let value, perc, sum = 0, avg, max, aux, step;
+    let value, perc, sum = 0, step;
 
     switch (measure) {
       case 'count':
         value = data['followers_count'];
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
+      case 'post-sum':
+        data = data.filter(el => (new Date(el.timestamp)) >= intervalDate.first && (new Date(el.timestamp)) <= intervalDate.last);
+        value = data.length;
+        break;
       default:
         data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
-        for (const i in data) {
-          sum += data[i].value;
+        for (const el of data) {
+          sum += el.value;
         }
-
-        // avg = sum / data.length;
         value = sum;
 
         break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
@@ -4323,8 +4347,6 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         value = data['followers_count'];
         break;
       case 'ga-tot-user':
-
-        //console.log('GOOGLE', data);
         value = 0;
         data = data.filter(el => parseDate(el[0]).getTime() >= intervalDate.first.getTime() && parseDate(el[0]).getTime() <= intervalDate.last.getTime());
         for (const i in data) {
@@ -4332,7 +4354,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
         break;
       case 'subs':
-        value = data.length;
+        data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
+        value = data[0].subscribers;
         break;
     }
 
@@ -4379,7 +4402,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
   private getDomain(arg: string) {
     let domain;
 
-    if (arg.indexOf("://") > -1) {
+    if (arg.indexOf('://') > -1) {
       domain = arg.split('/')[2];
     } else {
       domain = arg.split('/')[0];
@@ -4388,12 +4411,12 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     //trova e rimuovi eventuale porta
     domain = domain.split(':')[0];
 
-    domain = domain.replace(/\$/g, ".");
+    domain = domain.replace(/\$/g, '.');
 
     return domain;
   }
 
-  public mapChartData (data) {
+  public mapChartData(data) {
 
     let myMap = new Map();
     let chartData = [];
@@ -4426,7 +4449,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     return chartData;
   }
 
-  public lengthKeys (data) {
+  public lengthKeys(data) {
     let myMap;
     myMap = new Map();
     let keys = [];

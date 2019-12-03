@@ -16,7 +16,7 @@ export const FB_CHART = {
   IMPRESSIONS_PAID: 37,
   VIDEO_VIEWS: 38,
   POST_IMPRESSIONS: 39,
-  VIDEO_ADS: 40,
+  //VIDEO_ADS: 40,
   REACTIONS_LINEA: 48,
   REACTIONS_COLUMN_CHART: 49,
   PAGE_VIEW_EXTERNALS: 50,
@@ -80,13 +80,13 @@ export interface FbPage {
 }
 
 export interface FbPost {
-  id: string,
-  created_time: Date,
-  name?: string
+  id: string;
+  created_time: Date;
+  name?: string;
 }
 
-export interface FbAnyData {
-  value: Array<any>;
+export interface FbData {
+  value: Array<any> | number;
   end_time: Date;
 }
 

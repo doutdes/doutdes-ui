@@ -3,27 +3,34 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {StoreService} from './store.service';
 import {environment} from '../../../environments/environment';
 import {FBM_CHART, FbmAnyData, FbmPage} from '../_models/FacebookMarketingData';
+import {FbData, FbPage} from '../_models/FacebookData';
+import {ChartParams} from '../_models/Chart';
 
 @Injectable()
 export class FacebookMarketingService {
+  private urlRequest = `${environment.protocol}${environment.host}:${environment.port}/fbm`;
 
   constructor(
     private http: HttpClient,
     private storeService: StoreService) {
   }
 
-  // Here they will be the various back-end calls (insights, campaings, etc.)
-
   private getAuthorization = (): HttpHeaders =>
     new HttpHeaders()
       .set('Content-type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`)
 
-  getData(ID, pageID) {
+  getData(chartParams: ChartParams, pageID: string) {
     const headers = this.getAuthorization();
-    let call;
 
-    switch (ID) {
+    const params = {
+      metric: chartParams.metric || null,
+      breakdowns: chartParams.breakdowns || null,
+      domain: chartParams.domain,
+      page_id: pageID
+    };
+
+    /*switch (ID) {
       case FBM_CHART:
         call = 'insights';
         break;
@@ -86,20 +93,18 @@ export class FacebookMarketingService {
       case FBM_CHART.HOURLYAUDIENCE_CTR:
         call = 'insights/breakdowns/hourlyAudience';
         break;
-    }
-
-    return this.http.get<FbmAnyData[]>(this.formatURL(call, pageID), {headers});
-
+    }*/
+    return this.http.get<FbmAnyData>(`${this.urlRequest}/data`, {headers, params});
   }
 
   getPages() {
     const headers = this.getAuthorization();
-    return this.http.get<FbmPage[]>(this.formatURL('pages'), {headers});
+    return this.http.get<FbmPage[]>(`${this.urlRequest}/pages`, {headers});
   }
 
-  private formatURL(call, pageID = null) {
+ /* private formatURL(call, pageID = null) {
     const aux = pageID ? (pageID + '/' + call) : call;
     return environment.protocol + environment.host + ':' + environment.port + '/fbm/' + aux;
-  }
+  }*/
 
 }

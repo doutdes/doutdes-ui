@@ -13,13 +13,19 @@ import {ToastrService} from 'ngx-toastr';
 import {T} from '@angular/core/src/render3';
 import {Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {Chart} from '../../shared/_models/Chart';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
+import {User} from '../../shared/_models/User';
+import {consoleTestResultHandler} from 'tslint/lib/test';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-emptycard',
   templateUrl: './emptycard.component.html'
 })
 
-export class EmptycardComponent implements OnInit, OnDestroy {
+export class EmptycardComponent implements OnInit {
 
   @Input() xlOrder: string;
   @Input() lgOrder: string;
@@ -53,18 +59,32 @@ export class EmptycardComponent implements OnInit, OnDestroy {
   metrics = [];
   styles = [];
   type = [];
-  breakdowns = ['Copertura', 'Impression', 'Spesa', 'click link', 'Click', 'CPC', 'CPP', 'CTR'];
+  breakdowns = [];
 
   description: string; // Description of the metric shown
 
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
 
   constructor(
     private formBuilder: FormBuilder,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public translate: TranslateService,
+    private http: HttpClient,
+    private userService: UserService,
   ) {
+    this.userService.get().subscribe(value => {
+      this.user = value;
+      this.http.get('./assets/langSetting/langStringVarious/' + this.conversionSetDefaultLang() + '.json')
+        .subscribe(file => {
+          this.GEService.langFilterDate.next(file);
+        });
+    });
   }
 
   async ngOnInit() {
@@ -83,7 +103,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     if (!dashData) {
       console.error('ERROR in EMPTY-CARD. Cannot get retrieve dashboard data.');
     } else {
-      let dummy_dashType = -1; // A dummy dash_type for the emptycard, as event subscriber
+      const dummy_dashType = -1; // A dummy dash_type for the emptycard, as event subscriber
 
       try {
         if (!this.GEService.isSubscriber(dummy_dashType)) {
@@ -107,9 +127,7 @@ export class EmptycardComponent implements OnInit, OnDestroy {
         console.error('Error while resolving updateDropdownOptions in EMPTY-CARD.', e);
       }
     }
-
   }
-
 
   get form() {
     return this.insertChartForm.controls;
@@ -120,8 +138,10 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     try {
       await this.updateDropdownOptions();
+
       if (this.metrics.length === 0) {
-        this.toastr.info('Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.', 'Nessun grafico disponibile');
+        this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'FULL_GRAF'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'FULL_GRAF'));
       } else {
         this.modalService.onHide.subscribe(() => {
           this.closeModal();
@@ -146,33 +166,30 @@ export class EmptycardComponent implements OnInit, OnDestroy {
     this.submitted = true;
     this.chartRequired = false;
 
-
     selected = this.chartRemaining.find(chart =>
-      chart.type == this.insertChartForm.value.channel &&
-      chart.title == this.insertChartForm.value.title &&
-      chart.format == this.insertChartForm.value.style
+      chart.type === parseInt(this.insertChartForm.value.channel, 10) &&
+      chart.title === this.insertChartForm.value.title &&
+      chart.format === this.insertChartForm.value.style
     );
 
     if (!selected) {
       this.loading = false;
       return;
     }
-
     if (this.insertChartForm.invalid) {
       this.loading = false;
       return;
     }
 
     this.loading = true;
-    dashChart = {
-      chart_id: selected.ID,
-      dashboard_id: this.dashboard_data.dashboard_id,
-      title: selected.title,
-      type: selected.type,
-      format: selected.format,
-      description: selected.description
-    };
 
+    selected.chart_id = selected.ID;
+    delete selected['ID'];
+
+    dashChart = {
+      ...selected,
+      dashboard_id: this.dashboard_data.dashboard_id,
+    };
 
     try {
       await this.dashboardService.addChartToDashboard(dashChart).toPromise();
@@ -182,15 +199,15 @@ export class EmptycardComponent implements OnInit, OnDestroy {
       this.insertChartForm.reset();
 
       this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
+
       await this.updateDropdownOptions();
 
-
     } catch (error) {
-      this.toastr.error('Non è stato possibile aggiungere "' + dashChart.title + '" alla dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico.');
+      this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_ADD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ADD'));
       console.error('Error inserting the Chart in the dashboard');
       console.error(error);
     }
-
   }
 
   async updateDropdownOptions() {
@@ -199,32 +216,35 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
     if (this.dashboard_data) {
 
-        this.chartRemaining = this.dashboard_data.dashboard_type !== 0
-          ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type).toPromise()
-          : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
+      this.chartRemaining = this.dashboard_data.dashboard_type !== 0
+        ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
+          .toPromise()
+        : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
 
-        this.chartRemaining.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
-          if (this.chartRemaining && this.chartRemaining.length > 0) {
+      this.chartRemaining.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
+      if (this.chartRemaining && this.chartRemaining.length > 0) {
 
-            // Update channels
-            if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
-              for (const i in this.dashboard_data.permissions) {
-                if (this.dashboard_data.permissions[i]) this.channels.push({name: DS_TYPE[i], value: i});
-              }
-            } else {
-              this.channels.push({name: DS_TYPE[this.dashboard_data.dashboard_type], value: this.dashboard_data.dashboard_type});
+        // Update channels
+        if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
+          for (const i in this.dashboard_data.permissions) {
+            if (this.dashboard_data.permissions[i]) {
+              this.channels.push({name: DS_TYPE[i], value: i});
             }
+          }
+        } else {
+          this.channels.push({name: DS_TYPE[this.dashboard_data.dashboard_type], value: this.dashboard_data.dashboard_type});
+        }
 
             this.insertChartForm.controls['channel'].setValue(this.channels[0].value);
             this.insertChartForm.controls['break'].setValue(this.breakdowns[0]);
-            this.breakdowns = this.breakdowns.filter(b => this.chartRemaining.filter(chart => chart.title.includes(b)).length > 0);
 
-            this.filterDropdown(true);
 
-            result = true;
-          }
+        this.filterDropdown(true);
 
-          return result;
+        result = true;
+      }
+
+      return result;
 
     } else {
       console.error('ERROR in EMPTY-CARD. Cannot retrieve dashboard data.');
@@ -233,39 +253,64 @@ export class EmptycardComponent implements OnInit, OnDestroy {
 
   }
 
-  filterDropdown(updateChannel = false) {
+  filterDropdown = (updateChannel = false) => {
     if (updateChannel) {
-      this.metrics = this.getUnique(this.chartRemaining.filter(chart => chart.type == this.insertChartForm.value.channel), 'title');
-      this.insertChartForm.value.channel === 5 ? this.metrics = this.metrics.filter(chart => chart.title.includes(this.insertChartForm.controls['break'].value)) : null;
+      // this.breakdowns = this.breakdowns.filter(b => this.chartRemaining.filter(chart => chart.title.includes(b)).length > 0);
+      this.chartRemaining.forEach( chart => !this.breakdowns.includes(chart.metric) ? this.breakdowns.push(chart.metric) : null);
+      this.insertChartForm.value.break === undefined ? this.insertChartForm.controls['break'].setValue('reach') : null;
+
+      this.metrics = this.getUnique(this.chartRemaining
+        .filter(chart => chart.type === parseInt(this.insertChartForm.value.channel, 10))
+        .sort((a: Chart, b: Chart) => a.title.localeCompare(b.title)), 'title'
+      );
+
+      this.insertChartForm.value.channel === 5
+        ? this.metrics = this.metrics.filter(chart => chart.metric === this.insertChartForm.controls['break'].value)
+        : null;
+
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].title);
     }
 
-    this.description = (this.chartRemaining.find(chart => chart.title == this.insertChartForm.value.metric && chart.type == this.insertChartForm.value.channel)).description;
+    // Set the description of the metric
+    this.description = (this.chartRemaining.find(chart =>
+      chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10)
+    )).description;
 
     // Update styles
-    this.styles = this.chartRemaining.filter(chart => chart.title == this.insertChartForm.value.metric && chart.type == this.insertChartForm.value.channel).map(item => item.format);
-    this.insertChartForm.controls['style'].setValue(this.styles[0]);
+    this.styles = this.chartRemaining
+      .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10))
+      .map(item => item.format);
 
+    this.insertChartForm.controls['style'].setValue(this.styles[0]);
     // Update title
+
     this.insertChartForm.controls['title'].setValue(this.insertChartForm.value.metric);
 
-    // Set the description of the metric
+  };
+
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
+        break;
+      case "en" :
+        this.value = "English";
+        break;
+      default:
+        this.value = "Italiano";
+    }
+
+    return this.value;
   }
 
-  getUnique(arr, comp) {
-    const unique = arr
-      .map(e => e[comp])
+  getUnique = (arr, comp) => arr.map(e => e[comp])
 
-      // store the keys of the unique objects
-      .map((e, i, final) => final.indexOf(e) === i && i)
+    // store the keys of the unique objects
+    .map((e, i, final) => final.indexOf(e) === i && i)
 
-      // eliminate the dead keys & store unique objects
-      .filter(e => arr[e]).map(e => arr[e]);
+    // eliminate the dead keys & store unique objects
+    .filter(e => arr[e]).map(e => arr[e]);
 
-    return unique;
-
-  }
-
-  ngOnDestroy() {
-  }
 }
+

@@ -10,6 +10,9 @@ import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../../shared/store/model';
 import {ToastrService} from 'ngx-toastr';
 import {StoreService} from '../../../../shared/_services/store.service';
+import {TranslateService} from '@ngx-translate/core';
+import {GlobalEventsManagerService} from '../../../../shared/_services/global-event-manager.service';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-feature-authentication-register-form',
@@ -25,14 +28,21 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
   loading = false;
   submitted = false;
 
+  user: User;
+  value: string;
+
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserService,
     private storeService: StoreService,
     private router: Router,
     private ngRedux: NgRedux<IAppState>,
-    private toastr: ToastrService
-  ) { }
+    private toastr: ToastrService,
+    public translate: TranslateService,
+    private GEService: GlobalEventsManagerService,
+    private http: HttpClient
+  ) {
+  }
 
   ngOnInit(): void {
     this.registrationForm = this.formBuilder.group({
@@ -78,6 +88,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       this.registrationForm.controls['vat_number'].setValidators(null);
       this.registrationForm.controls['vat_number'].updateValueAndValidity();
     }
+
   }
 
   get f() { return this.registrationForm.controls; }
@@ -115,7 +126,7 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
 
     // If the registration form is invalid, return
     if (this.registrationForm.invalid) {
-
+      console.log (this.registrationForm);
       console.log('Some fields are invalid!');
       this.loading = false;
       return;
@@ -178,4 +189,21 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
         }
       );
   }
+
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
+        break;
+      case "en" :
+        this.value = "English";
+        break;
+      default:
+        this.value = "Italiano";
+    }
+
+    return this.value;
+  }
+
 }

@@ -1,9 +1,9 @@
-import {Component, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {GoogleChartComponent} from 'ng2-google-charts';
 import {GA_CHART} from '../../shared/_models/GoogleData';
 import {D_TYPE} from '../../shared/_models/Dashboard';
@@ -12,6 +12,10 @@ import {AggregatedDataService} from '../../shared/_services/aggregated-data.serv
 import {BehaviorSubject, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {FilterActions} from '../../features/dashboard/redux-filter/filter.actions';
+import {Chart} from '../../shared/_models/Chart';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../shared/_services/user.service';
+import {User} from '../../shared/_models/User';
 
 @Component({
   selector: 'app-card',
@@ -23,8 +27,10 @@ export class CardComponent implements OnInit {
   @Input() dashChart: DashboardCharts;
   @Input() xlOrder: string;
   @Input() lgOrder: string;
+
   @HostBinding('class') elementClass = 'pt-3';
   @ViewChild('mychart') mychart: GoogleChartComponent;
+  @ViewChild('addMetric') addMetric: ElementRef;
 
   aggregated: boolean;
   type: string;
@@ -56,8 +62,15 @@ export class CardComponent implements OnInit {
   submitted = false;
 
   D_TYPE = D_TYPE;
-
   drag: boolean;
+
+  metrics: Array<Chart>;
+  addMetricForm: FormGroup;
+
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -66,7 +79,8 @@ export class CardComponent implements OnInit {
     private GEService: GlobalEventsManagerService,
     private DService: DashboardService,
     private toastr: ToastrService,
-    private filterActions: FilterActions
+    private filterActions: FilterActions,
+    public translate: TranslateService,
   ) {
     this.GEService.draggable.subscribe(value => this.drag = value);
   }
@@ -74,7 +88,21 @@ export class CardComponent implements OnInit {
   ngOnInit() {
 
     this.aggregated = !!this.dashChart.aggregated;
+
     // Handling icon nicknames
+    this.setColorStyle();
+
+    if (this.aggregated) {
+      this.handleAggregated();
+    }
+
+    this.updateChartForm = this.formBuilder.group({
+      chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
+    });
+
+  }
+
+  setColorStyle = (): void => {
     switch (this.dashChart.type) {
       case D_TYPE.FBM:
       case D_TYPE.FBC:
@@ -100,20 +128,13 @@ export class CardComponent implements OnInit {
         this.icon = 'fa-youtube';
         this.background = '#c44e4e';
         this.color = '#bf0000';
+        break;
       }
       default: {
         break;
       }
     }
-
-    if (this.aggregated) {
-      this.handleAggregated();
-    }
-
-    this.updateChartForm = this.formBuilder.group({
-      chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
-    });
-  }
+  };
 
   get form() {
     return this.updateChartForm.controls;
@@ -127,6 +148,7 @@ export class CardComponent implements OnInit {
       this.loading = false;
       return;
     }
+
     const chart: DashboardCharts = {
       dashboard_id: this.dashChart.dashboard_id,
       chart_id: this.dashChart.chart_id,
@@ -262,7 +284,7 @@ export class CardComponent implements OnInit {
         this.highShift = '- ' + this.highShift + '%';
         this.highTrend = -1;
       } else {
-        this.highShift =  '0% =';
+        this.highShift = '0% =';
         this.highTrend = 0;
       }
 
@@ -273,13 +295,13 @@ export class CardComponent implements OnInit {
         this.lowShift = '- ' + this.lowShift + '%';
         this.lowTrend = -1;
       } else {
-        this.lowShift =  '0% =';
+        this.lowShift = '0% =';
         this.lowTrend = 0;
       }
     }
   }
 
-  openModal(template: TemplateRef<any>) {
+  openModal(template: ElementRef<any>) {
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 
@@ -290,7 +312,7 @@ export class CardComponent implements OnInit {
 
   removeChart(dashboard_id, chart_id): void {
 
-    let ds : Subject<void> = new Subject<void>(); // used to force unsubscription
+    let ds: Subject<void> = new Subject<void>(); // used to force unsubscription
 
     this.dashboardService.removeChart(dashboard_id, chart_id)
       .pipe(takeUntil(ds))
@@ -315,17 +337,39 @@ export class CardComponent implements OnInit {
         // this.GEService.updateChartInDashboard.next(toUpdate);
         this.filterActions.updateChart(toUpdate);
         this.closeModal();
-        this.toastr.success('"' + title + '" è stato correttamente rinominato in "' + toUpdate.title + '".', 'Grafico aggiornato correttamente!');
+        this.toastr.success(
+          `"${title}" è stato correttamente rinominato in "${toUpdate.title}"`,
+          'Grafico aggiornato correttamente!'
+        );
       }, error => {
-        this.toastr.error('Non è stato possibile rinominare il grafico "' + this.dashChart.title + '". Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiornamento del grafico.');
+        this.toastr.error(
+          `Non è stato possibile rinominare il grafico "${this.dashChart.title}". Riprova più tardi oppure contatta il supporto.`,
+          'Errore durante l\'aggiornamento del grafico.'
+        );
         console.log('Error updating the Chart');
         console.log(error);
       });
-
   }
 
-  areAggregatedDataAvailable(chartFormat) {
-    return chartFormat == 'linea';
+  addMetricToChart() {
+    this.filterActions.addMetric(this.dashChart, this.addMetricForm.controls.metricControl.value);
+  }
+
+  getMetricsAvailable() {
+    this.dashboardService.getChartsByFormat('linea')
+      .subscribe(charts => {
+        this.metrics = charts
+          .filter(chart => chart.ID !== this.dashChart.chart_id && chart.type === this.dashChart.type)
+          .sort((a: Chart, b: Chart) => a.title.localeCompare(b.title));
+
+        this.addMetricForm = this.formBuilder.group({
+          metricControl: [this.metrics[0]]
+        });
+
+        this.openModal(this.addMetric);
+      }, err => {
+        console.error(err);
+      });
   }
 
 }

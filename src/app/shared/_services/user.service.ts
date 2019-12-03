@@ -20,7 +20,8 @@ export class UserService {
   }
 
   update(user: User) {
-    return this.http.put(this.formatUrl('update'), user);
+    const headers = this.getAuthorization();
+    return this.http.put(this.formatUrl('update'), user, {headers});
   }
 
   private formatUrl(methodName) {

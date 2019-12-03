@@ -27,6 +27,9 @@ import {ApiKey} from '../../../shared/_models/ApiKeys';
 import {ToastrService} from 'ngx-toastr';
 import * as _ from 'lodash';
 import {DragulaService} from 'ng2-dragula';
+import {ChartParams} from '../../../shared/_models/Chart';
+import {TranslateService} from '@ngx-translate/core';
+import {HttpClient} from '@angular/common/http';
 
 
 @Component({
@@ -60,7 +63,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   public loading = false;
   public isApiKeySet = true;
-  loaded: boolean = false;
+  loaded = false;
 
   @select() filter: Observable<any>;
 
@@ -70,7 +73,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.ninety);
   bsRangeValue: Date[];
-  dateChoice: String = 'Ultimi 30 giorni';
+  dateChoice: String = null;
   // datePickerEnabled = false;
 
   modalRef: BsModalRef;
@@ -87,10 +90,14 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   };
 
   drag: boolean;
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
 
   constructor(
     private YTService: YoutubeService,
-    public GAService : GoogleAnalyticsService,
+    public GAService: GoogleAnalyticsService,
     private breadcrumbActions: BreadcrumbActions,
     private DService: DashboardService,
     private CCService: ChartsCallsService,
@@ -104,21 +111,46 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     private formBuilder: FormBuilder,
     private localeService: BsLocaleService,
     private dragulaService: DragulaService,
-) {
-    this.dragulaService.createGroup("REVERT", {
+    public translate: TranslateService,
+    private http: HttpClient
+  ) {
+    this.dragulaService.createGroup('REVERT', {
       revertOnSpill: false,
+    });
+
+    this.userService.get().subscribe(value => {
+      this.user = value;
+
+      this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+        .subscribe(file => {
+          this.GEService.langObj.next(file);
+        }, error => {
+          console.error(error);
+        });
+
+      if (this.GEService.getStringFilterDate('FILTER_DATE', 'LAST_30') == null) {
+        this.http.get('./assets/langSetting/langStringVarious/' + this.conversionSetDefaultLang() + '.json')
+          .subscribe(file => {
+            this.GEService.langFilterDate.next(file);
+            this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE', 'LAST_30');
+          });
+
+      } else {
+        this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE', 'LAST_30');
+      }
     });
   }
 
   async loadDashboard() {
-    let dash, charts, dataArray;
+    let dash, charts, dataArray, chartParams: ChartParams = {};
     const observables: Observable<any>[] = [];
     const chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData = {
+
+    const currentData: DashboardData = {
       data: chartsToShow,
       interval: dateInterval,
       type: D_TYPE.YT,
@@ -127,7 +159,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
     this.GEService.loadingScreen.next(true);
 
-    this.dragulaService.find("REVERT");
+    this.dragulaService.find('REVERT');
 
     try {
       // Retrieving dashboard ID
@@ -138,14 +170,14 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         console.error('Cannot retrieve a valid ID for the Website dashboard.');
         return;
       }
-      let temp = await this.YTService.getChannels().toPromise();
+      const channels = await this.YTService.getChannels().toPromise();
 
-      if(temp.length === 0) {
+      if (channels.length === 0) {
         this.dashErrors.noPages = true;
         return;
       }
 
-      let channelID = temp[0].id;
+      const channelID = channels[0].id;
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(channelID);
 
       if (this.dashStored) {
@@ -155,16 +187,22 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         this.GEService.loadingScreen.next(false);
 
         if (this.chartArray$.length === 0) {
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+
+          this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
 
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
 
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
-          let  temp = await this.YTService.getChannels().toPromise();
-          let channelID = temp[0].id;
-          charts.forEach(chart => observables.push(this.CCService.retrieveChartData(chart.chart_id, dateInterval, channelID)));// Retrieves data for each chart
+          charts.forEach((item: DashboardCharts) => {
+            chartParams = {
+              metric: item.metric,
+            };
+            observables.push(this.CCService.retrieveChartData(item.type, chartParams, channelID));
+          }); // Retrieves data for each chart
+
           dataArray = await forkJoin(observables).toPromise();
 
           for (let i = 0; i < dataArray.length; i++) {
@@ -173,8 +211,9 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
               chart.chartData = dataArray[i];
               let date = parseDate(chart['chartData'][0][0]);
 
-              if (date < this.minDate)
+              if (date < this.minDate) {
                 this.minDate = date;
+              }
 
               chart.error = false;
             } else {
@@ -184,8 +223,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
             }
 
             chartsToShow.push(chart);
-           }
-
+          }
           currentData.data = chartsToShow;
 
           this.filterActions.initData(currentData);
@@ -200,14 +238,16 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         } else {
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
-          this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+
+          this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       }
 
       this.loaded = true;
 
     } catch (e) {
-      console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
+      console.error('ERROR in YOUTUBE-COMPONENT. Cannot retrieve dashboard charts. More info:');
       console.error(e);
     }
   }
@@ -218,8 +258,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     let date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
     const intervalDate: IntervalDate = {
-      first: new Date(y, m - 1, 1),
-      last: new Date(new Date(y, m, 0).setHours(23, 59, 59, 999))
+      first: new Date(y, m, 1),
+      last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.YT, pageID, intervalDate);
 
@@ -229,6 +269,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
         empty = empty || !results;
 
+        this.getNameMinicard(i);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
@@ -245,9 +286,13 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       first: this.bsRangeValue[0],
       last: this.bsRangeValue[1]
     };
-    let  temp = await this.YTService.getChannels().toPromise();
+    let temp = await this.YTService.getChannels().toPromise();
     let channelID = temp[0].id;
-    this.CCService.retrieveChartData(dashChart.chart_id, dateInterval, channelID)
+    const chartParams = {
+      metric: dashChart.metric
+    };
+
+    this.CCService.retrieveChartData(dashChart.type, chartParams, channelID)
       .subscribe(chartData => {
 
         this.GEService.loadingScreen.next(true);
@@ -256,12 +301,14 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
           chartToPush.chartData = chartData;
           chartToPush.error = false;
 
-          this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
+          this.toastr.success('""' + dashChart.title + this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
         } else {
           chartToPush.error = true;
           console.error('Errore recuperando dati per ' + dashChart);
 
-          this.toastr.error('I dati disponibili per ' + dashChart.title + ' potrebbero essere non sufficienti', 'Errore durante l\'aggiunta del grafico');
+          this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_DATI'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI'));
         }
 
         this.filterActions.addChart(chartToPush);
@@ -271,7 +318,9 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       }, error1 => {
         console.error('Error querying the Chart');
         console.error(error1);
-        this.toastr.error('C\'è stato un errore recuperando i dati per il grafico ' + dashChart.title + '. Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
+
+        this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_DATI_1'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI_1'));
       });
   }
 
@@ -300,16 +349,52 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
     switch (days) {
       case this.FILTER_DAYS.seven:
-        this.dateChoice = 'Ultimi 7 giorni';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Ultimi 7 giorni';
+            break;
+          case 'en':
+            this.dateChoice = 'Last 7 days';
+            break;
+          default:
+            this.dateChoice = 'Ultimi 7 giorni';
+        }
         break;
       case this.FILTER_DAYS.thirty:
-        this.dateChoice = 'Ultimi 30 giorni';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Ultimi 30 giorni';
+            break;
+          case 'en':
+            this.dateChoice = 'Last 30 days';
+            break;
+          default:
+            this.dateChoice = 'Ultimi 30 giorni';
+        }
         break;
       case this.FILTER_DAYS.ninety:
-        this.dateChoice = 'Ultimi 90 giorni';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Ultimi 90 giorni';
+            break;
+          case 'en':
+            this.dateChoice = 'Last 90 days';
+            break;
+          default:
+            this.dateChoice = 'Ultimi 90 giorni';
+        }
         break;
       default:
-        this.dateChoice = 'Personalizzato';
+        switch (this.user.lang) {
+          case 'it':
+            this.dateChoice = 'Personalizzato';
+            break;
+          case 'en':
+            this.dateChoice = 'Customized';
+            break;
+          default:
+            this.dateChoice = 'Personalizzato';
+        }
         break;
     }
   }
@@ -333,7 +418,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     let key: ApiKey;
 
     this.GEService.loadingScreen.subscribe(value => {
-      this.loading = value
+      this.loading = value;
     });
 
     this.addBreadcrumb();
@@ -346,7 +431,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         return;
       }
 
-       view_id = await this.getViewID();
+      view_id = await this.getViewID();
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!view_id) {
         await this.getViewList();
@@ -405,8 +490,6 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         this.GEService.addSubscriber(dash_type);
       }
 
-      this.localeService.use('it');
-
       await this.loadDashboard();
 
     } catch (e) {
@@ -418,7 +501,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     this.removeBreadcrumb();
     this.filterActions.removeCurrent();
 
-    this.dragulaService.destroy("REVERT");
+    this.dragulaService.destroy('REVERT');
   }
 
   clearDashboard(): void {
@@ -429,11 +512,15 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       this.closeModal();
     }, error => {
       if (error.status === 500) {
-        this.toastr.error('Non vi sono grafici da eliminare.', 'Errore durante la pulizia della dashboard.');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_CLEAR'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_CLEAR'));
         this.closeModal();
         console.error(error);
       } else {
-        this.toastr.error('Non è stato possibile rimuovere tutti i grafici. Riprova più tardi oppure contatta il supporto.', 'Errore durante la rimozione dei grafici.');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_RIMOZIONE'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
         //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
         console.error(error);
         this.closeModal();
@@ -466,7 +553,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     pdf.text(user.zip + ' - ' + user.city + ' (' + user.province + ')', 320, offset + 40);
 
     pdf.setFontSize(18);
-    pdf.text('REPORT DASHBOARD SITO', x, y - 5);
+    pdf.text('REPORT DASHBOARD YOUTUBE', x, y - 5);
     y += 20;
 
     pdf.setFontSize(14);
@@ -493,7 +580,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       x += canvas.width / dimRatio + 10;
     }
 
-    pdf.save('report_sito_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
+    pdf.save('report_yt_' + user.username + '_' + day + '-' + month + '-' + year + '.pdf');
 
     this.closeModal();
   }
@@ -555,10 +642,12 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.YT).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.YT).toPromise();
 
-      if(isPermissionGranted.tokenValid) {
+      if (isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
-        this.toastr.error('I permessi di accesso ai tuoi dati YouTube sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli.', 'Permessi non validi!')
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_PERMESSI'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_PERMESSI'));
       }
 
     } catch (e) {
@@ -568,7 +657,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     return result;
   }
 
-  async getViewID()  {
+  async getViewID() {
     let viewID;
 
     try {
@@ -582,7 +671,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   async getViewList() {
     try {
-      this.viewList = await this.YTService.getViewList().toPromise();
+      this.viewList = await this.YTService.getChannels().toPromise();
     } catch (e) {
       console.error('getViewList -> Error doing the query');
     }
@@ -592,16 +681,20 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
     this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
   }
 
-  dragAndDrop () {
+  dragAndDrop() {
     if (this.chartArray$.length == 0) {
-      this.toastr.error('Non è possibile attivare la "modalità ordinamento" perchè la dashboard è vuota.', 'Operazione non riuscita.');
+
+      this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_ORDINAMENTO'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ORDINAMENTO'));
     } else {
       this.drag = true;
       this.GEService.dragAndDrop.next(this.drag);
     }
 
     if (this.drag == true) {
-      this.toastr.info('Molte funzioni sono limitate.', 'Sei in modalità ordinamento.');
+
+      this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'MOD_ORD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MOD_ORD'));
     }
 
   }
@@ -614,7 +707,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       this.chartArray$ = this.tmpArray;
 
       for (i = 0; i < this.chartArray$.length; i++) {
-        this.chartArray$[i].position = i+1;
+        this.chartArray$[i].position = i + 1;
       }
 
     } else {
@@ -626,8 +719,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
   updateChartPosition(toUpdate): void {
 
-    toUpdate = _.map(toUpdate, function(el) {
-      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position}
+    toUpdate = _.map(toUpdate, function (el) {
+      return {'chart_id': el.chart_id, 'dashboard_id': el.dashboard_id, 'position': el.position};
     });
 
     this.DService.updateChartPosition(toUpdate)
@@ -637,18 +730,73 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         this.closeModal();
         this.drag = false;
         this.GEService.dragAndDrop.next(this.drag);
-        this.toastr.success('La dashboard è stata ordinata con successo!', 'Dashboard ordinata');
+
+        this.toastr.success(this.GEService.getStringToastr(false, true, "DASHBOARD", 'SUC_ORD'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
       }, error => {
-        this.toastr.error('Non è stato possibile ordianare la dashboard. Riprova più tardi oppure contatta il supporto.', 'Errore durante l\'ordinazione della dashboard');
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_ORD'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
         console.log('Error updating the Dashboard');
         console.log(error);
       });
 
   }
 
-  checkDrag () {
+  checkDrag() {
     this.drag = false;
     this.GEService.dragAndDrop.next(this.drag);
+  }
+
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
+        break;
+      case "en" :
+        this.value = "English";
+        break;
+      default:
+        this.value = "Italiano";
+    }
+
+    return this.value;
+  }
+
+  getNameMinicard (id_minicard) {
+
+    this.userService.get().subscribe(data => {
+      this.user = data;
+
+      this.http.get('./assets/langSetting/langStringVarious/' + this.conversionSetDefaultLang() + '.json')
+        .subscribe(file => {
+          this.GEService.langFilterDate.next(file);
+
+          switch (id_minicard) {
+            case '0' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("YT", "ISCR");
+              break;
+            case '1' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("YT", "VIEW");
+              break;
+            case '2' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("YT", "MED_DUR_VIS");
+              break;
+            case '3' :
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("YT", "VID_CAR");
+              break;
+          }
+
+        }, err => {
+          console.error(err);
+        })
+
+    }, err => {
+      console.error(err);
+    });
+
+
   }
 
 }

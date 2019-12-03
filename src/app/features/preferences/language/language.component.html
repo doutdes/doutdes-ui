@@ -1,0 +1,36 @@
+<div class="row rounded p-4 title-header">
+  <div class="col-md-12 pl-0">
+     <h2 class="my-auto pl-0">{{ 'LANGUAGE.TITLE' | translate }}</h2>
+  </div>
+</div>
+
+<div class="card-body">
+  <div class="form-inline mb-2">
+    <label class="my-1 mr-2">{{ 'LANGUAGE.SELECT' | translate }}</label>
+
+  <select #langSelect class="custom-select my-1 mr-sm-2" (change)="checkSelect($event)"> <!--(change)="translate.use(langSelect.value)" -->
+    <option *ngFor="let lang of translate.getLangs()" [selected]="lang === translate.currentLang" [value]="lang">{{ lang }}</option>
+  </select>
+
+    <button type="button" class="btn btn-success ml-lg-1 ml-sm-2 d-md-inline-block d-none float-right" (click)="optionModal(save)">{{ 'LANGUAGE.SAVE' | translate }}</button>
+  </div>
+</div>
+
+<ng-template #save>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-trash mr-3"></i>{{ 'LANGUAGE.SAVE2' | translate }}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <p>{{ 'LANGUAGE.SAVE3' | translate }}</p>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'LANGUAGE.NO' | translate }}</button>
+    <button type="button" class="btn btn-success" (click)="changeLanguage()">{{ 'LANGUAGE.SI' | translate }}</button>
+  </div>
+
+</ng-template> <!-- Save language -->

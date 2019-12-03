@@ -14,6 +14,10 @@ import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {InstagramService} from '../../../shared/_services/instagram.service';
 import {AggregatedDataService} from '../../../shared/_services/aggregated-data.service';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../../shared/_services/user.service';
+import {AppFooterModule} from '@coreui/angular';
+import {HttpClientModule} from '@angular/common/http';
 import {FacebookMarketingService} from '../../../shared/_services/facebook-marketing.service';
 
 @NgModule({
@@ -24,7 +28,10 @@ import {FacebookMarketingService} from '../../../shared/_services/facebook-marke
   imports: [
     SharedModule,
     CoreModule,
-    NgxLoadingModule.forRoot({})
+    AppFooterModule,
+    HttpClientModule,
+    NgxLoadingModule.forRoot({}),
+    TranslateModule
   ],
   providers: [
     ApiKeysService,
@@ -37,7 +44,8 @@ import {FacebookMarketingService} from '../../../shared/_services/facebook-marke
     BreadcrumbActions,
     FilterActions,
     ChartsCallsService,
-    FacebookMarketingService
+    FacebookMarketingService,
+    UserService
   ],
   exports: [
     FeaturePreferencesApiKeysComponent,

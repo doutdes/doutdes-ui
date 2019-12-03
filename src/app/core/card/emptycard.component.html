@@ -8,7 +8,7 @@
 
 <ng-template #addChart>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>Aggiungi grafico</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>{{ 'EMPTYCARD.NEW_GRA' | translate }}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -17,7 +17,7 @@
     <form [formGroup]="insertChartForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <div *ngIf="dashboard_data.dashboard_type === D_TYPE.CUSTOM" class="mb-2 row">
-          <label class="col-sm-2 col-form-label">Canale:</label>
+          <label class="col-sm-2 col-form-label">{{ 'EMPTYCARD.CANALE' | translate }}</label>
           <div class="col-sm-10">
             <select class="form-control" formControlName="channel" (change)="filterDropdown(true)">
               <option *ngFor="let service of channels" [value]="service.value">{{service.name}}</option>
@@ -26,17 +26,17 @@
         </div>
 
         <div *ngIf="insertChartForm.value.channel === 5" class="row mb-2">
-          <label class="col-sm-2 col-form-label">Cerca per:</label>
+          <label class="col-sm-2 col-form-label">{{ 'EMPTYCARD.CERCA' | translate }}</label>
           <div class="col-sm-10">
             <select class="form-control" formControlName="break" (change)="filterDropdown(true)">
-              <option *ngFor="let b of breakdowns" [value]="b">{{b}}</option>
+              <option *ngFor="let b of breakdowns" [value]="b">{{ 'FBM.' + b | translate }}</option>
             </select>
 
           </div>
         </div>
 
         <div class="row mb-2">
-          <label class="col-sm-2 col-form-label">Metrica:</label>
+          <label class="col-sm-2 col-form-label">{{ 'EMPTYCARD.METRICA' | translate }}</label>
           <div class="col-sm-10">
             <select class="form-control" formControlName="metric" (change)="filterDropdown()">
               <option *ngFor="let metric of metrics" [value]="metric.title">{{metric.title}}</option>
@@ -48,7 +48,7 @@
         </div>
 
         <div class="row mb-2">
-          <label class="col-sm-2 col-form-label">Stile:</label>
+          <label class="col-sm-2 col-form-label">{{ 'EMPTYCARD.STILE' | translate }}</label>
           <div class="col-sm-10">
             <select class="form-control" formControlName="style">
               <option *ngFor="let style of styles" [value]="style">{{style}}</option>
@@ -57,14 +57,14 @@
         </div>
 
         <div class="row mb-2">
-          <label class="col-sm-2 col-form-label">Title:</label>
+          <label class="col-sm-2 col-form-label">{{ 'EMPTYCARD.TITLE' | translate }}</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control pl-3" formControlName="title" placeholder="Titolo del grafico"
+            <input type="text" class="form-control pl-3" formControlName="title" placeholder="{{this.GEService.getStringFilterDate('PLACEHOLDER','TIT_GRA')}}"
                    [ngClass]="{ 'is-invalid': submitted && form.title.errors }">
 
             <div *ngIf="submitted && form['title'].errors" class="invalid-feedback">
-              <div *ngIf="form['title'].errors['required']">Il titolo del grafico è obbligatorio.</div>
-              <div *ngIf="form['title'].errors['maxlength']">Il titolo non può contenere più di 30 caratteri.</div>
+              <div *ngIf="form['title'].errors['required']">{{ 'EMPTYCARD.TIT_O' | translate }}</div>
+              <div *ngIf="form['title'].errors['maxlength']">{{ 'EMPTYCARD.TIT_ALERT' | translate }}</div>
             </div>
 
           </div>
@@ -72,8 +72,8 @@
       </div>
 
       <div class="modal-footer pr-0">
-        <button type="submit" class="btn btn-success">Aggiungi</button>
-        <button type="button" class="btn btn-danger" (click)="closeModal();">Annulla</button>
+        <button type="submit" class="btn btn-success">{{ 'EMPTYCARD.ADD' | translate }}</button>
+        <button type="button" class="btn btn-danger" (click)="closeModal();">{{ 'EMPTYCARD.ANNULLA' | translate }}</button>
       </div>
 
     </form>
@@ -81,17 +81,17 @@
 </ng-template>
 <ng-template #noChartsAvailable>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Nessun grafico disponibile</h4>
+    <h4 class="modal-title pull-left">{{ 'EMPTYCARD.NO_GRAF' | translate }}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    <p>Hai già aggiunto tutti i grafici al momento disponibili per questa dashboard.</p>
+    <p>{{ 'EMPTYCARD.FULL_GRAF' | translate }}</p>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-danger" (click)="closeModal()">Ok</button>
+      <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'EMPTYCARD.OK' | translate }}</button>
     </div>
   </div>
 </ng-template>

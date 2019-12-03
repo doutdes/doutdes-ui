@@ -17,8 +17,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import {defineLocale} from 'ngx-bootstrap';
 import {itLocale} from 'ngx-bootstrap/locale';
 import {DragulaModule} from 'ng2-dragula';
-
-defineLocale('it', itLocale);
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -43,13 +42,15 @@ defineLocale('it', itLocale);
       fullScreenBackdrop: true
     }),
     DragulaModule,
+    TranslateModule
   ],
   providers: [
     GoogleAnalyticsService,
     BreadcrumbActions,
     UserService,
     FilterActions,
-    BsLocaleService
+    BsLocaleService,
+    UserService
   ],
   exports: [
     FeatureDashboardGoogleAnalyticsComponent
