@@ -28,8 +28,11 @@
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.FB] && services$[D_TYPE.FB]['granted']">
             <td style="font-size: 1.09375rem;"><i [ngClass]="getLogo(D_TYPE.FB)"></i> {{services$[D_TYPE.FB].name}}</td>
             <td><div *ngFor="let perm of services$[D_TYPE.FB].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
-            <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
+            <td>
+<!--              <a class="btn btn-success" style="margin-bottom: 3px;" [href]="fbLoginURL"><i class="fas fa-edit mr-2"></i>{{ 'API-KEYS.EDIT_SORG' | translate }}</a>-->
+              <button type="button" class="btn btn-success" style="margin-bottom: 3px;" (click)="edit(D_TYPE.FB)"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.EDIT_SORG' | translate }}</button>
+
               <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.FB])"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.ELIMINA' | translate }}</button>
             </td>
           </tr> <!-- Facebook -->

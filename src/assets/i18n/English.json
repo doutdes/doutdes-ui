@@ -29,7 +29,8 @@
   },
   "FOOTER": {
     "START": "By the",
-    "DIP": "Dept. of Mathematics and Computer Science"
+    "DIP": "Dept. of Mathematics and Computer Science",
+    "INFO": "Privacy disclaimer"
   },
   "MENU": {
     "SITO_WEB": "Website",
@@ -124,7 +125,6 @@
     "AZIONI": "Shares",
     "AGGIORNA": "Update",
     "ELIMINA": "Delete",
-    "INIZIA": "Start",
     "FINSICE": "Ends",
     "CLOSE": "Close"
   },
@@ -256,7 +256,8 @@
     "ERR_DESC": "An error occurred while accessing the requested service.",
     "ERR_DESCR_1": "Try again later or contact technical support.",
     "CHIUDI": "Close",
-    "ADD_SORG": "Add new data source"
+    "ADD_SORG": "Add new data source",
+    "EDIT_SORG": "Edit"
   },
   "CARD": {
     "ELIMINA": "Delete",

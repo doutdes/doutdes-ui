@@ -23,9 +23,21 @@
                  (click)="showMenu(false)">
                 <span class="menu-collapsed">{{'MENU.SITO_WEB' | translate }}</span>
               </a>
-              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/facebook']"
+              <a class="list-group-item list-group-item-action py-1" [routerLink]=""
                  (click)="showMenu(false)">
                 <span class="menu-collapsed">Facebook</span>
+              </a>
+              <a [routerLink]="[drag ? '#' : '/dashboard/facebook/insights']" class="list-group-item list-group-item-action py-1"
+                 (click)="showMenu(false)">
+                <span class="menu-collapsed ml-4">Insights</span>
+              </a>
+              <a [routerLink]="[drag ? '#' : '/dashboard/facebook/marketing']" class="list-group-item list-group-item-action py-1"
+                 (click)="showMenu(false)">
+                <span class="menu-collapsed ml-4">Marketing</span>
+              </a>
+              <a [routerLink]="[drag ? '#' : '/dashboard/facebook/campaigns']" class="list-group-item list-group-item-action py-1"
+                 (click)="showMenu(false)">
+                <span class="menu-collapsed ml-4">Campaigns</span>
               </a>
               <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/instagram']"
                  (click)="showMenu(false)">

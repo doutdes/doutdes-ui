@@ -164,12 +164,12 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
         this.isApiKeySet = false;
         return;
       }
+      await this.getPagesList();
       fbm_page_id = await this.getPageID();
       this.pageID = fbm_page_id;
 
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!fbm_page_id) {
-        await this.getPagesList();
 
         if (this.pageList.length === 0) {
           this.dashErrors.noPages = true;
@@ -195,7 +195,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
           return;
         }
       }
-      await this.getPagesName();
+      await this.getPageName();
       this.createForm();
 
       this.firstDateRange = this.minDate;
@@ -643,7 +643,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     }
   }
 
-  async getPagesName() {
+  async getPageName() {
     try {
       this.pageList = await this.FBMService.getPages().toPromise();
       this.title = this.pageList.filter(el => el.id === this.pageID)[0].name;
@@ -668,13 +668,14 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
 
     this.loadingForm = true;
 
-    update = await this.apiKeyService.updateKey(key).toPromise();
-
-    if (update) {
-      this.closeModal();
-      await this.ngOnInit();
-    } else {
-      console.error('MANDARE ERRORE');
+    try {
+      update = await this.apiKeyService.updateKey(key).toPromise();
+      if (update) {
+        this.closeModal();
+        location.reload();
+      }
+    } catch (e) {
+      console.log (e);
     }
   }
 

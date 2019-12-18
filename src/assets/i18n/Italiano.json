@@ -29,7 +29,8 @@
   },
   "FOOTER": {
   	"START": "A cura del",
-  	"DIP": "Dip. di Matematica e Informatica"
+  	"DIP": "Dip. di Matematica e Informatica",
+    "INFO": "Informativa privacy"
   },
   "MENU": {
   	"SITO_WEB": "Sito web",
@@ -253,6 +254,7 @@
     "MANTIENI": "No, mantieni",
     "SI_ELIMINA": "Si, elimina",
     "ADD_SORG": "Aggiungi nuova sorgente dati",
+    "EDIT_SORG": "Modifica",
     "ERROR": " Errore durante l'accesso",
     "ERR_DESC": "Si è verificato un errore durante l'accesso al servizio richiesto. ",
     "ERR_DESCR_1": "Riprova più tardi o contatta il supporto tecnico.",

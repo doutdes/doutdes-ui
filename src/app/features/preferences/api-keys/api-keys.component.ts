@@ -17,6 +17,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {HttpClient} from '@angular/common/http';
+import {environment} from '../../../../environments/environment';
+import {StoreService} from '../../../shared/_services/store.service';
 
 const PrimaryWhite = '#ffffff';
 
@@ -44,6 +46,13 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   tmp: string;
   user: User;
 
+  private envURL = environment.protocol + environment.host + ':' + environment.port;
+
+  fbLoginURL: string;
+  igLoginURL: string;
+  gaLoginURL: string;
+  ytLoginURL: string;
+
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
@@ -65,7 +74,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     public translate: TranslateService,
     private userService: UserService,
-    private http: HttpClient
+    private http: HttpClient,
+    private store: StoreService,
   ) {
     this.loading = this.geManager.loadingScreen.asObservable();
 
@@ -126,17 +136,18 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     }
   }
 
-  async updateList(){
+  async updateList() {
     this.services$ = {};
     let observables = [];
 
-    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
-      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM) {
+    for (const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
+      if (D_TYPE[SERVICE] !== D_TYPE.CUSTOM) {
         observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
       }
     }
 
     forkJoin(observables).subscribe((services: Service[]) => {
+
       for (const i in services) {
         if (services[i].scopes) {
           if (services[i].type === D_TYPE.YT || services[i].type === D_TYPE.GA) {
@@ -150,6 +161,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
         this.geManager.loadingScreen.next(false);
         this.somethingGranted = this.somethingGranted || services[i].granted;
       }
+      this.setURL();
     });
   }
 
@@ -171,7 +183,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
           DS_TYPE[D_TYPE.IG] + this.geManager.getStringToastr(true, false, 'PREFERENCES', 'STOP_ACCESSO'));
       }
 
-      if(Object.keys(this.services$).length === 0) this.somethingGranted = false;
+      if (Object.keys(this.services$).length === 0) this.somethingGranted = false;
 
       this.toastr.info(this.geManager.getStringToastr(false, true, "PREFERENCES", 'STOP_ACCESSO')  + DS_TYPE[serviceType],
          DS_TYPE[serviceType] + this.geManager.getStringToastr(true, false, 'PREFERENCES', 'STOP_ACCESSO'));
@@ -259,4 +271,26 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     return this.value;
   }
 
+  setURL() {
+    this.fbLoginURL = this.envURL + '/fb/login?user_id=' + this.store.getId();
+    this.igLoginURL = this.envURL + '/ig/login?user_id=' + this.store.getId();
+    this.gaLoginURL = this.envURL + (this.services$[D_TYPE.YT] && this.services$[D_TYPE.YT].granted ? '/ga/yt' : '/ga') + '/login?user_id=' + this.store.getId();
+    this.ytLoginURL = this.envURL + (this.services$[D_TYPE.GA] && this.services$[D_TYPE.GA].granted ? '/ga/yt' : '/yt') + '/login?user_id=' + this.store.getId();
+  }
+
+  async edit(type: number) {
+    let removedPages, pageID;
+
+    switch (type) {
+      case D_TYPE.FB:
+        window.open(this.fbLoginURL, '_self');
+        removedPages = await this.fbService.updatePages().toPromise();
+        pageID = (await this.apiKeyService.getAllKeys().toPromise());
+        removedPages.includes(pageID.fb_page_id) ? await this.apiKeyService.updateKey({
+          fb_page_id: null,
+          service_id: D_TYPE.FB
+        }).toPromise() : null;
+        break;
+    }
+  }
 }

@@ -1,14 +1,19 @@
 <footer class="footer border rounded w-100">
   <div class="container-fluid">
     <div class="float-left">
-      <span>© {{this.copyrightYear}} DoUtDes</span>
+      <span>© {{this.copyrightYear}} DoUtDes </span>
+      <span style="color: #000000">| </span>
+      <a href="../../../assets/Info_privacy.pdf" target="_blank" style="color:#666; margin-left:5px ">{{ 'FOOTER.INFO' | translate }}</a>
     </div>
+
     <div class="float-right">
+
       <span > {{ 'FOOTER.START' | translate }}<b>
+
           <a *ngIf="!drag" href="http://dmi.unica.it" target="_blank" style="color:#666;"> {{ 'FOOTER.DIP' | translate }} </a>
 
           <a *ngIf="drag" target="_blank" style="color:#666;"> {{ 'FOOTER.DIP' | translate }} </a>
-        </b> (UniCA)
+       </b> (UniCA)
       </span>
     </div>
   </div>

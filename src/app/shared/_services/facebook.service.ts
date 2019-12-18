@@ -19,6 +19,11 @@ export class FacebookService {
     return this.http.get<FbPage[]>(`${this.urlRequest}/pages`, {headers});
   }
 
+  updatePages() {
+    const headers = this.getAuthorization();
+    return this.http.get<string[]>(`${this.urlRequest}/updatePages`, {headers});
+  }
+
   getData(metric: string, pageID: string) {
     const headers = this.getAuthorization();
     const params = {

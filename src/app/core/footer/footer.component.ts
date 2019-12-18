@@ -7,7 +7,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 @Component({
   selector: 'app-core-footer',
-  templateUrl: './footer.component.html',
+  templateUrl: './footer.component.html'
 })
 
 export class FooterComponent {

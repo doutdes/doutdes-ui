@@ -67,14 +67,14 @@ export class FeaturePreferencesApiKeysRegisterFormComponent implements OnInit, O
     this.services$ = {};
     let observables = [];
 
-    for(const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
-      if(D_TYPE[SERVICE] !== D_TYPE.CUSTOM) {
+    for (const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
+      if (D_TYPE[SERVICE] !== D_TYPE.CUSTOM) {
         observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
       }
     }
 
     forkJoin(observables).subscribe((services: Service[]) => {
-      for(const i in services) {
+      for (const i in services) {
         this.services$[services[i].type] = services[i];
         this.allGranted = this.allGranted && services[i].granted;
       }
