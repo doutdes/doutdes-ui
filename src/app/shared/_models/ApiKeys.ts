@@ -6,6 +6,7 @@ export interface ApiKey {
   channel_id?: string;
   fb_page_id?: string;
   fbm_page_id?: string;
+  ig_page_id?: string;
 }
 
 export interface Service {
