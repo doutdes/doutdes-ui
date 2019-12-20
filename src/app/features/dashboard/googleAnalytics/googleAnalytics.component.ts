@@ -43,6 +43,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   // @ViewChild(ToastContainerDirective) toastContainer: ToastContainerDirective;
   @ViewChild('selectView') selectView;
   @ViewChild('reportWait') reportWait;
+  @ViewChild('gaPagePreferences') gaPagePreferences;
 
   public D_TYPE = D_TYPE;
   public HARD_DASH_DATA = {
@@ -81,12 +82,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   // Form for init
   selectViewForm: FormGroup;
   loadingForm: boolean;
-  viewList;
+  viewList = [];
   submitted: boolean;
   dashErrors = {
     emptyMiniCards: false,
     noPages: false
   };
+  currentNamePage;
 
   drag: boolean;
   lang: string;
@@ -146,7 +148,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.GEService.loadingScreen.subscribe(value => {
       this.loading = value;
     });
-
     this.addBreadcrumb();
 
     try {
@@ -157,11 +158,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         return;
       }
 
+      await this.getViewList();
+      this.createForm();
       view_id = await this.getViewID();
 
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!view_id) {
-        await this.getViewList();
+
 
         if (this.viewList.length === 0) {
           this.dashErrors.noPages = true;
@@ -179,7 +182,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.selectViewForm = this.formBuilder.group({
             view_id: ['', Validators.compose([Validators.maxLength(15), Validators.required])],
           });
-
           this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
 
           this.openModal(this.selectView, true);
@@ -187,7 +189,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           return;
         }
       }
-
+      this.currentNamePage = await this.getViewName(view_id);
       this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); //this.minDate;
       this.lastDateRange = this.maxDate;
       //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -638,13 +640,16 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     this.loadingForm = true;
 
-    update = await this.apiKeyService.updateKey(key).toPromise();
 
-    if (update) {
-      this.closeModal();
-      await this.ngOnInit();
-    } else {
-      console.error('MANDARE ERRORE');
+    try {
+      update = await this.apiKeyService.updateKey(key).toPromise();
+      if (update) {
+        this.closeModal();
+  //        await this.ngOnInit();
+        location.reload();
+      }
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -825,5 +830,25 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
 
   }
+
+  async getViewName(viewid) {
+    let viewName;
+    try {
+      viewName = _.find(this.viewList, {'id': viewid});
+      console.log('questo è il mio nome su viewName', viewName.name)
+      return viewName.name;
+    } catch (e) {
+      console.log('errore get viewName', e);
+    }
+  }
+
+  createForm() {
+    this.selectViewForm = this.formBuilder.group({
+      view_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+    });
+    this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
+  }
+
+
 
 }

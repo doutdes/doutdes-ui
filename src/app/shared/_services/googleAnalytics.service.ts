@@ -7,6 +7,7 @@ import {GoogleData} from '../_models/GoogleData';
 import {Observable, of} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
 import {ChartParams} from '../_models/Chart';
+import {ViewGoogle} from '../_models/GoogleData';
 
 @Injectable()
 export class GoogleAnalyticsService {
@@ -20,7 +21,7 @@ export class GoogleAnalyticsService {
 
   getViewList() {
     const headers = this.getAuthorization();
-    return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/ga/getViewList', {headers});
+    return this.http.get<ViewGoogle[]>(environment.protocol + environment.host + ':' + environment.port + '/ga/getViewList', {headers});
   }
 
   getData(chartParams: ChartParams): Observable<any> {
