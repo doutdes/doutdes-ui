@@ -28,7 +28,7 @@ export class FacebookCampaignsService {
       breakdowns: chartParams.breakdowns || null,
       domain: chartParams.domain,
       page_id: pageID,
-      campaignsId: chartParams.campaignsId
+      campaignsId: chartParams.campaignsId || null
     };
 
     return this.http.get<FbcAnyData>(`${this.urlRequest}/data`, {headers, params});

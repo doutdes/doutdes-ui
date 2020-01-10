@@ -188,8 +188,8 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
         .pipe(takeUntil(dummySubj))
         .subscribe( data => {
           data = this.CCService.formatTable(data, this.marketing);
-
           this.dataCampaigns = new MatTableDataSource(data);
+
           setTimeout(() => this.dataCampaigns.paginator = this.paginator);
           setTimeout(() => this.dataCampaigns.sort = this.sort);
 
@@ -487,10 +487,8 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   }
 
   async loadMiniCards(pageID) {
-    // 1. Init intervalData (retrieve data of previous month)
     let results;
     let empty = false;
-    let date = new Date(), y = date.getFullYear(), m = date.getMonth();
 
 
     let pageIDs = {};

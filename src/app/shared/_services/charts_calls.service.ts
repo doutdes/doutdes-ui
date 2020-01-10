@@ -73,7 +73,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     let temp, index;
     let myMap;
     let limit;
-
+    console.log(data)
     const female = []; const male = []; const supportArray = []; const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24']; //temporal range for some fbm charts
 
@@ -724,7 +724,6 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;// IG composed clicks
       case IG_CHART.FOLLOWER_COUNT:
         header = [['Data', 'Nuovi utenti']];
-
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
