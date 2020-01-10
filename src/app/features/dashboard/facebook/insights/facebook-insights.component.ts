@@ -25,7 +25,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
-import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, PopoverModule} from 'ngx-bootstrap';
 import {ApiKey} from '../../../../shared/_models/ApiKeys';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ChartParams} from '../../../../shared/_models/Chart';
@@ -88,6 +88,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
   pageList = [];
   submitted: boolean;
   currentNamePage;
+  oldCurrentNamePage:string = "";
 
   @select() filter: Observable<any>;
 
@@ -515,6 +516,10 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         this.pageID = fb_page_id;
       }
       this.currentNamePage = await this.getPageName(this.pageID);
+      if(this.currentNamePage.length > 15){
+        this.oldCurrentNamePage = this.currentNamePage;
+        this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
+      }
       this.firstDateRange = this.minDate;
       this.lastDateRange = this.maxDate;
       this.bsRangeValue = [this.firstDateRange, this.lastDateRange];

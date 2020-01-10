@@ -171,6 +171,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         return;
       }
       const channels = await this.YTService.getChannels().toPromise();
+      console.log('stampo i canali presenti?');
+      console.log(channels);
 
       if (channels.length === 0) {
         this.dashErrors.noPages = true;

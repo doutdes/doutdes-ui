@@ -21,7 +21,7 @@ import {IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
-import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, parseDate, PopoverModule} from 'ngx-bootstrap';
 
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -87,7 +87,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   pageList = [];
   submitted: boolean;
   currentNamePage;
-
+  oldCurrentNamePage = "";
   @select() filter: Observable<any>;
 
   firstDateRange: Date;
@@ -521,6 +521,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       }
 
       this.currentNamePage = await this.getPageName(this.pageID);
+      if(this.currentNamePage.length > 15) {
+        this.oldCurrentNamePage = this.currentNamePage;
+        this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
+      }
       this.firstDateRange = this.minDate;
       this.lastDateRange = this.maxDate;
       this.bsRangeValue = [this.firstDateRange, this.lastDateRange];

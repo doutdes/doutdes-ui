@@ -21,7 +21,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
-import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, parseDate, PopoverModule} from 'ngx-bootstrap';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
@@ -30,7 +30,6 @@ import * as _ from 'lodash';
 import {ChartParams} from '../../../shared/_models/Chart';
 import {TranslateService} from '@ngx-translate/core';
 import {HttpClient} from '@angular/common/http';
-
 
 @Component({
   selector: 'app-feature-dashboard-google',
@@ -89,6 +88,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     noPages: false
   };
   currentNamePage;
+  oldCurrentNamePage:string = "";
 
   drag: boolean;
   lang: string;
@@ -190,6 +190,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         }
       }
       this.currentNamePage = await this.getViewName(view_id);
+      if(this.currentNamePage.length > 15){
+        this.oldCurrentNamePage = this.currentNamePage;
+        this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
+      }
       this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); //this.minDate;
       this.lastDateRange = this.maxDate;
       //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];

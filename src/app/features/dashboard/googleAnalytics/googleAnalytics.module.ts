@@ -10,7 +10,7 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
 import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics.component';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule, BsLocaleService, PopoverModule} from 'ngx-bootstrap';
 import {ngxLoadingAnimationTypes, NgxLoadingModule} from 'ngx-loading';
 import {UserService} from '../../../shared/_services/user.service';
 
@@ -23,27 +23,28 @@ import {TranslateModule} from '@ngx-translate/core';
   declarations: [
     FeatureDashboardGoogleAnalyticsComponent
   ],
-  imports: [
-    SharedModule,
-    CoreModule,
-    ChartsModule,
-    Ng2GoogleChartsModule,
-    AppFooterModule,
-    RouterModule,
-    HttpClientModule,
-    BsDatepickerModule.forRoot(),
-    BsDropdownModule.forRoot(),
-    NgxLoadingModule.forRoot({
-      animationType: ngxLoadingAnimationTypes.threeBounce,
-      backdropBackgroundColour: 'rgba(0,0,0,0.1)',
-      backdropBorderRadius: '4px',
-      primaryColour: '#FFF',
-      secondaryColour: '#FFF',
-      fullScreenBackdrop: true
-    }),
-    DragulaModule,
-    TranslateModule
-  ],
+    imports: [
+        SharedModule,
+        CoreModule,
+        ChartsModule,
+        Ng2GoogleChartsModule,
+        AppFooterModule,
+        RouterModule,
+        HttpClientModule,
+        BsDatepickerModule.forRoot(),
+        BsDropdownModule.forRoot(),
+        NgxLoadingModule.forRoot({
+            animationType: ngxLoadingAnimationTypes.threeBounce,
+            backdropBackgroundColour: 'rgba(0,0,0,0.1)',
+            backdropBorderRadius: '4px',
+            primaryColour: '#FFF',
+            secondaryColour: '#FFF',
+            fullScreenBackdrop: true
+        }),
+        DragulaModule,
+        TranslateModule,
+        PopoverModule
+    ],
   providers: [
     GoogleAnalyticsService,
     BreadcrumbActions,
