@@ -83,6 +83,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   loadingForm: boolean;
   viewList;
   submitted: boolean;
+  title = 'Youtube Analytics';
 
   dashErrors = {
     emptyMiniCards: false,
@@ -171,15 +172,13 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         return;
       }
       const channels = await this.YTService.getChannels().toPromise();
-      console.log('stampo i canali presenti?');
-      console.log(channels);
-
       if (channels.length === 0) {
         this.dashErrors.noPages = true;
         return;
       }
 
       const channelID = channels[0].id;
+      this.title = channels[0].title;
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(channelID);
 
       if (this.dashStored) {

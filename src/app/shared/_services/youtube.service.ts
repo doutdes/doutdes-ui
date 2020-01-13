@@ -18,8 +18,6 @@ export class YoutubeService {
 
   getChannels() {
     const headers = this.getAuthorization();
-    console.log('vediamo che dati recupero');
-    console.log(this.http.get<YtPage[]>(`${this.urlRequest}/channels`, {headers}))
     return this.http.get<YtPage[]>(`${this.urlRequest}/channels`, {headers});
   }
 
