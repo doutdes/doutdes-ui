@@ -88,7 +88,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     noPages: false
   };
   currentNamePage;
-  oldCurrentNamePage:string = "";
+  oldCurrentNamePage: string = '';
 
   drag: boolean;
   lang: string;
@@ -120,22 +120,22 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.userService.get().subscribe(value => {
       this.user = value;
 
-      this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+      this.http.get('./assets/langSetting/langToastr/' + this.conversionSetDefaultLang() + '.json')
         .subscribe(file => {
           this.GEService.langObj.next(file);
         }, error => {
           console.error(error);
         });
 
-      if (this.GEService.getStringFilterDate('FILTER_DATE','LAST_30') == null){
-        this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+      if (this.GEService.getStringFilterDate('FILTER_DATE', 'LAST_30') == null) {
+        this.http.get('./assets/langSetting/langStringVarious/' + this.conversionSetDefaultLang() + '.json')
           .subscribe(file => {
             this.GEService.langFilterDate.next(file);
-            this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
-          })
+            this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE', 'LAST_30');
+          });
 
       } else {
-        this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE','LAST_30');
+        this.dateChoice = this.GEService.getStringFilterDate('FILTER_DATE', 'LAST_30');
       }
     });
 
@@ -190,13 +190,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         }
       }
       this.currentNamePage = await this.getViewName(view_id);
-      if(this.currentNamePage.length > 15){
+      if (this.currentNamePage.length > 15) {
         this.oldCurrentNamePage = this.currentNamePage;
         this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
       }
-      this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); //this.minDate;
+      this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); // this.minDate;
       this.lastDateRange = this.maxDate;
-      //this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+      // this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
       this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange]; // Starts with Last 30 days
 
       this.filter.subscribe(elements => {
@@ -277,7 +277,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
           //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
 
-          this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+          this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
 
@@ -334,7 +334,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.GEService.loadingScreen.next(false);
           //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.','La tua dashboard è vuota');
 
-          this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+          this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
       }
@@ -403,13 +403,13 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           chartToPush.chartData = chartData;
           chartToPush.error = false;
 
-          this.toastr.success(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ADD'),
+          this.toastr.success(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
         } else {
           chartToPush.error = true;
           console.error('Errore recuperando dati per ' + dashChart);
 
-          this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_DATI'),
+          this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_DATI'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI'));
         }
 
@@ -421,7 +421,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         console.error('Error querying the Chart');
         console.error(error1);
 
-        this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_DATI_1'),
+        this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_DATI_1'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI_1'));
       });
   }
@@ -512,12 +512,12 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       this.userService.get().subscribe(value => {
         this.user = value;
 
-        this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+        this.http.get('./assets/langSetting/langBreadcrumb/' + this.conversionSetDefaultLang() + '.json')
           .subscribe(file => {
             this.GEService.langBread.next(file);
             bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('SITO_WEB'), '/dashboard/google'));
-          })
-      })
+          });
+      });
 
     } else {
       bread.push(new Breadcrumb(this.GEService.getStringBreadcrumb('SITO_WEB'), '/dashboard/google'));
@@ -549,11 +549,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
       if (error.status === 500) {
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_CLEAR'),
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_CLEAR'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_CLEAR'));
       } else {
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'NO_RIMOZIONE'),
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_RIMOZIONE'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
       }
     });
@@ -649,7 +649,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       update = await this.apiKeyService.updateKey(key).toPromise();
       if (update) {
         this.closeModal();
-  //        await this.ngOnInit();
+        //        await this.ngOnInit();
         location.reload();
       }
     } catch (e) {
@@ -682,7 +682,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         result = response['exists'] && isPermissionGranted['granted'];
       } else {
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_PERMESSI'),
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ERR_PERMESSI'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_PERMESSI'));
       }
 
@@ -767,11 +767,11 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.drag = false;
         this.GEService.dragAndDrop.next(this.drag);
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'SUC_ORD'),
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'SUC_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
       }, error => {
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_ORD'),
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ERR_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_ORD'));
         console.log('Error updating the Dashboard');
         console.log(error);
@@ -784,49 +784,49 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.GEService.dragAndDrop.next(this.drag);
   }
 
-  conversionSetDefaultLang () {
+  conversionSetDefaultLang() {
 
     switch (this.user.lang) {
-      case "it" :
-        this.value = "Italiano";
+      case 'it' :
+        this.value = 'Italiano';
         break;
-      case "en" :
-        this.value = "English";
+      case 'en' :
+        this.value = 'English';
         break;
       default:
-        this.value = "Italiano";
+        this.value = 'Italiano';
     }
 
     return this.value;
   }
 
-  getNameMinicard (id_minicard) {
+  getNameMinicard(id_minicard) {
 
     this.userService.get().subscribe(data => {
       this.user = data;
 
-      this.http.get("./assets/langSetting/langStringVarious/" + this.conversionSetDefaultLang() + ".json")
+      this.http.get('./assets/langSetting/langStringVarious/' + this.conversionSetDefaultLang() + '.json')
         .subscribe(file => {
           this.GEService.langFilterDate.next(file);
 
           switch (id_minicard) {
             case '0' :
-              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("GOOGLE", "UT_TOT");
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('GOOGLE', 'UT_TOT');
               break;
             case '1' :
-              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("GOOGLE", "VISITE_TOT");
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('GOOGLE', 'VISITE_TOT');
               break;
             case '2' :
-              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("GOOGLE", "FREQ_RIMB");
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('GOOGLE', 'FREQ_RIMB');
               break;
             case '3' :
-              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard("GOOGLE", "DU_SES");
+              this.miniCards[id_minicard].name = this.GEService.getStringNameMinicard('GOOGLE', 'DU_SES');
               break;
           }
 
         }, err => {
           console.error(err);
-        })
+        });
 
     }, err => {
       console.error(err);
@@ -839,7 +839,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     let viewName;
     try {
       viewName = _.find(this.viewList, {'id': viewid});
-      console.log('questo è il mio nome su viewName', viewName.name)
+      console.log('questo è il mio nome su viewName', viewName.name);
       return viewName.name;
     } catch (e) {
       console.log('errore get viewName', e);
@@ -852,7 +852,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     });
     this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
   }
-
 
 
 }

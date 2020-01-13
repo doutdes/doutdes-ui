@@ -88,7 +88,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
   pageList = [];
   submitted: boolean;
   currentNamePage;
-  oldCurrentNamePage:string = "";
+  oldCurrentNamePage: string = '';
 
   @select() filter: Observable<any>;
 
@@ -138,7 +138,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
     this.userService.get().subscribe(value => {
       this.user = value;
 
-      this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+      this.http.get('./assets/langSetting/langToastr/' + this.conversionSetDefaultLang() + '.json')
         .subscribe(file => {
           this.GEService.langObj.next(file);
         }, error => {
@@ -516,7 +516,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         this.pageID = fb_page_id;
       }
       this.currentNamePage = await this.getPageName(this.pageID);
-      if(this.currentNamePage.length > 15){
+      if (this.currentNamePage.length > 15) {
         this.oldCurrentNamePage = this.currentNamePage;
         this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
       }
@@ -700,7 +700,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         location.reload();
       }
     } catch (e) {
-      console.log (e);
+      console.log(e);
     }
   }
 

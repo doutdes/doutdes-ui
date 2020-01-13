@@ -43,6 +43,7 @@ const PrimaryWhite = '#ffffff';
 
 export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDestroy {
   title = 'Facebook Marketing';
+  oldTitle = '';
   public miniCards: MiniCard[] = FbmMiniCards;
   public chartArray$: Array<DashboardCharts> = [];
   loaded: boolean = false;
@@ -196,6 +197,10 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
         }
       }
       await this.getPageName();
+      if (this.title.length > 15) {
+        this.oldTitle = this.title;
+        this.title = this.title.slice(0, 13) + '...';
+      }
       this.createForm();
 
       this.firstDateRange = this.minDate;
