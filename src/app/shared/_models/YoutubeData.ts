@@ -59,6 +59,7 @@ export const YT_PALETTE = {
 
 export interface YtPage {
   name: string;
+  title: string;
   id: string;
 }
 
