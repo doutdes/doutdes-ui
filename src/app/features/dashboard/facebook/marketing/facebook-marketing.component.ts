@@ -197,7 +197,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
         }
       }
       await this.getPageName();
-      if (this.title.length > 15) {
+      if (this.title.length > 15 && this.title !== 'Facebook Marketing') {
         this.oldTitle = this.title;
         this.title = this.title.slice(0, 13) + '...';
       }
