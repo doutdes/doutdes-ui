@@ -180,6 +180,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
 
       const channelID = channels[0].id;
       this.title = channels[0].title;
+      this.oldTitle = this.title;
       if (this.title.length > 15) {
         this.oldTitle = this.title;
         this.title = this.title.slice(0, 13) + '...';
