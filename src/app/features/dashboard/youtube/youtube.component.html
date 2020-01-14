@@ -2,7 +2,7 @@
 <div class="row rounded py-sm-4 title-header">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()"  class="my-auto float-left">{{title}}
-      <ng-template *ngIf="oldTitle !== '' " #popTemplate> <
+      <ng-template  #popTemplate>
         <p style="font-size: 14px; margin: 0;">{{oldTitle}}</p>
       </ng-template>
     </h2>

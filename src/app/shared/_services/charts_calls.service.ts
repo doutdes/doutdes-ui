@@ -1668,9 +1668,9 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             height: 210,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
-            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
+              gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
