@@ -516,8 +516,9 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         this.pageID = fb_page_id;
       }
       this.currentNamePage = await this.getPageName(this.pageID);
+
+      this.oldCurrentNamePage = this.currentNamePage;
       if (this.currentNamePage.length > 15) {
-        this.oldCurrentNamePage = this.currentNamePage;
         this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
       }
       this.firstDateRange = this.minDate;

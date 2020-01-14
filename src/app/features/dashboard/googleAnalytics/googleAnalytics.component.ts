@@ -190,8 +190,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         }
       }
       this.currentNamePage = await this.getViewName(view_id);
+      this.oldCurrentNamePage = this.currentNamePage;
       if (this.currentNamePage.length > 15) {
-        this.oldCurrentNamePage = this.currentNamePage;
+
         this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
       }
       this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); // this.minDate;
