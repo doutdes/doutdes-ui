@@ -88,7 +88,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     noPages: false
   };
   currentNamePage;
-  oldCurrentNamePage: string = '';
+  oldCurrentNamePage: string = 'Google Analytics';
 
   drag: boolean;
   lang: string;
@@ -192,6 +192,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       this.currentNamePage = await this.getViewName(view_id);
       if (this.currentNamePage.length > 15) {
         this.oldCurrentNamePage = this.currentNamePage;
+        console.log('questo è oldCurrentNamePage: ', this.oldCurrentNamePage);
         this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
       }
       this.firstDateRange = subDays(this.maxDate, this.FILTER_DAYS.thirty); // this.minDate;
@@ -839,7 +840,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     let viewName;
     try {
       viewName = _.find(this.viewList, {'id': viewid});
-      console.log('questo è il mio nome su viewName', viewName.name);
       return viewName.name;
     } catch (e) {
       console.log('errore get viewName', e);

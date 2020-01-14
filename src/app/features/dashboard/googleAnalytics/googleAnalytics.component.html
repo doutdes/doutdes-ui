@@ -3,10 +3,10 @@
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
       <h2  #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()" *ngIf="viewList.length !== 0 && loaded"> {{currentNamePage}}
         <i *ngIf="viewList.length > 1" class="fas fa-sort-down cursor-pointer" (click)="openModal(gaPagePreferences)" style="font-size: 1.5em"></i>
+        <ng-template #popTemplate >
+          <p style="font-size: 14px; margin: 0;">{{oldCurrentNamePage}}</p>
+        </ng-template>
       </h2>
-    <ng-template *ngIf="oldCurrentNamePage !== '' " #popTemplate> <
-      <p style="font-size: 14px; margin: 0;">{{oldCurrentNamePage}}</p>
-    </ng-template>
     <h2 *ngIf = "!loaded" class="my-auto float-left">Google Analytics</h2>
   </div> <!-- title -->
 
