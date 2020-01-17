@@ -6,7 +6,7 @@ export const IG_CHART = { // ID charts in the database
   AUD_CITY: 19,
   AUD_COUNTRY: 20,
   ACTION_PERFORMED: 21,
-  //ONLINE_FOLLOWERS: 22,
+  ONLINE_FOLLOWERS: 22,
   PROFILE_VIEWS: 23,
   FOLLOWER_COUNT: 28,
 };

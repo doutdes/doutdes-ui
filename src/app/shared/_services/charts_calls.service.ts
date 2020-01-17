@@ -635,52 +635,52 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         }
 
         break; // IG Audience Locale
-      // case IG_CHART.ONLINE_FOLLOWERS:
-      //
-      //   interval = 3; // Interval of hours to show
-      //   header = [['Follower online', 'Min', 'Media', 'Max']];
-      //
-      //   for (let i = 0; i < data.length; i++) {
-      //     keys.push(data[i]['value']);
-      //   }
-      //
-      //   for (let i = 0; i < 24; i += interval) {
-      //     // MIN | AVG | MAX
-      //     chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, 0]);
-      //   }
-      //
-      //   // putting a unique entry in chartData for every existent age range
-      //   for (let day = 0; day < keys.length; day++) {
-      //
-      //     limit = keys[day] ? Object.keys(keys[day]).length : 0;
-      //
-      //     for (let h_interval = 0; h_interval < limit; h_interval += interval) {
-      //       temp = 0;
-      //       index = 0;
-      //       for (let hour = h_interval; hour < (h_interval + interval); hour++) {
-      //         temp += isNaN(parseInt(keys[day][hour], 10)) ? 0 : parseInt(keys[day][hour], 10);
-      //         index = (hour + 1) / interval;
-      //       }
-      //
-      //       chartData[index - 1][2] += temp;
-      //
-      //       if (temp < chartData[index - 1][1]) {
-      //         chartData[index - 1][1] = temp;
-      //       }
-      //
-      //       if (temp > chartData[index - 1][3]) {
-      //         chartData[index - 1][3] = temp;
-      //       }
-      //     }
-      //   }
-      //
-      //
-      //   for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
-      //     chartData[i][2] /= keys.length;
-      //     chartData[i][1] = chartData[i][1] === Number.MAX_SAFE_INTEGER ? 0 : chartData[i][1];
-      //   }
-      //
-      //   break; // IG Online followers
+      case IG_CHART.ONLINE_FOLLOWERS:
+
+        interval = 3; // Interval of hours to show
+        header = [['Follower online', 'Min', 'Media', 'Max']];
+
+        for (let i = 0; i < data.length; i++) {
+          keys.push(data[i]['value']);
+        }
+
+        for (let i = 0; i < 24; i += interval) {
+          // MIN | AVG | MAX
+          chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, 0]);
+        }
+
+        // putting a unique entry in chartData for every existent age range
+        for (let day = 0; day < keys.length; day++) {
+
+          limit = keys[day] ? Object.keys(keys[day]).length : 0;
+
+          for (let h_interval = 0; h_interval < limit; h_interval += interval) {
+            temp = 0;
+            index = 0;
+            for (let hour = h_interval; hour < (h_interval + interval); hour++) {
+              temp += isNaN(parseInt(keys[day][hour], 10)) ? 0 : parseInt(keys[day][hour], 10);
+              index = (hour + 1) / interval;
+            }
+
+            chartData[index - 1][2] += temp;
+
+            if (temp < chartData[index - 1][1]) {
+              chartData[index - 1][1] = temp;
+            }
+
+            if (temp > chartData[index - 1][3]) {
+              chartData[index - 1][3] = temp;
+            }
+          }
+        }
+
+
+        for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
+          chartData[i][2] /= keys.length;
+          chartData[i][1] = chartData[i][1] === Number.MAX_SAFE_INTEGER ? 0 : chartData[i][1];
+        }
+
+        break; // IG Online followers
       case IG_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
 
@@ -1592,7 +1592,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
+              gridLines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
@@ -1617,7 +1617,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
+              gridLines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
@@ -1644,7 +1644,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
+              gridLines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
@@ -1694,9 +1694,9 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             height: 210,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
-            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            hAxis: {gridLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
+              gridLines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
@@ -1719,9 +1719,9 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             height: 210,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
-            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            hAxis: {gridLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
+              gridLines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
@@ -1744,9 +1744,9 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             height: 210,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
-            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            hAxis: {gridLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
+              gridLines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
               textPosition: 'in',
@@ -1769,9 +1769,9 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
       //       height: 210,
       //       pointSize: data.length > 15 ? 0 : 7,
       //       pointShape: 'circle',
-      //       hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+      //       hAxis: {gridLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
       //       vAxis: {
-      //         grindLines: {color: '#eaeaea', count: 5},
+      //         gridLines: {color: '#eaeaea', count: 5},
       //         minorGridlines: {color: 'transparent'},
       //         minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
       //         textPosition: 'in',
@@ -1815,7 +1815,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             height: 210,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
-            hAxis: {grindLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            hAxis: {gridLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
               grindLines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
@@ -2332,23 +2332,23 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           }
         };
         break; // IG Audience Locale
-      // case IG_CHART.ONLINE_FOLLOWERS:
-      //   formattedData = {
-      //     chartType: 'ColumnChart',
-      //     dataTable: data,
-      //     chartClass: 9,
-      //     options: {
-      //       chartArea: {left: 0, right: 0, height: 290, top: 0},
-      //       height: 310,
-      //       vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
-      //       colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
-      //       areaOpacity: 0.4,
-      //       legend: {position: 'top', maxLines: 3},
-      //       bar: {groupWidth: '75%'},
-      //       isStacked: true,
-      //     }
-      //   };
-      //   break; // IG Online followers
+      case IG_CHART.ONLINE_FOLLOWERS:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 270, top: 20},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
+            areaOpacity: 0.4,
+            legend: {position: 'top', maxLines: 3},
+            bar: {groupWidth: '75%'},
+            isStacked: true,
+          }
+        };
+        break; // IG Online followers
       case IG_CHART.IMPRESSIONS:
         formattedData = {
           chartType: 'AreaChart',
