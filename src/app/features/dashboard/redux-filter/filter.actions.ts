@@ -196,6 +196,13 @@ export class FilterActions {
               case D_TYPE.FBM:
                 chart.chartData = chart.chartData.filter(el => parseDate(el.date_stop).getTime() >= filterInterval.first.getTime() && parseDate(el.date_stop).getTime() <= filterInterval.last.getTime());
                 break;
+              case D_TYPE.IG:
+                chart.chartData =
+                  chart.period !== 'lifetime'
+                  ? chart.chartData.filter(
+                    el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last)
+                  : chart.chartData;
+                break;
               default:
                 chart.chartData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
                 break;
@@ -205,6 +212,7 @@ export class FilterActions {
                           ? chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime())
                           : chart.chartData.filter(el => (new Date(el.end_time)) >= filterInterval.first && (new Date(el.end_time)) <= filterInterval.last);
             */
+
             chart.chartData = this.CCService.formatChart(chart.chart_id, chart.chartData);
             chart.aggregated = this.ADService.getAggregatedData(this.currentDashboard.data[i], filterInterval);
           }

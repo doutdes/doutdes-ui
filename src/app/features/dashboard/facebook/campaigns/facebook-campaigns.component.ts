@@ -133,6 +133,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
         if (this.pageList.length === 0) {
           this.dashErrors.noPages = true;
+          this.loading = false;
           return;
         }
 
@@ -268,7 +269,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
       this.CCService.retrieveChartData(D_TYPE.FBC, chartParams, this.fbm_page_id)
         .pipe(takeUntil(dummySubj))
         .subscribe( data => {
-          if (this.marketing === true) {
+          if (this.marketing === true) { // info of the status of the campaigns
             this.clickedAds = true;
 
             this.dataAdsets.data.forEach( d =>
@@ -279,7 +280,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
             this.dataAdsets.data = this.CCService.formatTable(data, this.marketing);
 
-          } else {
+          } else { // info of marketing for the campaigns
             data = this.CCService.formatTable(data, this.marketing);
             this.dataAds = new MatTableDataSource(data);
           }
@@ -290,7 +291,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     }
   }
 
-  changeData = (): void => {
+  changeData = (): void => { // switch information of the campaigns (marketing, status)
     this.adSets = false;
     this.ads = false;
     this.clickedAdset = '';

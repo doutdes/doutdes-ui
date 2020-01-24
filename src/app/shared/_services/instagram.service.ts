@@ -34,8 +34,9 @@ export class InstagramService {
       interval: `${chartParams.interval}`,
     };
 
-
-    return this.http.get<IgData>(`${this.urlRequest}/data`, {headers, params});
+    const miserve = this.http.get<IgData>(`${this.urlRequest}/data`, {headers, params});
+    console.log(miserve)
+    return miserve;
   }
 
   getMedia(pageID) {

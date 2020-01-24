@@ -67,6 +67,7 @@
     "LAST90": "Last 90 days",
     "MINICARD": "The minicards are not available, as the business profile has been recently activated.",
     "MINICARD_2": "An error was encountered while loading the minicards.",
+    "NO_FBM": "At the moment, you don't have access to a Facebook marketing page.",
     "NO_FB": "At the moment, you don't have access to a Facebook page. Create a page or become an administrator to observe its analytics here.",
     "NO_GOOGLE": "At the moment, you do not have access to a Google Analytics profile. Enter the monitoring snippet on a website to view its analytics here.",
     "NO_INSTAGRAM": "At the moment, you do not have access to an Instagram page with a business profile. Create a page or become an administrator to observe its analytics here.",

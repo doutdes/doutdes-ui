@@ -84,6 +84,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    await this.checkPage();
+
     const error = this.route.snapshot.queryParamMap.get('err');
     this.addBreadcrumb();
     this.geManager.loadingScreen.next(true);
@@ -279,18 +281,23 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   }
 
   async edit(type: number) {
-    let removedPages, pageID;
-
     switch (type) {
       case D_TYPE.FB:
         window.open(this.fbLoginURL, '_self');
-        removedPages = await this.fbService.updatePages().toPromise();
-        pageID = (await this.apiKeyService.getAllKeys().toPromise());
-        removedPages.includes(pageID.fb_page_id) ? await this.apiKeyService.updateKey({
-          fb_page_id: null,
-          service_id: D_TYPE.FB
-        }).toPromise() : null;
         break;
+    }
+  }
+
+  async checkPage() {
+    let removedPages, pageID;
+
+    pageID = (await this.apiKeyService.getAllKeys().toPromise());
+    if (pageID) {
+      removedPages = await this.fbService.updatePages().toPromise();
+      removedPages.includes(pageID.fb_page_id) ? await this.apiKeyService.updateKey({
+        fb_page_id: null,
+        service_id: D_TYPE.FB
+      }).toPromise() : null;
     }
   }
 }

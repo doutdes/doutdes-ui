@@ -5,6 +5,9 @@ import {Observable} from 'rxjs';
 import {User} from '../../shared/_models/User';
 import {UserService} from '../../shared/_services/user.service';
 import {TranslateService} from '@ngx-translate/core';
+import {FacebookMarketingService} from '../../shared/_services/facebook-marketing.service';
+import {ToastrService} from 'ngx-toastr';
+import {ApiKeysService} from '../../shared/_services/apikeys.service';
 
 @Component({
   selector: 'app-core-sidebar',
@@ -20,21 +23,30 @@ export class SidebarComponent {
   value: string;
   tmp: string;
   user: User;
+  fbm_flag = false;
+  hide: boolean;
 
   constructor(
     private globalEventService: GlobalEventsManagerService,
     private storeService: StoreService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private FBMService: FacebookMarketingService,
+    private apiKeyService: ApiKeysService,
   ) {
       //this.drag = this.globalEventService.dragAndDrop.asObservable();
 
     this.globalEventService.draggable.subscribe(value => {
-      this.drag = value
+      this.drag = value;
     });
 
     }
 
-  ngOnInit() {
+  async ngOnInit() {
+    const pageID = (await this.apiKeyService.getAllKeys().toPromise());
+    if (pageID) {
+      this.fbm_flag = (await this.FBMService.getPages().toPromise()).length > 0;
+    }
+    if (!this.fbm_flag) { this.hide = true; }
     this.globalEventService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value;
       this.userType = parseInt(this.storeService.getType());
@@ -49,7 +61,8 @@ export class SidebarComponent {
   public checkDrag () {
     if (this.drag) {
       return true;
-    } else
+    } else {
       return false;
+    }
   }
 }

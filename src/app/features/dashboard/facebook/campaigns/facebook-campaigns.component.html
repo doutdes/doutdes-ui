@@ -1,3 +1,4 @@
+
 <div class="row rounded py-sm-4 title-header">
   <div class="col-xl-6 col-md-6 col-sm-6 col-12 pl-0 d-sm-block d-none">
     <h2 class="my-auto float-left"> {{title}} </h2>
@@ -14,9 +15,11 @@
         <li class="dropdown-item cursor-pointer" (click)="closeTable()">
           <i class="fas fa-trash-alt mr-2"></i> {{ 'DASHBOARD.CHIUDI' | translate }}
         </li>
+<!--
         <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()">
           <i class="fas fa-file-pdf mr-2"></i> {{ 'DASHBOARD.ESPORT' | translate }}
         </li>
+-->
         <li class="dropdown-item cursor-pointer" (click)="changeData()">
           <i class="fas fa-chart-line mr-2"></i> {{ 'DASHBOARD.' + changeDataTitle | translate }}
         </li>
@@ -26,6 +29,12 @@
   </div>
   <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>
+
+<div *ngIf="dashErrors.noPages" class="alert alert-danger px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5><i class="fas fa-exclamation-triangle fa-2x float-left mt-1 mr-3"></i>
+    {{ 'DASHBOARD.NO_FBM' | translate }}
+  </h5>
+</div> <!-- ERR => No pages -->
 
 <div *ngIf="dashErrors.emptyMiniCards" class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">
   <h5>{{ 'DASHBOARD.MINICARD' | translate }}</h5>
@@ -61,7 +70,9 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumnsCampaigns; sticky: true"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumnsCampaigns;"></tr>
   </table>
+  <div *ngIf="dataCampaigns.filteredData !== undefined">
   <div *ngIf="dataCampaigns.filteredData.length === 0" class="empty-elem">{{ 'DASHBOARD.NO_ELEM' | translate }}</div>
+  </div>
   <mat-paginator #MatPaginator [pageSizeOptions]="[5, 10]" showFirstLastButtons></mat-paginator>
 </div>
 

@@ -18,16 +18,23 @@
       <a [routerLink]="[drag ? '#' : '/dashboard/google']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">{{'MENU.SITO_WEB' | translate }}</span>
       </a>
-      <a [routerLink]="" class="list-group-item list-group-item-action">
+      <a class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Facebook</span>
+        <span *ngIf="!fbm_flag" style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="far fa-question-circle" #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()"></span>
       </a>
       <a [routerLink]="[drag ? '#' : '/dashboard/facebook/insights']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed ml-4">Insights</span>
       </a>
-      <a [routerLink]="[drag ? '#' : '/dashboard/facebook/marketing']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag || hide ? '#' : '/dashboard/facebook/marketing']" [ngClass]="{
+      'list-group-item list-group-item-action' : fbm_flag === true,
+      'list-group-item list-group-item-action disabled' : fbm_flag === false
+      }">
         <span class="menu-collapsed ml-4">Marketing</span>
       </a>
-      <a [routerLink]="[drag ? '#' : '/dashboard/facebook/campaigns']" class="list-group-item list-group-item-action">
+      <a [routerLink]="[drag || hide ? '#' : '/dashboard/facebook/campaigns']" [ngClass]="{
+      'list-group-item list-group-item-action' : fbm_flag === true,
+      'list-group-item list-group-item-action disabled' : fbm_flag === false
+      }">
         <span class="menu-collapsed ml-4">Campaigns</span>
       </a>
       <a [routerLink]="[drag ? '#' : '/dashboard/instagram']" class="list-group-item list-group-item-action">
@@ -127,3 +134,6 @@
   <!-- List Group END-->
   <!--</div>-->
 </div>
+<ng-template #popTemplate>
+  <p style="font-size: 14px; margin: 0;">{{ 'DASHBOARD.NO_FBM' | translate }}</p>
+</ng-template>

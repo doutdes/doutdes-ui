@@ -19,6 +19,9 @@ import {UserService} from '../../shared/_services/user.service';
 import {User} from '../../shared/_models/User';
 import {consoleTestResultHandler} from 'tslint/lib/test';
 import {HttpClient} from '@angular/common/http';
+import {ApiKeysService} from '../../shared/_services/apikeys.service';
+import {FacebookService} from '../../shared/_services/facebook.service';
+import {FbData} from '../../shared/_models/FacebookData';
 
 @Component({
   selector: 'app-emptycard',
@@ -77,6 +80,9 @@ export class EmptycardComponent implements OnInit {
     public translate: TranslateService,
     private http: HttpClient,
     private userService: UserService,
+    private apiKeyService: ApiKeysService,
+    private FBService: FacebookService,
+
   ) {
     this.userService.get().subscribe(value => {
       this.user = value;

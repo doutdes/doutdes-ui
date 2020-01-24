@@ -11,6 +11,7 @@ import {GA_CHART, GA_PALETTE} from '../_models/GoogleData';
 import {FB_CHART, FB_PALETTE} from '../_models/FacebookData';
 import {IG_CHART, IG_PALETTE} from '../_models/InstagramData';
 import * as moment from 'moment';
+import {subDays} from 'date-fns';
 
 import {YT_CHART, YT_PALETTE} from '../_models/YoutubeData';
 import {ChartParams} from '../_models/Chart';
@@ -73,7 +74,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     let temp, index;
     let myMap;
     let limit;
-    console.log(data)
+
     const female = []; const male = []; const supportArray = []; const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24']; //temporal range for some fbm charts
 
@@ -724,10 +725,51 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;// IG composed clicks
       case IG_CHART.FOLLOWER_COUNT:
         header = [['Data', 'Nuovi utenti']];
+
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
         break; // IG FollowerCount
+      case IG_CHART.LOST_FOLLOWERS:
+        header = [['Data', 'Follower persi']];
+        let diff = 0;
+
+        if (data.length > 0  && data[0]['business'].length > 1) {
+          const follower_day = data[1]['follower_count'];
+          const business = data[0]['business'];
+          let i = (business.length - 1);
+          while (i >= 1) {
+            diff = (business[i - 1].followers_count - follower_day[i - 1].value) - (business[i].followers_count); //- follower_day[i].value
+            diff = diff < 0 ? 0 : diff;
+
+            chartData.push([
+              moment(business[i].end_time).toDate(),
+              diff
+            ]);
+            i--;
+          }
+        } else {
+          chartData.push([new Date(), diff]);
+        }
+        break;
+      case IG_CHART.INFO_CLICKS_COL:
+        header = [['Informazione', 'Valore']];
+
+        const metrics = ['Email', 'Informazioni sede', 'Telefono', 'Messaggi', 'Sito'];
+
+        const acc = [];
+        let count = 0;
+
+        for (let i = 0; i < 5; i++) {
+          data[0]['data'][i].forEach(el => count += el.value);
+          acc[i] = count;
+          count = 0;
+        }
+
+        for (let i = 0; i < 5; i++) {
+          chartData.push([metrics[i], acc[i]]);
+        }
+        break;
 
       case YT_CHART.VIEWS:
         header = [['Data', 'Visualizzazioni']];
@@ -2449,7 +2491,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           }
         };
         break; // IG Follower count
-      case IG_CHART.FOLLOWER_COUNT:
+      case IG_CHART.LOST_FOLLOWERS:
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
@@ -2463,16 +2505,41 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0, max: 1},
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
-            colors: [IG_PALETTE.FUCSIA.C3],
+            colors: [IG_PALETTE.AMARANTH.C5],
             areaOpacity: 0.1
           }
         };
+        break;
+      case IG_CHART.INFO_CLICKS_COL:
+        formattedData = {
+              chartType: 'ColumnChart',
+              dataTable: data,
+              chartClass: 9,
+              options: {
+                chartArea: {left: 0, right: 0, height: 270, top: 0},
+                height: 310,
+                vAxis: {
+                  minValue: 0,
+                  viewWindowMode: 'explicit',
+                  viewWindow: {min: 0, max: 50},
+                  gridlines: {color: '#eaeaea', count: 5},
+                  textPosition: 'in',
+                  textStyle: {color: '#999'}
+                  },
+                colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
+                areaOpacity: 0.4,
+                bar: {groupWidth: '75%'},
+                isStacked: true,
+              }
+            };
         break;
 
       case YT_CHART.VIEWS:
@@ -4311,7 +4378,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
     switch (measure) {
       case 'count':
-        value = data['followers_count'];
+        value = data[data.length - 1]['followers_count'];
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
       case 'post-sum':
         data = data.filter(el => (new Date(el.timestamp)) >= intervalDate.first && (new Date(el.timestamp)) <= intervalDate.last);
@@ -4473,7 +4540,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     return keys.length;
   }
 
-  public formatTable(data, marketing, otherData?) {
+  public formatTable(data, marketing, otherData?) { // format data that api return
     let supportArray = [];
     if (marketing) {
       data.data.forEach(d =>
@@ -4518,21 +4585,5 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
       })
     ); // TODO IMPROVE
     return array;
-  }
-
-  public chooseTable (type) {
-    let value;
-    switch (type) {
-      case 'campaigns':
-        value = 101;
-        break;
-      case 'adSets':
-        value = 102;
-        break;
-      case 'ads':
-        value = 103;
-        break;
-    }
-    return value;
   }
 }

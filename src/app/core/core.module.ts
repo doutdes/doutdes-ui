@@ -19,6 +19,9 @@ import {HttpClient} from '@angular/common/http';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {UserService} from '../shared/_services/user.service';
+import {FacebookService} from '../shared/_services/facebook.service';
+import {FacebookMarketingService} from '../shared/_services/facebook-marketing.service';
+import {ApiKeysService} from '../shared/_services/apikeys.service';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -53,6 +56,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     UserService,
     DashboardService,
     FilterActions,
+    FacebookMarketingService,
+    ApiKeysService,
     {provide: 'mapsApiKey', useValue: 'AIzaSyAjKzYOB3pXeI79ONHTp066mDb3xzTtUKc'}
   ],
   exports: [

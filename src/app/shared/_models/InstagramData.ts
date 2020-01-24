@@ -9,6 +9,9 @@ export const IG_CHART = { // ID charts in the database
   //ONLINE_FOLLOWERS: 22,
   PROFILE_VIEWS: 23,
   FOLLOWER_COUNT: 28,
+  LOST_FOLLOWERS: 101,
+  INFO_CLICKS_COL: 102,
+  INFO_CLICKS_TORTA: 103
 };
 
 export const IG_PALETTE = {

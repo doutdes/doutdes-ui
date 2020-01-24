@@ -250,6 +250,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
           forkJoin(observables)
             .subscribe(dataArray => {
+
               for (let i = 0; i < dataArray.length; i++) {
 
                 const chart: DashboardCharts = charts[i];
@@ -257,6 +258,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                   chart.chartData = dataArray[i];
+
                   let date = new Date(chart.chartData[0]['end_time']);
 
                   if (date < this.minDate) {
@@ -333,7 +335,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
         }
-
         this.filterActions.addChart(chartToPush);
         this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
 
