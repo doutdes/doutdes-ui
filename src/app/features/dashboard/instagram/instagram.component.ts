@@ -249,6 +249,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         // Retrieving dashboard charts
         this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
 
+          charts =charts.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
           if (charts && charts.length > 0) { // Checking if dashboard is not empty
             // Retrieves data for each chart
             charts.forEach(chart => {
@@ -257,7 +258,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                 period: chart.period,
                 interval: chart.interval
               };
-              observables.push(this.CCService.retrieveChartData(chart.type, chartParams, this.pageID));
+                observables.push(this.CCService.retrieveChartData(chart.type, chartParams, this.pageID));
+
             });
 
             forkJoin(observables)
@@ -268,7 +270,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                   const chart: DashboardCharts = charts[i];
 
                   if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-
                     chart.chartData = dataArray[i];
                     let date = new Date(chart.chartData[0]['end_time']);
 
@@ -286,7 +287,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
                   chartsToShow.push(chart); // Original Data
                 }
-                chartsToShow = chartsToShow.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
+               // chartsToShow = chartsToShow.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
                 currentData.data = chartsToShow;
 
                 this.filterActions.initData(currentData);

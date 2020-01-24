@@ -236,7 +236,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         // Retrieving dashboard charts
         this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
           .subscribe(charts => {
-
+            charts = charts.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
             if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
               charts.forEach(chart => {
