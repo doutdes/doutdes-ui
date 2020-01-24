@@ -24,7 +24,7 @@ import {parse} from 'ts-node';
 import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
 @Injectable()
-  export class ChartsCallsService {
+export class ChartsCallsService {
 
   constructor(
     private facebookService: FacebookService,
@@ -74,7 +74,10 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     let myMap;
     let limit;
 
-    const female = []; const male = []; const supportArray = []; const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
+    const female = [];
+    const male = [];
+    const supportArray = [];
+    const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24']; //temporal range for some fbm charts
 
     switch (ID) {
@@ -106,7 +109,6 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;  // Page Impressions
       case FB_CHART.FANS_COUNTRY_PIE:
         header = [['Paese', 'Numero fan']];
-
         // Push data pairs in the Chart array
         chartData = Object.keys(data[data.length - 1].value).map(function (k) {
           return [k, data[data.length - 1].value[k]];
@@ -987,7 +989,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', '']);
         }
         break;
       case FBM_CHART.GENDER_AGE_SPEND:
@@ -1008,7 +1010,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', '']);
         }
         break;
       case FBM_CHART.GENDER_AGE_CLICKS:
@@ -1029,7 +1031,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', '']);
         }
         break;
       case FBM_CHART.GENDER_AGE_INLINE:
@@ -1050,7 +1052,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', '']);
         }
         break;
       case FBM_CHART.GENDER_AGE_CPC:
@@ -1060,18 +1062,18 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         age.forEach(a =>
           data.filter(d => d.gender === 'female' && d.age === a).length !== 0
-          ? (v = data.filter(d => d.gender === 'female' && d.age === a),
+            ? (v = data.filter(d => d.gender === 'female' && d.age === a),
               female.push(v[0]['cpc'] * -1))
-          : female.push(0));
+            : female.push(0));
 
         age.forEach(a =>
           data.filter(d => d.gender === 'male' && d.age === a).length !== 0
-          ? (v = data.filter(d => d.gender === 'male' && d.age === a),
+            ? (v = data.filter(d => d.gender === 'male' && d.age === a),
               male.push(v[0]['cpc']))
-          : male.push(0));
+            : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', '']);
         }
         break;
       case FBM_CHART.GENDER_AGE_CTR:
@@ -1092,7 +1094,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', '']);
         }
         break;
       case FBM_CHART.GENDER_AGE_CPP:
@@ -1113,7 +1115,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             : male.push(0));
 
         for (let i = 0; i < 6; i++) {
-          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', ""]);
+          chartData.push([(age[i]), parseFloat(female[i]), '#FF19FF', age[i], parseFloat(male[i]), '#1940FF', '']);
         }
         break;
 
@@ -1186,7 +1188,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Impression']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].impressions, 10) + parseInt(data[i+1].impressions, 10) + parseInt(data[i+2].impressions, 10)); //fascia oraria con 3 elementi
+          supportArray.push(parseInt(data[i].impressions, 10) + parseInt(data[i + 1].impressions, 10) + parseInt(data[i + 2].impressions, 10)); //fascia oraria con 3 elementi
 
           chartData.push([
             time[i],
@@ -1198,7 +1200,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Spend']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].spend, 10) + parseInt(data[i+1].spend, 10) + parseInt(data[i+2].spend,10));
+          supportArray.push(parseInt(data[i].spend, 10) + parseInt(data[i + 1].spend, 10) + parseInt(data[i + 2].spend, 10));
 
           chartData.push([
             time[i],
@@ -1210,7 +1212,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CPC']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseFloat(data[i].cpc) + parseFloat(data[i+1].cpc) + parseFloat(data[i+2].cpc));
+          supportArray.push(parseFloat(data[i].cpc) + parseFloat(data[i + 1].cpc) + parseFloat(data[i + 2].cpc));
 
           chartData.push([
             time[i],
@@ -1222,7 +1224,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CTR']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseFloat(data[i].ctr) + parseFloat(data[i+1].ctr) + parseFloat(data[i+2].ctr));
+          supportArray.push(parseFloat(data[i].ctr) + parseFloat(data[i + 1].ctr) + parseFloat(data[i + 2].ctr));
 
           chartData.push([
             time[i],
@@ -1234,7 +1236,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Click']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].clicks, 10) + parseInt(data[i+1].clicks, 10) + parseInt(data[i+2].clicks,10));
+          supportArray.push(parseInt(data[i].clicks, 10) + parseInt(data[i + 1].clicks, 10) + parseInt(data[i + 2].clicks, 10));
 
           chartData.push([
             time[i],
@@ -1246,7 +1248,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Click link']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i+1].inline_link_clicks, 10) + parseInt(data[i+2].inline_link_clicks, 10));
+          supportArray.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i + 1].inline_link_clicks, 10) + parseInt(data[i + 2].inline_link_clicks, 10));
 
           chartData.push([
             time[i],
@@ -1259,7 +1261,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Copertura']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].reach, 10) + parseInt(data[i+1].reach, 10) + parseInt(data[i+2].reach, 10));
+          supportArray.push(parseInt(data[i].reach, 10) + parseInt(data[i + 1].reach, 10) + parseInt(data[i + 2].reach, 10));
 
           chartData.push([
             time[i],
@@ -1271,7 +1273,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Impression']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].impressions,10) + parseInt(data[i+1].impressions, 10) + parseInt(data[i+2].impressions, 10));
+          supportArray.push(parseInt(data[i].impressions, 10) + parseInt(data[i + 1].impressions, 10) + parseInt(data[i + 2].impressions, 10));
 
           chartData.push([
             time[i],
@@ -1283,7 +1285,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Costo']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].spend, 10) + parseInt(data[i+1].spend, 10) + parseInt(data[i+2].spend, 10));
+          supportArray.push(parseInt(data[i].spend, 10) + parseInt(data[i + 1].spend, 10) + parseInt(data[i + 2].spend, 10));
 
           chartData.push([
             time[i],
@@ -1295,7 +1297,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CPC']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseFloat(data[i].cpc) + parseFloat(data[i+1].cpc) + parseFloat(data[i+2].cpc));
+          supportArray.push(parseFloat(data[i].cpc) + parseFloat(data[i + 1].cpc) + parseFloat(data[i + 2].cpc));
 
           chartData.push([
             time[i],
@@ -1307,7 +1309,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CTR']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseFloat(data[i].ctr) + parseFloat(data[i+1].ctr) + parseFloat(data[i+2].ctr));
+          supportArray.push(parseFloat(data[i].ctr) + parseFloat(data[i + 1].ctr) + parseFloat(data[i + 2].ctr));
 
           chartData.push([
             time[i],
@@ -1319,7 +1321,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'CPP']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseFloat(data[i].cpp) + parseFloat(data[i+1].cpp) + parseFloat(data[i+2].cpp));
+          supportArray.push(parseFloat(data[i].cpp) + parseFloat(data[i + 1].cpp) + parseFloat(data[i + 2].cpp));
 
           chartData.push([
             time[i],
@@ -1331,7 +1333,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Click']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].clicks, 10) + parseInt(data[i+1].clicks, 10) + parseInt(data[i+2].clicks, 10));
+          supportArray.push(parseInt(data[i].clicks, 10) + parseInt(data[i + 1].clicks, 10) + parseInt(data[i + 2].clicks, 10));
 
           chartData.push([
             time[i],
@@ -1343,7 +1345,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         header = [['Orario', 'Click link']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i+1].inline_link_clicks, 10) + parseInt(data[i+2].inline_link_clicks, 10));
+          supportArray.push(parseInt(data[i].inline_link_clicks, 10) + parseInt(data[i + 1].inline_link_clicks, 10) + parseInt(data[i + 2].inline_link_clicks, 10));
 
           chartData.push([
             time[i],
@@ -2945,24 +2947,24 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           options: {
             isStacked: true,
             chartArea: {
-              left: "3%",
-              top: "0%",
-              width: "94%",
-              height: "90%"
+              left: '3%',
+              top: '0%',
+              width: '94%',
+              height: '90%'
             },
             height: 310,
             bar: {
-              groupWidth: "70%"
+              groupWidth: '70%'
             },
             legend: {
-              position: "none"
+              position: 'none'
             },
             hAxis: {
               ticks: [
-                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
-                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val) * -1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val / 2) * -1, f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
-                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: this.searchStep(val), f: this.searchStep(val).toString()}
               ],
               format: ';',
@@ -3011,23 +3013,23 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           options: {
             isStacked: true,
             chartArea: {
-              left: "3%",
-              top: "0%",
-              width: "94%",
-              height: "90%"
-            },            height: 310,
+              left: '3%',
+              top: '0%',
+              width: '94%',
+              height: '90%'
+            }, height: 310,
             bar: {
-              groupWidth: "70%"
+              groupWidth: '70%'
             },
             legend: {
-              position: "none"
+              position: 'none'
             },
             hAxis: {
               ticks: [
-                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
-                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val) * -1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val / 2) * -1, f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
-                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: this.searchStep(val), f: this.searchStep(val).toString()}
               ],
               format: ';',
@@ -3077,23 +3079,23 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           options: {
             isStacked: true,
             chartArea: {
-              left: "3%",
-              top: "0%",
-              width: "94%",
-              height: "90%"
-            },            height: 310,
+              left: '3%',
+              top: '0%',
+              width: '94%',
+              height: '90%'
+            }, height: 310,
             bar: {
-              groupWidth: "70%"
+              groupWidth: '70%'
             },
             legend: {
-              position: "none"
+              position: 'none'
             },
             hAxis: {
               ticks: [
-                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
-                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val) * -1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val / 2) * -1, f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
-                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: this.searchStep(val), f: this.searchStep(val).toString()}
               ],
               format: ';',
@@ -3142,23 +3144,23 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           options: {
             isStacked: true,
             chartArea: {
-              left: "3%",
-              top: "0%",
-              width: "94%",
-              height: "90%"
-            },            height: 310,
+              left: '3%',
+              top: '0%',
+              width: '94%',
+              height: '90%'
+            }, height: 310,
             bar: {
-              groupWidth: "70%"
+              groupWidth: '70%'
             },
             legend: {
-              position: "none"
+              position: 'none'
             },
             hAxis: {
               ticks: [
-                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
-                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val) * -1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val / 2) * -1, f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
-                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: this.searchStep(val), f: this.searchStep(val).toString()}
               ],
               format: ';',
@@ -3207,23 +3209,23 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           options: {
             isStacked: true,
             chartArea: {
-              left: "3%",
-              top: "0%",
-              width: "94%",
-              height: "90%"
-            },            height: 310,
+              left: '3%',
+              top: '0%',
+              width: '94%',
+              height: '90%'
+            }, height: 310,
             bar: {
-              groupWidth: "70%"
+              groupWidth: '70%'
             },
             legend: {
-              position: "none"
+              position: 'none'
             },
             hAxis: {
               ticks: [
-                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
-                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val) * -1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val / 2) * -1, f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
-                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: this.searchStep(val), f: this.searchStep(val).toString()}
               ],
               format: ';',
@@ -3272,24 +3274,24 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           options: {
             isStacked: true,
             chartArea: {
-              left: "3%",
-              top: "3%",
-              width: "94%",
-              height: "90%"
+              left: '3%',
+              top: '3%',
+              width: '94%',
+              height: '90%'
             },
             height: 310,
             bar: {
-              groupWidth: "70%"
+              groupWidth: '70%'
             },
             legend: {
-              position: "none"
+              position: 'none'
             },
             hAxis: {
               ticks: [
-                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
-                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val) * -1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val / 2) * -1, f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
-                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: this.searchStep(val), f: this.searchStep(val).toString()}
               ],
               format: ';',
@@ -3338,23 +3340,23 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           options: {
             isStacked: true,
             chartArea: {
-              left: "3%",
-              top: "0%",
-              width: "94%",
-              height: "90%"
-            },            height: 310,
+              left: '3%',
+              top: '0%',
+              width: '94%',
+              height: '90%'
+            }, height: 310,
             bar: {
-              groupWidth: "70%"
+              groupWidth: '70%'
             },
             legend: {
-              position: "none"
+              position: 'none'
             },
             hAxis: {
               ticks: [
-                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
-                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val) * -1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val / 2) * -1, f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
-                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: this.searchStep(val), f: this.searchStep(val).toString()}
               ],
               format: ';',
@@ -3403,23 +3405,23 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           options: {
             isStacked: true,
             chartArea: {
-              left: "3%",
-              top: "0%",
-              width: "94%",
-              height: "90%"
-            },            height: 310,
+              left: '3%',
+              top: '0%',
+              width: '94%',
+              height: '90%'
+            }, height: 310,
             bar: {
-              groupWidth: "70%"
+              groupWidth: '70%'
             },
             legend: {
-              position: "none"
+              position: 'none'
             },
             hAxis: {
               ticks: [
-                {v: this.searchStep(val)*-1, f: this.searchStep(val).toString()},
-                {v: this.searchStep(val/2)*-1, f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val) * -1, f: this.searchStep(val).toString()},
+                {v: this.searchStep(val / 2) * -1, f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
-                {v: this.searchStep(val/2), f: this.searchStep(val/2).toString()},
+                {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: this.searchStep(val), f: this.searchStep(val).toString()}
               ],
               format: ';',
@@ -3696,7 +3698,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3715,7 +3718,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3734,7 +3738,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3753,7 +3758,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3772,7 +3778,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3791,7 +3798,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3811,7 +3819,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3830,7 +3839,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3849,7 +3859,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3868,7 +3879,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3887,7 +3899,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3906,7 +3919,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3925,7 +3939,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -3944,7 +3959,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
             vAxis: {
               gridlines: {color: '#eaeaea', count: 6},
               textPosition: 'in',
-              textStyle: {color: '#999'}},
+              textStyle: {color: '#999'}
+            },
             colors: ['#1b53ff'],
             areaOpacity: 0.4,
           }
@@ -4157,7 +4173,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
       );
     }
 
-      switch (measure) {
+    switch (measure) {
       case 'subs':
         value = data[0].subscribers;
         break;
@@ -4242,19 +4258,19 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
     switch (measure) {
       case 'reach':
-        data.forEach(d => value += parseInt(d.reach,10));
+        data.forEach(d => value += parseInt(d.reach, 10));
         break;
       case 'spend':
-        data.forEach(d => value += parseInt(d.spend,10));
+        data.forEach(d => value += parseInt(d.spend, 10));
         break;
       case 'click':
-        data.forEach(d => value += parseInt(d.clicks,10));
+        data.forEach(d => value += parseInt(d.clicks, 10));
         break;
       case 'impressions':
-        data.forEach(d => value += parseInt(d.impressions,10));
+        data.forEach(d => value += parseInt(d.impressions, 10));
         break;
       default:
-        data.forEach(d => value += parseInt(d.reach,10));
+        data.forEach(d => value += parseInt(d.reach, 10));
         break;
     }
 
@@ -4277,21 +4293,21 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     switch (measure) {
       case 'budget':
         media = supportArray.filter(d => d.effective_status === 'ACTIVE').length;
-        supportArray.forEach(d => d.daily_budget ? support +=  parseInt(d.daily_budget, 10) : null);
+        supportArray.forEach(d => d.daily_budget ? support += parseInt(d.daily_budget, 10) : null);
         value2 = Number(support / media).toFixed(2);
-        value =  value2 + ' €';
+        value = value2 + ' €';
         break;
       case 'campaigns_status':
         value = supportArray.filter(d => d.effective_status === 'ACTIVE').length.toString();
         value2 = value;
         break;
       case 'spend':
-        supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend,10)) : null);
+        supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend, 10)) : null);
         value2 = Number(support / media).toFixed(2);
         value = value2 + ' €';
         break;
       case 'reach':
-        supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach,10)) : null);
+        supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach, 10)) : null);
         value = Math.round(support / media).toString();
         value2 = value;
         break;
@@ -4494,7 +4510,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
     data.forEach(d => array.find(el => el[breaks] === d[breaks] && el[breaks2] === d[breaks2]) !== undefined
       ? (
-          temp = array.find(el => el[breaks] === d[breaks] && el[breaks2] === d[breaks2]),
+        temp = array.find(el => el[breaks] === d[breaks] && el[breaks2] === d[breaks2]),
           temp.reach = parseInt(temp.reach, 10) + parseInt(d.reach, 10),
           temp.impressions = parseInt(temp.impressions, 10) + parseInt(d.impressions, 10),
           temp.clicks = parseInt(temp.clicks, 10) + parseInt(d.clicks, 10),
@@ -4521,7 +4537,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     return array;
   }
 
-  public chooseTable (type) {
+  public chooseTable(type) {
     let value;
     switch (type) {
       case 'campaigns':

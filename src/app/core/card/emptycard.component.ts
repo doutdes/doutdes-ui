@@ -11,7 +11,7 @@ import {GlobalEventsManagerService} from '../../shared/_services/global-event-ma
 import {D_TYPE, DS_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 import {T} from '@angular/core/src/render3';
-import {Observable, Subject} from 'rxjs';
+import {forkJoin, Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {Chart} from '../../shared/_models/Chart';
 import {TranslateService} from '@ngx-translate/core';
@@ -19,6 +19,11 @@ import {UserService} from '../../shared/_services/user.service';
 import {User} from '../../shared/_models/User';
 import {consoleTestResultHandler} from 'tslint/lib/test';
 import {HttpClient} from '@angular/common/http';
+import {ChartsCallsService} from '../../shared/_services/charts_calls.service';
+import {ApiKeysService} from '../../shared/_services/apikeys.service';
+import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
+import {FacebookService} from '../../shared/_services/facebook.service';
+import {InstagramService} from '../../shared/_services/instagram.service';
 
 @Component({
   selector: 'app-emptycard',
@@ -34,6 +39,7 @@ export class EmptycardComponent implements OnInit {
 
   @ViewChild('addChart') addChart: ElementRef;
   @ViewChild('noChartsAvailable') noChartsAvailable: ElementRef;
+
 
   modalRef: BsModalRef;
   chartRemaining;
@@ -60,13 +66,13 @@ export class EmptycardComponent implements OnInit {
   styles = [];
   type = [];
   breakdowns = [];
-
   description: string; // Description of the metric shown
 
   lang: string;
   value: string;
   tmp: string;
   user: User;
+  followers;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -77,7 +83,11 @@ export class EmptycardComponent implements OnInit {
     public translate: TranslateService,
     private http: HttpClient,
     private userService: UserService,
-  ) {
+    private CCService: ChartsCallsService,
+    private apiKeyService: ApiKeysService,
+    private FBService: FacebookService,
+    private IGService: InstagramService,
+    ) {
     this.userService.get().subscribe(value => {
       this.user = value;
       this.http.get('./assets/langSetting/langStringVarious/' + this.conversionSetDefaultLang() + '.json')
@@ -90,6 +100,7 @@ export class EmptycardComponent implements OnInit {
   async ngOnInit() {
     const dashData = this.dashboard_data;
 
+    await this.getFollowers(dashData.dashboard_type);
     this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
 
     this.insertChartForm = this.formBuilder.group({
@@ -201,7 +212,6 @@ export class EmptycardComponent implements OnInit {
       this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
 
       await this.updateDropdownOptions();
-
     } catch (error) {
       this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_ADD'),
         this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ADD'));
@@ -209,6 +219,7 @@ export class EmptycardComponent implements OnInit {
       console.error(error);
     }
   }
+
 
   async updateDropdownOptions() {
     let result = false;
@@ -220,10 +231,13 @@ export class EmptycardComponent implements OnInit {
         ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
           .toPromise()
         : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
+      this.chartRemaining = this.chartRemaining.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
 
-      this.chartRemaining.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
+
+
+
       if (this.chartRemaining && this.chartRemaining.length > 0) {
-
+        this.chartRemaining.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
         // Update channels
         if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
           for (const i in this.dashboard_data.permissions) {
@@ -252,6 +266,29 @@ export class EmptycardComponent implements OnInit {
     }
 
   }
+
+  async getFollowers(type) {
+    let pageID;
+    let observables;
+
+    switch (type) {
+      case D_TYPE.FB:
+        pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
+        observables = this.FBService.getData('page_fans', pageID);
+        forkJoin(observables).subscribe(data => {
+            this.followers = data[0][Object.keys(data[0])[Object.keys(data[0]).length - 1]].value;
+          });
+        break;
+      case D_TYPE.IG:
+        pageID = (await this.apiKeyService.getAllKeys().toPromise()).ig_page_id;
+        observables = this.IGService.getBusinessInfo(pageID);
+        forkJoin(observables).subscribe(data => {
+          this.followers = data[0]['followers_count'];
+          });
+        break;
+    }
+  }
+
 
   filterDropdown = (updateChannel = false) => {
     if (updateChannel) {
@@ -291,14 +328,14 @@ export class EmptycardComponent implements OnInit {
   conversionSetDefaultLang () {
 
     switch (this.user.lang) {
-      case "it" :
-        this.value = "Italiano";
+      case 'it' :
+        this.value = 'Italiano';
         break;
-      case "en" :
-        this.value = "English";
+      case 'en' :
+        this.value = 'English';
         break;
       default:
-        this.value = "Italiano";
+        this.value = 'Italiano';
     }
 
     return this.value;
