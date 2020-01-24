@@ -88,6 +88,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   submitted: boolean;
   currentNamePage;
   oldCurrentNamePage = "";
+  followers;
   @select() filter: Observable<any>;
 
   firstDateRange: Date;
@@ -194,7 +195,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     let dash, chartParams: ChartParams = {};
     const existence = await this.checkExistence();
     const observables: Observable<any>[] = [];
-    const chartsToShow: Array<DashboardCharts> = [];
+    let chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
       last: this.maxDate
@@ -285,7 +286,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
                   chartsToShow.push(chart); // Original Data
                 }
-
+                chartsToShow = chartsToShow.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
                 currentData.data = chartsToShow;
 
                 this.filterActions.initData(currentData);
@@ -479,6 +480,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     let existence, update;
     let key: ApiKey;
 
+
     this.GEService.loadingScreen.subscribe(value => {
       this.loading = value;
     });
@@ -495,6 +497,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       await this.getPagesList();
       this.createForm();
       ig_page_id = await this.getPageID();
+      await this.getFollowers(ig_page_id)
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!ig_page_id) {
         // await this.getPagesList();
@@ -538,7 +541,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG) : -1;
         this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
       });
-
       const dash_type = this.HARD_DASH_DATA.dashboard_type;
 
       if (!this.GEService.isSubscriber(dash_type)) {
@@ -872,5 +874,16 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     } catch (e) {
 
     }
+  }
+
+  async getFollowers(type) {
+    let pageID;
+    let observables;
+
+    pageID = (await this.apiKeyService.getAllKeys().toPromise()).ig_page_id;
+    observables = this.IGService.getBusinessInfo(pageID);
+    forkJoin(observables).subscribe(data => {
+      this.followers = data[0]['followers_count'];
+    });
   }
 }
