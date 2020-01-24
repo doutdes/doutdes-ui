@@ -2296,7 +2296,7 @@ export class ChartsCallsService {
           options: {
             region: 'world',
             colors: [IG_PALETTE.AMARANTH.C5],
-            colorAxis: {colors: [IG_PALETTE.AMARANTH.C4, IG_PALETTE.AMARANTH.C9]},
+            colorAxis: {colors: [IG_PALETTE.AMARANTH.C9, IG_PALETTE.AMARANTH.C4]},
             backgroundColor: '#fff',
             datalessRegionColor: '#eee',
             defaultColor: '#333',
