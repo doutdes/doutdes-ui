@@ -20,5 +20,6 @@ export interface DashboardCharts {
   originalTitle?: any;
   type?: number;
   aggregated?: any;
+  countFan?: number;
 }
 

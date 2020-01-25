@@ -1,7 +1,15 @@
 <div class="row rounded py-sm-4 title-header">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
-    <h2 class="my-auto float-left">Instagram</h2>
+    <h2 #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()"  *ngIf="pageList.length !== 0 && loaded"> {{currentNamePage}}
+      <i *ngIf="pageList.length > 1" class="fas fa-sort-down cursor-pointer" (click)="openModal(igPagePreferences)" style="font-size: 1.5em"></i>
+      <ng-template  #popTemplate>
+        <p style="font-size: 14px; margin: 0;">{{oldCurrentNamePage}}</p>
+      </ng-template>
+    </h2>
+
+    <h2 *ngIf = "!loaded" class="my-auto float-left">Instagram</h2>
   </div>
+
   <div *ngIf="isApiKeySet && loaded && !this.drag" class="col-xl-8 col-sm-6 col-md-8 col-12 my-md-auto">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
@@ -45,6 +53,8 @@
            (bsValueChange)="onValueChange($event)"
            bsDaterangepicker>
   </div>
+
+  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
 </div>
 
 <div *ngIf="dashErrors.emptyMiniCards" class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">
@@ -52,7 +62,7 @@
 </div> <!-- Mini cards -->
 
 <div *ngIf="dashErrors.noPages" class="alert alert-danger px-3 pt-3 mt-3 mb-0" role="alert">
-  <h5><i class="fas fa-exclamation-triangle fa-2x float-left mt-1 mr-3"></i>{{ 'DASHBOARD.NO_INSTAGRAM' | translate }}</h5>
+  <h5><i class="fas fa-exclamation-triangle fa-2x float-left mt-1 mr-3"></i>{{ 'DASHBOARD.FACEBOOK' | translate }}</h5>
 </div> <!-- Mini cards -->
 
 <div *ngIf="isApiKeySet && !dashErrors.emptyMiniCards && loaded && !this.drag" class="row px-3 pt-3">
@@ -108,7 +118,35 @@
   </div>
 
   <div class="modal-body">{{ 'DASHBOARD.NEW_REPORT' | translate }}</div>
-</ng-template>
+</ng-template><!--report wait-->
+
+<ng-template #selectView>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>{{ 'DASHBOARD.SELECT_IMPORT' | translate }}</h4>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
+      <div class="form-group row">
+        <p class="col-sm-12 text-justify">{{ 'DASHBOARD.FACEBOOK_PAGE' | translate }}</p>
+        <div class="col-sm-12">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="ig_page_id"
+                  [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['ig_page_id'].errors }">
+            <option *ngFor="let page of pageList" [value]="page.id">{{page.name}}</option>
+          </select>
+
+          <div *ngIf="submitted && selectViewForm.controls['ig_page_id'].errors" class="invalid-feedback">
+            <div>{{ 'DASHBOARD.FACEBOOK_PAGE_ALERT' | translate }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pr-0 pb-0">
+        <button type="submit" class="btn btn-success">{{ 'LANGUAGE.CONFERMA' | translate }}</button>
+      </div>
+    </form>
+  </div>
+</ng-template> <!-- select view -->
 
 <ng-template #deleteCharts>
   <div class="modal-header">
@@ -163,4 +201,34 @@
   </div>
 
 </ng-template> <!-- Deactivates Drag And Drop -->
+
+<ng-template #igPagePreferences>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fab fa-facebook mr-3"></i>{{ 'DASHBOARD.FB_PAGINA_PREFERITA' | translate }}</h4>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
+      <div class="form-group row">
+        <p class="col-sm-12 text-justify">{{ 'DASHBOARD.FB_DROPDOWN_PAGINA' | translate }}</p>
+        <div class="col-sm-12">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="ig_page_id"
+                  [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['ig_page_id'].errors }">
+            <option *ngFor="let page of pageList" [value]="page.id">{{page.name}}</option>
+          </select>
+
+          <div *ngIf="submitted && selectViewForm.controls['ig_page_id'].errors" class="invalid-feedback">
+            <div>{{ 'DASHBOARD.FACEBOOK_PAGE_ALERT' | translate }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pr-0 pb-0">
+        <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'LANGUAGE.ANNULLA' | translate }}</button>
+        <button type="submit" class="btn btn-success">{{ 'LANGUAGE.CONFERMA' | translate }}</button>
+      </div>
+    </form>
+  </div>
+
+</ng-template> <!-- igpreferences -->
 

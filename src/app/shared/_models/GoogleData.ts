@@ -67,3 +67,8 @@ export interface GoogleData {
   value: string;
   opt_value?: number;
 }
+
+export interface ViewGoogle {
+  name: string;
+  id: string;
+}

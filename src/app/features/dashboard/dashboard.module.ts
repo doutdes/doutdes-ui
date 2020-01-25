@@ -14,6 +14,7 @@ import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {UserService} from '../../shared/_services/user.service';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient} from '@angular/common/http';
+import {PopoverModule} from 'ngx-bootstrap';
 
 
 @NgModule({
@@ -30,6 +31,8 @@ import {HttpClient} from '@angular/common/http';
     FeatureDashboardGoogleAnalyticsModule,
     FeatureDashboardYoutubeAnalyticsModule,
     FeatureDashboardRoutingModule,
+    PopoverModule.forRoot(),
+    PopoverModule.forRoot(),
   ],
   providers: [
     UserService,

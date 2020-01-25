@@ -20,7 +20,7 @@ import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
 import {MiniCard, YtMiniCards} from '../../../shared/_models/MiniCard';
-import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, parseDate, PopoverModule} from 'ngx-bootstrap';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiKey} from '../../../shared/_models/ApiKeys';
@@ -83,6 +83,8 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
   loadingForm: boolean;
   viewList;
   submitted: boolean;
+  title = 'Youtube Analytics';
+  oldTitle = '';
 
   dashErrors = {
     emptyMiniCards: false,
@@ -171,13 +173,18 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
         return;
       }
       const channels = await this.YTService.getChannels().toPromise();
-
       if (channels.length === 0) {
         this.dashErrors.noPages = true;
         return;
       }
 
       const channelID = channels[0].id;
+      this.title = channels[0].title;
+      this.oldTitle = this.title;
+      if (this.title.length > 15) {
+        this.oldTitle = this.title;
+        this.title = this.title.slice(0, 13) + '...';
+      }
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(channelID);
 
       if (this.dashStored) {

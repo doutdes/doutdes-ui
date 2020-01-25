@@ -1,8 +1,15 @@
 <!--<div toastContainer></div>-->
 <div class="row rounded py-sm-4 title-header">
   <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
-    <h2 class="my-auto float-left">Google Analytics</h2>
+      <h2  #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()" *ngIf="viewList.length !== 0 && loaded"> {{currentNamePage}}
+        <i *ngIf="viewList.length > 1" class="fas fa-sort-down cursor-pointer" (click)="openModal(gaPagePreferences)" style="font-size: 1.5em"></i>
+        <ng-template #popTemplate >
+          <p style="font-size: 14px; margin: 0;">{{oldCurrentNamePage}}</p>
+        </ng-template>
+      </h2>
+    <h2 *ngIf = "!loaded" class="my-auto float-left">Google Analytics</h2>
   </div> <!-- title -->
+
   <div *ngIf="isApiKeySet && loaded && !this.drag" class="col-xl-8 col-md-8 col-sm-6 col-12 my-md-auto filter-div">
     <h5 class="d-inline-block d-sm-none mt-1">Filter</h5>
     <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
@@ -112,7 +119,7 @@
   </div>
 
   <div class="modal-body">{{ 'DASHBOARD.NEW_REPORT' | translate }}</div>
-</ng-template>
+</ng-template> <!-- repor wait -->
 
 <ng-template #selectView>
   <div class="modal-header">
@@ -140,7 +147,7 @@
       </div>
     </form>
   </div>
-</ng-template>
+</ng-template> <!-- select view -->
 
 <ng-template #deleteCharts>
   <div class="modal-header">
@@ -197,3 +204,34 @@
   </div>
 
 </ng-template> <!-- Deactivates Drag And Drop -->
+
+<ng-template #gaPagePreferences>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fab fa-facebook mr-3"></i>{{ 'DASHBOARD.FB_PAGINA_PREFERITA' | translate }}</h4>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
+      <div class="form-group row">
+        <p class="col-sm-12 text-justify">{{ 'DASHBOARD.FB_DROPDOWN_PAGINA' | translate }}</p>
+        <div class="col-sm-12">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="view_id"
+                  [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['view_id'].errors }">
+            <option *ngFor="let view of viewList" [value]="view.id">{{view.name}}</option>
+          </select>
+
+          <div *ngIf="submitted && selectViewForm.controls['view_id'].errors" class="invalid-feedback">
+            <div>{{ 'DASHBOARD.FACEBOOK_PAGE_ALERT' | translate }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pr-0 pb-0">
+        <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'LANGUAGE.ANNULLA' | translate }}</button>
+        <button type="submit" class="btn btn-success">{{ 'LANGUAGE.CONFERMA' | translate }}</button>
+      </div>
+    </form>
+  </div>
+
+</ng-template> <!-- gapreferences -->
+

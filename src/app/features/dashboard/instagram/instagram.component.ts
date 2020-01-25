@@ -21,7 +21,7 @@ import {IgMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
 import {User} from '../../../shared/_models/User';
 import {UserService} from '../../../shared/_services/user.service';
-import {BsLocaleService, BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, parseDate, PopoverModule} from 'ngx-bootstrap';
 
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -29,6 +29,9 @@ import * as _ from 'lodash';
 import {ChartParams} from '../../../shared/_models/Chart';
 import {TranslateService} from '@ngx-translate/core';
 import {HttpClient} from '@angular/common/http';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ApiKey} from '../../../shared/_models/ApiKeys';
+import {AppComponent} from '../../../app.component';
 
 const PrimaryWhite = '#ffffff';
 
@@ -41,6 +44,8 @@ const PrimaryWhite = '#ffffff';
 export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   @ViewChild('reportWait') reportWait;
+  @ViewChild('selectView') selectView;
+  @ViewChild('igPagePreferences') igPagePreferences;
 
   public D_TYPE = D_TYPE;
 
@@ -76,6 +81,14 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     secondaryColour: PrimaryWhite
   };
 
+  // Form for init
+  selectViewForm: FormGroup;
+  loadingForm: boolean;
+  pageList = [];
+  submitted: boolean;
+  currentNamePage;
+  oldCurrentNamePage = "";
+  followers;
   @select() filter: Observable<any>;
 
   firstDateRange: Date;
@@ -99,6 +112,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   user: User;
 
   constructor(
+    private appComponent: AppComponent,
+    private formBuilder: FormBuilder,
     private IGService: InstagramService,
     private apiKeyService: ApiKeysService,
     private breadcrumbActions: BreadcrumbActions,
@@ -176,137 +191,141 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async loadDashboard() {
-    let chartParams: ChartParams = {};
+
+    let dash, chartParams: ChartParams = {};
     const existence = await this.checkExistence();
     const observables: Observable<any>[] = [];
-    const chartsToShow: Array<DashboardCharts> = [];
+    let chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
       last: this.maxDate
     };
-    let currentData: DashboardData = {
+    const currentData: DashboardData = {
       data: chartsToShow,
       interval: dateInterval,
       type: D_TYPE.IG,
     };
-
-    if (!existence) { // If the Api Key has not been set yet, then a message is print
-      this.isApiKeySet = false;
-      return;
-    }
+    // Retrieving dashboard ID
 
     this.GEService.loadingScreen.next(true);
-
     this.dragulaService.find('REVERT');
+    try {
 
-    // Retrieving dashboard ID
-    const dash = await this.DService.getDashboardByType(3).toPromise(); // Instagram type
 
-    // Retrieving the page ID
-    this.pageID = (await this.IGService.getPages().toPromise());
-
-    if (this.pageID.length === 0) {
-      this.dashErrors.noPages = true;
-      return;
-    }
-
-    this.pageID = this.pageID[0].id; // TODO to add the choice of the page, now it takes just the first one
-
-    this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
-
-    if (dash.id) {
-      this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
-    } else {
-      console.error('Cannot retrieve a valid ID for the Instagram dashboard.');
-      return;
-    }
-
-    if (this.dashStored) {
-      // Ci sono già dati salvati
-      this.filterActions.loadStoredDashboard(D_TYPE.IG);
-      this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-      this.datePickerEnabled = true;
-
-      if (this.chartArray$.length === 0) {
-
-        this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
-          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
+      // Retrieving dashboard ID
+      dash = await this.DService.getDashboardByType(D_TYPE.IG).toPromise(); // Instagram type
+      if (dash.id) {
+        this.HARD_DASH_DATA.dashboard_id = dash.id; // Retrieving dashboard id
+      } else {
+        console.error('Cannot retrieve a page ID for the Instagram dashboard.');
+        return;
       }
 
-    } else {
-      // Retrieving dashboard charts
-      this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
+      // Retrieving the page ID
+      //this.pageID = (await this.IGService.getPages().toPromise());
+      if (this.pageID.length === 0) {
+        this.dashErrors.noPages = true;
+        return;
+      }
 
-        if (charts && charts.length > 0) { // Checking if dashboard is not empty
-          // Retrieves data for each chart
-          charts.forEach(chart => {
-            chartParams = {
-              metric: chart.metric,
-              period: chart.period,
-              interval: chart.interval
-            };
-            observables.push(this.CCService.retrieveChartData(chart.type, chartParams, this.pageID));
-          });
 
-          forkJoin(observables)
-            .subscribe(dataArray => {
+      this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
-              for (let i = 0; i < dataArray.length; i++) {
+      if (this.dashStored) {
+        // Ci sono già dati salvati
+        this.filterActions.loadStoredDashboard(D_TYPE.IG);
+        this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
+        this.datePickerEnabled = true;
 
-                const chart: DashboardCharts = charts[i];
+        this.GEService.loadingScreen.next(false);
 
-                if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-
-                  chart.chartData = dataArray[i];
-
-                  let date = new Date(chart.chartData[0]['end_time']);
-
-                  if (date < this.minDate) {
-                    this.minDate = date;
-                  }
-                  // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
-                  chart.error = false;
-                } else {
-                  chart.error = true;
-
-                  console.error('ERROR in INSTAGRAM COMPONENT. Cannot retrieve data from one of the charts. More info:');
-                  console.error(dataArray[i]);
-                }
-
-                chartsToShow.push(chart); // Original Data
-              }
-
-              currentData.data = chartsToShow;
-
-              this.filterActions.initData(currentData);
-              this.GEService.updateChartList.next(true);
-
-              // Shows last 30 days
-              this.datePickerEnabled = true;
-              this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-
-              this.GEService.loadingScreen.next(false);
-            });
-
-        } else {
-          this.filterActions.initData(currentData);
-          this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-          this.GEService.loadingScreen.next(false);
+        if (this.chartArray$.length === 0) {
 
           this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
-      }, err => {
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_CARICAMENTO'),
-          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_CARICAMENTO'));
-        console.error('ERROR in INSTAGRAM COMPONENT, when fetching charts.');
-        console.warn(err);
-      });
+      } else {
+        // Retrieving dashboard charts
+        this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).subscribe(charts => {
+
+          charts =charts.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
+          if (charts && charts.length > 0) { // Checking if dashboard is not empty
+            // Retrieves data for each chart
+            charts.forEach(chart => {
+              chartParams = {
+                metric: chart.metric,
+                period: chart.period,
+                interval: chart.interval
+              };
+                observables.push(this.CCService.retrieveChartData(chart.type, chartParams, this.pageID));
+
+            });
+
+          forkJoin(observables)
+            .subscribe(dataArray => {
+              for (let i = 0; i < dataArray.length; i++) {
+
+                  const chart: DashboardCharts = charts[i];
+
+                if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
+
+                  chart.chartData = dataArray[i];
+                  let date = new Date(chart.chartData[0]['end_time']);
+
+                    if (date < this.minDate) {
+                      this.minDate = date;
+                    }
+                    // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
+                    chart.error = false;
+                  } else {
+                    chart.error = true;
+
+                    console.error('ERROR in INSTAGRAM COMPONENT. Cannot retrieve data from one of the charts. More info:');
+                    console.error(dataArray[i]);
+                  }
+
+                  chartsToShow.push(chart); // Original Data
+                }
+               // chartsToShow = chartsToShow.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
+                currentData.data = chartsToShow;
+
+                this.filterActions.initData(currentData);
+                this.GEService.updateChartList.next(true);
+
+                // Shows last 30 days
+                this.datePickerEnabled = true;
+                this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
+                this.GEService.loadingScreen.next(false);
+
+              });
+
+          } else {
+            this.filterActions.initData(currentData);
+            this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
+            this.GEService.loadingScreen.next(false);
+
+            this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+              this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
+          }
+        }, err => {
+
+          this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'ERR_CARICAMENTO'),
+            this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_CARICAMENTO'));
+          console.error('ERROR in INSTAGRAM COMPONENT, when fetching charts.');
+          console.warn(err);
+        });
+      }
+
+      this.loaded = true;
+
+    } catch (e) {
+      console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
+      console.error(e);
     }
 
-    this.loaded = true;
-  }
+
+  } //loaddashboard
 
   addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;
@@ -335,6 +354,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
           chartToPush.error = true;
           console.log('Errore recuperando dati per ' + dashChart);
         }
+
         this.filterActions.addChart(chartToPush);
         this.filterActions.filterData(intervalDate); // Dopo aver aggiunto un grafico, li porta tutti alla stessa data
 
@@ -457,43 +477,104 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.firstDateRange = this.minDate;
-    this.lastDateRange = this.maxDate;
-    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+    let ig_page_id;
+    let existence, update;
+    let key: ApiKey;
 
-    this.filter.subscribe(elements => {
-      this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
-      const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG) : -1;
-      this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
+
+    this.GEService.loadingScreen.subscribe(value => {
+      this.loading = value;
     });
 
-    const dash_type = this.HARD_DASH_DATA.dashboard_type;
+    this.addBreadcrumb();
 
-    if (!this.GEService.isSubscriber(dash_type)) {
-      this.GEService.removeFromDashboard.subscribe(values => {
-        if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
-          this.filterActions.removeChart(values[0]);
+    try {
+      existence = await this.checkExistence();
+
+      if (!existence) { // If the Api Key has not been set yet, then a message is print
+        this.isApiKeySet = false;
+        return;
+      }
+      await this.getPagesList();
+      this.createForm();
+      ig_page_id = await this.getPageID();
+      await this.getFollowers(ig_page_id)
+      // We check if the user has already set a preferred page if there is more than one in his permissions.
+      if (!ig_page_id) {
+        // await this.getPagesList();
+        if (this.pageList.length === 0) {
+          this.dashErrors.noPages = true;
+          return;
         }
-      });
-      this.GEService.showChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          this.addChartToDashboard(chart);
+
+        if (this.pageList.length === 1) {
+          key = {ig_page_id: this.pageList[0]['id'], service_id: D_TYPE.IG};
+
+          update = await this.apiKeyService.updateKey(key).toPromise();
+          this.pageID = key.ig_page_id;
+
+          if (!update) {
+            return;
+          }
+        } else {
+          this.openModal(this.selectView, true);
+          return;
         }
-      });
-      this.GEService.updateChartInDashboard.subscribe(chart => {
-        if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
-          this.filterActions.updateChart(chart);
-        }
-      });
+      } else {
+        this.pageID = ig_page_id;
+      }
+
+      this.currentNamePage = await this.getPageName(this.pageID);
+      this.oldCurrentNamePage = this.currentNamePage;
+      if(this.currentNamePage.length > 15) {
+        this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
+      }
+      this.firstDateRange = this.minDate;
+      this.lastDateRange = this.maxDate;
+      this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
       this.GEService.loadingScreen.subscribe(value => {
         this.loading = value;
       });
 
-      this.GEService.addSubscriber(dash_type);
-    }
+      this.filter.subscribe(elements => {
+        this.chartArray$ = elements['filteredDashboard'] ? elements['filteredDashboard']['data'] : [];
+        const index = elements['storedDashboards'] ? elements['storedDashboards'].findIndex((el: DashboardData) => el.type === D_TYPE.IG) : -1;
+        this.dashStored = index >= 0 ? elements['storedDashboards'][index] : null;
+      });
+      const dash_type = this.HARD_DASH_DATA.dashboard_type;
 
-    this.addBreadcrumb();
-    await this.loadDashboard();
+      if (!this.GEService.isSubscriber(dash_type)) {
+        this.GEService.removeFromDashboard.subscribe(values => {
+          if (values[0] !== 0 && values[1] === this.HARD_DASH_DATA.dashboard_id) {
+            this.filterActions.removeChart(values[0]);
+          }
+        });
+
+        this.GEService.showChartInDashboard.subscribe(chart => {
+          if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+            this.addChartToDashboard(chart);
+          }
+        });
+        this.GEService.updateChartInDashboard.subscribe(chart => {
+          if (chart && chart.dashboard_id === this.HARD_DASH_DATA.dashboard_id) {
+            this.filterActions.updateChart(chart);
+          }
+        });
+        this.GEService.loadingScreen.subscribe(value => {
+          this.loading = value;
+        });
+
+        this.GEService.addSubscriber(dash_type);
+      }
+
+
+      this.addBreadcrumb();
+      await this.loadDashboard();
+
+    } catch (e) {
+      console.error('Error on ngOnInit of Instagram', e);
+    }
   }
 
   ngOnDestroy() {
@@ -729,5 +810,81 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     });
 
 
+  }
+
+  async selectViewSubmit() {
+    let update;
+    this.submitted = true;
+
+    if (this.selectViewForm.invalid) {
+      this.loadingForm = false;
+      return;
+    }
+
+    const key: ApiKey = {
+      ig_page_id: this.selectViewForm.value.ig_page_id,
+      service_id: D_TYPE.IG
+    };
+
+    this.loadingForm = true;
+
+    try {
+      update = await this.apiKeyService.updateKey(key).toPromise();
+      if (update) {
+        this.closeModal();
+        location.reload();
+      }
+    } catch (e) {
+      console.log (e);
+    }
+  }
+
+  createForm() {
+    this.selectViewForm = this.formBuilder.group({
+      ig_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+    });
+    this.selectViewForm.controls['ig_page_id'].setValue(this.pageList[0].id);
+  }
+
+  async getPageID() {
+    let pageID;
+
+    try {
+      //    pageID = (await this.IGService.getPages().toPromise());
+      pageID = (await this.apiKeyService.getAllKeys().toPromise()).ig_page_id;
+    } catch (e) {
+      console.error('getPageID -> error doing the query', e);
+    }
+
+    return pageID;
+  }
+
+  async getPagesList() {
+    try {
+      this.pageList = await this.IGService.getPages().toPromise();
+    } catch (e) {
+      console.error('getIGPageList -> Error doing the query');
+    }
+  }
+
+  async getPageName(igPage) {
+    let pageName;
+    try {
+      pageName = _.find(this.pageList, {'id': igPage});
+      return pageName.name;
+    } catch (e) {
+
+    }
+  }
+
+  async getFollowers(type) {
+    let pageID;
+    let observables;
+
+    pageID = (await this.apiKeyService.getAllKeys().toPromise()).ig_page_id;
+    observables = this.IGService.getBusinessInfo(pageID);
+    forkJoin(observables).subscribe(data => {
+      this.followers = data[0]['followers_count'];
+    });
   }
 }

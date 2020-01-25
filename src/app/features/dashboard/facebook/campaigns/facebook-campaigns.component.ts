@@ -41,6 +41,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   titleAdset: string;
   changeDataTitle = 'MARKETING';
   public miniCards: MiniCard[] = FbcMiniCards;
+  private pageID = null;
 
   dashErrors = {
     emptyMiniCards: false,
@@ -156,6 +157,9 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
           return;
         }
       }
+      await this.getPageName();
+      this.createForm();
+
       this.GEService.loadingScreen.subscribe(value => {
         this.loading = value;
       });
@@ -510,6 +514,22 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
     return empty;
 
+  }
+
+  async getPageName() {
+    try {
+      this.pageList = await this.FBCService.getPages().toPromise();
+      this.title = this.pageList.filter(el => el.id === this.fbm_page_id)[0].name;
+    } catch (e) {
+      console.error('getFbmViewList -> Error doing the query');
+    }
+  }
+
+  createForm() {
+    this.selectViewForm = this.formBuilder.group({
+      fbm_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+    });
+    this.selectViewForm.controls['fbm_page_id'].setValue(this.pageList[0].id);
   }
 }
 

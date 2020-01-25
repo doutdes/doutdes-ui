@@ -25,7 +25,7 @@ import {ngxLoadingAnimationTypes} from 'ngx-loading';
 import {D_TYPE} from '../../../../shared/_models/Dashboard';
 import {FbMiniCards, MiniCard} from '../../../../shared/_models/MiniCard';
 import {ToastrService} from 'ngx-toastr';
-import {BsLocaleService, BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsLocaleService, BsModalRef, BsModalService, PopoverModule} from 'ngx-bootstrap';
 import {ApiKey} from '../../../../shared/_models/ApiKeys';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ChartParams} from '../../../../shared/_models/Chart';
@@ -54,7 +54,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
     dashboard_id: null
   };
 
-  private pageID = null;
+  public pageID = null;
 
   public FILTER_DAYS = {
     yesterday: 1,
@@ -88,7 +88,8 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
   pageList = [];
   submitted: boolean;
   currentNamePage;
-
+  oldCurrentNamePage: string = '';
+  followers: number;
   @select() filter: Observable<any>;
 
   firstDateRange: Date;
@@ -137,7 +138,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
     this.userService.get().subscribe(value => {
       this.user = value;
 
-      this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+      this.http.get('./assets/langSetting/langToastr/' + this.conversionSetDefaultLang() + '.json')
         .subscribe(file => {
           this.GEService.langObj.next(file);
         }, error => {
@@ -173,8 +174,6 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
 
     pageIDs[D_TYPE.FB] = pageID;
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs, null);
-
-
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
@@ -194,7 +193,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
   async loadDashboard() { // TODO get pageID and refactor
     let dash, chartParams: ChartParams = {};
     const observables: Observable<any>[] = [];
-    const chartsToShow: Array<DashboardCharts> = [];
+    let chartsToShow: Array<DashboardCharts> = [];
     const dateInterval: IntervalDate = {
       first: this.minDate,
       last: this.maxDate
@@ -237,7 +236,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         // Retrieving dashboard charts
         this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id)
           .subscribe(charts => {
-
+            charts = charts.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
             if (charts && charts.length > 0) { // Checking if dashboard is not empty
 
               charts.forEach(chart => {
@@ -279,7 +278,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
                   }
                   ds.next();
                   ds.complete();
-
+                  chartsToShow = chartsToShow.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
                   currentData.data = chartsToShow;
 
                   this.filterActions.initData(currentData);
@@ -474,7 +473,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
     let fb_page_id;
     let existence, update;
     let key: ApiKey;
-
+    await this.getFollowers(fb_page_id)
     this.GEService.loadingScreen.subscribe(value => {
       this.loading = value;
     });
@@ -492,6 +491,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
       this.createForm();
       fb_page_id = await this.getPageID();
       // We check if the user has already set a preferred page if there is more than one in his permissions.
+      await this.getFollowers(fb_page_id)
       if (!fb_page_id) {
         // await this.getPagesList();
 
@@ -515,6 +515,11 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         this.pageID = fb_page_id;
       }
       this.currentNamePage = await this.getPageName(this.pageID);
+
+      this.oldCurrentNamePage = this.currentNamePage;
+      if (this.currentNamePage.length > 15) {
+        this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
+      }
       this.firstDateRange = this.minDate;
       this.lastDateRange = this.maxDate;
       this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
@@ -553,9 +558,11 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         this.GEService.addSubscriber(dash_type);
       }
       await this.loadDashboard();
+
     } catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
     }
+
 
   }
 
@@ -695,7 +702,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         location.reload();
       }
     } catch (e) {
-      console.log (e);
+      console.log(e);
     }
   }
 
@@ -853,5 +860,15 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
     });
     this.selectViewForm.controls['fb_page_id'].setValue(this.pageList[0].id);
   }
+  async getFollowers(type) {
+    let pageID;
+    let observables;
 
+    pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
+    observables = this.FBService.getData('page_fans', pageID);
+    forkJoin(observables).subscribe(data => {
+      this.followers = data[0][Object.keys(data[0])[Object.keys(data[0]).length - 1]].value;
+
+    });
+  }
 }

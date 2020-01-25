@@ -12,7 +12,7 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {DashboardService} from '../../../shared/_services/dashboard.service';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
-import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule, BsLocaleService, PopoverModule} from 'ngx-bootstrap';
 import {FilterActions} from '../redux-filter/filter.actions';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {UserService} from '../../../shared/_services/user.service';
@@ -55,6 +55,7 @@ import {BrowserModule} from '@angular/platform-browser';
     MatSortModule,
     MatPaginatorModule,
     MatInputModule,
+    PopoverModule,
   ],
   providers: [
     ApiKeysService,

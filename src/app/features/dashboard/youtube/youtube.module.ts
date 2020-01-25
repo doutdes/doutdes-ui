@@ -10,7 +10,7 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {YoutubeService} from '../../../shared/_services/youtube.service';
 import {FeatureDashboardYoutubeAnalyticsComponent} from './youtube.component';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule, BsLocaleService, PopoverModule} from 'ngx-bootstrap';
 import {ngxLoadingAnimationTypes, NgxLoadingModule} from 'ngx-loading';
 import {UserService} from '../../../shared/_services/user.service';
 
@@ -41,7 +41,8 @@ import {TranslateModule} from '@ngx-translate/core';
       fullScreenBackdrop: true
     }),
     DragulaModule,
-    TranslateModule
+    TranslateModule,
+    PopoverModule
   ],
   providers: [
     YoutubeService,
