@@ -860,15 +860,16 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
     });
     this.selectViewForm.controls['fb_page_id'].setValue(this.pageList[0].id);
   }
+
   async getFollowers(type) {
     let pageID;
     let observables;
-
     pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
-    observables = this.FBService.getData('page_fans', pageID);
-    forkJoin(observables).subscribe(data => {
-      this.followers = data[0][Object.keys(data[0])[Object.keys(data[0]).length - 1]].value;
-
-    });
+    if  (pageID)  {
+      observables = this.FBService.getData('page_fans', pageID);
+      forkJoin(observables).subscribe(data => {
+        this.followers = data[0][Object.keys(data[0])[Object.keys(data[0]).length - 1]].value;
+      });
+    }
   }
 }
