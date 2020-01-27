@@ -295,7 +295,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     let removedPages, pageID;
 
     pageID = (await this.apiKeyService.getAllKeys().toPromise());
-    if (pageID.fb_page_id) {
+    if (pageID && pageID.fb_page_id) {
       removedPages = await this.fbService.updatePages().toPromise();
       removedPages.includes(pageID.fb_page_id) ? await this.apiKeyService.updateKey({
         fb_page_id: null,
