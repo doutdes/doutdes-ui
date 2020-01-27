@@ -274,17 +274,21 @@ export class EmptycardComponent implements OnInit {
     switch (type) {
       case D_TYPE.FB:
         pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
-        observables = this.FBService.getData('page_fans', pageID);
-        forkJoin(observables).subscribe(data => {
+        if (pageID) {
+          observables = this.FBService.getData('page_fans', pageID);
+          forkJoin(observables).subscribe(data => {
             this.followers = data[0][Object.keys(data[0])[Object.keys(data[0]).length - 1]].value;
           });
+        }
         break;
       case D_TYPE.IG:
         pageID = (await this.apiKeyService.getAllKeys().toPromise()).ig_page_id;
-        observables = this.IGService.getBusinessInfo(pageID);
-        forkJoin(observables).subscribe(data => {
-          this.followers = data[0]['followers_count']; // data[data.length - 1]['followers_count'];
+        if (pageID){
+          observables = this.IGService.getBusinessInfo(pageID);
+          forkJoin(observables).subscribe(data => {
+            this.followers = data[data.length - 1]['followers_count'];
           });
+      }
         break;
     }
   }
