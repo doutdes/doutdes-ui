@@ -43,7 +43,7 @@ export class SidebarComponent {
 
   async ngOnInit() {
     const pageID = (await this.apiKeyService.getAllKeys().toPromise());
-    if (pageID.fbm_page_id) {
+    if (pageID && pageID.fbm_page_id) {
       this.fbm_flag = (await this.FBMService.getPages().toPromise()).length > 0;
     }
     if (!this.fbm_flag) { this.hide = true; }
