@@ -285,6 +285,9 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
       case D_TYPE.FB:
         window.open(this.fbLoginURL, '_self');
         break;
+      case D_TYPE.IG:
+        window.open(this.igLoginURL, '_self');
+        break;
     }
   }
 
