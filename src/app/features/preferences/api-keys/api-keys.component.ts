@@ -285,6 +285,9 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
       case D_TYPE.FB:
         window.open(this.fbLoginURL, '_self');
         break;
+      case D_TYPE.IG:
+        window.open(this.igLoginURL, '_self');
+        break;
     }
   }
 
@@ -292,7 +295,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     let removedPages, pageID;
 
     pageID = (await this.apiKeyService.getAllKeys().toPromise());
-    if (pageID) {
+    if (pageID.fb_page_id) {
       removedPages = await this.fbService.updatePages().toPromise();
       removedPages.includes(pageID.fb_page_id) ? await this.apiKeyService.updateKey({
         fb_page_id: null,
