@@ -292,15 +292,16 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   async checkPage() {
     let removedPages, pageID;
     pageID = (await this.apiKeyService.getAllKeys().toPromise());
+    const isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise();
 
-    if (pageID && pageID.fb_page_id) {
+    if (pageID && pageID.fb_page_id && isPermissionGranted.tokenValid) {
       removedPages = await this.fbService.updatePages().toPromise();
       removedPages.includes(pageID.fb_page_id) ? await this.apiKeyService.updateKey({
         fb_page_id: null,
         service_id: D_TYPE.FB
       }).toPromise() : null;
     }
-    if (pageID && pageID.ig_page_id) {
+    if (pageID && pageID.ig_page_id && isPermissionGranted.tokenValid) {
       removedPages = await this.igService.updatePages().toPromise();
       removedPages.includes(pageID.ig_page_id) ? await this.apiKeyService.updateKey({
         ig_page_id: null,
