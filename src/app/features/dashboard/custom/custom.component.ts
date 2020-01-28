@@ -682,12 +682,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     pageIDs[D_TYPE.YT] = (this.ytPageID != undefined) ? this.ytPageID[0].id : null; // TODO change this when the multiple choice works
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
-    console.log(pageIDs)
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         if (Object.keys(miniDatas[i]).length !== 0) {
           results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
-          console.log(results)
           this.getNameMinicard(i);
           this.miniCards[i].value = results['value'];
           this.miniCards[i].progress = results['perc'] + '%';
