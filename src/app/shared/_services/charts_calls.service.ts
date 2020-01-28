@@ -608,7 +608,16 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               index = chartData.findIndex(e => e[0] === (keys[i].substr(subIndex, keys[i].length)));
             }
             // and collecting data
-            (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
+
+            if (keys[i].substr(0, 1) === 'M'){
+              chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10)
+            }
+            else {
+              if (keys[i].substr(0, 1) === 'F') {
+                chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10)
+              }
+            }
+
           }
           chartData = chartData.sort();
         }
