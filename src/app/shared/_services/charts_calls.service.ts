@@ -4424,7 +4424,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
         break;
       case 'ig-follower':
-        value = data['followers_count'];
+        value = data[data.length - 1]['followers_count'];
         break;
       case 'ga-tot-user':
         value = 0;
