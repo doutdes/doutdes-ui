@@ -286,7 +286,7 @@ export class EmptycardComponent implements OnInit {
         if (pageID){
           observables = this.IGService.getBusinessInfo(pageID);
           forkJoin(observables).subscribe(data => {
-            this.followers = data[data.length - 1]['followers_count'];
+            this.followers = data[data.length - 1][0]['followers_count'];
           });
       }
         break;
