@@ -98,6 +98,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   submitted: boolean;
   viewList;
   fbPageList;
+  igPageList;
 
   drag: boolean;
 
@@ -132,7 +133,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     this.userService.get().subscribe(value => {
       this.user = value;
 
-      this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+      this.http.get('./assets/langSetting/langToastr/' + this.conversionSetDefaultLang() + '.json')
         .subscribe(file => {
           this.GEService.langObj.next(file);
         }, error => {
@@ -224,10 +225,31 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           }
         }
       }
+      if (this.HARD_DASH_DATA.permissions[D_TYPE.IG]) {
+
+        this.igPageID = await this.getIgPageID();
+        if (!this.igPageID) {
+          await this.getIgPagesList();
+          if (this.igPageList.length === 1) {
+            key = {ig_page_id: this.igPageList[0]['id'], service_id: D_TYPE.IG};
+            await this.apiKeyService.updateKey(key).toPromise();
+          } else {
+            this.selectViewFormFb = this.formBuilder.group({
+              ig_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+            });
+            this.selectViewFormFb.controls['ig_page_id'].setValue(this.igPageList[0].id);
+            this.GEService.loadingScreen.next(false);
+            this.openModal(this.selectViewFb, true);
+
+            return;
+          }
+        }
+      }
+
+
 
       // Retrieving the pages ID // TODO to add the choice of the page, now it takes just the first one
-      //this.fbPageID = this.HARD_DASH_DATA.permissions[D_TYPE.FB] ? (await this.getFbPageID()) : null;
-      this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise()) : null;
+      // this.igPageID = this.HARD_DASH_DATA.permissions[D_TYPE.IG] ? (await this.IGService.getPages().toPromise()) : null;
       this.ytPageID = this.HARD_DASH_DATA.permissions[D_TYPE.YT] ? (await this.YTService.getChannels().toPromise()) : null;
 
       this.firstDateRange = subDays(new Date(), 30); // this.minDate;
@@ -302,7 +324,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       if (dash['id']) {
         this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
       } else {
-        //this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
+        // this.toastr.error('Non è stato possibile recuperare la dashboard. Per favore, contatta il supporto.', 'Errore durante l\'inizializzazione della dashboard.');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_INIZ'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_INIZ'));
@@ -316,7 +338,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.GEService.loadingScreen.next(false);
 
         if (this.chartArray$.length === 0) {
-          //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+          // this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
 
           this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
@@ -387,7 +409,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         } else {
           this.filterActions.initData(currentData);
           this.GEService.loadingScreen.next(false);
-          //this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
+          // this.toastr.info('Puoi iniziare aggiungendo un nuovo grafico.', 'La tua dashboard è vuota');
 
           this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
@@ -460,7 +482,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             this.minDate = date;
           }
 
-          //this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
+          // this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
 
           this.toastr.success(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
@@ -480,7 +502,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         console.log('Error querying the Chart');
         console.log(error1);
 
-        //this.toastr.error('"' + dashChart.title + ': C\'è stato un errore recuperando i dati per il grafico . Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
+        // this.toastr.error('"' + dashChart.title + ': C\'è stato un errore recuperando i dati per il grafico . Per favore, riprova più tardi oppure contatta il supporto.', 'Errore durante l\'aggiunta del grafico');
 
         this.toastr.error('"' + dashChart.title + this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_DATI_1'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_DATI_1'));
@@ -607,7 +629,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         pageID = this.fbPageID;
         break;
       case D_TYPE.IG:
-        pageID = this.igPageID[0].id;
+        pageID = this.igPageID.id;
         break;
       case D_TYPE.YT:
         pageID = this.ytPageID[0].id;
@@ -655,12 +677,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     };
 
     pageIDs[D_TYPE.FB] = this.fbPageID;
-
-    pageIDs[D_TYPE.IG] = (this.igPageID != undefined) ? this.igPageID[0].id : null; // TODO change this when the multiple choice works
-    pageIDs[D_TYPE.YT] = (this.ytPageID != undefined) ? this.ytPageID[0].id: null; // TODO change this when the multiple choice works
+    // pageIDs[D_TYPE.IG] = (this.igPageID != undefined) ? this.igPageID[0].id : null; // TODO change this when the multiple choice works
+    pageIDs[D_TYPE.IG] = this.igPageID;
+    pageIDs[D_TYPE.YT] = (this.ytPageID != undefined) ? this.ytPageID[0].id : null; // TODO change this when the multiple choice works
 
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.CUSTOM, pageIDs, intervalDate, permissions);
-
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
         if (Object.keys(miniDatas[i]).length !== 0) {
@@ -742,7 +763,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   clearDashboard(): void {
-    //console.log(charts_id);
+    // console.log(charts_id);
 
     this.DService.clearDashboard(this.HARD_DASH_DATA.dashboard_id).subscribe(() => {
       this.filterActions.clearDashboard(D_TYPE.CUSTOM);
@@ -754,7 +775,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         this.closeModal();
         console.error(error);
       } else {
-        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+        // console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_RIMOZIONE'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
@@ -765,19 +786,19 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   }
 
   async htmltoPDF() {
-    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
+    const pdf = new jsPDF('p', 'px', 'a4'); // 595w x 842h
     const cards = document.querySelectorAll('app-card');
     const firstCard = await html2canvas(cards[0]);
 
     const user = await this.getUserCompany();
 
-    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
-    let graphsRow = 2;
-    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
+    const dimRatio = firstCard['width'] > 400 ? 3 : 2;
+    const graphsRow = 2;
+    const graphsPage = firstCard['width'] > 400 ? 6 : 4;
     let x = 40, y = 40;
-    let offset = y - 10;
+    const offset = y - 10;
 
-    let dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
+    const dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
 
     this.openModal(this.reportWait, true);
 
@@ -854,12 +875,30 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     }
   }
 
+  async getIgPagesList() {
+    try {
+      this.igPageList = await this.IGService.getPages().toPromise();
+    } catch (e) {
+      console.error('getViewList -> Error doing the query');
+    }
+  }
+
   async getFbPageID() {
     let pageID;
     try {
       pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
     } catch (e) {
       console.error('getFbPageID -> error doing the query', e);
+    }
+    return pageID;
+  }
+
+  async getIgPageID() {
+    let pageID;
+    try {
+      pageID = (await this.apiKeyService.getAllKeys().toPromise()).ig_page_id;
+    } catch (e) {
+      console.error('getIGPageID -> error doing the query', e);
     }
     return pageID;
   }
