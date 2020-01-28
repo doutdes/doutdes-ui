@@ -209,9 +209,9 @@ export class EmptycardComponent implements OnInit {
 
       this.GEService.showChartInDashboard.next(dashChart);
       this.insertChartForm.reset();
-
-      this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
-
+      if (this.dropdownOptions.length > 0 ) {
+        this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
+      }
       await this.updateDropdownOptions();
     } catch (error) {
       this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_ADD'),
@@ -231,12 +231,12 @@ export class EmptycardComponent implements OnInit {
         ? await this.dashboardService.getChartsNotAddedByDashboardType(this.dashboard_data.dashboard_id, this.dashboard_data.dashboard_type)
           .toPromise()
         : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
-      this.chartRemaining = this.chartRemaining.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
 
 
 
 
       if (this.chartRemaining && this.chartRemaining.length > 0) {
+        this.chartRemaining = this.chartRemaining.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
         this.chartRemaining.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
         // Update channels
         if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
