@@ -37,6 +37,11 @@ export class InstagramService {
     return this.http.get<IgData>(`${this.urlRequest}/data`, {headers, params});
   }
 
+  updatePages() {
+    const headers = this.getAuthorization();
+    return this.http.get<string[]>(`${this.urlRequest}/updatePages`, {headers});
+  }
+
   getMedia(pageID) {
     const headers = this.getAuthorization();
     const path = pageID ? `${pageID}/media` : 'media';

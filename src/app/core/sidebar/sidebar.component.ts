@@ -42,15 +42,19 @@ export class SidebarComponent {
     }
 
   async ngOnInit() {
-    const pageID = (await this.apiKeyService.getAllKeys().toPromise());
-    if (pageID && pageID.fbm_page_id) {
-      this.fbm_flag = (await this.FBMService.getPages().toPromise()).length > 0;
-    }
     if (!this.fbm_flag) { this.hide = true; }
     this.globalEventService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value;
       this.userType = parseInt(this.storeService.getType());
     });
+
+    if (this.isUserLoggedIn) {
+      const pageID = (await this.apiKeyService.getAllKeys().toPromise());
+
+      if (pageID && pageID.fbm_page_id) {
+        this.fbm_flag = (await this.FBMService.getPages().toPromise()).length > 0;
+      }
+    }
 
     if (! this.isUserLoggedIn) {
       this.translate.setDefaultLang('Italiano');

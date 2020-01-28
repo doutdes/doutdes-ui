@@ -19,6 +19,7 @@ import {User} from '../../../shared/_models/User';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
 import {StoreService} from '../../../shared/_services/store.service';
+import {InstagramService} from '../../../shared/_services/instagram.service';
 
 const PrimaryWhite = '#ffffff';
 
@@ -50,8 +51,6 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   fbLoginURL: string;
   igLoginURL: string;
-  gaLoginURL: string;
-  ytLoginURL: string;
 
   public config = {
     animationType: ngxLoadingAnimationTypes.threeBounce,
@@ -76,6 +75,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private http: HttpClient,
     private store: StoreService,
+    private igService: InstagramService,
   ) {
     this.loading = this.geManager.loadingScreen.asObservable();
 
@@ -276,8 +276,6 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   setURL() {
     this.fbLoginURL = this.envURL + '/fb/login?user_id=' + this.store.getId();
     this.igLoginURL = this.envURL + '/ig/login?user_id=' + this.store.getId();
-    this.gaLoginURL = this.envURL + (this.services$[D_TYPE.YT] && this.services$[D_TYPE.YT].granted ? '/ga/yt' : '/ga') + '/login?user_id=' + this.store.getId();
-    this.ytLoginURL = this.envURL + (this.services$[D_TYPE.GA] && this.services$[D_TYPE.GA].granted ? '/ga/yt' : '/yt') + '/login?user_id=' + this.store.getId();
   }
 
   async edit(type: number) {
@@ -293,8 +291,8 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
   async checkPage() {
     let removedPages, pageID;
-
     pageID = (await this.apiKeyService.getAllKeys().toPromise());
+
     if (pageID && pageID.fb_page_id) {
       removedPages = await this.fbService.updatePages().toPromise();
       removedPages.includes(pageID.fb_page_id) ? await this.apiKeyService.updateKey({
@@ -302,5 +300,13 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
         service_id: D_TYPE.FB
       }).toPromise() : null;
     }
+    if (pageID && pageID.ig_page_id) {
+      removedPages = await this.igService.updatePages().toPromise();
+      removedPages.includes(pageID.ig_page_id) ? await this.apiKeyService.updateKey({
+        ig_page_id: null,
+        service_id: D_TYPE.IG
+      }).toPromise() : null;
+    }
+
   }
 }
