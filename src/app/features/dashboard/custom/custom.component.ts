@@ -394,13 +394,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
               interval: dateInterval,
               type: D_TYPE.CUSTOM,
             };
-
+            console.log('sono a riga 399, updatechartlist custom');
+            console.log(currentData)
             this.filterActions.initData(currentData);
             this.GEService.updateChartList.next(true);
 
             // Shows last 30 days
             this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-
             this.GEService.loadingScreen.next(false);
           }
         } else {
@@ -443,28 +443,29 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       .subscribe(chartData => {
         if (!chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;
-
           // getting the minDate of the chart, depending on its type
-          switch (dashChart.type) {
-            case D_TYPE.FB :
-            case D_TYPE.IG:
-              this.minSet.push({
-                id: dashChart.chart_id,
-                minDate: new Date(dashChart.chartData[0]['end_time'])
-              });
-              break;
-            case D_TYPE.GA:
-              this.minSet.push({
-                id: dashChart.chart_id,
-                minDate: (parseDate(dashChart['chartData'][0][0]))
-              });
-              break;
-            case D_TYPE.YT:
-              this.minSet.push({
-                id: dashChart.chart_id,
-                minDate: (parseDate(dashChart.chartData[0]['date']))
-              });
-              break;
+          if(dashChart['chartData'].length > 0) {
+            switch (dashChart.type) {
+              case D_TYPE.FB :
+              case D_TYPE.IG:
+                this.minSet.push({
+                  id: dashChart.chart_id,
+                  minDate: new Date(dashChart.chartData[0]['end_time'])
+                });
+                break;
+              case D_TYPE.GA:
+                this.minSet.push({
+                  id: dashChart.chart_id,
+                  minDate: (parseDate(dashChart['chartData'][0][0]))
+                });
+                break;
+              case D_TYPE.YT:
+                this.minSet.push({
+                  id: dashChart.chart_id,
+                  minDate: (parseDate(dashChart.chartData[0]['date']))
+                });
+                break;
+            }
           }
           this.minSet.forEach(el => {
             if (el.minDate < this.minDate) {
@@ -473,10 +474,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           });
 
           chartToPush.error = false;
-
-          const date = parseDate(chartToPush['chartData'][0][0]);
-          if (date < this.minDate) {
-            this.minDate = date;
+          if (chartToPush['chartData'][0]) {
+            const date = parseDate(chartToPush['chartData'][0][0]);
+            if (date < this.minDate) {
+              this.minDate = date;
+            }
           }
 
           // this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');

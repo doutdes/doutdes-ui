@@ -55,13 +55,15 @@ export class FilterActions {
 
     if (filteredDashboard) {
       for (let i in filteredDashboard.data) {
-        if (!filteredDashboard.data[i].error) { // If there was not error during the retrieving of the chart data
+        if (!filteredDashboard.data[i].error && filteredDashboard.data[i]['chartData'].length > 0) { // If there was not error during the retrieving of the chart data
           chart_id = filteredDashboard.data[i].chart_id;
 
           dateInterval = this.getIntervalDate(filteredDashboard.data[i].chartData, filteredDashboard.data[i].type);
 
           filteredDashboard.data[i].aggregated = this.ADService.getAggregatedData(filteredDashboard.data[i], dateInterval);
           filteredDashboard.data[i].chartData = this.CCService.formatChart(chart_id, filteredDashboard.data[i].chartData);
+        }else{
+          filteredDashboard.data[i].error = true;
         }
       }
       // It searches if the dashboard was already initialized. If it's not, then the dashboard will be stored

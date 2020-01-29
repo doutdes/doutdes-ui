@@ -100,7 +100,6 @@ export class EmptycardComponent implements OnInit {
 
   async ngOnInit() {
     const dashData = this.dashboard_data;
-
     await this.getFollowers(dashData.dashboard_type);
     this.elementClass = this.elementClass + ' order-xl-' + this.xlOrder + ' order-lg-' + this.lgOrder;
 
@@ -116,7 +115,6 @@ export class EmptycardComponent implements OnInit {
       console.error('ERROR in EMPTY-CARD. Cannot get retrieve dashboard data.');
     } else {
       const dummy_dashType = -1; // A dummy dash_type for the emptycard, as event subscriber
-
       try {
         if (!this.GEService.isSubscriber(dummy_dashType)) {
 
@@ -223,7 +221,8 @@ export class EmptycardComponent implements OnInit {
   async updateDropdownOptions() {
     let result = false;
     this.channels = [];
-
+    const tmp = new Set();
+    let remaining;
     if (this.dashboard_data) {
 
       this.chartRemaining = this.dashboard_data.dashboard_type !== 0
@@ -236,9 +235,15 @@ export class EmptycardComponent implements OnInit {
         this.chartRemaining = this.chartRemaining.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
         this.chartRemaining.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
         // Update channels
+
         if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
           for (const i in this.dashboard_data.permissions) {
-            if (this.dashboard_data.permissions[i]) {
+            this.chartRemaining.filter(e => e['type'] == i ? tmp.add(i) : null);
+          }
+          remaining = Array.from(tmp);
+
+          for (const i in this.dashboard_data.permissions) {
+            if (this.dashboard_data.permissions[i] && remaining.includes(i)) {
               // Non visualizzo i chart della dashboard Facebook Marketing
               if (DS_TYPE[i] !== 'Facebook Marketing') {
                 this.channels.push({name: DS_TYPE[i], value: i});
@@ -305,10 +310,9 @@ export class EmptycardComponent implements OnInit {
         .sort((a: Chart, b: Chart) => a.title.localeCompare(b.title)), 'title'
       );
 
-      this.insertChartForm.value.channel === 5
-        ? this.metrics = this.metrics.filter(chart => chart.metric === this.insertChartForm.controls['break'].value)
-        : null;
-
+      if (this.insertChartForm.value.channel === 5) {
+        this.metrics = this.metrics.filter(chart => chart.metric === this.insertChartForm.controls['break'].value);
+      }
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].title);
     }
 
