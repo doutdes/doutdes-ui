@@ -626,11 +626,12 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
 
         if (data.length > 0) {
+          let locale = require('locale-string');
           keys = Object.keys(data[0]['value']); // getting all the gender/age data
-
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
-            chartData.push([keys[i], parseInt(data[0]['value'][keys[i]], 10)]);
+           // console.log(locale.parse(keys[i].replace("_","-")).country);
+            chartData.push([locale.parse(keys[i].replace("_","-")).country, parseInt(data[0]['value'][keys[i]], 10)]);
           }
           chartData.sort(function (obj1, obj2) {
             // Ascending: first age less than the previous
@@ -2373,9 +2374,9 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           dataTable: data,
           chartClass: 9,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            chartArea: {left: 0, right: 0, height: 270, top: 0},
             legend: {position: 'none'},
-            height: 310,
+            height: 315,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
             colors: [IG_PALETTE.FUCSIA.C5],
             areaOpacity: 0.4,
