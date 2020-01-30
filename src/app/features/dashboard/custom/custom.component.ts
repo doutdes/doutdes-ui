@@ -320,7 +320,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
     try {
       // Retrieving dashboard ID
       dash = await this.DService.getDashboardByType(D_TYPE.CUSTOM).toPromise(); // Custom dashboard type
-
       if (dash['id']) {
         this.HARD_DASH_DATA.dashboard_id = dash['id']; // Retrieving dashboard id
       } else {
@@ -345,12 +344,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         }
       } else {
         charts = await this.DService.getAllDashboardCharts(this.HARD_DASH_DATA.dashboard_id).toPromise();
-
         if (charts && charts.length > 0) { // Checking if dashboard is not empty
           charts.forEach((chart: DashboardCharts) => {
             chartParams = {};
             // If the permission for the service is granted
-            if (this.HARD_DASH_DATA.permissions[chart.type] === true) {
+            if (this.HARD_DASH_DATA.permissions[chart.type]) {
               chartParams = {
                 metric: chart.metric,
                 dimensions: chart.dimensions || null,
@@ -367,7 +365,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
 
           dataArray = await forkJoin(observables).toPromise();
-
           if (dataArray) {
             for (let i = 0; i < dataArray.length; i++) {
 
@@ -394,13 +391,11 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
               interval: dateInterval,
               type: D_TYPE.CUSTOM,
             };
-
             this.filterActions.initData(currentData);
             this.GEService.updateChartList.next(true);
 
             // Shows last 30 days
             this.bsRangeValue = [subDays(this.maxDate, this.FILTER_DAYS.thirty), this.lastDateRange];
-
             this.GEService.loadingScreen.next(false);
           }
         } else {
@@ -443,29 +438,28 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       .subscribe(chartData => {
         if (!chartData['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = chartData;
-
           // getting the minDate of the chart, depending on its type
-          switch (dashChart.type) {
-            case D_TYPE.FB :
-            case D_TYPE.IG:
-              this.minSet.push({
-                id: dashChart.chart_id,
-                minDate: new Date(dashChart.chartData[0]['end_time'])
-              });
-              break;
-            case D_TYPE.GA:
-              this.minSet.push({
-                id: dashChart.chart_id,
-                minDate: (parseDate(dashChart['chartData'][0][0]))
-              });
-              break;
-            case D_TYPE.YT:
-              this.minSet.push({
-                id: dashChart.chart_id,
-                minDate: (parseDate(dashChart.chartData[0]['date']))
-              });
-              break;
-          }
+            switch (dashChart.type) {
+              case D_TYPE.FB :
+              case D_TYPE.IG:
+                this.minSet.push({
+                  id: dashChart.chart_id,
+                  minDate: (dashChart.chartData[0]) ? new Date(dashChart.chartData[0]['end_time']) : new Date(Date.now())
+                });
+                break;
+              case D_TYPE.GA:
+                this.minSet.push({
+                  id: dashChart.chart_id,
+                  minDate: dashChart.chartData[0] ? (parseDate(dashChart.chartData[0][0])) : new Date(Date.now())
+                });
+                break;
+              case D_TYPE.YT:
+                this.minSet.push({
+                  id: dashChart.chart_id,
+                  minDate: (dashChart.chartData[0]) ? new Date(dashChart.chartData[0]['date']) : new Date(Date.now())
+                });
+                break;
+            }
           this.minSet.forEach(el => {
             if (el.minDate < this.minDate) {
               this.minDate = el.minDate;
@@ -473,11 +467,10 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           });
 
           chartToPush.error = false;
-
-          const date = parseDate(chartToPush['chartData'][0][0]);
-          if (date < this.minDate) {
-            this.minDate = date;
-          }
+            const date = chartToPush['chartData'][0] ? parseDate(chartToPush['chartData'][0][0]) : new Date(Date.now());
+            if (date < this.minDate) {
+              this.minDate = date;
+            }
 
           // this.toastr.success('"' + dashChart.title + '" è stato correttamente aggiunto alla dashboard.', 'Grafico aggiunto!');
 
