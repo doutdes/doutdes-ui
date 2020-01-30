@@ -11,6 +11,8 @@ import {first, map} from 'rxjs/internal/operators';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
 import {UserService} from '../../shared/_services/user.service';
 import {TranslateService} from '@ngx-translate/core';
+import {ApiKeysService} from '../../shared/_services/apikeys.service';
+import {FacebookMarketingService} from '../../shared/_services/facebook-marketing.service';
 
 @Component({
   selector: 'app-core-header',
@@ -31,19 +33,25 @@ export class HeaderComponent {
 
   drag: boolean;
 
+  fbm_flag = false;
+  hide: boolean;
+
   constructor(
     private actions: LoginActions,
     private localStore: StoreService,
     private authService: AuthenticationService,
     public translate: TranslateService,
     private globalEventService: GlobalEventsManagerService,
-    private userService: UserService
+    private userService: UserService,
+    private apiKeyService: ApiKeysService,
+    private FBMService: FacebookMarketingService,
   ) {
     this.today = new Date().toLocaleString();
     this.today = this.today.substr(0, this.today.length - 10); // I know this is evil, but i'm lazy
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    if (!this.fbm_flag) { this.hide = true; }
     this.globalEventService.dragAndDrop.subscribe(value => this.drag = value);
 
     this.globalEventService.isUserLoggedIn.subscribe(value => {
@@ -51,8 +59,16 @@ export class HeaderComponent {
       this.username = this.localStore.getUserNames();
     });
 
+    if (this.isUserLoggedIn) {
+      const pageID = (await this.apiKeyService.getAllKeys().toPromise());
+
+      if (pageID && pageID.fbm_page_id) {
+        this.fbm_flag = (await this.FBMService.getPages().toPromise()).length > 0;
+    }
+
     if(! this.isUserLoggedIn) {
       this.translate.setDefaultLang('Italiano');
+      }
     }
 
   }

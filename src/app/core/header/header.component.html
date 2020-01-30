@@ -23,22 +23,31 @@
                  (click)="showMenu(false)">
                 <span class="menu-collapsed">{{'MENU.SITO_WEB' | translate }}</span>
               </a>
-              <a class="list-group-item list-group-item-action py-1" [routerLink]=""
-                 (click)="showMenu(false)">
-                <span class="menu-collapsed">Facebook</span>
+              <a href="#submenu5" data-toggle="collapse" aria-expanded="false"
+                 class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="menu-collapsed">Facebook</span>
+                  <span *ngIf="!fbm_flag" style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="far fa-question-circle" #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()"></span>
+                  <span class="fas fa-plus ml-auto"></span>
+                </div>
               </a>
-              <a [routerLink]="[drag ? '#' : '/dashboard/facebook/insights']" class="list-group-item list-group-item-action py-1"
-                 (click)="showMenu(false)">
-                <span class="menu-collapsed ml-4">Insights</span>
-              </a>
-              <a [routerLink]="[drag ? '#' : '/dashboard/facebook/marketing']" class="list-group-item list-group-item-action py-1"
-                 (click)="showMenu(false)">
-                <span class="menu-collapsed ml-4">Marketing</span>
-              </a>
-              <a [routerLink]="[drag ? '#' : '/dashboard/facebook/campaigns']" class="list-group-item list-group-item-action py-1"
-                 (click)="showMenu(false)">
-                <span class="menu-collapsed ml-4">Campaigns</span>
-              </a>
+              <div id="submenu5" class="collapse sidebar-submenu">
+                <a [routerLink]="[drag ? '#' : '/dashboard/facebook/insights']" class="list-group-item list-group-item-action">
+                  <span class="menu-collapsed ml-4">Insights</span>
+                </a>
+                <a [routerLink]="[drag || hide ? '#' : '/dashboard/facebook/marketing']" [ngClass]="{
+        'list-group-item list-group-item-action' : fbm_flag === true,
+        'list-group-item list-group-item-action disabled' : fbm_flag === false
+        }">
+                  <span class="menu-collapsed ml-4">Marketing</span>
+                </a>
+                <a [routerLink]="[drag || hide ? '#' : '/dashboard/facebook/campaigns']" [ngClass]="{
+        'list-group-item list-group-item-action' : fbm_flag === true,
+        'list-group-item list-group-item-action disabled' : fbm_flag === false
+        }">
+                  <span class="menu-collapsed ml-4">Campaigns</span>
+                </a>
+              </div>
               <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/instagram']"
                  (click)="showMenu(false)">
                 <span class="menu-collapsed">Instagram</span>
@@ -149,4 +158,8 @@
     </div>
   </div>
 </nav>
+
+<ng-template #popTemplate>
+  <p style="font-size: 14px; margin: 0;">{{ 'DASHBOARD.NO_FBM' | translate }}</p>
+</ng-template>
 
