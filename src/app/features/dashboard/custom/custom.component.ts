@@ -361,9 +361,6 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
               };
 
               pageID = this.getPageID(chart.type);
-              if (chart.type === D_TYPE.IG) {
-                console.log(pageID);
-              }
               observables.push(this.CCService.retrieveChartData(chart.type, chartParams, pageID));
             }
           }); // Retrieves data for each chart
@@ -629,7 +626,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         pageID = this.fbPageID;
         break;
       case D_TYPE.IG:
-        pageID = this.igPageID.id;
+        pageID = this.igPageID;
         break;
       case D_TYPE.YT:
         pageID = this.ytPageID[0].id;
