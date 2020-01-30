@@ -20,5 +20,5 @@ export const DS_TYPE = {
   2: 'Google Analytics',
   3: 'Instagram',
   4: 'YouTube',
-  5: 'FacebookMarketing'
+  5: 'Facebook Marketing'
 };

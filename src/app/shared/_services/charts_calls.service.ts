@@ -25,7 +25,7 @@ import {parse} from 'ts-node';
 import {FBC_CHART} from '../_models/FacebookCampaignsData';
 
 @Injectable()
-  export class ChartsCallsService {
+export class ChartsCallsService {
 
   constructor(
     private facebookService: FacebookService,
@@ -75,7 +75,10 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
     let myMap;
     let limit;
 
-    const female = []; const male = []; const supportArray = []; const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
+    const female = [];
+    const male = [];
+    const supportArray = [];
+    const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24']; //temporal range for some fbm charts
 
     switch (ID) {
@@ -608,7 +611,16 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               index = chartData.findIndex(e => e[0] === (keys[i].substr(subIndex, keys[i].length)));
             }
             // and collecting data
-            (keys[i].substr(0, 1) === 'M') ? chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10) : chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
+
+            if (keys[i].substr(0, 1) === 'M') {
+              chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10);
+            }
+            else {
+              if (keys[i].substr(0, 1) === 'F') {
+                chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
+              }
+            }
+
           }
           chartData = chartData.sort();
         }
@@ -617,11 +629,12 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
 
         if (data.length > 0) {
+          let locale = require('locale-string');
           keys = Object.keys(data[0]['value']); // getting all the gender/age data
-
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
-            chartData.push([keys[i], parseInt(data[0]['value'][keys[i]], 10)]);
+            // console.log(locale.parse(keys[i].replace("_","-")).country);
+            chartData.push([locale.parse(keys[i].replace('_', '-')).country, parseInt(data[0]['value'][keys[i]], 10)]);
           }
           chartData.sort(function (obj1, obj2) {
             // Ascending: first age less than the previous
@@ -734,7 +747,7 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         header = [['Data', 'Follower persi']];
         let diff = 0;
 
-        if (data.length > 0  && data[0]['business'].length > 1) {
+        if (data.length > 0 && data[0]['business'].length > 1) {
           const follower_day = data[1]['follower_count'];
           const business = data[0]['business'];
           let i = (business.length - 1);
@@ -2303,6 +2316,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         formattedData = {
           chartType: 'Table',
           dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           chartClass: 15,
           options: {
             cssClassNames: {
@@ -2331,6 +2351,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         formattedData = {
           chartType: 'GeoChart',
           dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           chartClass: 2,
           options: {
             region: 'world',
@@ -2348,11 +2375,18 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           chartType: 'ColumnChart',
           dataTable: data,
           chartClass: 9,
+          formatters: [{
+            columns: [1, 2],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           options: {
             chartArea: {left: 0, right: 0, height: 290, top: 0},
             legend: {position: 'none'},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
             colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10],
             areaOpacity: 0.4,
           }
@@ -2362,12 +2396,19 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         formattedData = {
           chartType: 'ColumnChart',
           dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           chartClass: 9,
           options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            chartArea: {left: 0, right: 0, height: 270, top: 0},
             legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            height: 315,
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
             colors: [IG_PALETTE.FUCSIA.C5],
             areaOpacity: 0.4,
           }
@@ -2377,11 +2418,18 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         formattedData = {
           chartType: 'ColumnChart',
           dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           chartClass: 9,
           options: {
             chartArea: {left: 0, right: 0, height: 270, top: 20},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format:'#'},
             colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 3},
@@ -2395,6 +2443,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
           chartType: 'AreaChart',
           dataTable: data,
           chartClass: 5,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           options: {
             chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'none'},
@@ -2408,7 +2463,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               minorGridlines: {color: 'transparent'},
               minValue: 0,
               textPosition: 'in',
-              textStyle: {color: '#999'}
+              textStyle: {color: '#999'},
+              format: '#'
             },
             colors: [IG_PALETTE.LAVENDER.C3],
             areaOpacity: 0.1
@@ -2419,6 +2475,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 192, top: 0},
@@ -2433,7 +2496,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               minorGridlines: {color: 'transparent'},
               minValue: 0,
               textPosition: 'in',
-              textStyle: {color: '#999'}
+              textStyle: {color: '#999'},
+              format:'#'
             },
             colors: [IG_PALETTE.FUCSIA.C3],
             areaOpacity: 0.1
@@ -2444,6 +2508,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         formattedData = {
           chartType: 'PieChart',
           dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           chartClass: 6,
           options: {
             chartArea: {left: 100, right: 0, height: 290, top: 20},
@@ -2470,6 +2541,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 192, top: 0},
@@ -2484,7 +2562,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               minorGridlines: {color: 'transparent'},
               minValue: 0,
               textPosition: 'in',
-              textStyle: {color: '#999'}
+              textStyle: {color: '#999'},
+              format: '#'
             },
             colors: [IG_PALETTE.AMARANTH.C5],
             areaOpacity: 0.1
@@ -2495,6 +2574,13 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
           chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 192, top: 0},
@@ -2511,7 +2597,8 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               textPosition: 'in',
-              textStyle: {color: '#999'}
+              textStyle: {color: '#999'},
+              format:'#'
             },
             colors: [IG_PALETTE.AMARANTH.C5],
             areaOpacity: 0.1
@@ -2520,26 +2607,34 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break;
       case IG_CHART.INFO_CLICKS_COL:
         formattedData = {
-              chartType: 'ColumnChart',
-              dataTable: data,
-              chartClass: 9,
-              options: {
-                chartArea: {left: 0, right: 0, height: 270, top: 0},
-                height: 310,
-                vAxis: {
-                  minValue: 0,
-                  viewWindowMode: 'explicit',
-                  viewWindow: {min: 0, max: 50},
-                  gridlines: {color: '#eaeaea', count: 5},
-                  textPosition: 'in',
-                  textStyle: {color: '#999'}
-                  },
-                colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
-                areaOpacity: 0.4,
-                bar: {groupWidth: '75%'},
-                isStacked: true,
-              }
-            };
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 270, top: 0},
+            height: 310,
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0, max: 50},
+              gridlines: {color: '#eaeaea', count: 5},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+              format:'#'
+            },
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
+            areaOpacity: 0.4,
+            bar: {groupWidth: '75%'},
+            isStacked: true,
+          }
+        };
         break;
 
       case YT_CHART.VIEWS:

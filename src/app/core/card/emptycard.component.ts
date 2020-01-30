@@ -150,8 +150,7 @@ export class EmptycardComponent implements OnInit {
 
     try {
       await this.updateDropdownOptions();
-
-      if (this.metrics.length === 0) {
+      if (this.metrics.length === 0 || this.chartRemaining === null) {
         this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'FULL_GRAF'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'FULL_GRAF'));
       } else {
@@ -209,7 +208,7 @@ export class EmptycardComponent implements OnInit {
 
       this.GEService.showChartInDashboard.next(dashChart);
       this.insertChartForm.reset();
-      if (this.dropdownOptions.length > 0 ) {
+      if (this.dropdownOptions.length > 0) {
         this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
       }
       await this.updateDropdownOptions();
@@ -233,8 +232,6 @@ export class EmptycardComponent implements OnInit {
         : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
 
 
-
-
       if (this.chartRemaining && this.chartRemaining.length > 0) {
         this.chartRemaining = this.chartRemaining.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
         this.chartRemaining.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
@@ -242,15 +239,18 @@ export class EmptycardComponent implements OnInit {
         if (this.dashboard_data.dashboard_type === D_TYPE.CUSTOM) {
           for (const i in this.dashboard_data.permissions) {
             if (this.dashboard_data.permissions[i]) {
-              this.channels.push({name: DS_TYPE[i], value: i});
+              // Non visualizzo i chart della dashboard Facebook Marketing
+              if (DS_TYPE[i] !== 'Facebook Marketing') {
+                this.channels.push({name: DS_TYPE[i], value: i});
+              }
             }
           }
         } else {
           this.channels.push({name: DS_TYPE[this.dashboard_data.dashboard_type], value: this.dashboard_data.dashboard_type});
         }
 
-            this.insertChartForm.controls['channel'].setValue(this.channels[0].value);
-            this.insertChartForm.controls['break'].setValue(this.breakdowns[0]);
+        this.insertChartForm.controls['channel'].setValue(this.channels[0].value);
+        this.insertChartForm.controls['break'].setValue(this.breakdowns[0]);
 
 
         this.filterDropdown(true);
@@ -283,12 +283,12 @@ export class EmptycardComponent implements OnInit {
         break;
       case D_TYPE.IG:
         pageID = (await this.apiKeyService.getAllKeys().toPromise()).ig_page_id;
-        if (pageID){
+        if (pageID) {
           observables = this.IGService.getBusinessInfo(pageID);
           forkJoin(observables).subscribe(data => {
             this.followers = data[data.length - 1][0]['followers_count'];
           });
-      }
+        }
         break;
     }
   }
@@ -297,7 +297,7 @@ export class EmptycardComponent implements OnInit {
   filterDropdown = (updateChannel = false) => {
     if (updateChannel) {
       // this.breakdowns = this.breakdowns.filter(b => this.chartRemaining.filter(chart => chart.title.includes(b)).length > 0);
-      this.chartRemaining.forEach( chart => !this.breakdowns.includes(chart.metric) ? this.breakdowns.push(chart.metric) : null);
+      this.chartRemaining.forEach(chart => !this.breakdowns.includes(chart.metric) ? this.breakdowns.push(chart.metric) : null);
       this.insertChartForm.value.break === undefined ? this.insertChartForm.controls['break'].setValue('reach') : null;
 
       this.metrics = this.getUnique(this.chartRemaining
@@ -329,7 +329,7 @@ export class EmptycardComponent implements OnInit {
 
   };
 
-  conversionSetDefaultLang () {
+  conversionSetDefaultLang() {
 
     switch (this.user.lang) {
       case 'it' :
@@ -347,7 +347,7 @@ export class EmptycardComponent implements OnInit {
 
   getUnique = (arr, comp) => arr.map(e => e[comp])
 
-    // store the keys of the unique objects
+  // store the keys of the unique objects
     .map((e, i, final) => final.indexOf(e) === i && i)
 
     // eliminate the dead keys & store unique objects
