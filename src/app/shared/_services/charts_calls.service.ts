@@ -684,7 +684,6 @@ import {FBC_CHART} from '../_models/FacebookCampaignsData';
         break; // IG Online followers
       case IG_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
-        console.log(data)
 
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), (data[i].value)]);
