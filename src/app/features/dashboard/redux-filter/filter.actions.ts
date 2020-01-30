@@ -138,7 +138,6 @@ export class FilterActions {
     const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
     let filteredChart = JSON.parse(JSON.stringify(chart));
     filteredChart.chartData = this.CCService.formatChart(filteredChart.chart_id, filteredChart.chartData);
-
     this.currentDashboard.data.push(chart);
     this.filteredDashboard.data.push(filteredChart);
 

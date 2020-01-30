@@ -678,7 +678,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.GA).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.GA).toPromise();
-
+      console.log(isPermissionGranted)
       if (isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {

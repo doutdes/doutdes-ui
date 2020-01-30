@@ -27,11 +27,9 @@ export class GoogleAnalyticsService {
   getData(chartParams: ChartParams): Observable<any> {
     const headers = this.getAuthorization();
     const params = {};
-
     for (const el of Object.keys(chartParams)) {
       params[el] = chartParams[el];
     }
-
     return this.http.get<GoogleData[]>(this.urlRequest, {headers, params})
       .pipe(map((res) => res), catchError(e => of(e)));
   }
