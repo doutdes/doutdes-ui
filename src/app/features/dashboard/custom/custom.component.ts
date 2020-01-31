@@ -44,6 +44,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
 
   @ViewChild('selectView') selectView;
   @ViewChild('selectViewFb') selectViewFb;
+  @ViewChild('selectViewIg') selectViewIg;
   @ViewChild('reportWait') reportWait;
 
   public HARD_DASH_DATA = {
@@ -94,6 +95,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
   // Form for init
   selectViewForm: FormGroup;
   selectViewFormFb: FormGroup;
+  selectViewFormIg: FormGroup
   loadingForm: boolean;
   submitted: boolean;
   viewList;
@@ -234,12 +236,12 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
             key = {ig_page_id: this.igPageList[0]['id'], service_id: D_TYPE.IG};
             await this.apiKeyService.updateKey(key).toPromise();
           } else {
-            this.selectViewFormFb = this.formBuilder.group({
+            this.selectViewFormIg = this.formBuilder.group({
               ig_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
             });
-            this.selectViewFormFb.controls['ig_page_id'].setValue(this.igPageList[0].id);
+            this.selectViewFormIg.controls['ig_page_id'].setValue(this.igPageList[0].id);
             this.GEService.loadingScreen.next(false);
-            this.openModal(this.selectViewFb, true);
+            this.openModal(this.selectViewIg, true);
 
             return;
           }
@@ -733,6 +735,16 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
         key = {
           fb_page_id: this.selectViewFormFb.value.fb_page_id,
           service_id: D_TYPE.FB
+        };
+        break;
+      case D_TYPE.IG:
+        if (this.selectViewFormIg.invalid) {
+          this.loadingForm = false;
+          return;
+        }
+        key = {
+          ig_page_id: this.selectViewFormIg.value.ig_page_id,
+          service_id: D_TYPE.IG
         };
         break;
       default:

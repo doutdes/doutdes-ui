@@ -88,7 +88,7 @@
     <button type="button" class="btn btn-success" (click)="modalRef.hide()">{{ 'API-KEYS.MANTIENI' | translate }}</button>
   </div>
 </ng-template>
-<button type="button" class="btn btn-lg btn-success" [routerLink]="['insert']"><i class="fas fa-plus-circle mr-2"></i>{{ 'API-KEYS.ADD_SORG' | translate }}</button>
+<button *ngIf="!allGranted" type="button" class="btn btn-lg btn-success" [routerLink]="['insert']"><i class="fas fa-plus-circle mr-2"></i>{{ 'API-KEYS.ADD_SORG' | translate }}</button>
 
 <ng-template #oauthError>
   <div class="modal-header">

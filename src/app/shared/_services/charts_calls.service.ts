@@ -2574,13 +2574,6 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'AreaChart',
           dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
           chartClass: 5,
           options: {
             chartArea: {left: 0, right: 0, height: 192, top: 0},
@@ -2598,7 +2591,6 @@ export class ChartsCallsService {
               minorGridlines: {color: 'transparent'},
               textPosition: 'in',
               textStyle: {color: '#999'},
-              format:'#'
             },
             colors: [IG_PALETTE.AMARANTH.C5],
             areaOpacity: 0.1

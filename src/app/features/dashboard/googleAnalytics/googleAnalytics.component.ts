@@ -96,6 +96,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   tmp: string;
   user: User;
 
+
   constructor(
     private GAService: GoogleAnalyticsService,
     private breadcrumbActions: BreadcrumbActions,
@@ -161,10 +162,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       await this.getViewList();
       this.createForm();
       view_id = await this.getViewID();
-
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!view_id) {
-
 
         if (this.viewList.length === 0) {
           this.dashErrors.noPages = true;
@@ -174,6 +173,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         if (this.viewList.length === 1) {
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
           update = await this.apiKeyService.updateKey(key).toPromise();
+          view_id = key['ga_view_id'];
 
           if (!update) {
             return;
@@ -678,7 +678,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     try {
       response = await this.apiKeyService.checkIfKeyExists(D_TYPE.GA).toPromise();
       isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.GA).toPromise();
-      console.log(isPermissionGranted)
       if (isPermissionGranted.tokenValid) {
         result = response['exists'] && isPermissionGranted['granted'];
       } else {

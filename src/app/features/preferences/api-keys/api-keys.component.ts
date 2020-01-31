@@ -46,6 +46,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
   value: string;
   tmp: string;
   user: User;
+  allGranted = false;
 
   private envURL = environment.protocol + environment.host + ':' + environment.port;
 
@@ -158,6 +159,7 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
           services[i].scopes = services[i].scopes.map(el => el.replace(/[^\w\s]|_/g, ' '));
           this.services$[services[i].type] = services[i];
+          this.allGranted = (this.services$[1] && this.services$[2] && this.services$[3] && this.services$[4]) ? true : false;
         }
 
         this.geManager.loadingScreen.next(false);
