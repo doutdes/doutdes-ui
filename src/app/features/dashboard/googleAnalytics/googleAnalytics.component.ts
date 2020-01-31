@@ -172,6 +172,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
         if (this.viewList.length === 1) {
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
+          view_id = key['ga_view_id'];
           update = await this.apiKeyService.updateKey(key).toPromise();
           view_id = key['ga_view_id'];
 
