@@ -11,6 +11,7 @@ import {GA_CHART, GA_PALETTE} from '../_models/GoogleData';
 import {FB_CHART, FB_PALETTE} from '../_models/FacebookData';
 import {IG_CHART, IG_PALETTE} from '../_models/InstagramData';
 import * as moment from 'moment';
+
 import {subDays} from 'date-fns';
 
 import {YT_CHART, YT_PALETTE} from '../_models/YoutubeData';
@@ -66,6 +67,7 @@ export class ChartsCallsService {
   public initFormatting(ID, data) {
     let header;
     let chartData = [];
+    let tmpData = [];
     let keys = [];
     let indexFound;
     let other;
@@ -74,6 +76,7 @@ export class ChartsCallsService {
     let temp, index;
     let myMap;
     let limit;
+    const countryList = require('country-list');
 
     const female = [];
     const male = [];
@@ -98,7 +101,7 @@ export class ChartsCallsService {
           });
         }
 
-        chartData = this.addPaddindRows(chartData);
+        chartData = this.addPaddingRows(chartData);
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
@@ -125,16 +128,17 @@ export class ChartsCallsService {
         }
         break; // Facebook Page Views
       case FB_CHART.FANS_CITY:
-        header = [['Città', 'Numero fan']];
+        header = [['Paese', 'Numero fan']];
 
         chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+          return [ChartsCallsService.cutString(countryList.getName(k), 30), data[data.length - 1].value[k]];
         });
-
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+        chartData = this.addPaddingRows(chartData);
+
         break; // Facebook Fan City
       case FB_CHART.ENGAGED_USERS:
         header = [['Data', 'Interazioni']];
@@ -318,7 +322,7 @@ export class ChartsCallsService {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
 
-        chartData = this.addPaddindRows(chartData);
+        chartData = this.addPaddingRows(chartData);
 
         break; // Facebook Domini dei referenti esterni (elenco)
       case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
@@ -353,7 +357,7 @@ export class ChartsCallsService {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
 
-        chartData = this.addPaddindRows(chartData);
+        chartData = this.addPaddingRows(chartData);
         break; // Facebook Vista contenuti per città (elenco)
       case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
         header = [['Città', 'Numero fan']];
@@ -379,7 +383,8 @@ export class ChartsCallsService {
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-        chartData = this.addPaddindRows(chartData);
+
+        chartData = this.addPaddingRows(chartData);
         break; // Facebook Vista contenuti per Paese (elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
@@ -441,7 +446,7 @@ export class ChartsCallsService {
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-        chartData = this.addPaddindRows(chartData);
+        chartData = this.addPaddingRows(chartData);
         break;  // Google List Referral
       case GA_CHART.SOURCES_COLUMNS:
         /** Data array is constructed as follows:
@@ -585,7 +590,7 @@ export class ChartsCallsService {
           });
 
           // paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
-          chartData = this.addPaddindRows(chartData);
+          chartData = this.addPaddingRows(chartData);
 
           // for (let i = 0; i < paddingRows; i++) {
           //   chartData.push(['', null]);
@@ -4131,7 +4136,7 @@ export class ChartsCallsService {
     return formattedData;
   }
 
-  public addPaddindRows(chartData) {
+  public addPaddingRows(chartData) {
     const paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
 
     for (let i = 0; i < paddingRows; i++) {
