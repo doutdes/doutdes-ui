@@ -54,6 +54,18 @@ export class ChartsCallsService {
           this.http.get('./assets/langSetting/CountryTranslate/it/world.json').subscribe(file => {
               if (file) {
                 this.listCountry = new Map;
+                // tslint:disable-next-line:forin
+                for (const i in file) {
+                  this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
+                }
+              }
+            }
+          );
+        } else {
+          this.http.get('./assets/langSetting/CountryTranslate/en/world.json').subscribe(file => {
+              if (file) {
+                this.listCountry = new Map;
+                // tslint:disable-next-line:forin
                 for (const i in file) {
                   this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
                 }
