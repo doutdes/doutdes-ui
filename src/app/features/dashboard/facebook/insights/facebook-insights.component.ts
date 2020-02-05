@@ -367,7 +367,6 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         first: new Date(value[0].setHours(0, 0, 0, 0)),
         last: new Date(value[1].setHours(23, 59, 59))
       };
-
       this.filterActions.filterData(dateInterval);
 
       let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());

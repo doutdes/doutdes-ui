@@ -279,13 +279,17 @@ export class ChartsCallsService {
         break; // Facebook Reazioni linea
       case FB_CHART.REACTIONS_COLUMN_CHART:
         header = [['Reazione', 'Numero']];
-
+        const react = ['like', 'love', 'ahah', 'wow', 'anger', 'sorry'];
         myMap = new Map();
         for (let el of data) {
           if (el['value']) {
-            let reacts = el['value'];
+            const reacts = el['value'];
+            // tslint:disable-next-line:forin
             for (let i in reacts) {
-              let value = parseInt(reacts[i], 10);
+              const value = parseInt(reacts[i], 10);
+              if (i === 'haha') {
+                i = 'ahah';
+              }
               if (myMap.has(i)) {
                 myMap.set(i, myMap.get(i) + value);
               } else {
@@ -295,13 +299,19 @@ export class ChartsCallsService {
           }
         }
 
+        for (const i of react) {
+          if (myMap.has(i)) {
+            myMap.set(i, myMap.get(i));
+          } else {
+            myMap.set(i, 0);
+          }
+        }
+
         var key = myMap.keys();
         var values = myMap.values();
-
         for (let i = 0; i < myMap.size; i++) {
           chartData.push([key.next().value, values.next().value]);
         }
-
         break; // Facebook Reazioni colonna
       case FB_CHART.PAGE_VIEW_EXTERNALS:
         header = [['Sito Web', 'Numero']];

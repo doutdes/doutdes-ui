@@ -177,7 +177,6 @@ export class FilterActions {
 
   filterByDateInterval(filterInterval: IntervalDate) {
     const dashToFilter: DashboardData = JSON.parse(JSON.stringify(this.currentDashboard)); // Looses the reference to original data
-
     const filtered = [];
     let chart;
     if (dashToFilter) {
