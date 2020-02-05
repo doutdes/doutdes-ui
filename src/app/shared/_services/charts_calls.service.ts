@@ -2441,7 +2441,7 @@ export class ChartsCallsService {
           chartType: 'ColumnChart',
           dataTable: data,
           formatters: [{
-            columns: [1],
+            columns: [1, 2, 3],
             type: 'NumberFormat',
             options: {
               pattern: '#.##'
@@ -2451,7 +2451,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 30, right: 0, height: 270, top: 20},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format:'#'},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
             hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
             colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
             areaOpacity: 0.4,
