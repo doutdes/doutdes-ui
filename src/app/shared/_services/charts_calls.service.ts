@@ -671,25 +671,32 @@ export class ChartsCallsService {
         break; // IG Audience Gender/Age
       case IG_CHART.AUD_LOCALE:
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
-
         if (data.length > 0) {
-          let locale = require('locale-string');
-          keys = Object.keys(data[0]['value']); // getting all the gender/age data
+          const locale = require('locale-string');
+
+          keys = Object.keys(data[data.length - 1]['value']);
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
-            // console.log(locale.parse(keys[i].replace("_","-")).country);
-            chartData.push([locale.parse(keys[i].replace('_', '-')).country, parseInt(data[0]['value'][keys[i]], 10)]);
+            chartData.push([locale.parse(keys[i].replace('_', '-')).language, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
           }
           chartData.sort(function (obj1, obj2) {
             // Ascending: first age less than the previous
             return -(obj1[1] - obj2[1]);
           });
 
+          for (let i = 0; i < chartData.length; i++) {
+            const arr = chartData.filter(el2 => chartData[i][0] === el2[0]);
+            if (arr.length > 1) {
+              chartData = chartData.filter(el => chartData[i] !== el ? !(arr.includes(el)) : chartData[i]);
+              arr.forEach(el => el !== chartData[i] ? chartData[i][1] += el[1] : null);
+            }
+          }
+
           other = [['Altro', 0]];
-          chartData.slice(4, chartData.length).forEach(el => {
+          chartData.slice(5, chartData.length).forEach(el => {
             other[0][1] += el[1];
           });
-          chartData = chartData.slice(0, 4).concat(other);
+          chartData = chartData.slice(0, 5).concat(other);
         }
 
         break; // IG Audience Locale
@@ -796,8 +803,7 @@ export class ChartsCallsService {
           const business = data[0]['business'];
           let i = (business.length - 1);
           while (i >= 1) {
-            diff = (business[i - 1].followers_count - follower_day[i - 1].value) - (business[i].followers_count); //- follower_day[i].value
-            diff = diff < 0 ? 0 : diff;
+            diff = Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count));
 
             chartData.push([
               moment(business[i].end_time).toDate(),
@@ -2449,11 +2455,13 @@ export class ChartsCallsService {
           }],
           chartClass: 9,
           options: {
-            chartArea: {left: 0, right: 0, height: 270, top: 0},
+            chartArea: {left: 30, right: 0, height: 270, top: 5},
             legend: {position: 'none'},
             height: 315,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
             colors: [IG_PALETTE.FUCSIA.C5],
+            bar: {groupWidth: '50%'},
             areaOpacity: 0.4,
           }
         };
@@ -2463,7 +2471,7 @@ export class ChartsCallsService {
           chartType: 'ColumnChart',
           dataTable: data,
           formatters: [{
-            columns: [1],
+            columns: [1, 2, 3],
             type: 'NumberFormat',
             options: {
               pattern: '#.##'
@@ -2471,13 +2479,14 @@ export class ChartsCallsService {
           }],
           chartClass: 9,
           options: {
-            chartArea: {left: 0, right: 0, height: 270, top: 20},
+            chartArea: {left: 30, right: 0, height: 270, top: 20},
             height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format:'#'},
+            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+            hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
             colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 3},
-            bar: {groupWidth: '75%'},
+            bar: {groupWidth: '50%'},
             isStacked: true,
           }
         };
@@ -2630,7 +2639,7 @@ export class ChartsCallsService {
             vAxis: {
               minValue: 0,
               viewWindowMode: 'explicit',
-              viewWindow: {min: 0, max: 1},
+              viewWindow: {min: 0},
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
               textPosition: 'in',

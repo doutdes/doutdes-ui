@@ -95,7 +95,6 @@ export class CardComponent implements OnInit {
     if (this.aggregated) {
       this.handleAggregated();
     }
-
     this.updateChartForm = this.formBuilder.group({
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });
@@ -230,6 +229,11 @@ export class CardComponent implements OnInit {
       this.low += unit;
       this.high += unit;
       this.avg += unit;
+
+      /*this.avg = this.avg.replace('.', ',');
+      this.high = this.high.replace('.', ',');
+      this.low = this.low.replace('.', ',');*/
+
       this.prevLow += unit;
       this.prevHigh += unit;
       this.prevAvg += unit;
