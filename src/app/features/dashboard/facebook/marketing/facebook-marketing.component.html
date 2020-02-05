@@ -166,10 +166,10 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-danger" (click)="clearDashboard()">
-      Sì, rimuovili
+    <button type="button" class="btn btn-success" (click)="clearDashboard()">
+      {{ 'DASHBOARD.CLEAR_CONFERMA' | translate }}
     </button>
-    <button type="button" class="btn btn-success" (click)="closeModal()">{{ 'DASHBOARD.CLEAR_CONFERMA_NO' | translate
+    <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'DASHBOARD.CLEAR_CONFERMA_NO' | translate
       }}</button>
   </div>
 

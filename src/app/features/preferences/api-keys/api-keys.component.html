@@ -84,8 +84,8 @@
 
   <div class="modal-footer">
 
-    <button *ngIf="this.checkbox" type="button" class="btn btn-danger" (click)="deleteService(serviceToDelete.type)">{{ 'API-KEYS.SI_ELIMINA' | translate }}</button>
-    <button type="button" class="btn btn-success" (click)="modalRef.hide()">{{ 'API-KEYS.MANTIENI' | translate }}</button>
+    <button *ngIf="this.checkbox" type="button" class="btn btn-success" (click)="deleteService(serviceToDelete.type)">{{ 'API-KEYS.SI_ELIMINA' | translate }}</button>
+    <button type="button" class="btn btn-danger" (click)="modalRef.hide()">{{ 'API-KEYS.MANTIENI' | translate }}</button>
   </div>
 </ng-template>
 <button *ngIf="!allGranted" type="button" class="btn btn-lg btn-success" [routerLink]="['insert']"><i class="fas fa-plus-circle mr-2"></i>{{ 'API-KEYS.ADD_SORG' | translate }}</button>

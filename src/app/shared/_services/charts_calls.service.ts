@@ -635,15 +635,22 @@ export class ChartsCallsService {
           const locale = require('locale-string');
 
           keys = Object.keys(data[data.length - 1]['value']);
-
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
-            chartData.push([locale.parse(keys[i].replace('_', '-')).country, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
+            chartData.push([locale.parse(keys[i].replace('_', '-')).language, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
           }
           chartData.sort(function (obj1, obj2) {
             // Ascending: first age less than the previous
             return -(obj1[1] - obj2[1]);
           });
+
+          for (let i = 0; i < chartData.length; i++) {
+            const arr = chartData.filter(el2 => chartData[i][0] === el2[0]);
+            if (arr.length > 1) {
+              chartData = chartData.filter(el => chartData[i] !== el ? !(arr.includes(el)) : chartData[i]);
+              arr.forEach(el => el !== chartData[i] ? chartData[i][1] += el[1] : null);
+            }
+          }
 
           other = [['Altro', 0]];
           chartData.slice(5, chartData.length).forEach(el => {
