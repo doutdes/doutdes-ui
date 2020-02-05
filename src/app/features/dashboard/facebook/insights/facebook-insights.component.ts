@@ -79,7 +79,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
   public loading = false;
   public isApiKeySet = true;
 
-  loaded: boolean = false;
+  loaded = false;
   modalRef: BsModalRef;
 
   // Form for init
@@ -88,7 +88,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
   pageList = [];
   submitted: boolean;
   currentNamePage;
-  oldCurrentNamePage: string = '';
+  oldCurrentNamePage = '';
   followers: number;
   @select() filter: Observable<any>;
 
@@ -162,7 +162,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
     // 1. Init intervalData (retrieve data of previous month)
     let results;
     let empty = false;
-    let date = new Date();
+    const date = new Date();
     const y = date.getFullYear();
     const m = date.getMonth();
     const intervalDate: IntervalDate = {
@@ -170,11 +170,12 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
       last: new Date(new Date(y, m + 1, 0).setHours(23, 59, 59, 999))
     };
 
-    let pageIDs = {};
+    const pageIDs = {};
 
     pageIDs[D_TYPE.FB] = pageID;
     const observables = this.CCService.retrieveMiniChartData(D_TYPE.FB, pageIDs, null);
     forkJoin(observables).subscribe(miniDatas => {
+      // tslint:disable-next-line:forin
       for (const i in miniDatas) {
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
         empty = empty || !results;
@@ -255,11 +256,11 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
                       chart.error = true;
                       console.warn('The attached chart does not contain any data.', chart);
                     } else if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
-                      if (dataArray[i].length === 0) { //if there is no data available
+                      if (dataArray[i].length === 0) { // if there is no data available
                         chart.error = true;
                       } else {
                         chart.chartData = dataArray[i];
-                        let date = new Date(chart.chartData[0]['end_time']);
+                        const date = new Date(chart.chartData[0]['end_time']);
                         if (date < this.minDate) {
                           this.minDate = date;
                         }
@@ -369,8 +370,8 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
       };
       this.filterActions.filterData(dateInterval);
 
-      let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
-      let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
+      const diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
+      const diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
 
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
         this.dateChoice = 'Personalizzato';
@@ -472,7 +473,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
     let fb_page_id;
     let existence, update;
     let key: ApiKey;
-    await this.getFollowers(fb_page_id)
+    await this.getFollowers(fb_page_id);
     this.GEService.loadingScreen.subscribe(value => {
       this.loading = value;
     });
@@ -490,7 +491,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
       this.createForm();
       fb_page_id = await this.getPageID();
       // We check if the user has already set a preferred page if there is more than one in his permissions.
-      await this.getFollowers(fb_page_id)
+      await this.getFollowers(fb_page_id);
       if (!fb_page_id) {
         // await this.getPagesList();
 
@@ -584,7 +585,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         this.closeModal();
         console.error(error);
       } else {
-        //console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
+        // console.error('ERROR in CARD-COMPONENT. Cannot delete a chart from the dashboard.');
 
         this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_RIMOZIONE'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_RIMOZIONE'));
@@ -595,20 +596,20 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
   }
 
   async htmltoPDF() {
-    const pdf = new jsPDF('p', 'px', 'a4');// 595w x 842h
+    const pdf = new jsPDF('p', 'px', 'a4'); // 595w x 842h
     const cards = document.querySelectorAll('app-card');
     const firstCard = await html2canvas(cards[0]);
 
     const user = await this.getUserCompany();
 
-    let dimRatio = firstCard['width'] > 400 ? 3 : 2;
-    let graphsRow = 2;
-    let graphsPage = firstCard['width'] > 400 ? 6 : 4;
+    const dimRatio = firstCard['width'] > 400 ? 3 : 2;
+    const graphsRow = 2;
+    const graphsPage = firstCard['width'] > 400 ? 6 : 4;
 
     let x = 40, y = 40;
-    let offset = y - 10;
+    const offset = y - 10;
 
-    let dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
+    const dateObj = new Date(), month = dateObj.getUTCMonth() + 1, day = dateObj.getUTCDate(), year = dateObj.getUTCFullYear();
 
     this.openModal(this.reportWait, true);
 
@@ -864,7 +865,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
     let pageID;
     let observables;
     pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
-    if  (pageID)  {
+    if (pageID) {
       observables = this.FBService.getData('page_fans', pageID);
       forkJoin(observables).subscribe(data => {
         this.followers = data[0][Object.keys(data[0])[Object.keys(data[0]).length - 1]].value;

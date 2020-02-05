@@ -103,7 +103,6 @@ export class AppComponent implements OnInit {
   }
 
   conversionSetDefaultLang () {
-
     switch (this.user.lang) {
       case "it" :
         this.value = "Italiano";

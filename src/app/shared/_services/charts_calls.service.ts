@@ -24,9 +24,19 @@ import NumberFormat = Intl.NumberFormat;
 import {computeStyle} from '@angular/animations/browser/src/util';
 import {parse} from 'ts-node';
 import {FBC_CHART} from '../_models/FacebookCampaignsData';
+import {GlobalEventsManagerService} from './global-event-manager.service';
+import {TranslateService} from '@ngx-translate/core';
+import {User} from '../_models/User';
+import {UserService} from './user.service';
+import {HttpClient} from '@angular/common/http';
+import {forEach} from '@angular/router/src/utils/collection';
+
 
 @Injectable()
 export class ChartsCallsService {
+
+  user: User;
+  listCountry = new Map();
 
   constructor(
     private facebookService: FacebookService,
@@ -34,9 +44,28 @@ export class ChartsCallsService {
     private instagramService: InstagramService,
     private youtubeService: YoutubeService,
     private facebookMarketingService: FacebookMarketingService,
+    private GEservice: GlobalEventsManagerService,
+    private userService: UserService,
+    private http: HttpClient,
     private facebookCampaignsService: FacebookCampaignsService) {
-  }
+      this.userService.get().subscribe(data => {
+          this.user = data;
+        if (this.user.lang === 'it') {
+          this.http.get('./assets/langSetting/CountryTranslate/it/world.json').subscribe(file => {
+              if (file) {
+                this.listCountry = new Map;
+                for (const i in file) {
+                  this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
+                }
+              }
+            }
+          );
+        }
+        }, err => {
+          console.error(err);
+      });
 
+  }
   public static cutString(str, maxLength) {
     if (str) {
       return str.length > maxLength ? str.substr(0, maxLength) + '...' : str;
@@ -137,6 +166,7 @@ export class ChartsCallsService {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
 
+        chartData = this.changeNameCountry(data)
         chartData = this.addPaddingRows(chartData);
 
         break; // Facebook Fan City
@@ -4700,5 +4730,19 @@ export class ChartsCallsService {
       })
     ); // TODO IMPROVE
     return array;
+  }
+
+  private changeNameCountry(data) {
+    let chartData;
+    const tmp = this.listCountry;
+
+    chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+      return [ChartsCallsService.cutString(tmp.get(k), 30), data[data.length - 1].value[k]];
+    });
+    chartData.sort(function (obj1, obj2) {
+      return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+    });
+
+    return chartData;
   }
 }
