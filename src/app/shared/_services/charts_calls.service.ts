@@ -792,16 +792,18 @@ export class ChartsCallsService {
 
         const acc = [];
         let count = 0;
+        if (data[0]) {
+          for (let i = 0; i < 5; i++) {
+            data[0]['data'][i].forEach(el => count += el.value);
+            acc[i] = count;
+            count = 0;
+          }
 
-        for (let i = 0; i < 5; i++) {
-          data[0]['data'][i].forEach(el => count += el.value);
-          acc[i] = count;
-          count = 0;
+          for (let i = 0; i < 5; i++) {
+            chartData.push([metrics[i], acc[i]]);
+          }
         }
 
-        for (let i = 0; i < 5; i++) {
-          chartData.push([metrics[i], acc[i]]);
-        }
         break;
 
       case YT_CHART.VIEWS:
@@ -2444,7 +2446,7 @@ export class ChartsCallsService {
             columns: [1, 2, 3],
             type: 'NumberFormat',
             options: {
-              pattern: '#.##'
+              pattern: '###.##'
             }
           }],
           chartClass: 9,
