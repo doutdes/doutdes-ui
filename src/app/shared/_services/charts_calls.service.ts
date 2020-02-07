@@ -178,7 +178,7 @@ export class ChartsCallsService {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
 
-        chartData = this.changeNameCountry(data)
+        //chartData = this.changeNameCountry(data) next release
         chartData = this.addPaddingRows(chartData);
 
         break; // Facebook Fan City

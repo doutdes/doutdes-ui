@@ -864,9 +864,10 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
   async getFollowers(type) {
     let pageID;
     let observables;
-    pageID = (await this.apiKeyService.getAllKeys().toPromise()).fb_page_id;
+    pageID = (await this.apiKeyService.getAllKeys().toPromise());
+
     if (pageID) {
-      observables = this.FBService.getData('page_fans', pageID);
+      observables = this.FBService.getData('page_fans', pageID.fb_page_id);
       forkJoin(observables).subscribe(data => {
         this.followers = data[0][Object.keys(data[0])[Object.keys(data[0]).length - 1]].value;
       });

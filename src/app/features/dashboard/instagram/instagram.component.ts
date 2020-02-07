@@ -881,9 +881,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     let pageID;
     let observables;
 
-    pageID = (await this.apiKeyService.getAllKeys().toPromise()).ig_page_id;
+    pageID = (await this.apiKeyService.getAllKeys().toPromise());
     if (pageID) {
-      observables = this.IGService.getBusinessInfo(pageID);
+      observables = this.IGService.getBusinessInfo(pageID.ig_page_id);
       forkJoin(observables).subscribe(data => {
         this.followers = data[data.length - 1][0]['followers_count'];
       });
