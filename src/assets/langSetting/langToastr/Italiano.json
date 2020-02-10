@@ -1,5 +1,9 @@
 {
   "DASHBOARD": {
+    "ERR_GETDATA": {
+      "TITLE": "Mancato recupero dati",
+      "MESSAGE": "I permessi di Instagram non sono stati settati"
+    },
     "VUOTA": {
       "TITLE": "La tua dashboard è vuota",
       "MESSAGE": "Puoi iniziare aggiungendo un nuovo grafico."

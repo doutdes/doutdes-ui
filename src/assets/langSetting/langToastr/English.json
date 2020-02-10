@@ -1,5 +1,9 @@
 {
   "DASHBOARD": {
+    "ERR_GETDATA": {
+      "TITLE": "Data recovery failed",
+      "MESSAGE": "Instagram permissions have not been set"
+    },
     "VUOTA": {
       "TITLE": "Your dashboard is empty",
       "MESSAGE": "You can start by adding a new chart."

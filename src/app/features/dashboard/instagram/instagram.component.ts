@@ -230,6 +230,13 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
 
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
+      if (this.miniCards[0]['value'] === '-') {
+        // this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'STOP_ACCESSO'),
+        //   this.GEService.getStringToastr(true, false, 'DASHBOARD', 'STOP_ACCESSO'));
+
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ERR_GETDATA'),
+          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_GETDATA'));
+      }
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -506,7 +513,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
           this.dashErrors.noPages = true;
           return;
         }
-
         if (this.pageList.length === 1) {
           key = {ig_page_id: this.pageList[0]['id'], service_id: D_TYPE.IG};
 
@@ -840,10 +846,12 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   createForm() {
-    this.selectViewForm = this.formBuilder.group({
-      ig_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
-    });
-    this.selectViewForm.controls['ig_page_id'].setValue(this.pageList[0].id);
+    if(this.pageList.length > 0) {
+      this.selectViewForm = this.formBuilder.group({
+        ig_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+      });
+      this.selectViewForm.controls['ig_page_id'].setValue(this.pageList[0].id);
+    }
   }
 
   async getPageID() {
@@ -882,11 +890,16 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     let observables;
 
     pageID = (await this.apiKeyService.getAllKeys().toPromise());
-    if (pageID) {
-      observables = this.IGService.getBusinessInfo(pageID.ig_page_id);
-      forkJoin(observables).subscribe(data => {
-        this.followers = data[data.length - 1][0]['followers_count'];
-      });
+    try {
+      if (pageID) {
+        observables = this.IGService.getBusinessInfo(pageID.ig_page_id);
+        forkJoin(observables).subscribe(data => {
+          if(data[data.length - 1])
+          this.followers = data[data.length - 1][0]['followers_count'];
+        });
+      }
+    }catch (e) {
+      console.log(e)
     }
   }
 }
