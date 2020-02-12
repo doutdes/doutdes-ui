@@ -228,15 +228,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         return;
       }
 
-
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
-      if (this.miniCards[0]['value'] === '-') {
-        // this.toastr.error(this.GEService.getStringToastr(false, true, "DASHBOARD", 'STOP_ACCESSO'),
-        //   this.GEService.getStringToastr(true, false, 'DASHBOARD', 'STOP_ACCESSO'));
-
-        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ERR_GETDATA'),
-          this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ERR_GETDATA'));
-      }
 
       if (this.dashStored) {
         // Ci sono già dati salvati
@@ -325,7 +317,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       }
 
       this.loaded = true;
-
     } catch (e) {
       console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
       console.error(e);
