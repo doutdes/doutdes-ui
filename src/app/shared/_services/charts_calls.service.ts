@@ -783,6 +783,9 @@ export class ChartsCallsService {
           chartData.push([metrics[i], acc[i]]);
         }
         break;
+      case IG_CHART.MEDIA_LIKE_DATA:
+        console.log(data)
+        break;
 
       case YT_CHART.VIEWS:
         header = [['Data', 'Visualizzazioni']];
@@ -2598,6 +2601,37 @@ export class ChartsCallsService {
         };
         break;
       case IG_CHART.INFO_CLICKS_COL:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 270, top: 0},
+            height: 310,
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0, max: 50},
+              gridlines: {color: '#eaeaea', count: 5},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+              format:'#'
+            },
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
+            areaOpacity: 0.4,
+            bar: {groupWidth: '75%'},
+            isStacked: true,
+          }
+        };
+        break;
+      case IG_CHART.MEDIA_LIKE_DATA:
         formattedData = {
           chartType: 'ColumnChart',
           dataTable: data,
