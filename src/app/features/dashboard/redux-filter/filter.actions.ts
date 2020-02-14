@@ -177,7 +177,6 @@ export class FilterActions {
 
   filterByDateInterval(filterInterval: IntervalDate) {
     const dashToFilter: DashboardData = JSON.parse(JSON.stringify(this.currentDashboard)); // Looses the reference to original data
-
     const filtered = [];
     let chart;
     if (dashToFilter) {
@@ -199,7 +198,7 @@ export class FilterActions {
                 break;
               case D_TYPE.IG:
                 chart.chartData =
-                  chart.period !== 'lifetime'
+                  chart.period !== 'lifetime' && chart.metric !== 'lost_followers'
                   ? chart.chartData.filter(
                     el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last)
                   : chart.chartData;

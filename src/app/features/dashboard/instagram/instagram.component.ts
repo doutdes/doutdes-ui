@@ -228,7 +228,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         return;
       }
 
-
       this.dashErrors.emptyMiniCards = await this.loadMiniCards(this.pageID);
 
       if (this.dashStored) {
@@ -318,7 +317,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       }
 
       this.loaded = true;
-
     } catch (e) {
       console.error('ERROR in CUSTOM-COMPONENT. Cannot retrieve dashboard charts. More info:');
       console.error(e);
@@ -506,7 +504,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
           this.dashErrors.noPages = true;
           return;
         }
-
         if (this.pageList.length === 1) {
           key = {ig_page_id: this.pageList[0]['id'], service_id: D_TYPE.IG};
 
@@ -840,10 +837,12 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   createForm() {
-    this.selectViewForm = this.formBuilder.group({
-      ig_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
-    });
-    this.selectViewForm.controls['ig_page_id'].setValue(this.pageList[0].id);
+    if(this.pageList.length > 0) {
+      this.selectViewForm = this.formBuilder.group({
+        ig_page_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+      });
+      this.selectViewForm.controls['ig_page_id'].setValue(this.pageList[0].id);
+    }
   }
 
   async getPageID() {
@@ -881,12 +880,17 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     let pageID;
     let observables;
 
-    pageID = (await this.apiKeyService.getAllKeys().toPromise()).ig_page_id;
-    if (pageID) {
-      observables = this.IGService.getBusinessInfo(pageID);
-      forkJoin(observables).subscribe(data => {
-        this.followers = data[data.length - 1][0]['followers_count'];
-      });
+    pageID = (await this.apiKeyService.getAllKeys().toPromise());
+    try {
+      if (pageID) {
+        observables = this.IGService.getBusinessInfo(pageID.ig_page_id);
+        forkJoin(observables).subscribe(data => {
+          if(data[data.length - 1])
+          this.followers = data[data.length - 1][0]['followers_count'];
+        });
+      }
+    }catch (e) {
+      console.log(e)
     }
   }
 }

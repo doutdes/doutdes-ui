@@ -42,7 +42,7 @@ export class SidebarComponent {
     }
 
   async ngOnInit() {
-    if (!this.fbm_flag) { this.hide = true; }
+
     this.globalEventService.isUserLoggedIn.subscribe(value => {
       this.isUserLoggedIn = value;
       this.userType = parseInt(this.storeService.getType());
@@ -55,6 +55,8 @@ export class SidebarComponent {
         this.fbm_flag = (await this.FBMService.getPages().toPromise()).length > 0;
       }
     }
+    if (!this.fbm_flag) {this.hide = true; }
+
 
     if (! this.isUserLoggedIn) {
       this.translate.setDefaultLang('Italiano');

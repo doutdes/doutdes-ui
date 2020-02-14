@@ -22,7 +22,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.GA].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.GA])"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.ELIMINA' | translate }}</button>
+              <button type="button" class="btn btn-danger" style="margin-left: 77pt;" (click)="openModal(deleteKey, services$[D_TYPE.GA])"><i class="fas fa-trash-alt ml-1 mr-1"></i></button>
             </td>
           </tr> <!-- Google -->
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.FB] && services$[D_TYPE.FB]['granted']">
@@ -31,9 +31,9 @@
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
             <td>
 <!--              <a class="btn btn-success" style="margin-bottom: 3px;" [href]="fbLoginURL"><i class="fas fa-edit mr-2"></i>{{ 'API-KEYS.EDIT_SORG' | translate }}</a>-->
-              <button type="button" class="btn btn-success" style="margin-bottom: 3px;" (click)="edit(D_TYPE.FB)"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.EDIT_SORG' | translate }}</button>
+              <button type="button" class="btn btn-secondary" style="margin-right: 3pt; margin-left: 40pt;" (click)="edit(D_TYPE.FB)"><i class="far fa-edit ml-1"></i></button>
 
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.FB])"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.ELIMINA' | translate }}</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.FB])"><i class="fas fa-trash-alt  ml-1 mr-1"></i></button>
             </td>
           </tr> <!-- Facebook -->
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.IG] && services$[D_TYPE.IG]['granted']">
@@ -41,9 +41,9 @@
             <td><div *ngFor="let perm of services$[D_TYPE.IG].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button>-->
-              <button type="button" class="btn btn-success" style="margin-bottom: 3px;" (click)="edit(D_TYPE.IG)"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.EDIT_SORG' | translate }}</button>
+              <button type="button" class="btn btn-secondary" style="margin-right: 3pt; margin-left: 40pt;" (click)="edit(D_TYPE.IG)"><i class="far fa-edit ml-1"></i></button>
 
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.IG])"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.ELIMINA' | translate }}</button>
+              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.IG])"><i class="fas fa-trash-alt ml-1 mr-1"></i></button>
             </td>
           </tr> <!-- Instagram -->
           <tr class="border" style="background:#eee" *ngIf="services$[D_TYPE.YT] && services$[D_TYPE.YT]['granted']">
@@ -51,7 +51,7 @@
             <td><div *ngFor="let perm of services$[D_TYPE.YT].scopes" class="api-key-card rounded mr-2 my-1">{{perm}}</div></td>
             <td>
               <!--<button type="button" class="btn btn-primary mr-3"><i class="fas fa-sync-alt mr-2"></i>Update</button> TODO restore -->
-              <button type="button" class="btn btn-danger" (click)="openModal(deleteKey, services$[D_TYPE.YT])"><i class="fas fa-trash-alt mr-2"></i>{{ 'API-KEYS.ELIMINA' | translate }}</button>
+              <button type="button" class="btn btn-danger"  style="margin-left: 77pt;" (click)="openModal(deleteKey, services$[D_TYPE.YT])"><i class="fas fa-trash-alt ml-1 mr-1"></i></button>
             </td>
           </tr> <!-- YouTube -->
         </tbody>
@@ -84,8 +84,8 @@
 
   <div class="modal-footer">
 
-    <button *ngIf="this.checkbox" type="button" class="btn btn-danger" (click)="deleteService(serviceToDelete.type)">{{ 'API-KEYS.SI_ELIMINA' | translate }}</button>
-    <button type="button" class="btn btn-success" (click)="modalRef.hide()">{{ 'API-KEYS.MANTIENI' | translate }}</button>
+    <button *ngIf="this.checkbox" type="button" class="btn btn-success" (click)="deleteService(serviceToDelete.type)">{{ 'API-KEYS.SI_ELIMINA' | translate }}</button>
+    <button type="button" class="btn btn-danger" (click)="modalRef.hide()">{{ 'API-KEYS.MANTIENI' | translate }}</button>
   </div>
 </ng-template>
 <button *ngIf="!allGranted" type="button" class="btn btn-lg btn-success" [routerLink]="['insert']"><i class="fas fa-plus-circle mr-2"></i>{{ 'API-KEYS.ADD_SORG' | translate }}</button>

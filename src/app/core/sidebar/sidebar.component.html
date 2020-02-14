@@ -32,18 +32,22 @@
         <a [routerLink]="[drag ? '#' : '/dashboard/facebook/insights']" class="list-group-item list-group-item-action">
           <span class="menu-collapsed ml-4">Insights</span>
         </a>
-        <a [routerLink]="[drag || hide ? '#' : '/dashboard/facebook/marketing']" [ngClass]="{
-        'list-group-item list-group-item-action' : fbm_flag === true,
-        'list-group-item list-group-item-action disabled' : fbm_flag === false
-        }">
-          <span class="menu-collapsed ml-4">Marketing</span>
-        </a>
-        <a [routerLink]="[drag || hide ? '#' : '/dashboard/facebook/campaigns']" [ngClass]="{
-        'list-group-item list-group-item-action' : fbm_flag === true,
-        'list-group-item list-group-item-action disabled' : fbm_flag === false
-        }">
-          <span class="menu-collapsed ml-4">Campaigns</span>
-        </a>
+        <ng-container *ngIf="fbm_flag === true">
+            <a [routerLink]="[drag ? '#' : '/dashboard/facebook/marketing']" class="list-group-item list-group-item-action">
+              <span class="menu-collapsed ml-4">Marketing</span>
+            </a>
+            <a  [routerLink]="[drag ? '#' : '/dashboard/facebook/campaigns']" class="list-group-item list-group-item-action">
+              <span class="menu-collapsed ml-4">Campaigns</span>
+            </a>
+        </ng-container>
+        <ng-container *ngIf="fbm_flag === false">
+          <a [routerLink]="[drag ? '#' : '/dashboard/facebook/marketing']" class="list-group-item list-group-item-action disabled">
+            <span class="menu-collapsed ml-4">Marketing</span>
+          </a>
+          <a  [routerLink]="[drag ? '#' : '/dashboard/facebook/campaigns']" class="list-group-item list-group-item-action disabled">
+            <span class="menu-collapsed ml-4">Campaigns</span>
+          </a>
+        </ng-container>
       </div>
       <a [routerLink]="[drag ? '#' : '/dashboard/instagram']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed">Instagram</span>

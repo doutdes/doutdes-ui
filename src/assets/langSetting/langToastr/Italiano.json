@@ -1,5 +1,9 @@
 {
   "DASHBOARD": {
+    "ERR_GETDATA": {
+      "TITLE": "Mancato recupero dati",
+      "MESSAGE": "Non sono stati concessi i permessi per questa pagina. Si possono aggiungere da Preferenze -> Configura Sorgenti Dati "
+    },
     "VUOTA": {
       "TITLE": "La tua dashboard è vuota",
       "MESSAGE": "Puoi iniziare aggiungendo un nuovo grafico."
