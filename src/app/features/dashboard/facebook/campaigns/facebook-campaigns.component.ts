@@ -98,7 +98,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   // Form for init
   selectViewForm: FormGroup;
   loadingForm: boolean;
-  pageList;
+  pageList = [];
   submitted: boolean;
 
   constructor(

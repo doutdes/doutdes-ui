@@ -87,7 +87,7 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
   // Form for init
   selectViewForm: FormGroup;
   loadingForm: boolean;
-  pageList;
+  pageList = [];
   submitted: boolean;
 
   @select() filter: Observable<any>;
