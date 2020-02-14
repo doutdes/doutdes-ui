@@ -31,6 +31,7 @@ import {ChartParams} from '../../../../shared/_models/Chart';
 import {DragulaService} from 'ng2-dragula';
 import {HttpClient} from '@angular/common/http';
 import * as _ from 'lodash';
+import {Router} from '@angular/router';
 
 
 const PrimaryWhite = '#ffffff';
@@ -119,7 +120,8 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
     private CCService: ChartsCallsService,
     private dragulaService: DragulaService,
     public translate: TranslateService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router,
   ) {
     this.dragulaService.createGroup('REVERT', {
       revertOnSpill: false,
@@ -171,9 +173,9 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
 
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       if (!fbm_page_id) {
-
         if (this.pageList.length === 0) {
           this.dashErrors.noPages = true;
+          // this.router.navigate(['./src/app/features/dashboard/facebook/insights']);
           return;
         }
 
