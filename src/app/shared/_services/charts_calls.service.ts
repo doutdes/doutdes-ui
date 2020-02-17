@@ -293,11 +293,11 @@ export class ChartsCallsService {
           }
         }
 
-        let key = myMap.keys();
-        let values = myMap.values();
+        let keyReactions = myMap.keys();
+        let valuesReactions = myMap.values();
 
         for (let i = 0; i < myMap.size; i++) {
-          chartData.push([key.next().value, values.next().value]);
+          chartData.push([keyReactions.next().value, valuesReactions.next().value]);
         }
 
         break; // Facebook Reazioni torta
@@ -744,13 +744,13 @@ export class ChartsCallsService {
           tmp = [];
         }
 
-        for (const i in blockDay) {
+        for (let i = 0; i < blockDay.length; i++) {
           for (const j in blockTime) {
             maxArray[j].push(blockDay[i][j].reduce((m, x) => m > x ? m : x));
             minArray[j].push(blockDay[i][j].reduce((m, x) => m < x ? m : x));
             averageArray[j].push((blockDay[i][j].reduce((a, b) => a + b)) / 3);
 
-            if ( i == blockDay.length - 1 ) {
+            if ( i === blockDay.length - 1 ) {
               max.push(maxArray[j].reduce((a, b) => a + b) / blockTime.length);
               min.push(minArray[j].reduce((a, b) => a + b) / blockTime.length);
               average.push(averageArray[j].reduce((a, b) => a + b) / blockTime.length);
@@ -762,10 +762,6 @@ export class ChartsCallsService {
           // MIN | AVG | MAX
           chartData.push([time[i], min[i], average[i], max[i]]);
         }
-
-
-
-
 
         break; // IG Online followers
       case IG_CHART.IMPRESSIONS:

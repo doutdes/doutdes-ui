@@ -241,7 +241,6 @@ export class EmptycardComponent implements OnInit {
             this.chartRemaining.filter(e => e['type'] == i ? tmp.add(i) : null);
           }
           remaining = Array.from(tmp);
-
           for (const i in this.dashboard_data.permissions) {
             if (this.dashboard_data.permissions[i] && remaining.includes(i)) {
               // Non visualizzo i chart della dashboard Facebook Marketing

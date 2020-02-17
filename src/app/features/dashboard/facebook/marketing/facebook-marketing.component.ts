@@ -323,9 +323,11 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
                         chart.error = true;
                       }
                       else {
-                        chart.chartData = dataArray[i];
+                        let date;
 
-                        let date = new Date(chart.chartData.data[0]['date_stop']);
+                        chart.chartData = dataArray[i];
+                        if (chart.chartData.data[0]) //Todo modifica da vedere su Funzione andrea
+                          date = new Date(chart.chartData.data[0]['date_stop']);
                         if (date < this.minDate)
                           this.minDate = date;
                         // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null; TODO Check
