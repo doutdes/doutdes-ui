@@ -49,34 +49,34 @@ export class ChartsCallsService {
     private userService: UserService,
     private http: HttpClient,
     private facebookCampaignsService: FacebookCampaignsService) {
-      this.userService.get().subscribe(data => {
-          this.user = data;
-        if (this.user.lang === 'it') {
-          this.http.get('./assets/langSetting/CountryTranslate/it/world.json').subscribe(file => {
-              if (file) {
-                this.listCountry = new Map;
-                // tslint:disable-next-line:forin
-                for (const i in file) {
-                  this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
-                }
+    this.userService.get().subscribe(data => {
+      this.user = data;
+      if (this.user.lang === 'it') {
+        this.http.get('./assets/langSetting/CountryTranslate/it/world.json').subscribe(file => {
+            if (file) {
+              this.listCountry = new Map;
+              // tslint:disable-next-line:forin
+              for (const i in file) {
+                this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
               }
             }
-          );
-        } else {
-          this.http.get('./assets/langSetting/CountryTranslate/en/world.json').subscribe(file => {
-              if (file) {
-                this.listCountry = new Map;
-                // tslint:disable-next-line:forin
-                for (const i in file) {
-                  this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
-                }
+          }
+        );
+      } else {
+        this.http.get('./assets/langSetting/CountryTranslate/en/world.json').subscribe(file => {
+            if (file) {
+              this.listCountry = new Map;
+              // tslint:disable-next-line:forin
+              for (const i in file) {
+                this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
               }
             }
-          );
-        }
-        }, err => {
-          console.error(err);
-      });
+          }
+        );
+      }
+    }, err => {
+      console.error(err);
+    });
 
   }
   public static cutString(str, maxLength) {
@@ -178,14 +178,14 @@ export class ChartsCallsService {
       case FB_CHART.FANS_CITY:
         header = [['Paese', 'Numero fan']];
 
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [ChartsCallsService.cutString(countryList.getName(k), 30), data[data.length - 1].value[k]];
-        });
-        chartData.sort(function (obj1, obj2) {
-          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
-        });
+        // chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+        //   return [ChartsCallsService.cutString(countryList.getName(k), 30), data[data.length - 1].value[k]];
+        // });
+        // chartData.sort(function (obj1, obj2) {
+        //   return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        // });
 
-        // chartData = this.changeNameCountry(data) next release
+        chartData = this.changeNameCountry(data) //next release
         chartData = this.addPaddingRows(chartData);
 
         break; // Facebook Fan City
@@ -633,7 +633,7 @@ export class ChartsCallsService {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
           });
-
+          console.log(data)
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
@@ -2494,7 +2494,7 @@ export class ChartsCallsService {
             columns: [1, 2, 3],
             type: 'NumberFormat',
             options: {
-              pattern: '###.##'
+              pattern: '#.##'
             }
           }],
           chartClass: 9,
@@ -2503,7 +2503,7 @@ export class ChartsCallsService {
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
             hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
+            colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.AMARANTH.C3, IG_PALETTE.LAVENDER.C3],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 3},
             bar: {groupWidth: '60%'},
