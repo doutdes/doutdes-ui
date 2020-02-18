@@ -51,12 +51,11 @@ export class SidebarComponent {
     if (this.isUserLoggedIn) {
       const pageID = (await this.apiKeyService.getAllKeys().toPromise());
 
-      if (pageID && pageID.fbm_page_id) {
+      if (pageID) {
         this.fbm_flag = (await this.FBMService.getPages().toPromise()).length > 0;
       }
     }
     if (!this.fbm_flag) {this.hide = true; }
-
 
     if (! this.isUserLoggedIn) {
       this.translate.setDefaultLang('Italiano');

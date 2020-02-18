@@ -124,6 +124,7 @@ export class ChartsCallsService {
     const supportArray = [];
     const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24']; //temporal range for some fbm charts
+    let acc = 0;
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -832,23 +833,39 @@ export class ChartsCallsService {
 
         const metrics = ['Email', 'Informazioni sede', 'Telefono', 'Messaggi', 'Sito'];
 
-        const acc = [];
+        const arr_acc = [];
         let count = 0;
         if (data[0]) {
           for (let i = 0; i < 5; i++) {
             data[0]['data'][i].forEach(el => count += el.value);
-            acc[i] = count;
+            arr_acc[i] = count;
             count = 0;
           }
 
           for (let i = 0; i < 5; i++) {
-            chartData.push([metrics[i], acc[i]]);
+            chartData.push([metrics[i], arr_acc[i]]);
           }
         }
 
         break;
       case IG_CHART.MEDIA_LIKE_DATA:
-        console.log(data)
+        header = [['Data', 'Like', {role: 'tooltip'}]];
+        let arr = [], date, len;
+        date = data[data.length - 1].end_time.slice(0, 10);
+        date = new Date(Date.parse(date))
+        for (let i = data.length - 1; i >= 0; i--) {
+          arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date));
+          arr.forEach(el => acc += el.like_count);
+          len = arr.length > 0 ? arr.length : 1;
+          chartData.push([
+            parseDate(date),
+            acc,
+            'Like ' + acc + ', N. media ' + arr.length + ', Media like ' + (acc / len) + ', ' + date.toString().slice(3, 15)
+          ]);
+          acc = 0;
+          date = new Date(Date.parse(date) + 1000 * 3600 * 24);
+        }
+
         break;
 
       case YT_CHART.VIEWS:
@@ -1036,6 +1053,7 @@ export class ChartsCallsService {
         data = this.formatDataFbm(data, 'gender');
 
         header = [['Genere', 'Click']];
+
         for (let i = 0; i < 2; i++) {
           chartData.push([(data[i].gender), parseInt(data[i].clicks, 10)]);
         }
@@ -1480,7 +1498,7 @@ export class ChartsCallsService {
     let type;
     let val = 0;
 
-    data = this.initFormatting(ID, data);
+    data = data.length > 0 ? this.initFormatting(ID, data) : data;
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -2700,32 +2718,28 @@ export class ChartsCallsService {
         break;
       case IG_CHART.MEDIA_LIKE_DATA:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'AreaChart',
           dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 9,
+          chartClass: 5,
           options: {
-            chartArea: {left: 0, right: 0, height: 270, top: 0},
-            height: 310,
+            chartArea: {left: 0, right: 0, height: 185, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
             vAxis: {
               minValue: 0,
               viewWindowMode: 'explicit',
-              viewWindow: {min: 0, max: 50},
+              viewWindow: {min: 0},
               gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
               textPosition: 'in',
               textStyle: {color: '#999'},
-              format:'#'
             },
-            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
-            areaOpacity: 0.4,
-            bar: {groupWidth: '75%'},
-            isStacked: true,
+            colors: [IG_PALETTE.AMARANTH.C5],
+            areaOpacity: 0.1
           }
         };
         break;
