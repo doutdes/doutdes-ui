@@ -849,6 +849,7 @@ export class ChartsCallsService {
 
         break;
       case IG_CHART.MEDIA_LIKE_DATA:
+        console.log(data)
         header = [['Data', 'Like', {role: 'tooltip'}]];
         let arr = [], date, len;
         date = data[data.length - 1].end_time.slice(0, 10);
