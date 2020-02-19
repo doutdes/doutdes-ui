@@ -733,7 +733,6 @@ export class ChartsCallsService {
         header = [['Follower online', 'Min', 'Media', 'Max']];
         dayValue = Object.values(data);
 
-
         for (const i in dayValue) {
           dayValue[i]['value'] ? day = Object.values(dayValue[i]['value']) : day = [0, 0, 0];
           for (const j in blockTime) {
@@ -743,7 +742,6 @@ export class ChartsCallsService {
           blockDay.push(tmp);
           tmp = [];
         }
-
         for (let i = 0; i < blockDay.length; i++) {
           for (const j in blockTime) {
             maxArray[j].push(blockDay[i][j].reduce((m, x) => m > x ? m : x));
@@ -757,9 +755,7 @@ export class ChartsCallsService {
             }
           }
         }
-
-        for (const i in time ) {
-          // MIN | AVG | MAX
+        for (const i in time ) { // MIN | AVG | MAX
           chartData.push([time[i], min[i], average[i], max[i]]);
         }
 
@@ -770,6 +766,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), (data[i].value)]);
         }
+
         break; // IG Impressions by day
       case IG_CHART.REACH:
         header = [['Data', 'Utenti raggiunti']];
@@ -4820,5 +4817,35 @@ export class ChartsCallsService {
     });
 
     return chartData;
+  }
+
+  private formatChartIg(data, formattedData) {
+
+    let opacity = 0.4;
+
+    formattedData = {
+      chartType: 'ColumnChart',
+      dataTable: data,
+      formatters: [{
+        columns: [1, 2, 3],
+        type: 'NumberFormat',
+        options: {
+          pattern: '#.##'
+        }
+      }],
+      options: {
+        chartArea: {left: 30, right: 0, height: 270, top: 20},
+        height: 310,
+        vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+        hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+        colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.AMARANTH.C3, IG_PALETTE.LAVENDER.C3],
+        areaOpacity: opacity,
+        legend: {position: 'top', maxLines: 3},
+        bar: {groupWidth: '60%'},
+        isStacked: false,
+      }
+    };
+
+    return formattedData;
   }
 }
