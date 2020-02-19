@@ -849,22 +849,41 @@ export class ChartsCallsService {
 
         break;
       case IG_CHART.MEDIA_LIKE_DATA:
-        console.log(data)
         header = [['Data', 'Like', {role: 'tooltip'}]];
-        let arr = [], date, len;
-        date = data[data.length - 1].end_time.slice(0, 10);
-        date = new Date(Date.parse(date))
+
+        let arr = [], len, date1, date2, diff_time;
+
+        const day_time = 1000 * 3600 * 24;
+
         for (let i = data.length - 1; i >= 0; i--) {
-          arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date));
-          arr.forEach(el => acc += el.like_count);
-          len = arr.length > 0 ? arr.length : 1;
-          chartData.push([
-            parseDate(date),
-            acc,
-            'Like ' + acc + ', N. media ' + arr.length + ', Media like ' + (acc / len) + ', ' + date.toString().slice(3, 15)
-          ]);
+          date2 = new Date(data[i].end_time.slice(0, 10));
+          if (i > 0) {
+            date1 = new Date(data[i - 1].end_time.slice(0, 10));
+            diff_time = Math.abs(date1.getTime() - date2.getTime()) / day_time;
+          }
+
+          if (chartData.length === 0 || !(chartData[chartData.length - 1][0] === date2.toString().slice(3, 15))) {
+            arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date2));
+            arr.forEach(el => acc += el.like_count);
+            len = arr.length > 0 ? arr.length : 1;
+            chartData.push([
+              date2.toString().slice(3, 15),
+              acc,
+              'Like ' + acc + ', N. media ' + arr.length + ', Media like ' + (acc / len) + ', ' + date2.toString().slice(3, 15)
+            ]);
+          }
+
+          if (diff_time > 1) {
+            for (let j = diff_time - 1; j > 0; j--) {
+              chartData.push([
+                subDays(date1, j).toString().slice(3, 15),
+                0,
+                'Like ' + 0 + ', N. media ' + 0 + ', Media like ' + 0 + ', ' + subDays(date1, j).toString().slice(3, 15)
+              ]);
+            }
+          }
           acc = 0;
-          date = new Date(Date.parse(date) + 1000 * 3600 * 24);
+          diff_time = 0;
         }
 
         break;
