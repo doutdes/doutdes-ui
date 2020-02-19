@@ -30,6 +30,7 @@ import {User} from '../_models/User';
 import {UserService} from './user.service';
 import {HttpClient} from '@angular/common/http';
 import {forEach} from '@angular/router/src/utils/collection';
+import {dayOfYearFromWeeks} from 'ngx-bootstrap/chronos/units/week-calendar-utils';
 
 
 @Injectable()
@@ -48,34 +49,34 @@ export class ChartsCallsService {
     private userService: UserService,
     private http: HttpClient,
     private facebookCampaignsService: FacebookCampaignsService) {
-      this.userService.get().subscribe(data => {
-          this.user = data;
-        if (this.user.lang === 'it') {
-          this.http.get('./assets/langSetting/CountryTranslate/it/world.json').subscribe(file => {
-              if (file) {
-                this.listCountry = new Map;
-                // tslint:disable-next-line:forin
-                for (const i in file) {
-                  this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
-                }
+    this.userService.get().subscribe(data => {
+      this.user = data;
+      if (this.user.lang === 'it') {
+        this.http.get('./assets/langSetting/CountryTranslate/it/world.json').subscribe(file => {
+            if (file) {
+              this.listCountry = new Map;
+              // tslint:disable-next-line:forin
+              for (const i in file) {
+                this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
               }
             }
-          );
-        } else {
-          this.http.get('./assets/langSetting/CountryTranslate/en/world.json').subscribe(file => {
-              if (file) {
-                this.listCountry = new Map;
-                // tslint:disable-next-line:forin
-                for (const i in file) {
-                  this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
-                }
+          }
+        );
+      } else {
+        this.http.get('./assets/langSetting/CountryTranslate/en/world.json').subscribe(file => {
+            if (file) {
+              this.listCountry = new Map;
+              // tslint:disable-next-line:forin
+              for (const i in file) {
+                this.listCountry.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
               }
             }
-          );
-        }
-        }, err => {
-          console.error(err);
-      });
+          }
+        );
+      }
+    }, err => {
+      console.error(err);
+    });
 
   }
   public static cutString(str, maxLength) {
@@ -108,7 +109,7 @@ export class ChartsCallsService {
   public initFormatting(ID, data) {
     let header;
     let chartData = [];
-    let tmpData = [];
+    const tmpData = [];
     let keys = [];
     let indexFound;
     let other;
@@ -123,7 +124,12 @@ export class ChartsCallsService {
     const male = [];
     const supportArray = [];
     const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
-    const time = ['00-03', '03-06', '06-09', '09-12', '12-15', '15-18', '18-21', '21-24']; //temporal range for some fbm charts
+    const time = ['0-3', '3-6', '6-9', '9-12', '12-15', '15-18', '18-21', '21-24']; // temporal range for some fbm charts
+
+    const min = [];
+    const average = [];
+    const max = [] ;
+    const blockTime = [3, 6, 9, 12, 15, 18, 21, 24];
     let acc = 0;
 
     switch (ID) {
@@ -172,14 +178,14 @@ export class ChartsCallsService {
       case FB_CHART.FANS_CITY:
         header = [['Paese', 'Numero fan']];
 
-        chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-          return [ChartsCallsService.cutString(countryList.getName(k), 30), data[data.length - 1].value[k]];
-        });
-        chartData.sort(function (obj1, obj2) {
-          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
-        });
+        // chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+        //   return [ChartsCallsService.cutString(countryList.getName(k), 30), data[data.length - 1].value[k]];
+        // });
+        // chartData.sort(function (obj1, obj2) {
+        //   return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        // });
 
-        //chartData = this.changeNameCountry(data) next release
+        chartData = this.changeNameCountry(data) //next release
         chartData = this.addPaddingRows(chartData);
 
         break; // Facebook Fan City
@@ -273,11 +279,11 @@ export class ChartsCallsService {
       case FB_CHART.REACTIONS:
         header = [['Reazione', 'numero reaz.']];
         myMap = new Map();
-        for (let el of data) {
+        for (const el of data) {
           if (el['value']) {
-            let reacts = el['value'];
-            for (let i in reacts) {
-              let value = parseInt(reacts[i], 10);
+            const reacts = el['value'];
+            for (const i in reacts) {
+              const value = parseInt(reacts[i], 10);
               if (myMap.has(i)) {
                 myMap.set(i, myMap.get(i) + value);
               } else {
@@ -287,11 +293,11 @@ export class ChartsCallsService {
           }
         }
 
-        var key = myMap.keys();
-        var values = myMap.values();
+        let keyReactions = myMap.keys();
+        let valuesReactions = myMap.values();
 
         for (let i = 0; i < myMap.size; i++) {
-          chartData.push([key.next().value, values.next().value]);
+          chartData.push([keyReactions.next().value, valuesReactions.next().value]);
         }
 
         break; // Facebook Reazioni torta
@@ -300,7 +306,7 @@ export class ChartsCallsService {
 
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
-          for (let el of data) {
+          for (const el of data) {
             if (el.value && (el.value != undefined)) {
 
               sum = Object.values(el.value).reduce((a: Number, b: Number) => {
@@ -324,7 +330,7 @@ export class ChartsCallsService {
         header = [['Reazione', 'Numero']];
         const react = ['like', 'love', 'ahah', 'wow', 'anger', 'sorry'];
         myMap = new Map();
-        for (let el of data) {
+        for (const el of data) {
           if (el['value']) {
             const reacts = el['value'];
             // tslint:disable-next-line:forin
@@ -350,8 +356,8 @@ export class ChartsCallsService {
           }
         }
 
-        var key = myMap.keys();
-        var values = myMap.values();
+        const key = myMap.keys();
+        const values = myMap.values();
         for (let i = 0; i < myMap.size; i++) {
           chartData.push([key.next().value, values.next().value]);
         }
@@ -373,7 +379,7 @@ export class ChartsCallsService {
 
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
-          for (let el of data) {
+          for (const el of data) {
             if (el && (el.value != undefined)) {
               sum = Object.values(el.value).reduce((a: Number, b: Number) => {// @ts-ignore
                 // @ts-ignore
@@ -562,7 +568,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i][0]), parseInt(data[i][1], 10)]);
         }
-        break;//GA New Users
+        break; // GA New Users
       case GA_CHART.MOBILE_DEVICES:
         header = [['Dispositivo', 'Sessioni']];
 
@@ -601,7 +607,7 @@ export class ChartsCallsService {
         break;  // Google New Users vs Return users
       case GA_CHART.PAGE_LOAD_TIME:
         header = [['Pagina', 'Tempo medio (s)']];
-        let tmpArray = [];
+        const tmpArray = [];
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
           if (indexFound >= 0) {
@@ -627,7 +633,7 @@ export class ChartsCallsService {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
           });
-
+          console.log(data)
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
@@ -651,12 +657,12 @@ export class ChartsCallsService {
       case IG_CHART.AUD_GENDER_AGE:
         header = [['Età', 'Maschio', 'Femmina']];
 
-        let gender_data = data[0] ? Object.keys(data[0]['value']) : null;
+        const gender_data = data[0] ? Object.keys(data[0]['value']) : null;
 
         if (gender_data && gender_data.length > 0) {
           keys = Object.keys(data[0]['value']); // getting all the gender/age data
 
-          let subIndex = (keys[0].indexOf('.') !== -1) ? 2 : 1;
+          const subIndex = (keys[0].indexOf('.') !== -1) ? 2 : 1;
 
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
@@ -671,8 +677,7 @@ export class ChartsCallsService {
 
             if (keys[i].substr(0, 1) === 'M') {
               chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10);
-            }
-            else {
+            } else {
               if (keys[i].substr(0, 1) === 'F') {
                 chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
               }
@@ -715,47 +720,43 @@ export class ChartsCallsService {
         break; // IG Audience Locale
       case IG_CHART.ONLINE_FOLLOWERS:
 
+        let dayValue = [];
+        let day = [];
+        let times = [];
+        let tmp = [];
+        const minArray = [[], [], [], [], [], [], [], []];
+        const averageArray = [[], [], [], [], [], [], [], []];
+        const maxArray = [[], [], [], [], [], [], [], []];
+        const blockTime = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11], [12, 13, 14], [15, 16, 17], [18, 19, 20], [21, 22, 23]];
+        const blockDay = [];
         interval = 3; // Interval of hours to show
         header = [['Follower online', 'Min', 'Media', 'Max']];
+        dayValue = Object.values(data);
 
-        for (let i = 0; i < data.length; i++) {
-          keys.push(data[i]['value']);
+        for (const i in dayValue) {
+          dayValue[i]['value'] ? day = Object.values(dayValue[i]['value']) : day = [0, 0, 0];
+          for (const j in blockTime) {
+            day.length > 3 ? times = [day[blockTime[j][0]], day[blockTime[j][1]], day[blockTime[j][2]]] : times = [0, 0, 0];
+            tmp.push(times);
+          }
+          blockDay.push(tmp);
+          tmp = [];
         }
+        for (let i = 0; i < blockDay.length; i++) {
+          for (const j in blockTime) {
+            maxArray[j].push(blockDay[i][j].reduce((m, x) => m > x ? m : x));
+            minArray[j].push(blockDay[i][j].reduce((m, x) => m < x ? m : x));
+            averageArray[j].push((blockDay[i][j].reduce((a, b) => a + b)) / 3);
 
-        for (let i = 0; i < 24; i += interval) {
-          // MIN | AVG | MAX
-          chartData.push([i + '-' + (i + interval), Number.MAX_SAFE_INTEGER, 0, 0]);
-        }
-
-        // putting a unique entry in chartData for every existent age range
-        for (let day = 0; day < keys.length; day++) {
-
-          limit = keys[day] ? Object.keys(keys[day]).length : 0;
-
-          for (let h_interval = 0; h_interval < limit; h_interval += interval) {
-            temp = 0;
-            index = 0;
-            for (let hour = h_interval; hour < (h_interval + interval); hour++) {
-              temp += isNaN(parseInt(keys[day][hour], 10)) ? 0 : parseInt(keys[day][hour], 10);
-              index = (hour + 1) / interval;
-            }
-
-            chartData[index - 1][2] += temp;
-
-            if (temp < chartData[index - 1][1]) {
-              chartData[index - 1][1] = temp;
-            }
-
-            if (temp > chartData[index - 1][3]) {
-              chartData[index - 1][3] = temp;
+            if ( i === blockDay.length - 1 ) {
+              max.push(maxArray[j].reduce((a, b) => a + b) / blockTime.length);
+              min.push(minArray[j].reduce((a, b) => a + b) / blockTime.length);
+              average.push(averageArray[j].reduce((a, b) => a + b) / blockTime.length);
             }
           }
         }
-
-
-        for (let i = 0; i < JSON.parse(JSON.stringify(chartData)).length; i++) {
-          chartData[i][2] /= keys.length;
-          chartData[i][1] = chartData[i][1] === Number.MAX_SAFE_INTEGER ? 0 : chartData[i][1];
+        for (const i in time ) { // MIN | AVG | MAX
+          chartData.push([time[i], min[i], average[i], max[i]]);
         }
 
         break; // IG Online followers
@@ -765,6 +766,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), (data[i].value)]);
         }
+
         break; // IG Impressions by day
       case IG_CHART.REACH:
         header = [['Data', 'Utenti raggiunti']];
@@ -776,11 +778,11 @@ export class ChartsCallsService {
       case IG_CHART.ACTION_PERFORMED:
         header = [['Tipo', 'Numero']];
         let map = new Map();
-        //group by click type
+        // group by click type
         for (let i = 0; i < data.length; i++) {
           map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(map.get(data[i]['metric']) + data[i]['value'], 10)) : map.set(data[i]['metric'], parseInt(data[i]['value'], 10));
-          //let fakeVal = 25;
-          //map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(fakeVal, 10)) : map.set(data[i]['metric'], parseInt(fakeVal, 10));
+          // let fakeVal = 25;
+          // map.has(data[i]['metric']) ? map.set(data[i]['metric'], parseInt(fakeVal, 10)) : map.set(data[i]['metric'], parseInt(fakeVal, 10));
 
         }
         let empty = true;
@@ -792,14 +794,14 @@ export class ChartsCallsService {
 
         if (empty) {
           map = new Map();
-          map.set('Nessun dato', 100);//parseInt(100, 10));
+          map.set('Nessun dato', 100); // parseInt(100, 10));
           map.set('empty', true);
 
         }
         map.forEach((value: boolean, key: string) => {
-          chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); //removing all the underscores
+          chartData.push([key.replace(new RegExp('_', 'g'), ' ').replace(new RegExp('clicks', 'g'), ' '), map.get(key)]); // removing all the underscores
         });
-        break;// IG composed clicks
+        break; // IG composed clicks
       case IG_CHART.FOLLOWER_COUNT:
         header = [['Data', 'Nuovi utenti']];
 
@@ -1345,7 +1347,7 @@ export class ChartsCallsService {
 
         header = [['Orario', 'Impression']];
         for (let i = 0; i < time.length; i++) {
-          supportArray.push(parseInt(data[i].impressions, 10) + parseInt(data[i + 1].impressions, 10) + parseInt(data[i + 2].impressions, 10)); //fascia oraria con 3 elementi
+          supportArray.push(parseInt(data[i].impressions, 10) + parseInt(data[i + 1].impressions, 10) + parseInt(data[i + 2].impressions, 10)); // fascia oraria con 3 elementi
 
           chartData.push([
             time[i],
@@ -1840,7 +1842,7 @@ export class ChartsCallsService {
           }
         };
 
-        break; //Fb Fan cancellati
+        break; // Fb Fan cancellati
       case FB_CHART.IMPRESSIONS_PAID:
         formattedData = {
           chartType: 'AreaChart',
@@ -2027,7 +2029,7 @@ export class ChartsCallsService {
             width: '100%'
           }
         };
-        break; //Fb Domini dei referenti esterni (elenco)
+        break; // Fb Domini dei referenti esterni (elenco)
       case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
         formattedData = {
           chartType: 'AreaChart',
@@ -2052,7 +2054,7 @@ export class ChartsCallsService {
             areaOpacity: 0.1
           }
         };
-        break; //Fb Domini dei referenti esterni (linea)
+        break; // Fb Domini dei referenti esterni (linea)
       case FB_CHART.PAGE_IMPRESSIONS_CITY:
         formattedData = {
           chartType: 'Table',
@@ -2078,7 +2080,7 @@ export class ChartsCallsService {
             width: '100%'
           }
         };
-        break; //Fb Vista contenuti per città (elenco)
+        break; // Fb Vista contenuti per città (elenco)
       case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
         formattedData = {
           chartType: 'GeoChart',
@@ -2124,7 +2126,7 @@ export class ChartsCallsService {
           }
         };
 
-        break; //Fb Vista contenuti per Paese (elenco)
+        break; // Fb Vista contenuti per Paese (elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
@@ -2167,7 +2169,7 @@ export class ChartsCallsService {
             vAxis: {
               gridlines: {color: '#eaeaea', count: 5},
               minorGridlines: {color: 'transparent'},
-              minValue: 0,//this.getMinChartStep(D_TYPE.GA, data, 0.8),
+              minValue: 0, // this.getMinChartStep(D_TYPE.GA, data, 0.8),
               textPosition: 'in',
               textStyle: {color: '#999'}
             },
@@ -2270,7 +2272,7 @@ export class ChartsCallsService {
           }
         };
 
-        //average = sum / data.length;
+        // average = sum / data.length;
 
         break; // Google BounceRate
       case GA_CHART.AVG_SESS_DURATION:
@@ -2349,7 +2351,7 @@ export class ChartsCallsService {
             areaOpacity: 0.1
           }
         };
-        break;// GA new users
+        break; // GA new users
       case GA_CHART.MOBILE_DEVICES:
         formattedData = {
           chartType: 'Table',
@@ -2376,7 +2378,7 @@ export class ChartsCallsService {
             width: '100%'
           }
         };
-        break;// GA mobile devices per session
+        break; // GA mobile devices per session
       case GA_CHART.PERCENT_NEW_SESSION:
         formattedData = {
           chartType: 'PieChart',
@@ -2529,7 +2531,7 @@ export class ChartsCallsService {
             columns: [1, 2, 3],
             type: 'NumberFormat',
             options: {
-              pattern: '###.##'
+              pattern: '#.##'
             }
           }],
           chartClass: 9,
@@ -2538,11 +2540,11 @@ export class ChartsCallsService {
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
             hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9],
+            colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.AMARANTH.C3, IG_PALETTE.LAVENDER.C3],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 3},
-            bar: {groupWidth: '50%'},
-            isStacked: true,
+            bar: {groupWidth: '60%'},
+            isStacked: false,
           }
         };
         break; // IG Online followers
@@ -2605,7 +2607,7 @@ export class ChartsCallsService {
               minValue: 0,
               textPosition: 'in',
               textStyle: {color: '#999'},
-              format:'#'
+              format: '#'
             },
             colors: [IG_PALETTE.FUCSIA.C3],
             areaOpacity: 0.1
@@ -2727,7 +2729,7 @@ export class ChartsCallsService {
               gridlines: {color: '#eaeaea', count: 5},
               textPosition: 'in',
               textStyle: {color: '#999'},
-              format:'#'
+              format: '#'
             },
             colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
             areaOpacity: 0.4,
@@ -3220,7 +3222,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
-          chartClass: 9, //TODO delete
+          chartClass: 9, // TODO delete
           formatters: [
             {
               columns: [1],
@@ -3286,7 +3288,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
-          chartClass: 9, //TODO delete
+          chartClass: 9, // TODO delete
           formatters: [
             {
               columns: [1],
@@ -3352,7 +3354,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
-          chartClass: 9, //TODO delete
+          chartClass: 9, // TODO delete
           formatters: [
             {
               columns: [1],
@@ -3417,7 +3419,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
-          chartClass: 9, //TODO delete
+          chartClass: 9, // TODO delete
           formatters: [
             {
               columns: [1],
@@ -3482,7 +3484,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
-          chartClass: 9, //TODO delete
+          chartClass: 9, // TODO delete
           formatters: [
             {
               columns: [1],
@@ -3547,7 +3549,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
-          chartClass: 9, //TODO delete
+          chartClass: 9, // TODO delete
           formatters: [
             {
               columns: [1],
@@ -3613,7 +3615,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
-          chartClass: 9, //TODO delete
+          chartClass: 9, // TODO delete
           formatters: [
             {
               columns: [1],
@@ -3678,7 +3680,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
-          chartClass: 9, //TODO delete
+          chartClass: 9, // TODO delete
           formatters: [
             {
               columns: [1],
@@ -4306,7 +4308,7 @@ export class ChartsCallsService {
         observables.push(this.facebookService.getData('page_fans', pageID));
         observables.push(this.facebookService.fbPosts(pageID));
         observables.push(this.facebookService.getData('page_actions_post_reactions_total', pageID));
-        //observables.push(this.facebookService.getData('page_impressions_unique', pageID));
+        // observables.push(this.facebookService.getData('page_impressions_unique', pageID));
         observables.push(this.facebookService.getData('page_views_total', pageID));
         break;
       case D_TYPE.GA:
@@ -4486,13 +4488,13 @@ export class ChartsCallsService {
 
     switch (measure) {
       case 'post-sum':
-        //console.log('FB', data);
+        // console.log('FB', data);
         data['data'] = data['data'].filter(el => (moment(el['created_time'])) >= intervalDate.first && (moment(el['created_time'])) <= intervalDate.last);
         value = data['data'].length;
 
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
-        //console.log(intervalDate.last);
+        // console.log(intervalDate.last);
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
         value = data[data.length - 1].value;
 
@@ -4527,7 +4529,7 @@ export class ChartsCallsService {
             aux += data[i]['value'] || 0;
           }
         }
-        //value = data[data.length - 1].value;
+        // value = data[data.length - 1].value;
         value = aux;
         break; // default take the last value as the good one, the perc is calculated dividing the avg for the max value
     }
@@ -4710,7 +4712,7 @@ export class ChartsCallsService {
       domain = arg.split('/')[0];
     }
 
-    //trova e rimuovi eventuale porta
+    // trova e rimuovi eventuale porta
     domain = domain.split(':')[0];
 
     domain = domain.replace(/\$/g, '.');
@@ -4720,16 +4722,16 @@ export class ChartsCallsService {
 
   public mapChartData(data) {
 
-    let myMap = new Map();
-    let chartData = [];
+    const myMap = new Map();
+    const chartData = [];
 
-    for (let el of data) {
+    for (const el of data) {
       if (el['value']) {
-        let web = el['value'];
+        const web = el['value'];
 
         for (let i in web) {
-          //i = this.getDomain(i);
-          let value = parseInt(web[i], 10);
+          // i = this.getDomain(i);
+          const value = parseInt(web[i], 10);
 
           i = this.getDomain(i);
           if (myMap.has(i)) {
@@ -4741,8 +4743,8 @@ export class ChartsCallsService {
       }
     }
 
-    var key = myMap.keys();
-    var values = myMap.values();
+    const key = myMap.keys();
+    const values = myMap.values();
 
     for (let i = 0; i < myMap.size; i++) {
       chartData.push([key.next().value, values.next().value]);
@@ -4754,11 +4756,11 @@ export class ChartsCallsService {
   public lengthKeys(data) {
     let myMap;
     myMap = new Map();
-    let keys = [];
+    const keys = [];
 
-    for (let el of data) {
-      let n = el['value'];
-      for (let key in n) {
+    for (const el of data) {
+      const n = el['value'];
+      for (const key in n) {
         if (myMap.has(key)) {
           myMap.set(key, 0);
         } else {
@@ -4767,7 +4769,7 @@ export class ChartsCallsService {
       }
     }
 
-    var key = myMap.keys();
+    const key = myMap.keys();
 
     for (let i = 0; i < myMap.size; i++) {
       keys.push([key.next().value]);
@@ -4835,5 +4837,35 @@ export class ChartsCallsService {
     });
 
     return chartData;
+  }
+
+  private formatChartIg(data, formattedData) {
+
+    let opacity = 0.4;
+
+    formattedData = {
+      chartType: 'ColumnChart',
+      dataTable: data,
+      formatters: [{
+        columns: [1, 2, 3],
+        type: 'NumberFormat',
+        options: {
+          pattern: '#.##'
+        }
+      }],
+      options: {
+        chartArea: {left: 30, right: 0, height: 270, top: 20},
+        height: 310,
+        vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+        hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+        colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.AMARANTH.C3, IG_PALETTE.LAVENDER.C3],
+        areaOpacity: opacity,
+        legend: {position: 'top', maxLines: 3},
+        bar: {groupWidth: '60%'},
+        isStacked: false,
+      }
+    };
+
+    return formattedData;
   }
 }

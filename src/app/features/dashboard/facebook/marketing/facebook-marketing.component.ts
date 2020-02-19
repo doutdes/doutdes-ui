@@ -324,6 +324,8 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
                         chart.chartData = dataArray[i];
                       }
                       else {
+                        let date;
+
                         chart.chartData = dataArray[i];
                         let date = new Date(chart.chartData.data[0]['date_stop']);
                         if (date < this.minDate)
