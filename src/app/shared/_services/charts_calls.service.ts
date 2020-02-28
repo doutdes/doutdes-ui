@@ -4612,11 +4612,13 @@ export class ChartsCallsService {
         value = data[data.length - 1]['followers_count'];
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
       case 'post-sum':
-        data = data.filter(el => (new Date(el.timestamp)) >= intervalDate.first && (new Date(el.timestamp)) <= intervalDate.last);
+
+        data = data.filter(el => (new Date( el.timestamp.toString().slice(0,10) )) >= intervalDate.first && (new Date( el.timestamp.toString().slice(0,10) )));
         value = data.length;
+        console.log(data)
         break;
       default:
-        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        data = data.filter(el => (new Date(el.end_time.toString().slice(0,10))) >= intervalDate.first && (new Date(el.end_time.toString().slice(0,10))) <= intervalDate.last);
         for (const el of data) {
           sum += el.value;
         }
