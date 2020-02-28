@@ -4615,7 +4615,6 @@ export class ChartsCallsService {
 
         data = data.filter(el => (new Date( el.timestamp.toString().slice(0,10) )) >= intervalDate.first && (new Date( el.timestamp.toString().slice(0,10) )));
         value = data.length;
-        console.log(data)
         break;
       default:
         data = data.filter(el => (new Date(el.end_time.toString().slice(0,10))) >= intervalDate.first && (new Date(el.end_time.toString().slice(0,10))) <= intervalDate.last);
