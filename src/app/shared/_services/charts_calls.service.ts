@@ -38,6 +38,7 @@ export class ChartsCallsService {
 
   user: User;
   listCountry = new Map();
+  listCountryIng = new Map();
 
   constructor(
     private facebookService: FacebookService,
@@ -62,6 +63,17 @@ export class ChartsCallsService {
             }
           }
         );
+        this.http.get('./assets/langSetting/CountryTranslate/en/world.json').subscribe(file => {
+            if (file) {
+              this.listCountryIng = new Map;
+              // tslint:disable-next-line:forin
+              for (const i in file) {
+                this.listCountryIng.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
+              }
+            }
+          }
+        );
+
       } else {
         this.http.get('./assets/langSetting/CountryTranslate/en/world.json').subscribe(file => {
             if (file) {
@@ -185,7 +197,7 @@ export class ChartsCallsService {
         //   return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         // });
 
-        chartData = this.changeNameCountry(data) //next release
+        chartData = this.changeNameCountry(data); // next release
         chartData = this.addPaddingRows(chartData);
 
         break; // Facebook Fan City
@@ -293,8 +305,8 @@ export class ChartsCallsService {
           }
         }
 
-        let keyReactions = myMap.keys();
-        let valuesReactions = myMap.values();
+        const keyReactions = myMap.keys();
+        const valuesReactions = myMap.values();
 
         for (let i = 0; i < myMap.size; i++) {
           chartData.push([keyReactions.next().value, valuesReactions.next().value]);
@@ -627,31 +639,23 @@ export class ChartsCallsService {
 
         break;
 
+        //Instagram chart
       case IG_CHART.AUD_CITY:
         header = [['Città', 'Popolarità']];
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
           });
-          console.log(data)
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
-
-          // paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
           chartData = this.addPaddingRows(chartData);
-
-          // for (let i = 0; i < paddingRows; i++) {
-          //   chartData.push(['', null]);
-          // }
         }
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
         header = [['Paese', 'Popolarità']];
         if (data.length > 0) {
-          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-            return [k, data[data.length - 1].value[k]];
-          });
+          chartData = this.changeNameCountry(data);
         }
         break; // IG Audience Country
       case IG_CHART.AUD_GENDER_AGE:
@@ -691,6 +695,13 @@ export class ChartsCallsService {
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
         if (data.length > 0) {
           const locale = require('locale-string');
+          // const tmp = Object.keys(data[data.length -1]['value']);
+          // const tmpobj=data[data.length -1]['value'];
+          // for (const el of tmp) {
+          //   tmpobj[el.slice(-2)] = tmpobj[el];
+          //   delete tmpobj[el];
+          // }
+          // data[data.length -1]['value'] = tmpobj;
 
           keys = Object.keys(data[data.length - 1]['value']);
           // putting a unique entry in chartArray for every existent age range
@@ -702,6 +713,7 @@ export class ChartsCallsService {
             return -(obj1[1] - obj2[1]);
           });
 
+         // chartData = this.changeNameCountry(data);
           for (let i = 0; i < chartData.length; i++) {
             const arr = chartData.filter(el2 => chartData[i][0] === el2[0]);
             if (arr.length > 1) {
@@ -854,7 +866,7 @@ export class ChartsCallsService {
         header = [['Data', 'Like', {role: 'tooltip'}]];
         let arr = [], date, len;
         date = data[data.length - 1].end_time.slice(0, 10);
-        date = new Date(Date.parse(date))
+        date = new Date(Date.parse(date));
         for (let i = data.length - 1; i >= 0; i--) {
           arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date));
           arr.forEach(el => acc += el.like_count);
@@ -2399,6 +2411,7 @@ export class ChartsCallsService {
         };
         break;  // Google Sources Column Chart
 
+      // Instragram chart
       case IG_CHART.AUD_CITY:
         formattedData = {
           chartType: 'Table',
@@ -4821,7 +4834,7 @@ export class ChartsCallsService {
 
   private formatChartIg(data, formattedData) {
 
-    let opacity = 0.4;
+    const opacity = 0.4;
 
     formattedData = {
       chartType: 'ColumnChart',
