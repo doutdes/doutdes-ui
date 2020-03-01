@@ -4407,7 +4407,7 @@ export class ChartsCallsService {
       sum += parseInt(el[1], 10);
     }
 
-    avg = (sum / data.length).toFixed(2);
+    data.length > 0 ? avg = (sum / data.length).toFixed(2) : avg = 0;
 
     switch (measure) {
       case 'bounce-rate':
@@ -4463,7 +4463,8 @@ export class ChartsCallsService {
         break;
       case 'avg_view_time':
         sum = data.map(el => el.value).reduce((a, b) => a + b, 0);
-        value = (sum / data.length).toFixed(2);
+        data.length > 0 ? value = (sum / data.length).toFixed(2) : value =0 ;
+
         break;
       case 'n_videos':
         value = data.length;
@@ -4478,40 +4479,45 @@ export class ChartsCallsService {
 
   private getFacebookMiniValue(measure, data, intervalDate) {
     let value, perc, sum = 0, avg, max, aux, step;
-
+    //console.log(intervalDate)
     switch (measure) {
       case 'post-sum':
         // console.log('FB', data);
         data['data'] = data['data'].filter(el => (moment(el['created_time'])) >= intervalDate.first && (moment(el['created_time'])) <= intervalDate.last);
-        value = data['data'].length;
+
+        data.length > 0 ? value = data['data'].length : value = 0 ;
 
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
         // console.log(intervalDate.last);
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
-        value = data[data.length - 1].value;
+        data.length > 0 ?  value = data[data.length - 1].value: value = 0;
 
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
       case 'reactions':
         data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
         max = [];
-
-        for (const i in data) {
-          aux = 0;
-          if (data[i]['value']) {
-            aux += data[i]['value']['like'] || 0;
-            aux += data[i]['value']['love'] || 0;
-            aux += data[i]['value']['haha'] || 0;
-            aux += data[i]['value']['wow'] || 0;
-            aux += data[i]['value']['sorry'] || 0;
-            aux += data[i]['value']['anger'] || 0;
+        if(data.length > 0 ) {
+          for (const i in data) {
+            aux = 0;
+            if (data[i]['value']) {
+              aux += data[i]['value']['like'] || 0;
+              aux += data[i]['value']['love'] || 0;
+              aux += data[i]['value']['haha'] || 0;
+              aux += data[i]['value']['wow'] || 0;
+              aux += data[i]['value']['sorry'] || 0;
+              aux += data[i]['value']['anger'] || 0;
+            }
+            sum += aux;
+            max.push(aux);
           }
-          sum += aux;
-          max.push(aux);
-        }
 
-        avg = sum / data.length;
-        value = sum;
+          avg = sum / data.length;
+          value = sum;
+        }else{
+          avg=0;
+          value=0;
+        }
 
         break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
       default:
@@ -4637,11 +4643,11 @@ export class ChartsCallsService {
     switch (measure) {
       case 'fb-fan-count':
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
-        value = data[data.length - 1].value;
+        data.length > 0 ? value = data[data.length - 1].value : value =0;
 
         break;
       case 'ig-follower':
-        value = data[data.length - 1]['followers_count'];
+        data.length > 0 ? value = data[data.length - 1]['followers_count'] : value = 0;
         break;
       case 'ga-tot-user':
         value = 0;
@@ -4652,7 +4658,7 @@ export class ChartsCallsService {
         break;
       case 'subs':
         data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
-        value = data[0].subscribers;
+        data.length > 0 ? value = data[0].subscribers : value = 0;
         break;
     }
 

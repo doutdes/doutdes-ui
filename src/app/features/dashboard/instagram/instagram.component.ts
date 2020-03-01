@@ -176,7 +176,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
-  //      console.log('sono qui', miniDatas[i])
 
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
 
@@ -187,7 +186,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         this.miniCards[i].step = results['step'];
       }
     });
-
     return empty;
   }
 

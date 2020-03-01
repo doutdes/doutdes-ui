@@ -180,7 +180,6 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.FB, this.miniCards[i].measure, intervalDate);
         empty = empty || !results;
 
-        console.log('result instagram: ', results.value)
         this.getNameMinicard(i);
         this.miniCards[i].value = results['value'];
         this.miniCards[i].progress = results['perc'] + '%';
