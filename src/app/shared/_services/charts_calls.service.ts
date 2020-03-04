@@ -704,6 +704,8 @@ export class ChartsCallsService {
       case IG_CHART.AUD_LOCALE:
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
         if (data.length > 0) {
+
+
           const locale = require('locale-string');
           // const tmp = Object.keys(data[data.length -1]['value']);
           // const tmpobj=data[data.length -1]['value'];
@@ -712,17 +714,18 @@ export class ChartsCallsService {
           //   delete tmpobj[el];
           // }
           // data[data.length -1]['value'] = tmpobj;
-
           keys = Object.keys(data[data.length - 1]['value']);
+
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
-            chartData.push([locale.parse(keys[i].replace('_', '-')).language, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
+            const tmp = this.listCountry.get(keys[i].slice(-2))
+            chartData.push([tmp, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
           }
+
           chartData.sort(function (obj1, obj2) {
             // Ascending: first age less than the previous
             return -(obj1[1] - obj2[1]);
           });
-
          // chartData = this.changeNameCountry(data);
           for (let i = 0; i < chartData.length; i++) {
             const arr = chartData.filter(el2 => chartData[i][0] === el2[0]);
