@@ -39,6 +39,7 @@ export class ChartsCallsService {
   user: User;
   listCountry = new Map();
   listCountryIng = new Map();
+  listLanguageItalian = new Map();
 
   constructor(
     private facebookService: FacebookService,
@@ -53,6 +54,15 @@ export class ChartsCallsService {
     this.userService.get().subscribe(data => {
       this.user = data;
       if (this.user.lang === 'it') {
+
+        this.http.get('./assets/langSetting/languageTranslate/languageItalian.json').subscribe(file => {
+          if (file) {
+            this.listLanguageItalian = new Map;
+            for (const i in file) {
+              this.listLanguageItalian.set(file[i]['state'], file[i]['lan']);
+            }
+          }
+        });
         this.http.get('./assets/langSetting/CountryTranslate/it/world.json').subscribe(file => {
             if (file) {
               this.listCountry = new Map;
@@ -649,7 +659,7 @@ export class ChartsCallsService {
 
         break;
 
-        //Instagram chart
+        // Instagram chart
       case IG_CHART.AUD_CITY:
         header = [['Città', 'Popolarità']];
         if (data.length > 0) {
@@ -716,10 +726,16 @@ export class ChartsCallsService {
           // data[data.length -1]['value'] = tmpobj;
           keys = Object.keys(data[data.length - 1]['value']);
 
+          console.log(this.listLanguageItalian)
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
-            const tmp = this.listCountry.get(keys[i].slice(-2))
-            chartData.push([tmp, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
+            if (this.user.lang === 'it') {
+              // tslint:disable-next-line:no-shadowed-variable
+              const tmp = this.listLanguageItalian.get((keys[i].slice(0, 2)));
+              chartData.push([tmp, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
+            } else {
+            chartData.push([locale.parse(keys[i].replace('_', '-')).language, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
+           }
           }
 
           chartData.sort(function (obj1, obj2) {
@@ -4502,7 +4518,7 @@ export class ChartsCallsService {
         break;
       case 'avg_view_time':
         sum = data.map(el => el.value).reduce((a, b) => a + b, 0);
-        data.length > 0 ? value = (sum / data.length).toFixed(2) : value =0 ;
+        data.length > 0 ? value = (sum / data.length).toFixed(2) : value = 0 ;
 
         break;
       case 'n_videos':
@@ -4518,7 +4534,7 @@ export class ChartsCallsService {
 
   private getFacebookMiniValue(measure, data, intervalDate) {
     let value, perc, sum = 0, avg, max, aux, step;
-    //console.log(intervalDate)
+    // console.log(intervalDate)
     switch (measure) {
       case 'post-sum':
         // console.log('FB', data);
@@ -4530,13 +4546,13 @@ export class ChartsCallsService {
       case 'count':
         // console.log(intervalDate.last);
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
-        data.length > 0 ?  value = data[data.length - 1].value: value = 0;
+        data.length > 0 ?  value = data[data.length - 1].value : value = 0;
 
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
       case 'reactions':
         data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
         max = [];
-        if(data.length > 0 ) {
+        if (data.length > 0 ) {
           for (const i in data) {
             aux = 0;
             if (data[i]['value']) {
@@ -4553,9 +4569,9 @@ export class ChartsCallsService {
 
           avg = sum / data.length;
           value = sum;
-        }else{
-          avg=0;
-          value=0;
+        } else {
+          avg = 0;
+          value = 0;
         }
 
         break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
@@ -4680,7 +4696,7 @@ export class ChartsCallsService {
     switch (measure) {
       case 'fb-fan-count':
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
-        data.length > 0 ? value = data[data.length - 1].value : value =0;
+        data.length > 0 ? value = data[data.length - 1].value : value = 0;
 
         break;
       case 'ig-follower':
