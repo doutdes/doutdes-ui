@@ -11,7 +11,8 @@ export const IG_CHART = { // ID charts in the database
   FOLLOWER_COUNT: 28,
   LOST_FOLLOWERS: 101,
   INFO_CLICKS_COL: 102,
-  MEDIA_LIKE_DATA: 103
+  MEDIA_LIKE_DATA: 103,
+  MEDIA_COMMENT_DATA: 104
 };
 
 export const IG_PALETTE = {

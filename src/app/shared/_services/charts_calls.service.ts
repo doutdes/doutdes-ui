@@ -125,6 +125,7 @@ export class ChartsCallsService {
     const supportArray = [];
     const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['0-3', '3-6', '6-9', '9-12', '12-15', '15-18', '18-21', '21-24']; // temporal range for some fbm charts
+    let elem = 'Like';
 
     const min = [];
     const average = [];
@@ -633,7 +634,7 @@ export class ChartsCallsService {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
           });
-          console.log(data)
+
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
@@ -814,8 +815,10 @@ export class ChartsCallsService {
         let diff = 0;
 
         if (data.length > 0 && data[0]['business'].length > 1) {
+
           const follower_day = data[1]['follower_count'];
           const business = data[0]['business'];
+
           let i = (business.length - 1);
           while (i >= 1) {
             diff = Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count));
@@ -825,6 +828,7 @@ export class ChartsCallsService {
               diff
             ]);
             i--;
+            i = business[i - 1] === undefined || follower_day[i - 1] === undefined ? 0 : i;
           }
         } else {
           chartData.push([new Date(), diff]);
@@ -850,6 +854,8 @@ export class ChartsCallsService {
         }
 
         break;
+      case IG_CHART.MEDIA_COMMENT_DATA:
+        elem = 'Commenti';
       case IG_CHART.MEDIA_LIKE_DATA:
         header = [['Data', 'Like', {role: 'tooltip'}]];
 
@@ -866,25 +872,25 @@ export class ChartsCallsService {
 
           if (chartData.length === 0 || !(chartData[chartData.length - 1][0] === date2.toString().slice(3, 15))) {
             arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date2));
-            arr.forEach(el => acc += el.like_count);
+            arr.forEach(el => acc += el.value);
             len = arr.length > 0 ? arr.length : 1;
             chartData.push([
               date2.toString().slice(3, 15),
               acc,
-              'Like ' + acc + ', N. media ' + arr.length + ', Media like ' + (acc / len) + ', ' + date2.toString().slice(3, 15)
+              '${elem} ' + acc + ', N. media ' + arr.length + ', Media like ' + (acc / len) + ', ' + date2.toString().slice(3, 15)
             ]);
           }
+          acc = 0;
 
           if (diff_time > 1) {
             for (let j = diff_time - 1; j > 0; j--) {
               chartData.push([
                 subDays(date1, j).toString().slice(3, 15),
-                0,
+                acc,
                 'Like ' + 0 + ', N. media ' + 0 + ', Media like ' + 0 + ', ' + subDays(date1, j).toString().slice(3, 15)
               ]);
             }
           }
-          acc = 0;
           diff_time = 0;
         }
 
