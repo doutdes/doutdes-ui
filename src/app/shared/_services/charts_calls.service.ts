@@ -755,7 +755,6 @@ export class ChartsCallsService {
         header = [['Follower online', 'Min', 'Media', 'Max']];
         dayValue = Object.values(data);
 
-        console.log(data)
         for (const i in dayValue) {
           dayValue[i]['value'] ? day = Object.values(dayValue[i]['value']) : day = [0, 0, 0];
           for (const j in blockTime) {
