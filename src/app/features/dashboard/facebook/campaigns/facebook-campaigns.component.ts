@@ -100,6 +100,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
   loadingForm: boolean;
   pageList = [];
   submitted: boolean;
+  user: User;
 
   constructor(
     private FBCService: FacebookCampaignsService,
@@ -111,7 +112,10 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
     private userService: UserService,
     private GEService: GlobalEventsManagerService,
     private toastr: ToastrService,
-  ) {}
+  ) {
+    this.userService.get().subscribe(value => {
+      this.user = value; });
+  }
 
   async ngOnInit() {
     let key: ApiKey, update, existence;
@@ -167,7 +171,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
 
       await this.loadCampaigns();
       this.GEService.loadingScreen.next(false);
-
+      this.userService.logger(6, this.user).subscribe();
     } catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
       /*this.toastr.error(
@@ -194,7 +198,7 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
         .subscribe( data => {
           data = this.CCService.formatTable(data, this.marketing);
           this.dataCampaigns = new MatTableDataSource(data);
-
+          console.log(this.dataCampaigns)
           setTimeout(() => this.dataCampaigns.paginator = this.paginator);
           setTimeout(() => this.dataCampaigns.sort = this.sort);
 

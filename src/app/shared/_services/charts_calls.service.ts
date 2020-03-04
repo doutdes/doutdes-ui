@@ -199,8 +199,7 @@ export class ChartsCallsService {
 
         chartData = this.changeNameCountry(data); // next release
         chartData = this.addPaddingRows(chartData);
-
-        break; // Facebook Fan City
+        break; // Facebook Fan City in realtà è per conuntry
       case FB_CHART.ENGAGED_USERS:
         header = [['Data', 'Interazioni']];
 
@@ -413,11 +412,9 @@ export class ChartsCallsService {
         header = [['Città', 'numero views']];
 
         chartData = this.mapChartData(data);
-
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-
         chartData = this.addPaddingRows(chartData);
         break; // Facebook Vista contenuti per città (elenco)
       case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
@@ -447,6 +444,19 @@ export class ChartsCallsService {
 
         chartData = this.addPaddingRows(chartData);
         break; // Facebook Vista contenuti per Paese (elenco)
+      case FB_CHART.PAGE_FANS_CITY_ELENCO:
+        header = [['Città', 'Numero fan']];
+
+        chartData = this.mapChartData(data);
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddingRows(chartData);
+
+        chartData = this.addPaddingRows(chartData);
+        break; // Facebook fan per città(elenco)
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -745,6 +755,7 @@ export class ChartsCallsService {
         header = [['Follower online', 'Min', 'Media', 'Max']];
         dayValue = Object.values(data);
 
+        console.log(data)
         for (const i in dayValue) {
           dayValue[i]['value'] ? day = Object.values(dayValue[i]['value']) : day = [0, 0, 0];
           for (const j in blockTime) {
@@ -1634,7 +1645,7 @@ export class ChartsCallsService {
             width: '100%'
           }
         };
-        break; // Facebook Fan City
+        break; // Facebook Fan City in realtà per paese
       case FB_CHART.FANS_COUNTRY_PIE:
 
         formattedData = {
@@ -2119,6 +2130,32 @@ export class ChartsCallsService {
         };
 
         break; // Fb Vista contenuti per Paese (elenco)
+      case FB_CHART.PAGE_FANS_CITY_ELENCO:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 14,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            allowHtml: true,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; // Facebook Fan City per elenco
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
@@ -4570,13 +4607,11 @@ export class ChartsCallsService {
   private getFacebookCampaignsMiniValue(measure, data) {
     let value, support = 0, perc, step, media = 0, value2;
     const supportArray = [];
-
     data.forEach(d =>
       d['insights'] !== null && d['insights'] !== undefined
         ? supportArray.push(Object.assign({}, d, d['insights'].data[0]))
         : supportArray.push(d)
     );
-
     switch (measure) {
       case 'budget':
         media = supportArray.filter(d => d.effective_status === 'ACTIVE').length;
@@ -4589,12 +4624,12 @@ export class ChartsCallsService {
         value2 = value;
         break;
       case 'spend':
-        supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend, 10)) : null);
+        supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend, 10)) : (media++, support += 0) );
         value2 = Number(support / media).toFixed(2);
         value = value2 + ' €';
         break;
       case 'reach':
-        supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach, 10)) : null);
+        supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach, 10)) : (media++, support += 0) );
         value = Math.round(support / media).toString();
         value2 = value;
         break;

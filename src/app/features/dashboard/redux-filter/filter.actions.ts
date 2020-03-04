@@ -12,6 +12,7 @@ import {until} from 'selenium-webdriver';
 import elementIsSelected = until.elementIsSelected;
 import * as moment from 'moment';
 import {Chart} from '../../../shared/_models/Chart';
+import {IG_CHART} from '../../../shared/_models/InstagramData';
 
 export const FILTER_INIT = 'FILTER_INIT';
 export const FILTER_UPDATE = 'FILTER_UPDATE';
@@ -52,7 +53,6 @@ export class FilterActions {
     let chart_id, index, dateInterval;
 
     // Given the original data, it retrieves the right format for the data
-
     if (filteredDashboard) {
       for (let i in filteredDashboard.data) {
         if (!filteredDashboard.data[i].error && filteredDashboard.data[i]['chartData'].length > 0) { // If there was not error during the retrieving of the chart data
@@ -197,7 +197,9 @@ export class FilterActions {
                 chart.chartData = chart.chartData.filter(el => parseDate(el.date_stop).getTime() >= filterInterval.first.getTime() && parseDate(el.date_stop).getTime() <= filterInterval.last.getTime());
                 break;
               case D_TYPE.IG:
-                chart.chartData =
+                chart.chartData = chart.metric ===
+                'online_followers' ? chart.chartData.filter(
+                  el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last) :
                   chart.period !== 'lifetime' && chart.metric !== 'lost_followers'
                   ? chart.chartData.filter(
                     el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last)

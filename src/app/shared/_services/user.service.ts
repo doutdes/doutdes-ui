@@ -44,6 +44,6 @@ export class UserService {
     const headers = this.getAuthorization();
 
     return this.http.post(environment.protocol + environment.host + ':' + environment.port + '/mongo/',
-      {user: user.id, type: type}, {headers});
+      {user: user.id, username: user.username, type: type}, {headers});
   }
 }
