@@ -456,17 +456,35 @@ export class ChartsCallsService {
         break; // Facebook Vista contenuti per Paese (elenco)
       case FB_CHART.PAGE_FANS_CITY_ELENCO:
         header = [['Città', 'Numero fan']];
-
-        chartData = this.mapChartData(data);
-
+        chartData = [ ];
+        const tempCity = Object.keys(data[data.length - 1]['value']);
+        if (data.length > 0) {
+          for(const el of tempCity){
+            chartData.push([el, data[data.length - 1]['value'][el]]);
+          }
+        }
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
 
         chartData = this.addPaddingRows(chartData);
+        break; // Facebook fan per città(elenco)
+      case FB_CHART.PAGE_FANS_AGE_ELENCO:
+        header = [['Età', 'Numero fan']];
+        chartData = [ ];
+        const tempAge = Object.keys(data[data.length - 1]['value']);
+        if (data.length > 0) {
+          for(const el of tempAge){
+            chartData.push([el, data[data.length - 1]['value'][el]]);
+          }
+        }
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
 
         chartData = this.addPaddingRows(chartData);
         break; // Facebook fan per città(elenco)
+
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -726,7 +744,7 @@ export class ChartsCallsService {
           // data[data.length -1]['value'] = tmpobj;
           keys = Object.keys(data[data.length - 1]['value']);
 
-          console.log(this.listLanguageItalian)
+          console.log(this.listLanguageItalian);
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
             if (this.user.lang === 'it') {
@@ -2174,6 +2192,32 @@ export class ChartsCallsService {
           }
         };
         break; // Facebook Fan City per elenco
+      case FB_CHART.PAGE_FANS_AGE_ELENCO:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 14,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            allowHtml: true,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; // Facebook Fan Age per elenco
 
       case GA_CHART.IMPRESSIONS_DAY:
         formattedData = {
