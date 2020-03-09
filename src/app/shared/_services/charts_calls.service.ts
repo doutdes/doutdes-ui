@@ -459,7 +459,7 @@ export class ChartsCallsService {
         chartData = [ ];
         const tempCity = Object.keys(data[data.length - 1]['value']);
         if (data.length > 0) {
-          for(const el of tempCity){
+          for (const el of tempCity) {
             chartData.push([el, data[data.length - 1]['value'][el]]);
           }
         }
@@ -474,7 +474,7 @@ export class ChartsCallsService {
         chartData = [ ];
         const tempAge = Object.keys(data[data.length - 1]['value']);
         if (data.length > 0) {
-          for(const el of tempAge){
+          for (const el of tempAge) {
             chartData.push([el, data[data.length - 1]['value'][el]]);
           }
         }
@@ -687,6 +687,18 @@ export class ChartsCallsService {
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
+          const oldValue = data[data.length - 2]['value'];
+          for (const i in chartData) {
+            // tslint:disable-next-line:no-shadowed-variable
+            const diff = oldValue[chartData[i][0]] ?
+              parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]],10) :
+            1;
+              diff > 0 ?
+              chartData[i] = [chartData[i][0], {v : +1, f: chartData[i][1].toString() }] :
+              diff === 0 ?
+                chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
+                chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
+          }
           chartData = this.addPaddingRows(chartData);
         }
         break; // IG Audience City
@@ -735,16 +747,8 @@ export class ChartsCallsService {
 
 
           const locale = require('locale-string');
-          // const tmp = Object.keys(data[data.length -1]['value']);
-          // const tmpobj=data[data.length -1]['value'];
-          // for (const el of tmp) {
-          //   tmpobj[el.slice(-2)] = tmpobj[el];
-          //   delete tmpobj[el];
-          // }
-          // data[data.length -1]['value'] = tmpobj;
           keys = Object.keys(data[data.length - 1]['value']);
 
-          console.log(this.listLanguageItalian);
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
             if (this.user.lang === 'it') {
@@ -863,7 +867,6 @@ export class ChartsCallsService {
         break; // IG composed clicks
       case IG_CHART.FOLLOWER_COUNT:
         header = [['Data', 'Nuovi utenti']];
-
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
@@ -891,7 +894,6 @@ export class ChartsCallsService {
         break;
       case IG_CHART.INFO_CLICKS_COL:
         header = [['Informazione', 'Valore']];
-
         const metrics = ['Email', 'Informazioni sede', 'Telefono', 'Messaggi', 'Sito'];
 
         const arr_acc = [];
@@ -2517,7 +2519,7 @@ export class ChartsCallsService {
           dataTable: data,
           formatters: [{
             columns: [1],
-            type: 'NumberFormat',
+            type: 'ArrowFormat',
             options: {
               pattern: '#.##'
             }
@@ -2616,6 +2618,7 @@ export class ChartsCallsService {
         };
         break; // IG Audience Locale
       case IG_CHART.ONLINE_FOLLOWERS:
+
         formattedData = {
           chartType: 'ColumnChart',
           dataTable: data,
@@ -4935,12 +4938,12 @@ export class ChartsCallsService {
     return chartData;
   }
 
-  private formatChartIg(data, formattedData) {
+  private formatChartIg(data, formattedData, chartType = null, opacity = 0.4,
+  ) {
 
-    const opacity = 0.4;
 
     formattedData = {
-      chartType: 'ColumnChart',
+      chartType: chartType,
       dataTable: data,
       formatters: [{
         columns: [1, 2, 3],
