@@ -125,7 +125,7 @@ export class ChartsCallsService {
     const supportArray = [];
     const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['0-3', '3-6', '6-9', '9-12', '12-15', '15-18', '18-21', '21-24']; // temporal range for some fbm charts
-    let elem = 'Like';
+    let elem = 'Like ';
 
     const min = [];
     const average = [];
@@ -855,7 +855,9 @@ export class ChartsCallsService {
 
         break;
       case IG_CHART.MEDIA_COMMENT_DATA:
-        elem = 'Commenti';
+        elem = 'Commenti ';
+
+      // tslint:disable-next-line:no-switch-case-fall-through
       case IG_CHART.MEDIA_LIKE_DATA:
         header = [['Data', 'Like', {role: 'tooltip'}]];
 
@@ -877,7 +879,7 @@ export class ChartsCallsService {
             chartData.push([
               date2.toString().slice(3, 15),
               acc,
-              '${elem} ' + acc + ', N. media ' + arr.length + ', Media like ' + (acc / len) + ', ' + date2.toString().slice(3, 15)
+              elem + acc + ', N. media ' + arr.length + ', Media ' + elem + (acc / len) + ', ' + date2.toString().slice(3, 15)
             ]);
           }
           acc = 0;
@@ -887,12 +889,20 @@ export class ChartsCallsService {
               chartData.push([
                 subDays(date1, j).toString().slice(3, 15),
                 acc,
-                'Like ' + 0 + ', N. media ' + 0 + ', Media like ' + 0 + ', ' + subDays(date1, j).toString().slice(3, 15)
+                elem + 0 + ', N. media ' + 0 + ', Media ' + elem + 0 + ', ' + subDays(date1, j).toString().slice(3, 15)
               ]);
             }
           }
           diff_time = 0;
         }
+
+        break;
+
+      case IG_CHART.MEDIA_LIKE_TYPE:
+        header = [['Tipo', 'Like', {role: 'tooltip'}]];
+        let images, videos, carousel;
+
+        console.log(data);
 
         break;
 
@@ -2744,6 +2754,7 @@ export class ChartsCallsService {
           }
         };
         break;
+
       case IG_CHART.MEDIA_LIKE_DATA:
         formattedData = {
           chartType: 'AreaChart',
@@ -2768,6 +2779,66 @@ export class ChartsCallsService {
             },
             colors: [IG_PALETTE.AMARANTH.C5],
             areaOpacity: 0.1
+          }
+        };
+        break;
+
+      case IG_CHART.MEDIA_COMMENT_DATA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 185, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0},
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+            },
+            colors: [IG_PALETTE.AMARANTH.C5],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+
+      case IG_CHART.MEDIA_LIKE_TYPE:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 270, top: 0},
+            height: 310,
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0, max: 50},
+              gridlines: {color: '#eaeaea', count: 5},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+              format: '#'
+            },
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
+            areaOpacity: 0.4,
+            bar: {groupWidth: '75%'},
+            isStacked: true,
           }
         };
         break;
