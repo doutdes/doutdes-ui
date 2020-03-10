@@ -625,7 +625,70 @@ export class ChartsCallsService {
           chartData[i][1] /= (tmpArray[i][1] * 1000);
         }
 
+        //console.log(chartData);
         break;
+      case GA_CHART.AUD_COUNTRY_GO:
+        /** Data array is constructed as follows:
+         * 0 - data
+         * 1 - country
+         * 2 - value
+         **/
+        header = [['Country', 'Value']];
+        let mapData = new Map();
+
+        for (let i = 0; i < data.length; i++) {
+          if(!mapData.has(data[i][1])){
+            mapData.set(data[i][1], parseInt(data[i][2]));
+          } else {
+            const value_0 = parseInt(mapData.get(data[i][1]));
+            const value_1 = parseInt(data[i][2]);
+
+            mapData.delete(mapData.get(data[i][1]));
+            mapData.set(data[i][1], value_0 + value_1);
+          }
+        }
+
+        const chiave = mapData.keys();
+        const valore = mapData.values();
+
+        for (let i = 0; i < mapData.size; i++) {
+          chartData.push([chiave.next().value, valore.next().value]);
+        }
+
+        break; // Google Audience Country
+      case GA_CHART.AUD_REGION_GO:
+        /** Data array is constructed as follows:
+         * 0 - data
+         * 1 - region
+         * 2 - country
+         * 3 - value
+         **/
+        header = [['Region', 'Value']];
+        let mapD = new Map();
+
+        for (let i = 0; i < data.length; i++) {
+          if (data[i][2] == "Italy") {
+            console.log(data[i][2]);
+            if (!mapD.has(data[i][1])) {
+              mapD.set(data[i][1], parseInt(data[i][3]));
+            } else {
+              const value_0 = parseInt(mapD.get(data[i][1]));
+              const value_1 = parseInt(data[i][3]);
+
+              mapD.delete(mapD.get(data[i][1]));
+              mapD.set(data[i][1], value_0 + value_1);
+            }
+          }
+        }
+
+        const c = mapD.keys();
+        const valu = mapD.values();
+
+        for (let i = 0; i < mapD.size; i++) {
+          chartData.push([c.next().value, valu.next().value]);
+        }
+
+        break; // Google Audience Region
 
       case IG_CHART.AUD_CITY:
         header = [['Città', 'Popolarità']];
@@ -2381,6 +2444,41 @@ export class ChartsCallsService {
           }
         };
         break;  // Google Sources Column Chart
+        //case GA_CHART.
+      case GA_CHART.AUD_COUNTRY_GO:
+        formattedData = {
+          chartType: 'GeoChart',
+          dataTable: data,
+          chartClass: 2,
+          options: {
+            //region: 'IT',
+            displayMode: 'markers',
+            colors: [GA_PALETTE.LIME.C3],
+            colorAxis: {colors: ['#d8de63', '#de6363']},
+            backgroundColor: '#fff',
+            datalessRegionColor: '#eee',
+            defaultColor: '#333',
+            height: '300'
+          }
+        };
+        break; // Google Audience Country
+      case GA_CHART.AUD_REGION_GO:
+        formattedData = {
+          chartType: 'GeoChart',
+          dataTable: data,
+          chartClass: 2,
+          options: {
+            region: 'IT',
+            displayMode: 'markers',
+            colors: [GA_PALETTE.LIME.C3],
+            colorAxis: {colors: ['#dbff29', '#73de63']},
+            backgroundColor: '#fff',
+            datalessRegionColor: '#eee',
+            defaultColor: '#333',
+            height: '300'
+          }
+        };
+        break; // Google Audience Region
 
       case IG_CHART.AUD_CITY:
         formattedData = {
@@ -4774,4 +4872,5 @@ export class ChartsCallsService {
 
     return chartData;
   }
+
 }

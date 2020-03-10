@@ -853,5 +853,4 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
   }
 
-
 }
