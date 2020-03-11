@@ -668,7 +668,6 @@ export class ChartsCallsService {
 
         for (let i = 0; i < data.length; i++) {
           if (data[i][2] == "Italy") {
-            console.log(data[i][2]);
             if (!mapD.has(data[i][1])) {
               mapD.set(data[i][1], parseInt(data[i][3]));
             } else {
@@ -689,6 +688,37 @@ export class ChartsCallsService {
         }
 
         break; // Google Audience Region
+      case GA_CHART.SESSION_ELENCO_GO:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 -
+         * 2 - value
+         **/
+
+        header = [['Sorgente', 'Sessioni']];
+
+        for (let i = 0; i < data.length; i++) {
+          indexFound = keys.findIndex(el => el === data[i][1]);
+
+          if (indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+          }
+        }
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
+        }
+
+        break; // Google Session elenco
 
       case IG_CHART.AUD_CITY:
         header = [['Città', 'Popolarità']];
@@ -2479,6 +2509,32 @@ export class ChartsCallsService {
           }
         };
         break; // Google Audience Region
+      case GA_CHART.SESSION_ELENCO_GO:
+        formattedData = {
+          chartType: 'Table',
+          dataTable: data,
+          chartClass: 12,
+          options: {
+            cssClassNames: {
+              'headerRow': 'border m-3 headercellbg',
+              'tableRow': 'bg-light',
+              'oddTableRow': 'bg-white',
+              'selectedTableRow': '',
+              'hoverTableRow': '',
+              'headerCell': 'border-0 py-2 pl-2',
+              'tableCell': 'border-0 py-1 pl-2',
+              'rowNumberCell': 'underline-blue-font'
+            },
+            alternatingRowStyle: true,
+            sortAscending: false,
+            sort: 'disable',
+            sortColumn: 1,
+            pageSize: 9,
+            height: '100%',
+            width: '100%'
+          }
+        };
+        break; // Google Session elenco
 
       case IG_CHART.AUD_CITY:
         formattedData = {

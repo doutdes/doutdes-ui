@@ -35,6 +35,7 @@ export class AppComponent implements OnInit {
             this.user = data;
             this.translate.setDefaultLang(this.conversionSetDefaultLang());
 
+            /*
             // Per settare la lingua dei toastr
             this.http.get('./assets/langSetting/langToastr/' + this.conversionSetDefaultLang() + '.json')
               .subscribe(file => {
@@ -52,6 +53,7 @@ export class AppComponent implements OnInit {
               .subscribe(file => {
                 this.GEservice.langFilterDate.next(file);
               });
+            */
 
           }, err => {
             console.error(err);
@@ -76,6 +78,7 @@ export class AppComponent implements OnInit {
         this.userService.get().subscribe(data => {
           this.user = data;
 
+
           // Per settare la lingua dei toastr
           this.http.get('./assets/langSetting/langToastr/' + this.conversionSetDefaultLang() + '.json')
             .subscribe(file => {
@@ -93,6 +96,7 @@ export class AppComponent implements OnInit {
             .subscribe(file => {
               this.GEservice.langFilterDate.next(file);
             });
+
 
         }, err => {
           console.error(err);
