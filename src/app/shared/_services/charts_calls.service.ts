@@ -691,7 +691,7 @@ export class ChartsCallsService {
           for (const i in chartData) {
             // tslint:disable-next-line:no-shadowed-variable
             const diff = oldValue[chartData[i][0]] ?
-              parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]],10) :
+              parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]], 10) :
             1;
               diff > 0 ?
               chartData[i] = [chartData[i][0], {v : +1, f: chartData[i][1].toString() }] :
@@ -1565,29 +1565,33 @@ export class ChartsCallsService {
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.BLUE.C1],
-            areaOpacity: 0.1
-          }
-        };
+
+        formattedData = this.areaChart(data, { options : { areaOpacity: 0.1,
+            vAxis: { minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)}}});
+
+        // formattedData = {
+        //   chartType: 'AreaChart',
+        //   dataTable: data,
+        //   chartClass: 5,
+        //   options: {
+        //     chartArea: {left: 0, right: 0, height: 192, top: 0},
+        //     legend: {position: 'none'},
+        //     lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+        //     height: 210,
+        //     pointSize: data.length > 15 ? 0 : 7,
+        //     pointShape: 'circle',
+        //     hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+        //     vAxis: {
+        //       gridlines: {color: '#eaeaea', count: 5},
+        //       minorGridlines: {color: 'transparent'},
+        //       minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+        //       textPosition: 'in',
+        //       textStyle: {color: '#999'}
+        //     },
+        //     colors: [FB_PALETTE.BLUE.C1],
+        //     areaOpacity: 0.1
+        //   }
+        // };
 
         break;  // Fb Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
@@ -2677,37 +2681,10 @@ export class ChartsCallsService {
         };
         break; // IG Impressions by day
       case IG_CHART.REACH:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-              format: '#'
-            },
-            colors: [IG_PALETTE.FUCSIA.C3],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {
+          formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+          options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.FUCSIA.C3]}});
         break; // IG Reach
       case IG_CHART.ACTION_PERFORMED:
         formattedData = {
@@ -2743,64 +2720,15 @@ export class ChartsCallsService {
         }
         break; // IG clicks pie
       case IG_CHART.FOLLOWER_COUNT:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-              format: '#'
-            },
-            colors: [IG_PALETTE.AMARANTH.C5],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {
+            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+            options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
+
         break; // IG Follower count
       case IG_CHART.LOST_FOLLOWERS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              minValue: 0,
-              viewWindowMode: 'explicit',
-              viewWindow: {min: 0},
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-            },
-            colors: [IG_PALETTE.AMARANTH.C5],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
         break;
       case IG_CHART.INFO_CLICKS_COL:
         formattedData = {
@@ -2834,31 +2762,8 @@ export class ChartsCallsService {
         };
         break;
       case IG_CHART.MEDIA_LIKE_DATA:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 185, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              minValue: 0,
-              viewWindowMode: 'explicit',
-              viewWindow: {min: 0},
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-            },
-            colors: [IG_PALETTE.AMARANTH.C5],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
         break;
 
       case YT_CHART.VIEWS:
@@ -4938,33 +4843,47 @@ export class ChartsCallsService {
     return chartData;
   }
 
-  private formatChartIg(data, formattedData, chartType = null, opacity = 0.4,
-  ) {
-
-
+  private areaChart(data, format?: object) {
+    let formattedData;
     formattedData = {
-      chartType: chartType,
+      chartType: 'AreaChart',
       dataTable: data,
-      formatters: [{
-        columns: [1, 2, 3],
-        type: 'NumberFormat',
-        options: {
-          pattern: '#.##'
-        }
-      }],
       options: {
-        chartArea: {left: 30, right: 0, height: 270, top: 20},
-        height: 310,
-        vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
-        hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-        colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.AMARANTH.C3, IG_PALETTE.LAVENDER.C3],
-        areaOpacity: opacity,
-        legend: {position: 'top', maxLines: 3},
-        bar: {groupWidth: '60%'},
-        isStacked: false,
+        chartArea: {left: 0, right: 0, height: 192, top: 0},
+        legend: {position: 'none'},
+        lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+        height: 210,
+        pointSize: data.length > 15 ? 0 : 7,
+        pointShape: 'circle',
+        hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+        vAxis: {
+          gridlines: {color: '#eaeaea', count: 5},
+          minorGridlines: {color: 'transparent'},
+          minValue: 0,
+          textPosition: 'in',
+          textStyle: {color: '#999'},
+          format: '#'
+        },
+        colors: [IG_PALETTE.FUCSIA.C3],
+        areaOpacity: 0.1
       }
     };
 
+    if(format) {
+      for(const el of Object.keys(format)){
+        if (el !== 'options') {
+          formattedData[el] = format[el];
+        }
+        if (el === 'options') {
+          for (const e of Object.keys(format[el])) {
+            formattedData[el][e] ?  Object.assign(formattedData[el][e], format[el][e]) : formattedData[el][e] = format[el][e];
+          }
+        }
+      }
+    }
     return formattedData;
   }
+
+
 }
+
