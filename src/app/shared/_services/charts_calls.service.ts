@@ -2016,6 +2016,12 @@ export class ChartsCallsService {
             areaOpacity: 0.3
           }
         };
+        console.log(data)
+        formattedData = this.tableChart(data,
+          {showRowNumber: true, width: '100%', height: '100%',
+            formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
+            }]});
+        console.log(formattedData)
         break;  // Google Sources Column Chart
 
       // Instragram chart
@@ -3836,7 +3842,11 @@ export class ChartsCallsService {
         }
         if (el === 'options') {
           for (const e of Object.keys(format[el])) {
-            formattedData[el][e] = format[el][e];
+            if (formattedData[el][e]) {
+              Object.assign(formattedData[el][e], format[el][e]);
+            } else {
+              formattedData[el][e] = format[el][e];
+            }
           }
         }
       }
@@ -3879,7 +3889,11 @@ export class ChartsCallsService {
         }
         if (el === 'options') {
           for (const e of Object.keys(format[el])) {
-            formattedData[el][e] = format[el][e];
+            if (formattedData[el][e]) {
+              Object.assign(formattedData[el][e], format[el][e]);
+            } else {
+              formattedData[el][e] = format[el][e];
+            }
           }
         }
       }
@@ -3910,7 +3924,11 @@ export class ChartsCallsService {
         }
         if (el === 'options') {
           for (const e of Object.keys(format[el])) {
+            if (formattedData[el][e]) {
+              Object.assign(formattedData[el][e], format[el][e]);
+            } else {
               formattedData[el][e] = format[el][e];
+            }
           }
         }
       }
