@@ -374,7 +374,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
         this.getNameMinicard(i);
         this.miniCards[i].value = results['value'];
-        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].progress = 100 + '%';
+        //this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
 
         empty = empty || !results;
