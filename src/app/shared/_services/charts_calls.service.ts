@@ -699,6 +699,7 @@ export class ChartsCallsService {
                 chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
                 chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
           }
+
           chartData = this.addPaddingRows(chartData);
         }
         break; // IG Audience City

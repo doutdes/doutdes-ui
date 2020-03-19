@@ -198,12 +198,19 @@ export class FilterActions {
                 break;
               case D_TYPE.IG:
                 chart.chartData = chart.metric ===
-                'online_followers'  ? chart.chartData.filter(
+                'online_followers' ? chart.chartData.filter(
                   el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last) :
                   chart.period !== 'lifetime' && chart.metric !== 'lost_followers'
                   ? chart.chartData.filter(
                     el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last)
                   : chart.chartData;
+
+
+                if (chart.metric === 'audience_city'){
+                  chart.chartData = chart.chartData.filter(
+                    el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
+                  console.log(chart)
+                }
                 break;
               default:
                 chart.chartData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
