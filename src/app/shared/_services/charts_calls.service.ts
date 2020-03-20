@@ -679,6 +679,7 @@ export class ChartsCallsService {
 
         // Instagram chart
       case IG_CHART.AUD_CITY:
+        console.log(data)
         header = [['Città', 'Popolarità']];
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
