@@ -105,6 +105,19 @@ export class FilterActions {
       storedDashboards: this.storedDashboards
     });
   }
+/*
+  updateIntervalChart(chart: DashboardCharts) {
+    const index = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+    const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
+
+    this.currentDashboard.data[index].chartData = chart.chartData;
+    this.filteredDashboard.data[index].chartData = chart.chartData;
+    this.storedDashboards[storedIndex].data[index].chart = chart.title;
+
+  }
+
+ */
+
 
   updateChartPosition(arrayChart$: DashboardCharts, type: number) {
     const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === type);

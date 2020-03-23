@@ -991,6 +991,7 @@ export class ChartsCallsService {
           chartData.push([this.formatInterval(intervalDateComparison, 1), j, 0]);
           chartData.push([this.formatInterval(intervalDateComparison, 2), 0, k]);
 
+          //this.filterActions.updateChart(chart);
           //console.log(chartData);
         });
 

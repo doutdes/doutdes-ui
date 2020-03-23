@@ -193,6 +193,7 @@ export class CardComponent implements OnInit {
     this.loading = true;
 
     this.updateChart(this.dashChart.title, chart);
+    console.log('ok');
   }
 
   chartResizer(): void {
@@ -444,8 +445,6 @@ export class CardComponent implements OnInit {
       this.GEService.ComparisonIntervals.next(this.intervalFinal);
       this.closeModal();
     }
-
-
 
   }
 
