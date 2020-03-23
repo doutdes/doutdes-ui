@@ -39,6 +39,8 @@ export class ChartsCallsService {
   user: User;
   listCountry = new Map();
 
+  intervalDateComparison: any;
+
   constructor(
     private facebookService: FacebookService,
     private googleAnalyticsService: GoogleAnalyticsService,
@@ -79,6 +81,7 @@ export class ChartsCallsService {
       });
 
   }
+
   public static cutString(str, maxLength) {
     if (str) {
       return str.length > maxLength ? str.substr(0, maxLength) + '...' : str;
@@ -131,6 +134,8 @@ export class ChartsCallsService {
     const max = [] ;
     const blockTime = [3, 6, 9, 12, 15, 18, 21, 24];
 
+    let j = 0;
+    let k = 0;
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -946,6 +951,50 @@ export class ChartsCallsService {
         }
 
         break;
+      case IG_CHART.COMPARISON_COLONNA:
+        header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
+
+        this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
+          // Sezione nel caso di modifica intervalli
+          if (intervalDateComparison != null) {
+            for (let i = 0; i < data.length; i++) {
+              //Controllo per colonna 1
+              if ((parseDate(data[i]['end_time']) >= intervalDateComparison[0][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[0][1]) {
+                j += data[i]['value'];
+              }
+              //Controllo per colonna 2
+              if ((parseDate(data[i]['end_time']) >= intervalDateComparison[1][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[1][1]) {
+                k += data[i]['value'];
+              }
+            }
+          } else {
+            // Sezione nel caso di non modifica intervalli/valore di default
+            for (let i = 0; i < data.length; i++) {
+              //Controllo per Colonna 1
+              if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-8]['end_time']))) {
+                j += data[i]['value'];
+                /*
+                console.log(parseDate(data[data.length-15]['end_time']));
+                console.log(parseDate(data[data.length-8]['end_time']));
+                 */
+              }
+              //Controllo per colonna 2
+                if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-8]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+                k += data[i]['value'];
+                  /*
+                  console.log(parseDate(data[data.length-8]['end_time']));
+                  console.log(parseDate(data[data.length-1]['end_time']));
+                   */
+              }
+            }
+          }
+          chartData.push([this.formatInterval(intervalDateComparison, 1), j, 0]);
+          chartData.push([this.formatInterval(intervalDateComparison, 2), 0, k]);
+
+          //console.log(chartData);
+        });
+
+        break; // IG Follower Count Comparasion
 
       case YT_CHART.VIEWS:
         header = [['Data', 'Visualizzazioni']];
@@ -2855,6 +2904,31 @@ export class ChartsCallsService {
           }
         };
         break;
+      case IG_CHART.COMPARISON_COLONNA:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1, 2],
+            type: 'NumberFormat',
+            options: {
+              pattern: '###.##'
+            }
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 30, right: 0, height: 270, top: 20},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+            hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
+            areaOpacity: 0.4,
+            legend: {position: 'top', maxLines: 2},
+            bar: {groupWidth: '45%'},
+            isStacked: true,
+          }
+        };
+        break; // IG Follower Count Comparasion
 
       case YT_CHART.VIEWS:
         formattedData = {
@@ -4929,4 +5003,21 @@ export class ChartsCallsService {
     return chartData;
   }
 
+  public formatInterval (intervalDate, n: number) {
+
+    if (!intervalDate) {
+      if (n == 1) return '20/02 - 22/02';
+      if (n == 2) return '09/02 - 12/03';
+    } else {
+      /*  DIFFERENZE
+      Il primo If commentato restituisce il giorno nel formato '0d'; es: 04/12
+      Il secondo If (quello non commentato) restituisce il giorno nel formato 'd'; es: 4/12
+       */
+      //if (n == 1) return parseDate(intervalDate[0][0]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][0]).getMonth() + ' - ' + parseDate(intervalDate[0][1]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][1]).getMonth();
+      if (n == 1) return parseDate(intervalDate[0][0]).getDate() + '/' +  parseDate(intervalDate[0][0]).getMonth() + ' - ' + parseDate(intervalDate[0][1]).getDate() + '/' +  parseDate(intervalDate[0][1]).getMonth();
+      if (n == 2) return parseDate(intervalDate[1][0]).getDate() + '/' +  parseDate(intervalDate[1][0]).getMonth() + ' - ' + parseDate(intervalDate[1][1]).getDate() + '/' +  parseDate(intervalDate[1][1]).getMonth();
+        }
+    }
+
 }
+

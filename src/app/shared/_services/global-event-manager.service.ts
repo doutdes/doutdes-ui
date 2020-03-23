@@ -121,6 +121,7 @@ export class GlobalEventsManagerService {
   public langBread: BehaviorSubject<any> = new BehaviorSubject(null); //langBread
   public langFilterDate: BehaviorSubject<any> = new BehaviorSubject(null); //langStringVarious
 
+  public ComparisonIntervals: BehaviorSubject<any> = new BehaviorSubject(null); //ComparasionIntervals
 
   // TODO delete this subjects
   public removeFromDashboard: BehaviorSubject<[number, number]> = new BehaviorSubject<[number, number]>([0, 0]);

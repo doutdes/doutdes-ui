@@ -16,6 +16,8 @@ import {Chart} from '../../shared/_models/Chart';
 import {TranslateService} from '@ngx-translate/core';
 import {UserService} from '../../shared/_services/user.service';
 import {User} from '../../shared/_models/User';
+import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
+import {subDays} from "date-fns";
 
 @Component({
   selector: 'app-card',
@@ -31,6 +33,14 @@ export class CardComponent implements OnInit {
   @HostBinding('class') elementClass = 'pt-3';
   @ViewChild('mychart') mychart: GoogleChartComponent;
   @ViewChild('addMetric') addMetric: ElementRef;
+
+  public FILTER_DAYS = {
+    yesterday: 1,
+    seven: 7,
+    eight: 8,
+    thirty: 29,
+    ninety: 89,
+  };
 
   aggregated: boolean;
   type: string;
@@ -63,6 +73,21 @@ export class CardComponent implements OnInit {
 
   D_TYPE = D_TYPE;
   drag: boolean;
+
+  datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
+  dateChoice: String = null;
+  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.eight);
+  minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.seven);
+  maxDate2: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+  minDate2: Date = subDays(this.maxDate2, this.FILTER_DAYS.seven);
+  bsRangeValue: Date[];
+  bsRangeValue2: Date[];
+  //set: Date[];
+  set1 = [];
+  set2 = [];
+  intervalFinal = [];
+  firstDateRange: Date;
+  lastDateRange: Date;
 
   metrics: Array<Chart>;
   addMetricForm: FormGroup;
@@ -98,6 +123,14 @@ export class CardComponent implements OnInit {
     this.updateChartForm = this.formBuilder.group({
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });
+
+    this.firstDateRange = this.minDate;
+    this.lastDateRange = this.maxDate;
+    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+    this.firstDateRange = this.minDate2;
+    this.lastDateRange = this.maxDate2;
+    this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
 
   }
 
@@ -374,6 +407,55 @@ export class CardComponent implements OnInit {
       }, err => {
         console.error(err);
       });
+  }
+
+  onValueChange(value, check: string) {
+
+    if (value && this.datePickerEnabled) {
+
+      const dateInterval: IntervalDate = {
+        first: new Date(value[0].setHours(0, 0, 0, 0)),
+        last: new Date(value[1].setHours(23, 59, 59))
+      };
+
+      this.filterActions.filterData(dateInterval);
+
+      let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
+      let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
+
+      if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
+        this.dateChoice = 'Personalizzato';
+      }
+
+    }
+
+    if (value && (check ==  'Interval1' || check == 'Interval2')) {
+
+      if (check == 'Interval1') {
+        this.intervalFinal[0] = [value[0], value[1]];
+      }
+
+      if (check == 'Interval2') {
+        this.intervalFinal[1] = [value[0], value[1]];
+      }
+    }
+
+    if (!value && check == 'Edit') {
+      this.GEService.ComparisonIntervals.next(this.intervalFinal);
+      this.closeModal();
+    }
+
+
+
+  }
+
+  checkCard(chart) {
+
+    if (chart == 108)
+      return true;
+    else
+      return false;
+
   }
 
 }
