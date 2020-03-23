@@ -679,7 +679,6 @@ export class ChartsCallsService {
 
         // Instagram chart
       case IG_CHART.AUD_CITY:
-        console.log(data)
         header = [['Città', 'Popolarità']];
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
@@ -700,8 +699,6 @@ export class ChartsCallsService {
                 chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
                 chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
           }
-
-          chartData = this.addPaddingRows(chartData);
         }
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
@@ -882,7 +879,8 @@ export class ChartsCallsService {
           const business = data[0]['business'];
           let i = (business.length - 1);
           while (i >= 1) {
-            diff = Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count));
+            if (business[i] && follower_day[i]) //TODO might have different lengths, check
+              diff = Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count));
 
             chartData.push([
               moment(business[i].end_time).toDate(),

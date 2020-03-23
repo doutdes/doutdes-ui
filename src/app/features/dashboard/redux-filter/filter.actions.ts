@@ -48,13 +48,12 @@ export class FilterActions {
    * After this, it requires for the right format of the data and it stores this in the formatted data
    **/
   initData(initialData: DashboardData) {
-    let currentDashboard = initialData || null;
-    let filteredDashboard = initialData ? JSON.parse(JSON.stringify(initialData)) : null;
+    const currentDashboard = initialData || null;
+    const filteredDashboard = initialData ? JSON.parse(JSON.stringify(initialData)) : null;
     let chart_id, index, dateInterval;
-
     // Given the original data, it retrieves the right format for the data
     if (filteredDashboard) {
-      for (let i in filteredDashboard.data) {
+      for (const i in filteredDashboard.data) {
         if (!filteredDashboard.data[i].error && filteredDashboard.data[i]['chartData'].length > 0) { // If there was not error during the retrieving of the chart data
           chart_id = filteredDashboard.data[i].chart_id;
 
@@ -62,7 +61,7 @@ export class FilterActions {
 
           filteredDashboard.data[i].aggregated = this.ADService.getAggregatedData(filteredDashboard.data[i], dateInterval);
           filteredDashboard.data[i].chartData = this.CCService.formatChart(chart_id, filteredDashboard.data[i].chartData);
-        }else{
+        } else {
           filteredDashboard.data[i].error = true;
         }
       }
@@ -136,7 +135,7 @@ export class FilterActions {
 
   addChart(chart: DashboardCharts) {
     const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
-    let filteredChart = JSON.parse(JSON.stringify(chart));
+    const filteredChart = JSON.parse(JSON.stringify(chart));
     filteredChart.chartData = this.CCService.formatChart(filteredChart.chart_id, filteredChart.chartData);
     this.currentDashboard.data.push(chart);
     this.filteredDashboard.data.push(filteredChart);
@@ -206,10 +205,9 @@ export class FilterActions {
                   : chart.chartData;
 
 
-                if (chart.metric === 'audience_city'){
+                if (chart.metric === 'audience_city') {
                   chart.chartData = chart.chartData.filter(
                     el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
-                  console.log(chart)
                 }
                 break;
               default:
@@ -280,7 +278,7 @@ export class FilterActions {
   }
 
   removedStoredDashboard(dashboard_type: number) {
-    let index = this.storedDashboards.findIndex((el: DashboardData) => el.type === D_TYPE.CUSTOM);
+    const index = this.storedDashboards.findIndex((el: DashboardData) => el.type === D_TYPE.CUSTOM);
 
     this.storedDashboards = this.storedDashboards.filter((el: DashboardData) => el.type === dashboard_type);
 

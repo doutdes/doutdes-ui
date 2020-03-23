@@ -239,7 +239,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
         if (this.chartArray$.length === 0) {
 
-          this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
+         this.toastr.info(this.GEService.getStringToastr(false, true, "DASHBOARD", 'VUOTA'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'VUOTA'));
         }
 
