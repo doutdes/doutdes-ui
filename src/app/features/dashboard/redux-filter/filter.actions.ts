@@ -205,7 +205,7 @@ export class FilterActions {
                   : chart.chartData;
 
 
-                if (chart.metric === 'audience_city') {
+                if (chart.metric === 'audience_city' || chart.metric === 'audience_gender_age') {
                   chart.chartData = chart.chartData.filter(
                     el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
                 }

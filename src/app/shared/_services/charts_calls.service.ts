@@ -699,6 +699,25 @@ export class ChartsCallsService {
                 chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
                 chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
           }
+          // chartData[1] = ['Monserrato, Sardinia', {v : -1, f: '300' }];
+          // chartData[2] = ["Quartu Sant'Elena, Sardinia", {v : 0, f: '287' }];
+          // chartData[3] = ['Elmas, Sardinia', {v : 1, f: '234' }];
+          // chartData[4] = ['Sassari, Sardinia', {v : -1, f: '196' }];
+          // chartData[5] = ['Nuoro, Sardinia', {v : 0, f: '122' }];
+          // chartData[6] = ['Olbia, Sardinia', {v : 0, f: '111' }];
+          // chartData[7] = ['Macomer, Sardinia', {v : 1, f: '96' }];
+          // chartData[8] = ['Selargius, Sardinia', {v : -1, f: '36' }];
+          //  chartData[0] = ["Cagliari, Sardinia	", {v : -1, f: '127' }];
+          //  chartData[1] = ["Paris, Île-de-France", {v : -1, f: '70' }];
+          //  chartData[2] = ['Lille, Hauts-de-France', {v : 1, f: '66' }];
+          //  chartData[3] = ['Rennes, Bretagne', {v : 1, f: '54' }];
+          //  chartData[4] = ['Rouen, Normandie', {v : -1, f: '31' }];
+          //  chartData[5] = ['Marseille, Provence-Alpes-Côte...', {v : 0, f: '16' }];
+          //  chartData[6] = ['Nantes, Pays de la Loire', {v : 1, f: '14' }];
+          //  chartData[7] = ['Toulouse, Occitanie', {v : -1, f: '9' }];
+          //  chartData[8] = ['Bordeaux, Nouvelle-Aquitaine', {v : -1, f: '8' }];
+           //console.log(chartData)
+          chartData = this.addPaddingRows(chartData);
         }
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
@@ -706,8 +725,14 @@ export class ChartsCallsService {
         if (data.length > 0) {
           chartData = this.changeNameCountry(data);
         }
+        // console.log(chartData)
+        // chartData=[["Italia", 1000], ["Francia", 3000], ["Regno Unito", 2500], ["Polonia", 1900], ["Russia", 500], ["Australia", 600],
+        // ["Grecia", 1200], ["Stati Uniti", 3500]]
+        // chartData=[["Italia", 1000]]
+        // console.log(chartData)
         break; // IG Audience Country
       case IG_CHART.AUD_GENDER_AGE:
+        console.log(data);
         header = [['Età', 'Maschio', 'Femmina']];
 
         const gender_data = data[0] ? Object.keys(data[0]['value']) : null;
@@ -739,6 +764,10 @@ export class ChartsCallsService {
           }
           chartData = chartData.sort();
         }
+       // chartData[1] =["18-24", 1566, 1330]
+       //    chartData[1] =["18-24", 1566, 1530]
+       //   chartData[2] =["25-34", 1400, 1200]
+        // console.log(chartData)
         break; // IG Audience Gender/Age
       case IG_CHART.AUD_LOCALE:
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
@@ -778,10 +807,19 @@ export class ChartsCallsService {
           });
           chartData = chartData.slice(0, 5).concat(other);
         }
+        // console.log(chartData)
+        // chartData=[['Tedesco', 5000],
+        // ['Inglese', 3000],
+        // ['Spagnolo', 2900],
+        // ['Francese', 2250],
+        // ['Italiano', 1650],
+        // ['Altro', 1350]];
+        //
+
 
         break; // IG Audience Locale
       case IG_CHART.ONLINE_FOLLOWERS:
-
+        console.log(data)
         let dayValue = [];
         let day = [];
         let times = [];
@@ -828,7 +866,17 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), (data[i].value)]);
         }
-
+        // chartData.push([moment(data[32].end_time).toDate(), 40]);
+        // chartData.push([moment(data[33].end_time).toDate(), 60]);
+        // chartData.push([moment(data[34].end_time).toDate(), 50]);
+        // chartData.push([moment(data[35].end_time).toDate(), 50]);
+        // chartData.push([moment(data[36].end_time).toDate(), 45]);
+        // chartData.push([moment(data[37].end_time).toDate(), 62]);
+        // chartData.push([moment(data[38].end_time).toDate(), 55]);
+        // chartData.push([moment(data[39].end_time).toDate(), 38]);
+        // chartData.push([moment(data[40].end_time).toDate(), 60]);
+        // chartData.push([moment(data[41].end_time).toDate(), 50]);
+        // console.log(data)
         break; // IG Impressions by day
       case IG_CHART.REACH:
         header = [['Data', 'Utenti raggiunti']];
@@ -836,6 +884,16 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+        // chartData.push([moment(data[32].end_time).toDate(), 40]);
+        // chartData.push([moment(data[33].end_time).toDate(), 60]);
+        // chartData.push([moment(data[34].end_time).toDate(), 50]);
+        // chartData.push([moment(data[35].end_time).toDate(), 50]);
+        // chartData.push([moment(data[36].end_time).toDate(), 45]);
+        // chartData.push([moment(data[37].end_time).toDate(), 62]);
+        // chartData.push([moment(data[38].end_time).toDate(), 55]);
+        // chartData.push([moment(data[39].end_time).toDate(), 38]);
+        // chartData.push([moment(data[40].end_time).toDate(), 60]);
+        // chartData.push([moment(data[41].end_time).toDate(), 50]);
         break; // IG Reach
       case IG_CHART.ACTION_PERFORMED:
         header = [['Tipo', 'Numero']];
@@ -869,6 +927,12 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+        // console.log(chartData[35][1])
+        // chartData[35] = [chartData[35][0], 60]
+        // chartData[36] = [chartData[36][0], 50]
+        // chartData[37] = [chartData[37][0], 40]
+        // chartData[38] = [chartData[38][0], 30]
+        // chartData[39] = [chartData[39][0], 12]
         break; // IG FollowerCount
       case IG_CHART.LOST_FOLLOWERS:
         header = [['Data', 'Follower persi']];
@@ -888,9 +952,27 @@ export class ChartsCallsService {
             ]);
             i--;
           }
+          // chartData.push([moment(business[0].end_time).toDate(), 10]);
+          // chartData.push([moment(business[1].end_time).toDate(), 5]);
+          // chartData.push([moment(business[2].end_time).toDate(), 15]);
+          // chartData.push([moment(business[3].end_time).toDate(), 23]);
+          // chartData.push([moment(business[4].end_time).toDate(), 20]);
+          // chartData.push([moment(business[5].end_time).toDate(), 80]);
+          // chartData.push([moment(business[6].end_time).toDate(), 16]);
+          // chartData.push([moment(business[7].end_time).toDate(), 30]);
+          // chartData.push([moment(business[8].end_time).toDate(), 11]);
+          // chartData.push([moment(business[9].end_time).toDate(), 9]);
+          // chartData.push([moment(business[10].end_time).toDate(), 8]);
         } else {
           chartData.push([new Date(), diff]);
         }
+        //   chartData.push([moment(data[35].end_time).toDate(), 10]);
+        // chartData.push([moment(data[36].end_time).toDate(), 5]);
+        // chartData.push([moment(data[37].end_time).toDate(), 50]);
+        // chartData.push([moment(data[38].end_time).toDate(), 10]);
+        // chartData.push([moment(data[39].end_time).toDate(), 20]);
+        // chartData.push([moment(data[40].end_time).toDate(), 4]);
+        // chartData.push([moment(data[41].end_time).toDate(), 3]);
         break;
       case IG_CHART.INFO_CLICKS_COL:
         header = [['Informazione', 'Valore']];
