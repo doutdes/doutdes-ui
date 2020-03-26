@@ -1,5 +1,5 @@
 import {Component, ElementRef, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
@@ -10,7 +10,7 @@ import {D_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
 import {BehaviorSubject, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {retry, takeUntil} from 'rxjs/operators';
 import {FilterActions} from '../../features/dashboard/redux-filter/filter.actions';
 import {Chart} from '../../shared/_models/Chart';
 import {TranslateService} from '@ngx-translate/core';
@@ -76,10 +76,10 @@ export class CardComponent implements OnInit {
 
   datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
   dateChoice: String = null;
-  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.eight);
-  minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.seven);
+  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+  minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.thirty);
   maxDate2: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate2: Date = subDays(this.maxDate2, this.FILTER_DAYS.seven);
+  minDate2: Date = subDays(this.maxDate2, this.FILTER_DAYS.thirty);
   bsRangeValue: Date[];
   bsRangeValue2: Date[];
   //set: Date[];
@@ -412,6 +412,12 @@ export class CardComponent implements OnInit {
 
   onValueChange(value, check: string) {
 
+    const intervalDate: IntervalDate = {
+      first: this.checkBsRangeValue(1, this.bsRangeValue, this.bsRangeValue2),
+      last: this.checkBsRangeValue(2, this.bsRangeValue, this.bsRangeValue2),
+    };
+
+  /*
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
@@ -429,6 +435,7 @@ export class CardComponent implements OnInit {
       }
 
     }
+   */
 
     if (value && (check ==  'Interval1' || check == 'Interval2')) {
 
@@ -442,8 +449,10 @@ export class CardComponent implements OnInit {
     }
 
     if (!value && check == 'Edit') {
+
       this.GEService.ComparisonIntervals.next(this.intervalFinal);
       this.closeModal();
+      this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
     }
 
   }
@@ -455,6 +464,20 @@ export class CardComponent implements OnInit {
     else
       return false;
 
+  }
+
+  checkBsRangeValue (n, bs1, bs2) {
+    //first
+    if (n == 1) {
+      if(parseDate(bs1[0]) < parseDate(bs2[0])) return bs1[0];
+      if(parseDate(bs1[0]) > parseDate(bs2[0])) return bs2[0];
+      if(parseDate(bs1[0]) == parseDate(bs2[0])) return bs1[0];
+  } else {
+    //last
+      if(parseDate(bs1[1]) > parseDate(bs2[1])) return bs1[1];
+      if(parseDate(bs1[1]) < parseDate(bs2[1])) return bs2[1];
+      if(parseDate(bs1[1]) == parseDate(bs2[1])) return bs2[1];
+    }
   }
 
 }

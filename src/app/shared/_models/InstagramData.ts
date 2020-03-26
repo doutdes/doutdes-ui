@@ -62,6 +62,8 @@ export const IG_PALETTE = {
     C11: '#ffcee2',
     C12: '#ffe7f0',
   }
+
+
 };
 
 export interface IgPage {

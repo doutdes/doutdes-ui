@@ -973,26 +973,16 @@ export class ChartsCallsService {
               //Controllo per Colonna 1
               if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-8]['end_time']))) {
                 j += data[i]['value'];
-                /*
-                console.log(parseDate(data[data.length-15]['end_time']));
-                console.log(parseDate(data[data.length-8]['end_time']));
-                 */
               }
               //Controllo per colonna 2
                 if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-8]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
                 k += data[i]['value'];
-                  /*
-                  console.log(parseDate(data[data.length-8]['end_time']));
-                  console.log(parseDate(data[data.length-1]['end_time']));
-                   */
               }
             }
           }
+          chartData = [];
           chartData.push([this.formatInterval(intervalDateComparison, 1), j, 0]);
           chartData.push([this.formatInterval(intervalDateComparison, 2), 0, k]);
-
-          //this.filterActions.updateChart(chart);
-          //console.log(chartData);
         });
 
         break; // IG Follower Count Comparasion
@@ -2922,7 +2912,8 @@ export class ChartsCallsService {
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
             hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
+            //colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
+            colors: ['#256b15', '#55b5ed'],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 2},
             bar: {groupWidth: '45%'},

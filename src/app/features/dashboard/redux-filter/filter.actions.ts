@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../shared/store/model';
-import {DashboardData, IntervalDate} from './filter.model';
+import {DashboardData, IntervalDate, IntervalDateComparasion} from './filter.model';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
@@ -90,6 +90,13 @@ export class FilterActions {
     this.Redux.dispatch({type: FILTER_BY_DATA, filteredDashboard: filteredDashboard});
   }
 
+  /*
+  filterDataComparasion(dateInterval: IntervalDateComparasion) {
+    const filteredDashboard = this.filterByDateInterval(dateInterval);
+    this.Redux.dispatch({type: FILTER_BY_DATA, filteredDashboard: filteredDashboard});
+  }
+  */
+
   updateChart(chart: DashboardCharts) {
     const index = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
     const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
@@ -117,7 +124,6 @@ export class FilterActions {
   }
 
  */
-
 
   updateChartPosition(arrayChart$: DashboardCharts, type: number) {
     const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === type);
