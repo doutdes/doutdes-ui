@@ -76,10 +76,24 @@ export class CardComponent implements OnInit {
 
   datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
   dateChoice: String = null;
+  /*
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.thirty);
   maxDate2: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate2: Date = subDays(this.maxDate2, this.FILTER_DAYS.thirty);
+   */
+  /*
+  maxDate: Date = this.checkMinMaxDate(1, 0);
+  minDate: Date = this.checkMinMaxDate(1, 1);
+  maxDate2: Date = this.checkMinMaxDate(2, 0);
+  minDate2: Date = this.checkMinMaxDate(2, 1);
+   */
+
+  maxDate: Date;
+  minDate: Date;
+  maxDate2: Date;
+  minDate2: Date;
+
   bsRangeValue: Date[];
   bsRangeValue2: Date[];
   //set: Date[];
@@ -412,10 +426,25 @@ export class CardComponent implements OnInit {
 
   onValueChange(value, check: string) {
 
+    console.log(this.checkMinMaxDate(1,0));
+
+    this.maxDate = subDays(new Date(), this.FILTER_DAYS.yesterday);
+    this.minDate =  subDays(this.maxDate, this.FILTER_DAYS.thirty);
+    this.maxDate2 = subDays(new Date(), this.FILTER_DAYS.yesterday);
+    this.minDate2 = subDays(this.maxDate2, this.FILTER_DAYS.thirty);
+
+    /*
+    this.maxDate = this.checkMinMaxDate(1, 0);
+    this.minDate = this.checkMinMaxDate(1, 1);
+    this.maxDate2= this.checkMinMaxDate(2, 0);
+    this.minDate2 = this.checkMinMaxDate(2, 1);
+    */
+
     const intervalDate: IntervalDate = {
       first: this.checkBsRangeValue(1, this.bsRangeValue, this.bsRangeValue2),
       last: this.checkBsRangeValue(2, this.bsRangeValue, this.bsRangeValue2),
     };
+
 
   /*
     if (value && this.datePickerEnabled) {
@@ -449,7 +478,6 @@ export class CardComponent implements OnInit {
     }
 
     if (!value && check == 'Edit') {
-
       this.GEService.ComparisonIntervals.next(this.intervalFinal);
       this.closeModal();
       this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
@@ -478,6 +506,37 @@ export class CardComponent implements OnInit {
       if(parseDate(bs1[1]) < parseDate(bs2[1])) return bs2[1];
       if(parseDate(bs1[1]) == parseDate(bs2[1])) return bs2[1];
     }
+  }
+
+  checkMinMaxDate (n_Interval, type_Interval) {
+
+    this.GEService.checkFilterDateIGComparasion.subscribe(data => {
+      //Se viene impostato il filtro di "Ultimi 7 giorni"
+      if (data == 7) {
+        //Intervallo 1
+        if (n_Interval == 1) {
+          if(type_Interval == 0) return subDays(new Date(), this.FILTER_DAYS.yesterday); //Max
+          if(type_Interval == 1) return subDays(this.maxDate, this.FILTER_DAYS.seven); //Min
+        } else {
+          //Intervallo 2
+          if (type_Interval == 0) return subDays(new Date(), this.FILTER_DAYS.yesterday); //Max
+          if (type_Interval == 1) return subDays(this.maxDate, this.FILTER_DAYS.seven); //Min
+        }
+      } else {
+        //Se il filtro è impostato ad "Ultimi 30 giorni"
+        //Intervallo 1
+        if (n_Interval == 1) {
+          if(type_Interval == 0) return subDays(new Date(), this.FILTER_DAYS.yesterday); //Max
+          if(type_Interval == 1) return subDays(this.maxDate, this.FILTER_DAYS.thirty); //Min
+        } else {
+          //Intervallo 2
+          if (type_Interval == 0) return subDays(new Date(), this.FILTER_DAYS.yesterday); //Max
+          if (type_Interval == 1) return subDays(this.maxDate2, this.FILTER_DAYS.thirty); //Min
+        }
+      }
+
+    }); //End
+
   }
 
 }

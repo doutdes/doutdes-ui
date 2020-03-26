@@ -31,6 +31,7 @@ import {UserService} from './user.service';
 import {HttpClient} from '@angular/common/http';
 import {forEach} from '@angular/router/src/utils/collection';
 import {dayOfYearFromWeeks} from 'ngx-bootstrap/chronos/units/week-calendar-utils';
+import {error} from 'util';
 
 
 @Injectable()
@@ -954,6 +955,8 @@ export class ChartsCallsService {
       case IG_CHART.COMPARISON_COLONNA:
         header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
 
+        this.GEservice.checkFilterDateIGComparasion.next(data.length);
+
         this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
           // Sezione nel caso di modifica intervalli
           if (intervalDateComparison != null) {
@@ -983,6 +986,9 @@ export class ChartsCallsService {
           chartData = [];
           chartData.push([this.formatInterval(intervalDateComparison, 1), j, 0]);
           chartData.push([this.formatInterval(intervalDateComparison, 2), 0, k]);
+        }, error => {
+          console.log(error);
+          console.error(error);
         });
 
         break; // IG Follower Count Comparasion
