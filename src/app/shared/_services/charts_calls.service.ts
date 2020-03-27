@@ -955,9 +955,13 @@ export class ChartsCallsService {
       case IG_CHART.COMPARISON_COLONNA:
         header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
 
+        // Per gestire i filtri degli intervalli
         this.GEservice.checkFilterDateIGComparasion.next(data.length);
 
         this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
+
+          //console.log(intervalDateComparison);
+
           // Sezione nel caso di modifica intervalli
           if (intervalDateComparison != null) {
             for (let i = 0; i < data.length; i++) {
@@ -973,13 +977,29 @@ export class ChartsCallsService {
           } else {
             // Sezione nel caso di non modifica intervalli/valore di default
             for (let i = 0; i < data.length; i++) {
-              //Controllo per Colonna 1
-              if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-8]['end_time']))) {
-                j += data[i]['value'];
-              }
-              //Controllo per colonna 2
+
+              // Se il filtro è impostato a "Ultimi 30 giorni"
+              if (data.length == 30) {
+                //Controllo per Colonna 1
+                if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-8]['end_time']))) {
+                  j += data[i]['value'];
+                }
+                //Controllo per colonna 2
                 if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-8]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
-                k += data[i]['value'];
+                  k += data[i]['value'];
+                }
+              }
+
+              // Se il filtro è impostato a "Ultimi 7 giorni"
+              if (data.length == 7) {
+                //Controllo per Colonna 1
+                if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-7]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-5]['end_time']))) {
+                  j += data[i]['value'];
+                }
+                //Controllo per colonna 2
+                if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-3]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+                  k += data[i]['value'];
+                }
               }
             }
           }

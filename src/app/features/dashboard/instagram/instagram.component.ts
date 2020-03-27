@@ -381,6 +381,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
         this.dateChoice = 'Personalizzato';
       }
+
+      //console.log(dateInterval);
     }
   }
 

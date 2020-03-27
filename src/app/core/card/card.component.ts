@@ -76,32 +76,25 @@ export class CardComponent implements OnInit {
 
   datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
   dateChoice: String = null;
-  /*
-  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate: Date = subDays(this.maxDate, this.FILTER_DAYS.thirty);
-  maxDate2: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate2: Date = subDays(this.maxDate2, this.FILTER_DAYS.thirty);
-   */
-  /*
-  maxDate: Date = this.checkMinMaxDate(1, 0);
-  minDate: Date = this.checkMinMaxDate(1, 1);
-  maxDate2: Date = this.checkMinMaxDate(2, 0);
-  minDate2: Date = this.checkMinMaxDate(2, 1);
-   */
 
-  maxDate: Date;
-  minDate: Date;
-  maxDate2: Date;
-  minDate2: Date;
+  // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
+  maxDate_30: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+  minDate_30: Date = subDays(this.maxDate_30, this.FILTER_DAYS.thirty);
+  maxDate2_30: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+  minDate2_30: Date = subDays(this.maxDate2_30, this.FILTER_DAYS.thirty);
+
+  // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
+  maxDate_7: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+  minDate_7: Date = subDays(this.maxDate_7, this.FILTER_DAYS.seven);
+  maxDate2_7: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+  minDate2_7: Date = subDays(this.maxDate2_7, this.FILTER_DAYS.seven);
 
   bsRangeValue: Date[];
   bsRangeValue2: Date[];
-  //set: Date[];
-  set1 = [];
-  set2 = [];
   intervalFinal = [];
   firstDateRange: Date;
   lastDateRange: Date;
+  check_int: number;
 
   metrics: Array<Chart>;
   addMetricForm: FormGroup;
@@ -138,14 +131,8 @@ export class CardComponent implements OnInit {
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });
 
-    this.firstDateRange = this.minDate;
-    this.lastDateRange = this.maxDate;
-    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
-    this.firstDateRange = this.minDate2;
-    this.lastDateRange = this.maxDate2;
-    this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
-
+    this.checkMinMaxDate();
   }
 
   setColorStyle = (): void => {
@@ -426,27 +413,13 @@ export class CardComponent implements OnInit {
 
   onValueChange(value, check: string) {
 
-    console.log(this.checkMinMaxDate(1,0));
-
-    this.maxDate = subDays(new Date(), this.FILTER_DAYS.yesterday);
-    this.minDate =  subDays(this.maxDate, this.FILTER_DAYS.thirty);
-    this.maxDate2 = subDays(new Date(), this.FILTER_DAYS.yesterday);
-    this.minDate2 = subDays(this.maxDate2, this.FILTER_DAYS.thirty);
-
-    /*
-    this.maxDate = this.checkMinMaxDate(1, 0);
-    this.minDate = this.checkMinMaxDate(1, 1);
-    this.maxDate2= this.checkMinMaxDate(2, 0);
-    this.minDate2 = this.checkMinMaxDate(2, 1);
-    */
+    //this.checkMinMaxDate();
 
     const intervalDate: IntervalDate = {
       first: this.checkBsRangeValue(1, this.bsRangeValue, this.bsRangeValue2),
       last: this.checkBsRangeValue(2, this.bsRangeValue, this.bsRangeValue2),
     };
 
-
-  /*
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
@@ -462,9 +435,7 @@ export class CardComponent implements OnInit {
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
         this.dateChoice = 'Personalizzato';
       }
-
     }
-   */
 
     if (value && (check ==  'Interval1' || check == 'Interval2')) {
 
@@ -508,31 +479,35 @@ export class CardComponent implements OnInit {
     }
   }
 
-  checkMinMaxDate (n_Interval, type_Interval) {
+  checkMinMaxDate (): any {
+    let tmp_data_1 = 0;
 
     this.GEService.checkFilterDateIGComparasion.subscribe(data => {
-      //Se viene impostato il filtro di "Ultimi 7 giorni"
+
+      //console.log(data);
+
+      if (data == 30) {
+        this.firstDateRange = this.minDate_30;
+        this.lastDateRange = this.maxDate_30;
+        this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+        this.firstDateRange = this.minDate2_30;
+        this.lastDateRange = this.maxDate2_30;
+        this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
+
+        this.check_int = 30;
+      }
+
       if (data == 7) {
-        //Intervallo 1
-        if (n_Interval == 1) {
-          if(type_Interval == 0) return subDays(new Date(), this.FILTER_DAYS.yesterday); //Max
-          if(type_Interval == 1) return subDays(this.maxDate, this.FILTER_DAYS.seven); //Min
-        } else {
-          //Intervallo 2
-          if (type_Interval == 0) return subDays(new Date(), this.FILTER_DAYS.yesterday); //Max
-          if (type_Interval == 1) return subDays(this.maxDate, this.FILTER_DAYS.seven); //Min
-        }
-      } else {
-        //Se il filtro è impostato ad "Ultimi 30 giorni"
-        //Intervallo 1
-        if (n_Interval == 1) {
-          if(type_Interval == 0) return subDays(new Date(), this.FILTER_DAYS.yesterday); //Max
-          if(type_Interval == 1) return subDays(this.maxDate, this.FILTER_DAYS.thirty); //Min
-        } else {
-          //Intervallo 2
-          if (type_Interval == 0) return subDays(new Date(), this.FILTER_DAYS.yesterday); //Max
-          if (type_Interval == 1) return subDays(this.maxDate2, this.FILTER_DAYS.thirty); //Min
-        }
+        this.firstDateRange = this.minDate_7;
+        this.lastDateRange = this.maxDate_7;
+        this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+        this.firstDateRange = this.minDate2_7;
+        this.lastDateRange = this.maxDate2_7;
+        this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
+
+        this.check_int = 7;
       }
 
     }); //End
