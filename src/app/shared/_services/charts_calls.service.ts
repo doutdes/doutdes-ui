@@ -1001,11 +1001,48 @@ export class ChartsCallsService {
                   k += data[i]['value'];
                 }
               }
+
+              // Se il filtro è impostato a "Personalizzato"
+              if (data.length != 7 && data.length != 30) {
+
+                // Se imposta la data di lunghezza 1 (es. 09/03 - 09/03)
+                if (data.length == 1) {
+                  j = data[0]['value'];  //Controllo per Colonna 1
+                  k = data[0]['value']; //Controllo per colonna 2
+                }
+
+                // Se imposta la data di lunghezza 2 (es. 09/03 - 10/03)
+                if (data.length == 2) {
+                  j = data[0]['value'];  //Controllo per Colonna 1
+                  k = data[1]['value'];  //Controllo per colonna 2
+                }
+
+                // Se imposta la data di lunghezza 3 (es. 09/03 - 11/03)
+                if (data.length == 3) {
+                  j = data[0]['value'];  //Controllo per Colonna 1
+                  k = data[2]['value'];  //Controllo per colonna 2
+                }
+
+                // Se imposta la data di lunghezza >= 4 (es. 09/03 - 12/03)
+                if (data.length >= 4) {
+                  //Controllo per Colonna 1
+                  if ((parseDate(data[i]['end_time']) >= parseDate(data[0]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[1]['end_time']))) {
+                    j += data[i]['value'];
+                  }
+                  //Controllo per colonna 2
+                  if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-2]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+                    k += data[i]['value'];
+                  }
+                }
+
+              }
+
             }
           }
           chartData = [];
-          chartData.push([this.formatInterval(intervalDateComparison, 1), j, 0]);
-          chartData.push([this.formatInterval(intervalDateComparison, 2), 0, k]);
+          console.log(j, k);
+          chartData.push([this.formatInterval(intervalDateComparison, 1, data), j, 0]);
+          chartData.push([this.formatInterval(intervalDateComparison, 2, data), 0, k]);
         }, error => {
           console.log(error);
           console.error(error);
@@ -2938,11 +2975,10 @@ export class ChartsCallsService {
             height: 310,
             vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
             hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-            //colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
-            colors: ['#256b15', '#55b5ed'],
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 2},
-            bar: {groupWidth: '45%'},
+            bar: {groupWidth: '40%'},
             isStacked: true,
           }
         };
@@ -5021,11 +5057,44 @@ export class ChartsCallsService {
     return chartData;
   }
 
-  public formatInterval (intervalDate, n: number) {
+  public formatInterval (intervalDate, n: number, data) {
 
     if (!intervalDate) {
-      if (n == 1) return '20/02 - 22/02';
-      if (n == 2) return '09/02 - 12/03';
+      if (data.length == 30) {
+        if (n == 1) return parseDate(data[data.length-15]['end_time']).getDate() + '/' +  parseDate(data[data.length-15]['end_time']).getMonth() + ' - ' + parseDate(data[data.length-8]['end_time']).getDate() + '/' +  parseDate(data[data.length-8]['end_time']).getMonth();
+        if (n == 2) return parseDate(data[data.length-8]['end_time']).getDate() + '/' +  parseDate(data[data.length-8]['end_time']).getMonth() + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' +  parseDate(data[data.length-1]['end_time']).getMonth();
+      } else {
+        if (data.length == 7) {
+          if (n == 1) return parseDate(data[data.length-7]['end_time']).getDate() + '/' +  parseDate(data[data.length-7]['end_time']).getMonth() + ' - ' + parseDate(data[data.length-5]['end_time']).getDate() + '/' +  parseDate(data[data.length-5]['end_time']).getMonth();
+          if (n == 2) return parseDate(data[data.length-3]['end_time']).getDate() + '/' +  parseDate(data[data.length-3]['end_time']).getMonth() + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' +  parseDate(data[data.length-1]['end_time']).getMonth();
+        } else {
+
+          // Se imposta la data di lunghezza 1 (es. 09/03 - 09/03)
+          if (data.length == 1) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' +  parseDate(data[0]['end_time']).getMonth() + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' +  parseDate(data[0]['end_time']).getMonth();
+            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' +  parseDate(data[0]['end_time']).getMonth() + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' +  parseDate(data[0]['end_time']).getMonth();
+          }
+
+          // Se imposta la data di lunghezza 2 (es. 09/03 - 10/03)
+          if (data.length == 2) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' +  parseDate(data[0]['end_time']).getMonth() + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' +  parseDate(data[1]['end_time']).getMonth();
+            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' +  parseDate(data[0]['end_time']).getMonth() + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' +  parseDate(data[1]['end_time']).getMonth();
+          }
+
+          // Se imposta la data di lunghezza 3 (es. 09/03 - 11/03)
+          if (data.length == 3) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' +  parseDate(data[0]['end_time']).getMonth() + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' +  parseDate(data[0]['end_time']).getMonth();
+            if (n == 2) return parseDate(data[2]['end_time']).getDate() + '/' +  parseDate(data[2]['end_time']).getMonth() + ' - ' + parseDate(data[2]['end_time']).getDate() + '/' +  parseDate(data[2]['end_time']).getMonth();
+          }
+
+          // Se imposta la data di lunghezza >= 4 (es. 09/03 - 12/03)
+          if (data.length >= 4) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' +  parseDate(data[0]['end_time']).getMonth() + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' +  parseDate(data[1]['end_time']).getMonth();
+            if (n == 2) return parseDate(data[data.length-2]['end_time']).getDate() + '/' +  parseDate(data[data.length-2]['end_time']).getMonth() + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' +  parseDate(data[data.length-1]['end_time']).getMonth();;
+          }
+
+        }
+      }
     } else {
       /*  DIFFERENZE
       Il primo If commentato restituisce il giorno nel formato '0d'; es: 04/12

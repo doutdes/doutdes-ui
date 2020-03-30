@@ -80,14 +80,10 @@ export class CardComponent implements OnInit {
   // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
   maxDate_30: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate_30: Date = subDays(this.maxDate_30, this.FILTER_DAYS.thirty);
-  maxDate2_30: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate2_30: Date = subDays(this.maxDate2_30, this.FILTER_DAYS.thirty);
 
   // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
   maxDate_7: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate_7: Date = subDays(this.maxDate_7, this.FILTER_DAYS.seven);
-  maxDate2_7: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate2_7: Date = subDays(this.maxDate2_7, this.FILTER_DAYS.seven);
 
   bsRangeValue: Date[];
   bsRangeValue2: Date[];
@@ -413,13 +409,12 @@ export class CardComponent implements OnInit {
 
   onValueChange(value, check: string) {
 
-    //this.checkMinMaxDate();
-
     const intervalDate: IntervalDate = {
       first: this.checkBsRangeValue(1, this.bsRangeValue, this.bsRangeValue2),
       last: this.checkBsRangeValue(2, this.bsRangeValue, this.bsRangeValue2),
     };
 
+    /*
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {
@@ -436,6 +431,7 @@ export class CardComponent implements OnInit {
         this.dateChoice = 'Personalizzato';
       }
     }
+    */
 
     if (value && (check ==  'Interval1' || check == 'Interval2')) {
 
@@ -484,30 +480,44 @@ export class CardComponent implements OnInit {
 
     this.GEService.checkFilterDateIGComparasion.subscribe(data => {
 
-      //console.log(data);
-
       if (data == 30) {
         this.firstDateRange = this.minDate_30;
         this.lastDateRange = this.maxDate_30;
         this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
-        this.firstDateRange = this.minDate2_30;
-        this.lastDateRange = this.maxDate2_30;
+        this.firstDateRange = this.minDate_30;
+        this.lastDateRange = this.maxDate_30;
         this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
 
         this.check_int = 30;
       }
 
       if (data == 7) {
-        this.firstDateRange = this.minDate_7;
-        this.lastDateRange = this.maxDate_7;
-        this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+          this.firstDateRange = this.minDate_7;
+          this.lastDateRange = this.maxDate_7;
+          this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
-        this.firstDateRange = this.minDate2_7;
-        this.lastDateRange = this.maxDate2_7;
-        this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
+          this.firstDateRange = this.minDate_7;
+          this.lastDateRange = this.maxDate_7;
+          this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
 
-        this.check_int = 7;
+          this.check_int = 7;
+      }
+
+      if (data[1] != 7 && data[1] != 30) {
+        this.GEService.checkInterval.subscribe(value => {
+          if (value) {
+            this.firstDateRange = value['first'];
+            this.lastDateRange = value['last'];
+            this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+            this.firstDateRange = value['first'];
+            this.lastDateRange = value['last'];
+            this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
+
+            this.check_int = 0;
+          }
+        });
       }
 
     }); //End

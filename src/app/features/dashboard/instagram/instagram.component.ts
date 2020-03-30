@@ -382,6 +382,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         this.dateChoice = 'Personalizzato';
       }
 
+      this.GEService.checkInterval.next(dateInterval);
+
       //console.log(dateInterval);
     }
   }

@@ -123,6 +123,7 @@ export class GlobalEventsManagerService {
 
   public ComparisonIntervals: BehaviorSubject<any> = new BehaviorSubject(null); //ComparasionIntervals
   public checkFilterDateIGComparasion: BehaviorSubject<number> = new BehaviorSubject<number>(null); //checkFilterDateIGComparasion
+  public checkInterval: BehaviorSubject<any> = new BehaviorSubject<any>(null); //CheckIntervallPersonalizzato
 
   // TODO delete this subjects
   public removeFromDashboard: BehaviorSubject<[number, number]> = new BehaviorSubject<[number, number]>([0, 0]);
