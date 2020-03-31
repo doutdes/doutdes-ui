@@ -18,6 +18,7 @@ import {UserService} from '../../shared/_services/user.service';
 import {User} from '../../shared/_models/User';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {subDays} from "date-fns";
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-card',
@@ -111,8 +112,21 @@ export class CardComponent implements OnInit {
     private toastr: ToastrService,
     private filterActions: FilterActions,
     public translate: TranslateService,
+    private userService: UserService,
+    private http: HttpClient
   ) {
     this.GEService.draggable.subscribe(value => this.drag = value);
+
+    this.userService.get().subscribe(value => {
+      this.user = value;
+
+      this.http.get('./assets/langSetting/langToastr/' + this.conversionSetDefaultLang() + '.json')
+        .subscribe(file => {
+          this.GEService.langObj.next(file);
+        }, error => {
+          console.error(error);
+        });
+    });
 
     this.edit_2 = false;
     this.edit_1 = false;
@@ -419,7 +433,6 @@ export class CardComponent implements OnInit {
       last: this.checkBsRangeValue(2, this.bsRangeValue, this.bsRangeValue2),
     };
 
-
       try {
 
         if (check == 'Interval1' && value) {
@@ -436,7 +449,10 @@ export class CardComponent implements OnInit {
         console.error(e);
         this.edit_1 = false;
         this.edit_2 = false;
-        this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
+
+        //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
+          this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
       }
 
 
@@ -446,13 +462,21 @@ export class CardComponent implements OnInit {
           this.GEService.ComparisonIntervals.next(this.intervalFinal);
           this.closeModal();
           this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
-          this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
+
+          //this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
+          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_INTERVAL'));
+
           this.edit_1 = false;
           this.edit_2 = false;
         } catch (e) {
           console.log(e);
           console.error(e);
-          this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
+
+          //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
+          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
+
           this.edit_1 = false;
           this.edit_2 = false;
         }
@@ -463,7 +487,7 @@ export class CardComponent implements OnInit {
       }
     }
 
-  }
+   }
 
   checkCard(chart) {
 
@@ -535,6 +559,22 @@ export class CardComponent implements OnInit {
 
     }); //End
 
+  }
+
+  conversionSetDefaultLang() {
+
+    switch (this.user.lang) {
+      case 'it' :
+        this.value = 'Italiano';
+        break;
+      case 'en' :
+        this.value = 'English';
+        break;
+      default:
+        this.value = 'Italiano';
+    }
+
+    return this.value;
   }
 
 }

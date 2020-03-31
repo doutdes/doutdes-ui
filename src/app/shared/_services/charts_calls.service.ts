@@ -960,8 +960,6 @@ export class ChartsCallsService {
 
         this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
 
-          //console.log(intervalDateComparison);
-
           // Sezione nel caso di modifica intervalli
           if (intervalDateComparison != null) {
             // Se vengono impostate le stesse date (es. Intervallo 1: 01/03 - 01/03, Intervallo 2: 01/03 - 01/03)
@@ -5108,6 +5106,7 @@ export class ChartsCallsService {
       if (n == 2) return parseDate(intervalDate[1][0]).getDate() + '/' + (parseDate(intervalDate[1][0]).getMonth()+1) + ' - ' + parseDate(intervalDate[1][1]).getDate() + '/' + (parseDate(intervalDate[1][1]).getMonth()+1);
         }
     }
+
 
 }
 
