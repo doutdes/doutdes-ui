@@ -91,6 +91,8 @@ export class CardComponent implements OnInit {
   firstDateRange: Date;
   lastDateRange: Date;
   check_int: number;
+  edit_1: boolean;
+  edit_2: boolean;
 
   metrics: Array<Chart>;
   addMetricForm: FormGroup;
@@ -111,6 +113,9 @@ export class CardComponent implements OnInit {
     public translate: TranslateService,
   ) {
     this.GEService.draggable.subscribe(value => this.drag = value);
+
+    this.edit_2 = false;
+    this.edit_1 = false;
   }
 
   ngOnInit() {
@@ -414,40 +419,48 @@ export class CardComponent implements OnInit {
       last: this.checkBsRangeValue(2, this.bsRangeValue, this.bsRangeValue2),
     };
 
-    /*
-    if (value && this.datePickerEnabled) {
 
-      const dateInterval: IntervalDate = {
-        first: new Date(value[0].setHours(0, 0, 0, 0)),
-        last: new Date(value[1].setHours(23, 59, 59))
-      };
+      try {
 
-      this.filterActions.filterData(dateInterval);
+        if (check == 'Interval1' && value) {
+          this.intervalFinal[0] = [value[0], value[1]];
+          this.edit_1 = true;
+        }
+        if (check == 'Interval2' && value) {
+          this.intervalFinal[1] = [value[0], value[1]];
+          this.edit_2 = true;
+        }
 
-      let diff = Math.abs(dateInterval.first.getTime() - dateInterval.last.getTime());
-      let diffDays = Math.ceil(diff / (1000 * 3600 * 24)) - 1;
-
-      if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
-        this.dateChoice = 'Personalizzato';
       }
-    }
-    */
-
-    if (value && (check ==  'Interval1' || check == 'Interval2')) {
-
-      if (check == 'Interval1') {
-        this.intervalFinal[0] = [value[0], value[1]];
+      catch (e) {
+        console.error(e);
+        this.edit_1 = false;
+        this.edit_2 = false;
+        this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
       }
 
-      if (check == 'Interval2') {
-        this.intervalFinal[1] = [value[0], value[1]];
-      }
-    }
 
     if (!value && check == 'Edit') {
-      this.GEService.ComparisonIntervals.next(this.intervalFinal);
-      this.closeModal();
-      this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+      if (this.edit_1 && this.edit_2) {
+        try {
+          this.GEService.ComparisonIntervals.next(this.intervalFinal);
+          this.closeModal();
+          this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+          this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
+          this.edit_1 = false;
+          this.edit_2 = false;
+        } catch (e) {
+          console.log(e);
+          console.error(e);
+          this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
+          this.edit_1 = false;
+          this.edit_2 = false;
+        }
+      } else {
+        console.log('Errore');
+        this.edit_1 = false;
+        this.edit_2 = false;
+      }
     }
 
   }

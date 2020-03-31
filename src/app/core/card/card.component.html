@@ -235,7 +235,7 @@
                  [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
                  (bsValueChange)="onValueChange($event, 'Interval2')"
                  bsDaterangepicker>
-          <!-- Se il filtro è impostato ad "Ultimi 7 giorni" -->
+          <!-- Se il filtro è impostato ad "Personalizzato" -->
           <input *ngIf="this.check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
                  [(ngModel)]="bsRangeValue2"
                  [minDate]="firstDateRange"
