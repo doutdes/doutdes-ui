@@ -962,9 +962,6 @@ export class ChartsCallsService {
 
           // Sezione nel caso di modifica intervalli
           if (intervalDateComparison != null) {
-            // Se vengono impostate le stesse date (es. Intervallo 1: 01/03 - 01/03, Intervallo 2: 01/03 - 01/03)
-            //if (intervalDateComparison[0])
-
             for (let i = 0; i < data.length; i++) {
               //Controllo per colonna 1
               if ((parseDate(data[i]['end_time']) >= intervalDateComparison[0][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[0][1]) {
@@ -981,6 +978,7 @@ export class ChartsCallsService {
 
               // Se il filtro è impostato a "Ultimi 30 giorni"
               if (data.length == 30) {
+                console.log('Ok');
                 //Controllo per Colonna 1
                 if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-8]['end_time']))) {
                   j += data[i]['value'];
@@ -2118,7 +2116,6 @@ export class ChartsCallsService {
             pieSliceText: 'percentage',
             pieSliceTextStyle: {fontSize: 12, color: 'white'},
             colors: [FB_PALETTE.BLUE.C3, FB_PALETTE.BLUE.C8, FB_PALETTE.BLUE.C6, FB_PALETTE.TURQUOISE.C12, FB_PALETTE.TURQUOISE.C4, FB_PALETTE.TURQUOISE.C9, FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9],
-
 
             areaOpacity: 0.2
           }
@@ -4714,7 +4711,9 @@ export class ChartsCallsService {
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
         // console.log(intervalDate.last);
+        //console.log(data);
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
+
         value = data[data.length - 1].value;
 
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years

@@ -209,7 +209,6 @@ export class CardComponent implements OnInit {
     this.loading = true;
 
     this.updateChart(this.dashChart.title, chart);
-    console.log('ok');
   }
 
   chartResizer(): void {
@@ -439,6 +438,7 @@ export class CardComponent implements OnInit {
           this.intervalFinal[0] = [value[0], value[1]];
           this.edit_1 = true;
         }
+
         if (check == 'Interval2' && value) {
           this.intervalFinal[1] = [value[0], value[1]];
           this.edit_2 = true;
@@ -461,17 +461,18 @@ export class CardComponent implements OnInit {
         try {
           this.GEService.ComparisonIntervals.next(this.intervalFinal);
           this.closeModal();
+
           this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
 
           //this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
-          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
+          this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
             this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_INTERVAL'));
 
           this.edit_1 = false;
           this.edit_2 = false;
         } catch (e) {
           console.log(e);
-          console.error(e);
+          //console.error(e);
 
           //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
           this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
