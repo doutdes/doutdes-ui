@@ -542,7 +542,7 @@ export class CardComponent implements OnInit {
           this.check_int = 7;
       }
 
-      if (data[1] != 7 && data[1] != 30) {
+      if (data != 7 && data != 30) {
         this.GEService.checkInterval.subscribe(value => {
           if (value) {
             this.firstDateRange = value['first'];
