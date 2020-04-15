@@ -292,7 +292,7 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
       await this.loadMiniCards();
       await this.loadDashboard();
       this.GEService.loadingScreen.next(false);
-
+      this.userService.logger(0, this.user).subscribe();
     } catch (e) {
       console.error('Error on ngOnInit of Custom Dashboard', e);
       this.toastr.error('È stato riscontrato un errore durante il carimento della dashboard. Per favore, riprova oppure contatta il supporto.', 'Errore nel carimento della dashboard');

@@ -13,6 +13,7 @@ export const IG_CHART = { // ID charts in the database
   INFO_CLICKS_COL: 102,
   INFO_CLICKS_TORTA: 103,
   COMPARISON_COLONNA: 108,
+  MEDIA_LIKE_DATA: 109
 };
 
 export const IG_PALETTE = {
@@ -62,8 +63,6 @@ export const IG_PALETTE = {
     C11: '#ffcee2',
     C12: '#ffe7f0',
   }
-
-
 };
 
 export interface IgPage {

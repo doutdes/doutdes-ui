@@ -231,6 +231,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
       await this.loadDashboard();
 
+      this.userService.logger(2, this.user).subscribe();
+
     } catch (e) {
       console.error('Error on ngOnInit of Google Analytics', e);
     }

@@ -38,4 +38,12 @@ export class UserService {
       .set('Content-type', 'application/json')
       .set('Authorization', `Bearer ${this.storeService.getToken()}`);
   }
+
+  // function to signal, in mongodb,the last access of a user on a dashboard
+  logger(type, user) {
+    const headers = this.getAuthorization();
+
+    return this.http.post(environment.protocol + environment.host + ':' + environment.port + '/mongo/',
+      {user: user.id, username: user.username, type: type}, {headers});
+  }
 }

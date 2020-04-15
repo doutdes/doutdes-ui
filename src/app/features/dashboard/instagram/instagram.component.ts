@@ -176,18 +176,17 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
+
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.IG, this.miniCards[i].measure, intervalDate);
 
         empty = empty || !results;
-
         this.getNameMinicard(i);
-        this.miniCards[i].value = results['value'];
+        this.miniCards[i].value =  results['value'];
         this.miniCards[i].progress = 100 + '%';
         //this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });
-
     return empty;
   }
 
@@ -573,6 +572,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
       this.addBreadcrumb();
       await this.loadDashboard();
+      await this.userService.logger(3, this.user).subscribe();
+
 
     } catch (e) {
       console.error('Error on ngOnInit of Instagram', e);

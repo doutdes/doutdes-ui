@@ -499,7 +499,7 @@ export class FeatureDashboardYoutubeAnalyticsComponent implements OnInit, OnDest
       }
 
       await this.loadDashboard();
-
+      this.userService.logger(4, this.user).subscribe();
     } catch (e) {
       console.error('Error on ngOnInit of Youtube Analytics', e);
     }
