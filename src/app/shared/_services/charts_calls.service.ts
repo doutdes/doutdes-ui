@@ -2069,6 +2069,31 @@ export class ChartsCallsService {
         formattedData = this.areaChart( data,
           {options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
         break;
+      case IG_CHART.COMPARISON_COLONNA:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1, 2],
+            type: 'NumberFormat',
+            options: {
+              pattern: '###.##'
+            }
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 30, right: 0, height: 270, top: 20},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+            hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
+            areaOpacity: 0.4,
+            legend: {position: 'top', maxLines: 2},
+            bar: {groupWidth: '40%'},
+            isStacked: true,
+          }
+        };
+        break; // IG Follower Count Comparasion
 
       case YT_CHART.VIEWS:
         formattedData = this.areaChart( data,
@@ -3552,10 +3577,6 @@ export class ChartsCallsService {
         }
     }
 
-
-}
-
-
   private areaChart(data, format?: object) {
     let formattedData;
     formattedData = {
@@ -3757,7 +3778,6 @@ export class ChartsCallsService {
 
     return formattedData;
   }
-
 
 }
 
