@@ -490,7 +490,7 @@ export class ChartsCallsService {
         });
 
         chartData = this.addPaddingRows(chartData);
-        break; // Facebook fan per città(elenco)
+        break; // Facebook fan per Age (elenco)
 
 
       case GA_CHART.IMPRESSIONS_DAY:
@@ -800,13 +800,13 @@ export class ChartsCallsService {
           }
           chartData = this.addPaddingRows(chartData);
         }
-        break; // IG Audience City
+        break; // IG Follower City - Elenco
       case IG_CHART.AUD_COUNTRY:
         header = [['Paese', 'Popolarità']];
         if (data.length > 0) {
           chartData = this.changeNameCountry(data);
         }
-        break; // IG Audience Country
+        break; // IG Follower Country
       case IG_CHART.AUD_GENDER_AGE:
         header = [['Età', 'Maschio', 'Femmina']];
 
@@ -839,7 +839,7 @@ export class ChartsCallsService {
           }
           chartData = chartData.sort();
         }
-        break; // IG Audience Gender/Age
+        break; // IG Follower Gender/Age
       case IG_CHART.AUD_LOCALE:
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
         if (data.length > 0) {
@@ -1056,6 +1056,59 @@ export class ChartsCallsService {
         });
 
         break; // IG Follower Count Comparasion
+      case IG_CHART.AUD_CITY_GEOMAPPA:
+        header = [['Città', 'Numero fan']];
+
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [k, data[data.length - 1].value[k]];
+          });
+        }
+
+        chartData = chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = chartData.slice(0, 15);
+        break; // IG Follower City - Geomappa
+      case IG_CHART.AUD_GENDER_AGE_TORTA:
+        header = [['Boh', 'ok']];
+        let avg1 = 0;
+        for (let i = 0; i < data.length; i++) {
+          avg1 += parseFloat(data[i][1]);
+        }
+
+        avg /= data.length;
+
+        chartData.push(['Uomini ', avg1]);
+        chartData.push(['Donne', 100 - avg1]);
+
+        c
+        break; // IG Follower Gender/Age - Torta
+      case IG_CHART.AUD_COUNTRY_ELENCO:
+        header = [['Paese', 'Popolarità']];
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+          });
+          chartData.sort(function (obj1, obj2) {
+            return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+          });
+          const oldValue = data[data.length - 2]['value'];
+          for (const i in chartData) {
+            // tslint:disable-next-line:no-shadowed-variable
+            const diff = oldValue[chartData[i][0]] ?
+              parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]], 10) :
+              1;
+            diff > 0 ?
+              chartData[i] = [chartData[i][0], {v : +1, f: chartData[i][1].toString() }] :
+              diff === 0 ?
+                chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
+                chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
+          }
+          chartData = this.addPaddingRows(chartData);
+        }
+        break; // IG Follower Country - Elenco
 
       case YT_CHART.VIEWS:
         header = [['Data', 'Visualizzazioni']];
@@ -1986,19 +2039,19 @@ export class ChartsCallsService {
         formattedData = this.tableChart(data,
           {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
           }]});
-        break; // IG Audience City
+        break; // IG Follower City
       case IG_CHART.AUD_COUNTRY:
         formattedData = this.geoChart(data, { options : {
             region: 'world',
             ccolors: [IG_PALETTE.AMARANTH.C5],
             colorAxis: {colors: [IG_PALETTE.AMARANTH.C9, IG_PALETTE.AMARANTH.C4]}}} );
-        break; // IG Audience Country
+        break; // IG Follower Country
       case IG_CHART.AUD_GENDER_AGE:
         formattedData = this.columnChart(data,
           {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
             options: { vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
             colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
-        break; // IG Audience Gender/Age
+        break; // IG Follower Gender/Age
       case IG_CHART.AUD_LOCALE:
         formattedData = this.columnChart(data,
           {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
@@ -2007,7 +2060,7 @@ export class ChartsCallsService {
               hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
               colors: [IG_PALETTE.FUCSIA.C5],
               bar: {groupWidth: '50%'}}});
-        break; // IG Audience Locale
+        break; // IG Follower Locale
       case IG_CHART.ONLINE_FOLLOWERS:
         formattedData = this.columnChart(data,
           {formatters: [{columns: [1, 2, 3], type: 'NumberFormat', options: {pattern: '#.##'}}],
@@ -2094,6 +2147,21 @@ export class ChartsCallsService {
           }
         };
         break; // IG Follower Count Comparasion
+      case IG_CHART.AUD_CITY_GEOMAPPA:
+        formattedData = this.geoChart(data, { options : {
+            region: 'IT',
+            displayMode: 'markers',
+            colors: [IG_PALETTE.AMARANTH.C5]}} );
+        break; // IG Follower City - Geomappa
+      case IG_CHART.AUD_GENDER_AGE_TORTA:
+        formattedData = this.pieChart(data,
+          {options: {colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7]}});
+        break; // IG Follower Gender/Age - Torta
+      case IG_CHART.AUD_COUNTRY_ELENCO:
+        formattedData = this.tableChart(data,
+          {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
+            }]});
+        break; // IG Follower Country - Elenco
 
       case YT_CHART.VIEWS:
         formattedData = this.areaChart( data,
