@@ -314,23 +314,25 @@ export class EmptycardComponent implements OnInit {
       if (this.insertChartForm.value.channel === 5) {
         this.metrics = this.metrics.filter(chart => chart.metric === this.insertChartForm.controls['break'].value);
       }
+     if(this.metrics[0])
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].title);
     }
+    if(this.metrics[0]) {
+      // Set the description of the metric
+      this.description = (this.chartRemaining.find(chart =>
+        chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10)
+      )).description;
 
-    // Set the description of the metric
-    this.description = (this.chartRemaining.find(chart =>
-      chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10)
-    )).description;
+      // Update styles
+      this.styles = this.chartRemaining
+        .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10))
+        .map(item => item.format);
 
-    // Update styles
-    this.styles = this.chartRemaining
-      .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10))
-      .map(item => item.format);
+      this.insertChartForm.controls['style'].setValue(this.styles[0]);
+      // Update title
 
-    this.insertChartForm.controls['style'].setValue(this.styles[0]);
-    // Update title
-
-    this.insertChartForm.controls['title'].setValue(this.insertChartForm.value.metric);
+      this.insertChartForm.controls['title'].setValue(this.insertChartForm.value.metric);
+    }
 
   };
 

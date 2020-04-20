@@ -557,8 +557,8 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
 
         this.GEService.addSubscriber(dash_type);
       }
-      await this.loadDashboard();
-
+      await this.loadDashboard()
+      this.userService.logger(1, this.user).subscribe();
     } catch (e) {
       console.error('Error on ngOnInit of Facebook', e);
     }
