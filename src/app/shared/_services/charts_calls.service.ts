@@ -859,14 +859,18 @@ export class ChartsCallsService {
 
       // tslint:disable-next-line:no-switch-case-fall-through
       case IG_CHART.MEDIA_LIKE_DATA:
-        header = [['Data', 'Like', {role: 'tooltip'}]];
+        header = [['Data', 'Like'/*, {role: 'tooltip'}*/]];
 
         let arr = [], len, date1, date2, diff_time;
-
+console.log(data)
         const day_time = 1000 * 3600 * 24;
-
+        data.push(data[data.length - 1])
         for (let i = data.length - 1; i >= 0; i--) {
-          date2 = new Date(data[i].end_time.slice(0, 10));
+          chartData.push([
+            data[i].end_time.slice(0, 10),
+            data[i].value
+          ])
+          /*date2 = new Date(data[i].end_time.slice(0, 10));
           if (i > 0) {
             date1 = new Date(data[i - 1].end_time.slice(0, 10));
             diff_time = Math.abs(date1.getTime() - date2.getTime()) / day_time;
@@ -882,17 +886,17 @@ export class ChartsCallsService {
               elem + acc + ', N. media ' + arr.length + ', Media ' + elem + (acc / len) + ', ' + date2.toString().slice(3, 15)
             ]);
           }
-          acc = 0;
+          acc = 0;*/
 
-          if (diff_time > 1) {
-            for (let j = diff_time - 1; j > 0; j--) {
-              chartData.push([
-                subDays(date1, j).toString().slice(3, 15),
-                acc,
-                elem + 0 + ', N. media ' + 0 + ', Media ' + elem + 0 + ', ' + subDays(date1, j).toString().slice(3, 15)
-              ]);
-            }
-          }
+          // if (diff_time > 1) {
+          //   for (let j = diff_time - 1; j > 0; j--) {
+          //     chartData.push([
+          //       subDays(date1, j).toString().slice(3, 15),
+          //       acc,
+          //       elem + 0 + ', N. media ' + 0 + ', Media ' + elem + 0 + ', ' + subDays(date1, j).toString().slice(3, 15)
+          //     ]);
+          //   }
+          // }
           diff_time = 0;
         }
 
@@ -2757,10 +2761,11 @@ export class ChartsCallsService {
 
       case IG_CHART.MEDIA_LIKE_DATA:
         formattedData = {
-          chartType: 'AreaChart',
+          chartType: 'ColumnChart',
           dataTable: data,
           chartClass: 5,
           options: {
+            isStacked: true,
             chartArea: {left: 0, right: 0, height: 185, top: 0},
             legend: {position: 'none'},
             lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
