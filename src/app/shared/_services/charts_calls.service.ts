@@ -38,6 +38,8 @@ export class ChartsCallsService {
 
   user: User;
   listCountry = new Map();
+  listCountryIng = new Map();
+  listLanguageItalian = new Map();
 
   constructor(
     private facebookService: FacebookService,
@@ -52,6 +54,15 @@ export class ChartsCallsService {
     this.userService.get().subscribe(data => {
       this.user = data;
       if (this.user.lang === 'it') {
+
+        this.http.get('./assets/langSetting/languageTranslate/languageItalian.json').subscribe(file => {
+          if (file) {
+            this.listLanguageItalian = new Map;
+            for (const i in file) {
+              this.listLanguageItalian.set(file[i]['state'], file[i]['lan']);
+            }
+          }
+        });
         this.http.get('./assets/langSetting/CountryTranslate/it/world.json').subscribe(file => {
             if (file) {
               this.listCountry = new Map;
@@ -62,6 +73,17 @@ export class ChartsCallsService {
             }
           }
         );
+        this.http.get('./assets/langSetting/CountryTranslate/en/world.json').subscribe(file => {
+            if (file) {
+              this.listCountryIng = new Map;
+              // tslint:disable-next-line:forin
+              for (const i in file) {
+                this.listCountryIng.set(file[i]['alpha2'].toUpperCase(), file[i]['name']);
+              }
+            }
+          }
+        );
+
       } else {
         this.http.get('./assets/langSetting/CountryTranslate/en/world.json').subscribe(file => {
             if (file) {
@@ -186,10 +208,9 @@ export class ChartsCallsService {
         //   return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         // });
 
-        chartData = this.changeNameCountry(data) //next release
+        chartData = this.changeNameCountry(data); // next release
         chartData = this.addPaddingRows(chartData);
-
-        break; // Facebook Fan City
+        break; // Facebook Fan City in realtà è per conuntry
       case FB_CHART.ENGAGED_USERS:
         header = [['Data', 'Interazioni']];
 
@@ -294,8 +315,8 @@ export class ChartsCallsService {
           }
         }
 
-        let keyReactions = myMap.keys();
-        let valuesReactions = myMap.values();
+        const keyReactions = myMap.keys();
+        const valuesReactions = myMap.values();
 
         for (let i = 0; i < myMap.size; i++) {
           chartData.push([keyReactions.next().value, valuesReactions.next().value]);
@@ -402,11 +423,9 @@ export class ChartsCallsService {
         header = [['Città', 'numero views']];
 
         chartData = this.mapChartData(data);
-
         chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
-
         chartData = this.addPaddingRows(chartData);
         break; // Facebook Vista contenuti per città (elenco)
       case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
@@ -436,6 +455,37 @@ export class ChartsCallsService {
 
         chartData = this.addPaddingRows(chartData);
         break; // Facebook Vista contenuti per Paese (elenco)
+      case FB_CHART.PAGE_FANS_CITY_ELENCO:
+        header = [['Città', 'Numero fan']];
+        chartData = [ ];
+        const tempCity = Object.keys(data[data.length - 1]['value']);
+        if (data.length > 0) {
+          for (const el of tempCity) {
+            chartData.push([el, data[data.length - 1]['value'][el]]);
+          }
+        }
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddingRows(chartData);
+        break; // Facebook fan per città(elenco)
+      case FB_CHART.PAGE_FANS_AGE_ELENCO:
+        header = [['Età', 'Numero fan']];
+        chartData = [ ];
+        const tempAge = Object.keys(data[data.length - 1]['value']);
+        if (data.length > 0) {
+          for (const el of tempAge) {
+            chartData.push([el, data[data.length - 1]['value'][el]]);
+          }
+        }
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = this.addPaddingRows(chartData);
+        break; // Facebook fan per città(elenco)
+
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -628,6 +678,7 @@ export class ChartsCallsService {
 
         break;
 
+        // Instagram chart
       case IG_CHART.AUD_CITY:
         header = [['Città', 'Popolarità']];
         if (data.length > 0) {
@@ -638,21 +689,25 @@ export class ChartsCallsService {
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
-
-          // paddingRows = chartData.length % 11 ? 11 - (chartData.length % 11) : 0;
+          const oldValue = data[data.length - 2]['value'];
+          for (const i in chartData) {
+            // tslint:disable-next-line:no-shadowed-variable
+            const diff = oldValue[chartData[i][0]] ?
+              parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]], 10) :
+            1;
+              diff > 0 ?
+              chartData[i] = [chartData[i][0], {v : +1, f: chartData[i][1].toString() }] :
+              diff === 0 ?
+                chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
+                chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
+          }
           chartData = this.addPaddingRows(chartData);
-
-          // for (let i = 0; i < paddingRows; i++) {
-          //   chartData.push(['', null]);
-          // }
         }
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
         header = [['Paese', 'Popolarità']];
         if (data.length > 0) {
-          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-            return [k, data[data.length - 1].value[k]];
-          });
+          chartData = this.changeNameCountry(data);
         }
         break; // IG Audience Country
       case IG_CHART.AUD_GENDER_AGE:
@@ -691,18 +746,27 @@ export class ChartsCallsService {
       case IG_CHART.AUD_LOCALE:
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
         if (data.length > 0) {
-          const locale = require('locale-string');
 
+
+          const locale = require('locale-string');
           keys = Object.keys(data[data.length - 1]['value']);
+
           // putting a unique entry in chartArray for every existent age range
           for (let i = 0; i < keys.length; i++) {
+            if (this.user.lang === 'it') {
+              // tslint:disable-next-line:no-shadowed-variable
+              const tmp = this.listLanguageItalian.get((keys[i].slice(0, 2)));
+              chartData.push([tmp, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
+            } else {
             chartData.push([locale.parse(keys[i].replace('_', '-')).language, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
+           }
           }
+
           chartData.sort(function (obj1, obj2) {
             // Ascending: first age less than the previous
             return -(obj1[1] - obj2[1]);
           });
-
+         // chartData = this.changeNameCountry(data);
           for (let i = 0; i < chartData.length; i++) {
             const arr = chartData.filter(el2 => chartData[i][0] === el2[0]);
             if (arr.length > 1) {
@@ -805,7 +869,6 @@ export class ChartsCallsService {
         break; // IG composed clicks
       case IG_CHART.FOLLOWER_COUNT:
         header = [['Data', 'Nuovi utenti']];
-
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
@@ -836,7 +899,6 @@ export class ChartsCallsService {
         break;
       case IG_CHART.INFO_CLICKS_COL:
         header = [['Informazione', 'Valore']];
-
         const metrics = ['Email', 'Informazioni sede', 'Telefono', 'Messaggi', 'Sito'];
 
         const arr_acc = [];
@@ -1544,399 +1606,127 @@ console.log(data)
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.BLUE.C1],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C1]}
           }
-        };
-
+          );
         break;  // Fb Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
-        formattedData = {
-          chartType: 'GeoChart',
-          dataTable: data,
-          chartClass: 2,
-          options: {
+        formattedData = this.geoChart(data, { options : {
             region: 'world',
-            colors: [FB_PALETTE.BLUE.C1],
-            colorAxis: {colors: ['#9EDEEF', '#63c2de']},
-            backgroundColor: '#fff',
-            datalessRegionColor: '#eee',
-            defaultColor: '#333',
-            height: '300'
-          }
-        };
+            colors: [FB_PALETTE.BLUE.C1]}} );
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.TURQUOISE.C10],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.TURQUOISE.C10]}
           }
-        };
+        );
 
         break;  // Page Impressions
       case FB_CHART.PAGE_VIEWS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.BLUE.C7],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C7]}
           }
-        };
+        );
+
         break; // Facebook Page Views
       case FB_CHART.FANS_CITY:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 14,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            allowHtml: true,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
-        break; // Facebook Fan City
+        formattedData = this.tableChart(data);
+        break; // Facebook Fan City in realtà per paese
       case FB_CHART.FANS_COUNTRY_PIE:
-
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: [FB_PALETTE.BLUE.C2, FB_PALETTE.BLUE.C3, FB_PALETTE.TURQUOISE.C1, FB_PALETTE.STIFFKEY.C2],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {options: {sliceVisibilityThreshold: 0.05,
+              colors: [FB_PALETTE.BLUE.C2, FB_PALETTE.BLUE.C3, FB_PALETTE.TURQUOISE.C1, FB_PALETTE.STIFFKEY.C2]}});
         break;  // Fan Country Pie
       case FB_CHART.ENGAGED_USERS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.BLUE.C4],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C4]}
           }
-        };
+        );
 
         break;  // Fb Interazioni Totali
       case FB_CHART.PAGE_CONSUMPTION:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.TURQUOISE.C4],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.TURQUOISE.C4]}
           }
-        };
+        );
         break; // Fb Click sui contenuti
       case FB_CHART.PAGE_PLACES_CHECKIN:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.STIFFKEY.C4],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.STIFFKEY.C4]}
           }
-        };
+        );
         break; // Fb Condivisione del luogo
       case FB_CHART.NEGATIVE_FEEDBACK:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.BLUE.C7],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C7]}
           }
-        };
+        );
+
         break; // Fb Feedback negativi
       case FB_CHART.ONLINE_FANS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.TURQUOISE.C7],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.TURQUOISE.C7]}
           }
-        };
-
+        );
         break; // Fb Fan online giornalieri
       case FB_CHART.FANS_ADD:
-
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.STIFFKEY.C7],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.STIFFKEY.C7]}
           }
-        };
+        );
 
         break; // Fb Nuovi fan
       case FB_CHART.FANS_REMOVES:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.BLUE.C10],
-            areaOpacity: 0.1
-          }
-        };
 
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C10]}
+          }
+        );
         break; // Fb Fan cancellati
       case FB_CHART.IMPRESSIONS_PAID:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.TURQUOISE.C10],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.TURQUOISE.C10]}
           }
-        };
+        );
         break;  // Fb Visualizzazioni di inserzioni
       case FB_CHART.VIDEO_VIEWS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.STIFFKEY.C10],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.STIFFKEY.C10]}
           }
-        };
+        );
         break; // Fb Riproduzioni di video
       case FB_CHART.POST_IMPRESSIONS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.BLUE.C8],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C8]}
           }
-        };
+        );
         break; // Fb Post visualizzati
       // case FB_CHART.VIDEO_ADS:
       //   formattedData = {
@@ -1964,460 +1754,128 @@ console.log(data)
       //   };
       //   break; // Fb Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: [FB_PALETTE.BLUE.C3, FB_PALETTE.BLUE.C8, FB_PALETTE.BLUE.C6, FB_PALETTE.TURQUOISE.C12, FB_PALETTE.TURQUOISE.C4, FB_PALETTE.TURQUOISE.C9, FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9],
-
-
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {options: {
+              colors: [FB_PALETTE.BLUE.C3, FB_PALETTE.BLUE.C8, FB_PALETTE.BLUE.C6,
+                FB_PALETTE.TURQUOISE.C12, FB_PALETTE.TURQUOISE.C4, FB_PALETTE.TURQUOISE.C9,
+                FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9]}});
         break; // Fb Reazioni torta
       case FB_CHART.REACTIONS_LINEA:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridLines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.STIFFKEY.C8],
-            areaOpacity: 0.1
+        formattedData = this.areaChart( data,
+          {
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.STIFFKEY.C8]}
           }
-        };
+        );
         break; // Fb Reazioni linea
       case FB_CHART.REACTIONS_COLUMN_CHART:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: [FB_PALETTE.TURQUOISE.C6, FB_PALETTE.TURQUOISE.C8, FB_PALETTE.TURQUOISE.C10],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: [FB_PALETTE.TURQUOISE.C6, FB_PALETTE.TURQUOISE.C8, FB_PALETTE.TURQUOISE.C10],
+          }});
         break; // Fb Reazioni colonna
       case FB_CHART.PAGE_VIEW_EXTERNALS:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break; // Fb Domini dei referenti esterni (elenco)
       case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              grindLines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [FB_PALETTE.TURQUOISE.C3],
-            areaOpacity: 0.1
-          }
-        };
+         formattedData = this.areaChart( data,
+              {
+                options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+                  colors: [FB_PALETTE.TURQUOISE.C3]}});
+
         break; // Fb Domini dei referenti esterni (linea)
       case FB_CHART.PAGE_IMPRESSIONS_CITY:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break; // Fb Vista contenuti per città (elenco)
       case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
-        formattedData = {
-          chartType: 'GeoChart',
-          dataTable: data,
-          chartClass: 2,
-          options: {
+        formattedData = this.geoChart(data, { options : {
             region: 'IT',
             displayMode: 'markers',
-            colors: [FB_PALETTE.BLUE.C3],
-            colorAxis: {colors: ['#9EDEEF', '#63c2de']},
-            backgroundColor: '#fff',
-            datalessRegionColor: '#eee',
-            defaultColor: '#333',
-            height: '300'
-          }
-        };
-
+            colors: [FB_PALETTE.BLUE.C2]}} );
         break; // //Fb Vista contenuti per città (geomappa)
       case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
-
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
-
+        formattedData = this.tableChart(data);
         break; // Fb Vista contenuti per Paese (elenco)
+      case FB_CHART.PAGE_FANS_CITY_ELENCO:
+        formattedData = this.tableChart(data);
+        break; // Facebook Fan City per elenco
+      case FB_CHART.PAGE_FANS_AGE_ELENCO:
+        formattedData = this.tableChart(data);
+        break; // Facebook Fan Age per elenco
 
       case GA_CHART.IMPRESSIONS_DAY:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 210, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 230,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [GA_PALETTE.LIME.C6],
-            areaOpacity: 0.1
+
+        formattedData = this.areaChart( data,
+          {
+            options : {hAxis: { textStyle: {color: '#666', fontName: 'Roboto'}},
+              vAxis : {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
+              colors: [GA_PALETTE.LIME.C6]}
           }
-        };
+        );
         break;  // Google PageViews (impressions by day)
       case GA_CHART.SESSION_DAY:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 210, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 230,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0, // this.getMinChartStep(D_TYPE.GA, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [GA_PALETTE.OCHER.C8],
-            areaOpacity: 0.05
-          }
-        };
+        formattedData = this.areaChart( data,
+          {
+            options : {hAxis: { textStyle: {color: '#666', fontName: 'Roboto'}},
+              colors: [GA_PALETTE.OCHER.C8]}}
+        );
         break;  // Google Sessions
       case GA_CHART.SOURCES_PIE:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 6,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: [GA_PALETTE.ORANGE.C12, GA_PALETTE.LIME.C7, GA_PALETTE.OCHER.C9, GA_PALETTE.ORANGE.C11],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {options: {colors: [GA_PALETTE.ORANGE.C12, GA_PALETTE.LIME.C7, GA_PALETTE.OCHER.C9, GA_PALETTE.ORANGE.C11]}});
         break;  // Google Sources Pie
       case GA_CHART.MOST_VISITED_PAGES:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 7,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            allowHtml: true,
-            sort: 'disable',
-            sortAscending: false,
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break;  // Google List Referral
       case GA_CHART.SOURCES_COLUMNS:
-
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 310, top: 0},
-            legend: {position: 'none'},
-            height: 330,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [GA_PALETTE.ORANGE.C9],
-            bar: {groupWidth: '70%'},
-            areaOpacity: 0.3
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: {chartArea: {left: 0, right: 0, height: 310, top: 0},
+              height: 330,
+              vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'},
+                textPosition: 'in', textStyle: {color: '#999'}}, colors: [GA_PALETTE.ORANGE.C9],
+              bar: {groupWidth: '70%'},  areaOpacity: 0.3 } } );
+        console.log(formattedData);
         break;  // Google Sources Column Chart
       case GA_CHART.BOUNCE_RATE:
         type = 'ga_bounce';
-
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 10,
-          options: {
-            chartArea: {left: 0, right: 0, height: 210, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 230,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [GA_PALETTE.OCHER.C11],
-            areaOpacity: 0.05
-          }
-        };
-
         // average = sum / data.length;
-
+        formattedData = this.areaChart( data,
+          {
+            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+            options : { chartArea: {left: 0, right: 0, height: 210, top: 0},
+              vAxis : {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
+              colors: [GA_PALETTE.OCHER.C11]},
+          });
         break; // Google BounceRate
       case GA_CHART.AVG_SESS_DURATION:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 212, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 230,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [GA_PALETTE.ORANGE.C3],
-            areaOpacity: 0.05
-          }
-        };
+        formattedData = this.areaChart( data,
+          {
+            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+            options : { chartArea: {left: 0, right: 0, height: 210, top: 0},
+              vAxis : {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
+              colors: [GA_PALETTE.ORANGE.C3]},
+          });
         break; // Google Average Session Duration
       case GA_CHART.BROWSER_SESSION:
-
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break; // Google list sessions per browser
       case GA_CHART.NEW_USERS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 210, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 230,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#666', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8),
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [GA_PALETTE.OCHER.C11],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {
+            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+            options : { chartArea: {left: 0, right: 0, height: 210, top: 0},
+              vAxis : {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
+              colors: [GA_PALETTE.OCHER.C11]},
+          });
         break; // GA new users
       case GA_CHART.MOBILE_DEVICES:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 7,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            allowHtml: true,
-            sort: 'disable',
-            sortAscending: true,
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break; // GA mobile devices per session
       case GA_CHART.PERCENT_NEW_SESSION:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 6,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {options: {colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7]}});
         break;  // Google New Users vs Returning
       case GA_CHART.PAGE_LOAD_TIME:
+        console.log(data);
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
@@ -2437,228 +1895,61 @@ console.log(data)
             areaOpacity: 0.3
           }
         };
-        break;  // Google Sources Column Chart
 
+      // Instragram chart
       case IG_CHART.AUD_CITY:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 15,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            allowHtml: true,
-            sort: 'disable',
-            sortAscending: true,
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
-
+        formattedData = this.tableChart(data,
+          {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
+          }]});
         break; // IG Audience City
       case IG_CHART.AUD_COUNTRY:
-        formattedData = {
-          chartType: 'GeoChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 2,
-          options: {
+        formattedData = this.geoChart(data, { options : {
             region: 'world',
-            colors: [IG_PALETTE.AMARANTH.C5],
-            colorAxis: {colors: [IG_PALETTE.AMARANTH.C9, IG_PALETTE.AMARANTH.C4]},
-            backgroundColor: '#fff',
-            datalessRegionColor: '#eee',
-            defaultColor: '#333',
-            height: '300',
-          }
-        };
+            ccolors: [IG_PALETTE.AMARANTH.C5],
+            colorAxis: {colors: [IG_PALETTE.AMARANTH.C9, IG_PALETTE.AMARANTH.C4]}}} );
         break; // IG Audience Country
       case IG_CHART.AUD_GENDER_AGE:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          formatters: [{
-            columns: [1, 2],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
-            colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: { vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+            colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
         break; // IG Audience Gender/Age
       case IG_CHART.AUD_LOCALE:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 9,
-          options: {
-            chartArea: {left: 30, right: 0, height: 270, top: 5},
-            legend: {position: 'none'},
-            height: 315,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
-            colors: [IG_PALETTE.FUCSIA.C5],
-            bar: {groupWidth: '50%'},
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: { chartArea: {left: 30, right: 0, height: 270, top: 5},
+            height: 315, vAxis: {  textPosition: 'out', format: '#'},
+              hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
+              colors: [IG_PALETTE.FUCSIA.C5],
+              bar: {groupWidth: '50%'}}});
         break; // IG Audience Locale
       case IG_CHART.ONLINE_FOLLOWERS:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1, 2, 3],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 9,
-          options: {
-            chartArea: {left: 30, right: 0, height: 270, top: 20},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
-            hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-            colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.AMARANTH.C3, IG_PALETTE.LAVENDER.C3],
-            areaOpacity: 0.4,
-            legend: {position: 'top', maxLines: 3},
-            bar: {groupWidth: '60%'},
-            isStacked: false,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {formatters: [{columns: [1, 2, 3], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: { chartArea: {left: 30, right: 0, height: 270, top: 20},  height: 310,
+              vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+              hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+              colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.AMARANTH.C3, IG_PALETTE.LAVENDER.C3],
+              areaOpacity: 0.4,
+              legend: {position: 'top', maxLines: 3},
+              bar: {groupWidth: '60%'}}});
         break; // IG Online followers
       case IG_CHART.IMPRESSIONS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-              format: '#'
-            },
-            colors: [IG_PALETTE.LAVENDER.C3],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {
+            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+            options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.LAVENDER.C3]}});
         break; // IG Impressions by day
       case IG_CHART.REACH:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-              format: '#'
-            },
-            colors: [IG_PALETTE.FUCSIA.C3],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {
+          formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+          options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.FUCSIA.C3]}});
         break; // IG Reach
       case IG_CHART.ACTION_PERFORMED:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 6,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C3, IG_PALETTE.LAVENDER.C1, IG_PALETTE.AMARANTH.C11],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {sliceVisibilityThreshold: 0.05,
+            options: {colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C3, IG_PALETTE.LAVENDER.C1, IG_PALETTE.AMARANTH.C11]}});
         if (data.filter(e => e[1] === true).length == 0) {
           formattedData.options.colors = [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C2, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7];
           formattedData.dataTable = data;
@@ -2668,95 +1959,26 @@ console.log(data)
         }
         break; // IG clicks pie
       case IG_CHART.FOLLOWER_COUNT:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-              format: '#'
-            },
-            colors: [IG_PALETTE.AMARANTH.C5],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {
+            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+            options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
+
         break; // IG Follower count
       case IG_CHART.LOST_FOLLOWERS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              minValue: 0,
-              viewWindowMode: 'explicit',
-              viewWindow: {min: 0},
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-            },
-            colors: [IG_PALETTE.AMARANTH.C5],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
         break;
       case IG_CHART.INFO_CLICKS_COL:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1],
-            type: 'NumberFormat',
-            options: {
-              pattern: '#.##'
-            }
-          }],
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 270, top: 0},
-            height: 310,
-            vAxis: {
-              minValue: 0,
-              viewWindowMode: 'explicit',
-              viewWindow: {min: 0, max: 50},
-              gridlines: {color: '#eaeaea', count: 5},
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-              format: '#'
-            },
-            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
-            areaOpacity: 0.4,
-            bar: {groupWidth: '75%'},
-            isStacked: true,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: { chartArea: {left: 0, right: 0, height: 270, top: 0},
+              vAxis: { minValue: 0, viewWindowMode: 'explicit', viewWindow: {min: 0, max: 50}, gridlines: {color: '#eaeaea', count: 5},
+                textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+              colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1,
+                IG_PALETTE.FUCSIA.C1],
+              areaOpacity: 0.4,
+              bar: {groupWidth: '75%'}, isStacked: true}});
         break;
 
       case IG_CHART.MEDIA_LIKE_DATA:
@@ -2849,453 +2071,107 @@ console.log(data)
         break;
 
       case YT_CHART.VIEWS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [YT_PALETTE.RED.C11],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {colors: [YT_PALETTE.RED.C11]}});
         break;
       case YT_CHART.COMMENTS:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [YT_PALETTE.OPAL.C2],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {colors: [YT_PALETTE.OPAL.C2]}});
         break;
       case YT_CHART.LIKES:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [YT_PALETTE.BROWN.C9],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {colors: [YT_PALETTE.BROWN.C9]}});
         break;
       case YT_CHART.DISLIKES:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [YT_PALETTE.RED.C12],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {colors: [YT_PALETTE.RED.C12]}});
         break;
       case YT_CHART.SHARES:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [YT_PALETTE.OPAL.C8],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {colors: [YT_PALETTE.OPAL.C8]}});
         break;
       case YT_CHART.AVGVIEW:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [YT_PALETTE.BROWN.C10],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {colors: [YT_PALETTE.BROWN.C10]}});
         break;
       case YT_CHART.ESTWATCH:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 192, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              minValue: 0,
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: [YT_PALETTE.RED.C3],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options : {colors: [YT_PALETTE.RED.C3]}});
         break;
 
       case FBM_CHART.AGE_REACH:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_IMPRESSIONS:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_SPEND:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_INLINE:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+        {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_CLICKS:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_CPC:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_CPP:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_CTR:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
 
       case FBM_CHART.GENDER_REACH:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {sliceVisibilityThreshold: 0.05,
+            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
         break;
       case FBM_CHART.GENDER_IMPRESSIONS:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {sliceVisibilityThreshold: 0.05,
+            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
         break;
       case FBM_CHART.GENDER_SPEND:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {sliceVisibilityThreshold: 0.05,
+            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
         break;
       case FBM_CHART.GENDER_INLINE:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+        {sliceVisibilityThreshold: 0.05,
+          options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
         break;
       case FBM_CHART.GENDER_CLICKS:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {sliceVisibilityThreshold: 0.05,
+            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
         break;
       case FBM_CHART.GENDER_CPC:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {sliceVisibilityThreshold: 0.05,
+            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
         break;
       case FBM_CHART.GENDER_CPP:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {sliceVisibilityThreshold: 0.05,
+            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
         break;
       case FBM_CHART.GENDER_CTR:
-        formattedData = {
-          chartType: 'PieChart',
-          dataTable: data,
-          chartClass: 8,
-          options: {
-            chartArea: {left: 100, right: 0, height: 290, top: 20},
-            legend: {position: 'right'},
-            height: 310,
-            sliceVisibilityThreshold: 0.05,
-            is3D: false,
-            pieHole: 0.55,
-            pieSliceText: 'percentage',
-            pieSliceTextStyle: {fontSize: 12, color: 'white'},
-            colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6'],
-            areaOpacity: 0.2
-          }
-        };
+        formattedData = this.pieChart(data,
+          {sliceVisibilityThreshold: 0.05,
+            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
         break;
 
       case FBM_CHART.GENDER_AGE_REACH:
@@ -3847,494 +2723,86 @@ console.log(data)
              colorAxis: {colors: ['green', 'blue']}
            }
          };*/
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break;
       case FBM_CHART.COUNTRYREGION_IMPRESSIONS:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break;
       case FBM_CHART.COUNTRYREGION_SPEND:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break;
       case FBM_CHART.COUNTRYREGION_INLINE:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break;
       case FBM_CHART.COUNTRYREGION_CLICKS:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break;
       case FBM_CHART.COUNTRYREGION_CPC:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break;
       case FBM_CHART.COUNTRYREGION_CPP:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break;
       case FBM_CHART.COUNTRYREGION_CTR:
-        formattedData = {
-          chartType: 'Table',
-          dataTable: data,
-          chartClass: 12,
-          options: {
-            cssClassNames: {
-              'headerRow': 'border m-3 headercellbg',
-              'tableRow': 'bg-light',
-              'oddTableRow': 'bg-white',
-              'selectedTableRow': '',
-              'hoverTableRow': '',
-              'headerCell': 'border-0 py-2 pl-2',
-              'tableCell': 'border-0 py-1 pl-2',
-              'rowNumberCell': 'underline-blue-font'
-            },
-            alternatingRowStyle: true,
-            sortAscending: false,
-            sort: 'disable',
-            sortColumn: 1,
-            pageSize: 9,
-            height: '100%',
-            width: '100%'
-          }
-        };
+        formattedData = this.tableChart(data);
         break;
 
       case FBM_CHART.HOURLYADVERTISER_IMPRESSIONS:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_SPEND:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_INLINE:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_CLICKS:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_CPC:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_CTR:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
 
       case FBM_CHART.HOURLYAUDIENCE_REACH:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_IMPRESSIONS:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_SPEND:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_INLINE:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+          formattedData = this.columnChart(data,
+            {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_CLICKS:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_CPC:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_CPP:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_CTR:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 9,
-          options: {
-            chartArea: {left: 0, right: 0, height: 290, top: 0},
-            legend: {position: 'none'},
-            height: 310,
-            isStacked: true,
-            vAxis: {
-              gridlines: {color: '#eaeaea', count: 6},
-              textPosition: 'in',
-              textStyle: {color: '#999'}
-            },
-            colors: ['#1b53ff'],
-            areaOpacity: 0.4,
-          }
-        };
+        formattedData = this.columnChart(data,
+          {options: { colors: ['#1b53ff']}});
         break;
 
     }
@@ -4496,7 +2964,7 @@ console.log(data)
       sum += parseInt(el[1], 10);
     }
 
-    avg = (sum / data.length).toFixed(2);
+    data.length > 0 ? avg = (sum / data.length).toFixed(2) : avg = 0;
 
     switch (measure) {
       case 'bounce-rate':
@@ -4552,7 +3020,8 @@ console.log(data)
         break;
       case 'avg_view_time':
         sum = data.map(el => el.value).reduce((a, b) => a + b, 0);
-        value = (sum / data.length).toFixed(2);
+        data.length > 0 ? value = (sum / data.length).toFixed(2) : value = 0 ;
+
         break;
       case 'n_videos':
         value = data.length;
@@ -4567,40 +3036,45 @@ console.log(data)
 
   private getFacebookMiniValue(measure, data, intervalDate) {
     let value, perc, sum = 0, avg, max, aux, step;
-
+    // console.log(intervalDate)
     switch (measure) {
       case 'post-sum':
         // console.log('FB', data);
         data['data'] = data['data'].filter(el => (moment(el['created_time'])) >= intervalDate.first && (moment(el['created_time'])) <= intervalDate.last);
-        value = data['data'].length;
+
+        data.length > 0 ? value = data['data'].length : value = 0 ;
 
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
         // console.log(intervalDate.last);
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
-        value = data[data.length - 1].value;
+        data.length > 0 ?  value = data[data.length - 1].value : value = 0;
 
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
       case 'reactions':
         data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
         max = [];
-
-        for (const i in data) {
-          aux = 0;
-          if (data[i]['value']) {
-            aux += data[i]['value']['like'] || 0;
-            aux += data[i]['value']['love'] || 0;
-            aux += data[i]['value']['haha'] || 0;
-            aux += data[i]['value']['wow'] || 0;
-            aux += data[i]['value']['sorry'] || 0;
-            aux += data[i]['value']['anger'] || 0;
+        if (data.length > 0 ) {
+          for (const i in data) {
+            aux = 0;
+            if (data[i]['value']) {
+              aux += data[i]['value']['like'] || 0;
+              aux += data[i]['value']['love'] || 0;
+              aux += data[i]['value']['haha'] || 0;
+              aux += data[i]['value']['wow'] || 0;
+              aux += data[i]['value']['sorry'] || 0;
+              aux += data[i]['value']['anger'] || 0;
+            }
+            sum += aux;
+            max.push(aux);
           }
-          sum += aux;
-          max.push(aux);
-        }
 
-        avg = sum / data.length;
-        value = sum;
+          avg = sum / data.length;
+          value = sum;
+        } else {
+          avg = 0;
+          value = 0;
+        }
 
         break; // The value is the sum of all the reactions of the previous month, the perc is calculated dividing the average reactions for the max value
       default:
@@ -4653,13 +3127,11 @@ console.log(data)
   private getFacebookCampaignsMiniValue(measure, data) {
     let value, support = 0, perc, step, media = 0, value2;
     const supportArray = [];
-
     data.forEach(d =>
       d['insights'] !== null && d['insights'] !== undefined
         ? supportArray.push(Object.assign({}, d, d['insights'].data[0]))
         : supportArray.push(d)
     );
-
     switch (measure) {
       case 'budget':
         media = supportArray.filter(d => d.effective_status === 'ACTIVE').length;
@@ -4672,12 +3144,12 @@ console.log(data)
         value2 = value;
         break;
       case 'spend':
-        supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend, 10)) : null);
+        supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend, 10)) : (media++, support += 0) );
         value2 = Number(support / media).toFixed(2);
         value = value2 + ' €';
         break;
       case 'reach':
-        supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach, 10)) : null);
+        supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach, 10)) : (media++, support += 0) );
         value = Math.round(support / media).toString();
         value2 = value;
         break;
@@ -4701,11 +3173,11 @@ console.log(data)
         value = data[data.length - 1]['followers_count'];
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
       case 'post-sum':
-        data = data.filter(el => (new Date(el.timestamp)) >= intervalDate.first && (new Date(el.timestamp)) <= intervalDate.last);
+        data = data.filter(el => (new Date(moment(el.timestamp).toDate())) >= intervalDate.first && (new Date(moment(el.timestamp).toDate())) );
         value = data.length;
         break;
       default:
-        data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
+        data = data.filter(el => (new Date(moment(el.end_time).toDate())) >= intervalDate.first && (new Date(moment(el.end_time).toDate())) <= intervalDate.last);
         for (const el of data) {
           sum += el.value;
         }
@@ -4726,11 +3198,11 @@ console.log(data)
     switch (measure) {
       case 'fb-fan-count':
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
-        value = data[data.length - 1].value;
+        data.length > 0 ? value = data[data.length - 1].value : value = 0;
 
         break;
       case 'ig-follower':
-        value = data[data.length - 1]['followers_count'];
+        data.length > 0 ? value = data[data.length - 1]['followers_count'] : value = 0;
         break;
       case 'ga-tot-user':
         value = 0;
@@ -4741,7 +3213,7 @@ console.log(data)
         break;
       case 'subs':
         data = data.filter(el => parseDate(el.date).getTime() >= intervalDate.first.getTime() && parseDate(el.date).getTime() <= intervalDate.last.getTime());
-        value = data[0].subscribers;
+        data.length > 0 ? value = data[0].subscribers : value = 0;
         break;
     }
 
@@ -4921,33 +3393,208 @@ console.log(data)
     return chartData;
   }
 
-  private formatChartIg(data, formattedData) {
+  private areaChart(data, format?: object) {
+    let formattedData;
+    formattedData = {
+      chartType: 'AreaChart',
+      dataTable: data,
+      options: {
+        chartArea: {left: 0, right: 0, height: 192, top: 0},
+        legend: {position: 'none'},
+        lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+        height: 210,
+        pointSize: data.length > 15 ? 0 : 7,
+        pointShape: 'circle',
+        hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+        vAxis: {
+          gridlines: {color: '#eaeaea', count: 5},
+          minorGridlines: {color: 'transparent'},
+          minValue: 0,
+          textPosition: 'in',
+          textStyle: {color: '#999'},
+        },
+        areaOpacity: 0.1
+      }
+    };
 
-    let opacity = 0.4;
+    if (format) {
+      for (const el of Object.keys(format)) {
+        if (el !== 'options') {
+          formattedData[el] = format[el];
+        }
+        if (el === 'options') {
+          for (const e of Object.keys(format[el])) {
+            if (formattedData[el][e]) {
+              Object.assign(formattedData[el][e], format[el][e]);
+            } else {
+              formattedData[el][e] = format[el][e];
+            }
+          }
+        }
+      }
+    }
+    return formattedData;
+  }
+
+  private tableChart(data, format?: object) {
+
+    let formattedData;
+
+    formattedData = {
+      chartType: 'Table',
+      dataTable: data,
+      options: {
+        cssClassNames: {
+          'headerRow': 'border m-3 headercellbg',
+          'tableRow': 'bg-light',
+          'oddTableRow': 'bg-white',
+          'selectedTableRow': '',
+          'hoverTableRow': '',
+          'headerCell': 'border-0 py-2 pl-2',
+          'tableCell': 'border-0 py-1 pl-2',
+          'rowNumberCell': 'underline-blue-font'
+        },
+        alternatingRowStyle: true,
+        allowHtml: true,
+        sort: 'disable',
+        sortColumn: 1,
+        pageSize: 9,
+        height: '100%',
+        width: '100%'
+      }
+    };
+
+    if (format) {
+      for (const el of Object.keys(format)) {
+        if (el !== 'options') {
+          formattedData[el] = format[el];
+        }
+        if (el === 'options') {
+          for (const e of Object.keys(format[el])) {
+            if (formattedData[el][e]) {
+              Object.assign(formattedData[el][e], format[el][e]);
+            } else {
+              formattedData[el][e] = format[el][e];
+            }
+          }
+        }
+      }
+    }
+    return formattedData;
+  }
+
+  private columnChart(data, format?: object) {
+
+    let formattedData;
 
     formattedData = {
       chartType: 'ColumnChart',
       dataTable: data,
-      formatters: [{
-        columns: [1, 2, 3],
-        type: 'NumberFormat',
-        options: {
-          pattern: '#.##'
-        }
-      }],
       options: {
-        chartArea: {left: 30, right: 0, height: 270, top: 20},
-        height: 310,
-        vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
-        hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-        colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.AMARANTH.C3, IG_PALETTE.LAVENDER.C3],
-        areaOpacity: opacity,
-        legend: {position: 'top', maxLines: 3},
-        bar: {groupWidth: '60%'},
-        isStacked: false,
+        chartArea: {left: 0, right: 0, height: 290, top: 0},
+        legend: {position: 'none'},
+        height: 330,
+        vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+        areaOpacity: 0.4,
       }
     };
 
+    if (format) {
+      for (const el of Object.keys(format)) {
+        if (el !== 'options') {
+          formattedData[el] = format[el];
+        }
+        if (el === 'options') {
+          for (const e of Object.keys(format[el])) {
+            if (formattedData[el][e]) {
+              Object.assign(formattedData[el][e], format[el][e]);
+            } else {
+              formattedData[el][e] = format[el][e];
+            }
+          }
+        }
+      }
+    }
+
     return formattedData;
   }
+
+  private pieChart(data, format?: object) {
+
+    let formattedData;
+
+    formattedData = {
+      chartType: 'PieChart',
+      dataTable: data,
+      chartClass: 8,
+      options: {
+        chartArea: {left: 100, right: 0, height: 290, top: 20},
+        legend: {position: 'right'},
+        height: 310,
+        is3D: false,
+        pieHole: 0.55,
+        pieSliceText: 'percentage',
+        pieSliceTextStyle: {fontSize: 12, color: 'white'},
+        areaOpacity: 0.2
+      }
+    };
+
+    if (format) {
+      for (const el of Object.keys(format)) {
+        if (el !== 'options') {
+          formattedData[el] = format[el];
+        }
+        if (el === 'options') {
+          for (const e of Object.keys(format[el])) {
+            if (formattedData[el][e]) {
+              Object.assign(formattedData[el][e], format[el][e]);
+            } else {
+              formattedData[el][e] = format[el][e];
+            }
+          }
+        }
+      }
+    }
+
+    return formattedData;
+  }
+
+  private geoChart(data, format?: object) {
+
+    let formattedData;
+
+    formattedData = {
+      chartType: 'GeoChart',
+      dataTable: data,
+      chartClass: 2,
+      options: {
+        colorAxis: {colors: ['#9EDEEF', '#63c2de']},
+        backgroundColor: '#fff',
+        datalessRegionColor: '#eee',
+        defaultColor: '#333',
+        height: '300'
+      }
+    };
+    if (format) {
+      for (const el of Object.keys(format)) {
+        if (el !== 'options') {
+          formattedData[el] = format[el];
+        }
+        if (el === 'options') {
+          for (const e of Object.keys(format[el])) {
+            if (formattedData[el][e]) {
+              Object.assign(formattedData[el][e], format[el][e]);
+            } else {
+              formattedData[el][e] = format[el][e];
+            }
+          }
+        }
+      }
+    }
+
+    return formattedData;
+  }
+
+
 }
+
