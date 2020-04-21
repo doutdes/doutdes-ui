@@ -3598,6 +3598,5 @@ export class ChartsCallsService {
     return formattedData;
   }
 
-
 }
 
