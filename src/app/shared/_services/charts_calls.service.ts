@@ -884,7 +884,10 @@ export class ChartsCallsService {
 
           let i = (business.length - 1);
           while (i >= 1) {
-            diff = Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count));
+
+            diff = business[i].followers_count !== 0 && business[i - 1].followers_count !== 0
+              ? Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count))
+              : 0;
 
             chartData.push([
               moment(business[i].end_time).toDate(),
@@ -923,15 +926,15 @@ export class ChartsCallsService {
       case IG_CHART.MEDIA_LIKE_DATA:
         header = [['Data', 'Like'/*, {role: 'tooltip'}*/]];
 
-        let arr = [], len, date1, date2, diff_time;
-console.log(data)
-        const day_time = 1000 * 3600 * 24;
-        data.push(data[data.length - 1])
-        for (let i = data.length - 1; i >= 0; i--) {
-          chartData.push([
-            data[i].end_time.slice(0, 10),
-            data[i].value
-          ])
+//         let arr = [], len, date1, date2, diff_time;
+// console.log(data)
+//         const day_time = 1000 * 3600 * 24;
+//         data.push(data[data.length - 1])
+//         for (let i = data.length - 1; i >= 0; i--) {
+//           chartData.push([
+//             data[i].end_time.slice(0, 10),
+//             data[i].value
+//           ])
           /*date2 = new Date(data[i].end_time.slice(0, 10));
           if (i > 0) {
             date1 = new Date(data[i - 1].end_time.slice(0, 10));
@@ -959,8 +962,8 @@ console.log(data)
           //     ]);
           //   }
           // }
-          diff_time = 0;
-        }
+          // diff_time = 0;
+        // }
 
         break;
 
@@ -968,7 +971,7 @@ console.log(data)
         header = [['Tipo', 'Like', {role: 'tooltip'}]];
         let images, videos, carousel;
 
-        console.log(data);
+        // console.log(data);
 
         break;
 
