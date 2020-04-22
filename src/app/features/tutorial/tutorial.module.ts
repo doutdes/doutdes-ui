@@ -7,6 +7,7 @@ import {FeatureTutorialGaComponent} from './google/tutorialGa.component';
 import {ModalModule} from 'ngx-bootstrap';
 import {FeatureTutorialFbComponent} from './facebook/tutorialFb.component';
 import {FeatureTutorialIgComponent} from './instagram/tutorialIg.component';
+import {FeatureTutorialYTComponent} from './youtube/tutorialYT.component';
 import {TranslateModule} from '@ngx-translate/core';
 import {UserService} from '../../shared/_services/user.service';
 
@@ -15,7 +16,8 @@ import {UserService} from '../../shared/_services/user.service';
   declarations: [
     FeatureTutorialGaComponent,
     FeatureTutorialFbComponent,
-    FeatureTutorialIgComponent
+    FeatureTutorialIgComponent,
+    FeatureTutorialYTComponent
   ],
   imports: [
     CoreModule,

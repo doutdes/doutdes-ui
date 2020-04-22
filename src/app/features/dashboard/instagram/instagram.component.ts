@@ -182,7 +182,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         empty = empty || !results;
         this.getNameMinicard(i);
         this.miniCards[i].value =  results['value'];
-        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].progress = 100 + '%';
+        //this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });
@@ -379,6 +380,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       if (!Object.values(this.FILTER_DAYS).includes(diffDays)) {
         this.dateChoice = 'Personalizzato';
       }
+
+      this.GEService.checkInterval.next(dateInterval);
+
+      //console.log(dateInterval);
     }
   }
 

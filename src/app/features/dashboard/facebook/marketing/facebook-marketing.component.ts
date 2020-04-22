@@ -405,7 +405,8 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
         empty = empty || !results;
 
         this.miniCards[i].value = results['value'];
-        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].progress = 100 + '%';
+        //this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });

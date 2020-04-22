@@ -1,5 +1,5 @@
 import {Component, ElementRef, HostBinding, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {BsModalRef, BsModalService, parseDate} from 'ngx-bootstrap';
 import {DashboardCharts} from '../../shared/_models/DashboardCharts';
 import {DashboardService} from '../../shared/_services/dashboard.service';
 import {GlobalEventsManagerService} from '../../shared/_services/global-event-manager.service';
@@ -10,12 +10,15 @@ import {D_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
 import {BehaviorSubject, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {retry, takeUntil} from 'rxjs/operators';
 import {FilterActions} from '../../features/dashboard/redux-filter/filter.actions';
 import {Chart} from '../../shared/_models/Chart';
 import {TranslateService} from '@ngx-translate/core';
 import {UserService} from '../../shared/_services/user.service';
 import {User} from '../../shared/_models/User';
+import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
+import {subDays} from "date-fns";
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-card',
@@ -31,6 +34,14 @@ export class CardComponent implements OnInit {
   @HostBinding('class') elementClass = 'pt-3';
   @ViewChild('mychart') mychart: GoogleChartComponent;
   @ViewChild('addMetric') addMetric: ElementRef;
+
+  public FILTER_DAYS = {
+    yesterday: 1,
+    seven: 7,
+    eight: 8,
+    thirty: 29,
+    ninety: 89,
+  };
 
   aggregated: boolean;
   type: string;
@@ -64,6 +75,26 @@ export class CardComponent implements OnInit {
   D_TYPE = D_TYPE;
   drag: boolean;
 
+  datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
+  dateChoice: String = null;
+
+  // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
+  maxDate_30: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+  minDate_30: Date = subDays(this.maxDate_30, this.FILTER_DAYS.thirty);
+
+  // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
+  maxDate_7: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+  minDate_7: Date = subDays(this.maxDate_7, this.FILTER_DAYS.seven);
+
+  bsRangeValue: Date[];
+  bsRangeValue2: Date[];
+  intervalFinal = [];
+  firstDateRange: Date;
+  lastDateRange: Date;
+  check_int: number;
+  edit_1: boolean;
+  edit_2: boolean;
+
   metrics: Array<Chart>;
   addMetricForm: FormGroup;
 
@@ -81,8 +112,24 @@ export class CardComponent implements OnInit {
     private toastr: ToastrService,
     private filterActions: FilterActions,
     public translate: TranslateService,
+    private userService: UserService,
+    private http: HttpClient
   ) {
     this.GEService.draggable.subscribe(value => this.drag = value);
+
+    this.userService.get().subscribe(value => {
+      this.user = value;
+
+      this.http.get('./assets/langSetting/langToastr/' + this.conversionSetDefaultLang() + '.json')
+        .subscribe(file => {
+          this.GEService.langObj.next(file);
+        }, error => {
+          console.error(error);
+        });
+    });
+
+    this.edit_2 = false;
+    this.edit_1 = false;
   }
 
   ngOnInit() {
@@ -99,6 +146,8 @@ export class CardComponent implements OnInit {
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });
 
+
+    this.checkMinMaxDate();
   }
 
   setColorStyle = (): void => {
@@ -374,6 +423,159 @@ export class CardComponent implements OnInit {
       }, err => {
         console.error(err);
       });
+  }
+
+  onValueChange(value, check: string) {
+
+    const intervalDate: IntervalDate = {
+      first: this.checkBsRangeValue(1, this.bsRangeValue, this.bsRangeValue2),
+      last: this.checkBsRangeValue(2, this.bsRangeValue, this.bsRangeValue2),
+    };
+
+      try {
+
+        if (check == 'Interval1' && value) {
+          this.intervalFinal[0] = [value[0], value[1]];
+          this.edit_1 = true;
+        }
+
+        if (check == 'Interval2' && value) {
+          this.intervalFinal[1] = [value[0], value[1]];
+          this.edit_2 = true;
+        }
+
+      }
+      catch (e) {
+        console.error(e);
+        this.edit_1 = false;
+        this.edit_2 = false;
+
+        //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
+          this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
+      }
+
+
+    if (!value && check == 'Edit') {
+      if (this.edit_1 && this.edit_2) {
+        try {
+          this.GEService.ComparisonIntervals.next(this.intervalFinal);
+          this.closeModal();
+
+          this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+
+          //this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
+          this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_INTERVAL'));
+
+          this.edit_1 = false;
+          this.edit_2 = false;
+        } catch (e) {
+          console.log(e);
+          //console.error(e);
+
+          //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
+          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
+
+          this.edit_1 = false;
+          this.edit_2 = false;
+        }
+      } else {
+        console.log('Errore');
+        this.edit_1 = false;
+        this.edit_2 = false;
+      }
+    }
+
+   }
+
+  checkCard(chart) {
+
+    if (chart == 108)
+      return true;
+    else
+      return false;
+
+  }
+
+  checkBsRangeValue (n, bs1, bs2) {
+    //first
+    if (n == 1) {
+      if(parseDate(bs1[0]) < parseDate(bs2[0])) return bs1[0];
+      if(parseDate(bs1[0]) > parseDate(bs2[0])) return bs2[0];
+      if(parseDate(bs1[0]) == parseDate(bs2[0])) return bs1[0];
+  } else {
+    //last
+      if(parseDate(bs1[1]) > parseDate(bs2[1])) return bs1[1];
+      if(parseDate(bs1[1]) < parseDate(bs2[1])) return bs2[1];
+      if(parseDate(bs1[1]) == parseDate(bs2[1])) return bs2[1];
+    }
+  }
+
+  checkMinMaxDate (): any {
+    let tmp_data_1 = 0;
+
+    this.GEService.checkFilterDateIGComparasion.subscribe(data => {
+
+      if (data == 30) {
+        this.firstDateRange = this.minDate_30;
+        this.lastDateRange = this.maxDate_30;
+        this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+        this.firstDateRange = this.minDate_30;
+        this.lastDateRange = this.maxDate_30;
+        this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
+
+        this.check_int = 30;
+      }
+
+      if (data == 7) {
+          this.firstDateRange = this.minDate_7;
+          this.lastDateRange = this.maxDate_7;
+          this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+          this.firstDateRange = this.minDate_7;
+          this.lastDateRange = this.maxDate_7;
+          this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
+
+          this.check_int = 7;
+      }
+
+      if (data != 7 && data != 30) {
+        this.GEService.checkInterval.subscribe(value => {
+          if (value) {
+            this.firstDateRange = value['first'];
+            this.lastDateRange = value['last'];
+            this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+            this.firstDateRange = value['first'];
+            this.lastDateRange = value['last'];
+            this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
+
+            this.check_int = 0;
+          }
+        });
+      }
+
+    }); //End
+
+  }
+
+  conversionSetDefaultLang() {
+
+    switch (this.user.lang) {
+      case 'it' :
+        this.value = 'Italiano';
+        break;
+      case 'en' :
+        this.value = 'English';
+        break;
+      default:
+        this.value = 'Italiano';
+    }
+
+    return this.value;
   }
 
 }

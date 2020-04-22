@@ -31,6 +31,7 @@ import {UserService} from './user.service';
 import {HttpClient} from '@angular/common/http';
 import {forEach} from '@angular/router/src/utils/collection';
 import {dayOfYearFromWeeks} from 'ngx-bootstrap/chronos/units/week-calendar-utils';
+import {error} from 'util';
 
 
 @Injectable()
@@ -40,6 +41,8 @@ export class ChartsCallsService {
   listCountry = new Map();
   listCountryIng = new Map();
   listLanguageItalian = new Map();
+
+  intervalDateComparison: any;
 
   constructor(
     private facebookService: FacebookService,
@@ -101,6 +104,7 @@ export class ChartsCallsService {
     });
 
   }
+
   public static cutString(str, maxLength) {
     if (str) {
       return str.length > maxLength ? str.substr(0, maxLength) + '...' : str;
@@ -153,6 +157,9 @@ export class ChartsCallsService {
     const average = [];
     const max = [] ;
     const blockTime = [3, 6, 9, 12, 15, 18, 21, 24];
+
+    let j = 0;
+    let k = 0;
     let acc = 0;
 
     switch (ID) {
@@ -484,7 +491,7 @@ export class ChartsCallsService {
         });
 
         chartData = this.addPaddingRows(chartData);
-        break; // Facebook fan per città(elenco)
+        break; // Facebook fan per Age (elenco)
 
 
       case GA_CHART.IMPRESSIONS_DAY:
@@ -677,6 +684,98 @@ export class ChartsCallsService {
         }
 
         break;
+      case GA_CHART.AUD_COUNTRY_GO:
+        /** Data array is constructed as follows:
+         * 0 - data
+         * 1 - country
+         * 2 - value
+         **/
+        header = [['Country', 'Value']];
+        let mapData = new Map();
+
+        for (let i = 0; i < data.length; i++) {
+          if(!mapData.has(data[i][1])){
+            mapData.set(data[i][1], parseInt(data[i][2]));
+          } else {
+            const value_0 = parseInt(mapData.get(data[i][1]));
+            const value_1 = parseInt(data[i][2]);
+
+            mapData.delete(mapData.get(data[i][1]));
+            mapData.set(data[i][1], value_0 + value_1);
+          }
+        }
+
+        const chiave = mapData.keys();
+        const valore = mapData.values();
+
+        for (let i = 0; i < mapData.size; i++) {
+          chartData.push([chiave.next().value, valore.next().value]);
+        }
+
+        break; // Google Audience Country
+      case GA_CHART.AUD_REGION_GO:
+        /** Data array is constructed as follows:
+         * 0 - data
+         * 1 - region
+         * 2 - country
+         * 3 - value
+         **/
+        header = [['Region', 'Value']];
+        let mapD = new Map();
+
+        for (let i = 0; i < data.length; i++) {
+          if (data[i][2] == "Italy") {
+            if (!mapD.has(data[i][1])) {
+              mapD.set(data[i][1], parseInt(data[i][3]));
+            } else {
+              const value_0 = parseInt(mapD.get(data[i][1]));
+              const value_1 = parseInt(data[i][3]);
+
+              mapD.delete(mapD.get(data[i][1]));
+              mapD.set(data[i][1], value_0 + value_1);
+            }
+          }
+        }
+
+        const c = mapD.keys();
+        const valu = mapD.values();
+
+        for (let i = 0; i < mapD.size; i++) {
+          chartData.push([c.next().value, valu.next().value]);
+        }
+
+        break; // Google Audience Region
+      case GA_CHART.SESSION_ELENCO_GO:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 -
+         * 2 - value
+         **/
+
+        header = [['Sorgente', 'Sessioni']];
+
+        for (let i = 0; i < data.length; i++) {
+          indexFound = keys.findIndex(el => el === data[i][1]);
+
+          if (indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+          }
+        }
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
+        }
+
+        break; // Google Session elenco
 
         // Instagram chart
       case IG_CHART.AUD_CITY:
@@ -703,13 +802,13 @@ export class ChartsCallsService {
           }
           chartData = this.addPaddingRows(chartData);
         }
-        break; // IG Audience City
+        break; // IG Follower City - Elenco
       case IG_CHART.AUD_COUNTRY:
         header = [['Paese', 'Popolarità']];
         if (data.length > 0) {
           chartData = this.changeNameCountry(data);
         }
-        break; // IG Audience Country
+        break; // IG Follower Country
       case IG_CHART.AUD_GENDER_AGE:
         header = [['Età', 'Maschio', 'Femmina']];
 
@@ -742,7 +841,7 @@ export class ChartsCallsService {
           }
           chartData = chartData.sort();
         }
-        break; // IG Audience Gender/Age
+        break; // IG Follower Gender/Age
       case IG_CHART.AUD_LOCALE:
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
         if (data.length > 0) {
@@ -974,6 +1073,86 @@ export class ChartsCallsService {
         // console.log(data);
 
         break;
+      // case IG_CHART.COMPARISON_COLONNA:
+      //   header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
+      //
+      //   // Per gestire i filtri degli intervalli
+      //   this.GEservice.checkFilterDateIGComparasion.next(data.length);
+      //
+      //   this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
+      //
+      //     // Sezione nel caso di modifica intervalli
+      //     if (intervalDateComparison != null) {
+      //       j = this.checkControlDate(1, intervalDateComparison, data, 0);
+      //       k = this.checkControlDate(1, intervalDateComparison, data, 1);
+      //     } else {
+      //       // Sezione nel caso di non modifica intervalli/valore di default
+      //       j = this.checkControlDate(2, intervalDateComparison, data, 0);
+      //       k = this.checkControlDate(2, intervalDateComparison, data, 1);
+      //     }
+      //
+      //     chartData = [];
+      //     chartData.push([this.formatInterval(intervalDateComparison, 1, data), j, 0]);
+      //     chartData.push([this.formatInterval(intervalDateComparison, 2, data), 0, k]);
+      //   }, error => {
+      //     console.log(error);
+      //     console.error(error);
+      //   });
+      //
+      //   break; // IG Follower Count Comparasion
+      case IG_CHART.AUD_CITY_GEOMAPPA:
+        header = [['Città', 'Numero fan']];
+
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [k, data[data.length - 1].value[k]];
+          });
+        }
+
+        chartData = chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = chartData.slice(0, 15);
+        break; // IG Follower City - Geomappa
+      case IG_CHART.AUD_GENDER_AGE_TORTA:
+        header = [['Boh', 'ok']];
+        let avg1 = 0;
+        for (let i = 0; i < data.length; i++) {
+          avg1 += parseFloat(data[i][1]);
+        }
+
+        avg /= data.length;
+
+        chartData.push(['Uomini ', avg1]);
+        chartData.push(['Donne', 100 - avg1]);
+
+        c
+        break; // IG Follower Gender/Age - Torta
+      case IG_CHART.AUD_COUNTRY_ELENCO:
+        header = [['Paese', 'Popolarità']];
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+          });
+          chartData.sort(function (obj1, obj2) {
+            return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+          });
+          const oldValue = data[data.length - 2]['value'];
+          for (const i in chartData) {
+            // tslint:disable-next-line:no-shadowed-variable
+            const diff = oldValue[chartData[i][0]] ?
+              parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]], 10) :
+              1;
+            diff > 0 ?
+              chartData[i] = [chartData[i][0], {v : +1, f: chartData[i][1].toString() }] :
+              diff === 0 ?
+                chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
+                chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
+          }
+          chartData = this.addPaddingRows(chartData);
+        }
+        break; // IG Follower Country - Elenco
 
       case YT_CHART.VIEWS:
         header = [['Data', 'Visualizzazioni']];
@@ -1904,19 +2083,19 @@ export class ChartsCallsService {
         formattedData = this.tableChart(data,
           {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
           }]});
-        break; // IG Audience City
+        break; // IG Follower City
       case IG_CHART.AUD_COUNTRY:
         formattedData = this.geoChart(data, { options : {
             region: 'world',
             ccolors: [IG_PALETTE.AMARANTH.C5],
             colorAxis: {colors: [IG_PALETTE.AMARANTH.C9, IG_PALETTE.AMARANTH.C4]}}} );
-        break; // IG Audience Country
+        break; // IG Follower Country
       case IG_CHART.AUD_GENDER_AGE:
         formattedData = this.columnChart(data,
           {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
             options: { vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
             colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
-        break; // IG Audience Gender/Age
+        break; // IG Follower Gender/Age
       case IG_CHART.AUD_LOCALE:
         formattedData = this.columnChart(data,
           {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
@@ -1925,7 +2104,7 @@ export class ChartsCallsService {
               hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
               colors: [IG_PALETTE.FUCSIA.C5],
               bar: {groupWidth: '50%'}}});
-        break; // IG Audience Locale
+        break; // IG Follower Locale
       case IG_CHART.ONLINE_FOLLOWERS:
         formattedData = this.columnChart(data,
           {formatters: [{columns: [1, 2, 3], type: 'NumberFormat', options: {pattern: '#.##'}}],
@@ -2072,6 +2251,46 @@ export class ChartsCallsService {
           }
         };
         break;
+      // case IG_CHART.COMPARISON_COLONNA:
+      //   formattedData = {
+      //     chartType: 'ColumnChart',
+      //     dataTable: data,
+      //     formatters: [{
+      //       columns: [1, 2],
+      //       type: 'NumberFormat',
+      //       options: {
+      //         pattern: '###.##'
+      //       }
+      //     }],
+      //     chartClass: 9,
+      //     options: {
+      //       chartArea: {left: 30, right: 0, height: 270, top: 20},
+      //       height: 310,
+      //       vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+      //       hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+      //       colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
+      //       areaOpacity: 0.4,
+      //       legend: {position: 'top', maxLines: 2},
+      //       bar: {groupWidth: '40%'},
+      //       isStacked: true,
+      //     }
+      //   };
+      //   break; // IG Follower Count Comparasion
+      case IG_CHART.AUD_CITY_GEOMAPPA:
+        formattedData = this.geoChart(data, { options : {
+            region: 'IT',
+            displayMode: 'markers',
+            colors: [IG_PALETTE.AMARANTH.C5]}} );
+        break; // IG Follower City - Geomappa
+      case IG_CHART.AUD_GENDER_AGE_TORTA:
+        formattedData = this.pieChart(data,
+          {options: {colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7]}});
+        break; // IG Follower Gender/Age - Torta
+      case IG_CHART.AUD_COUNTRY_ELENCO:
+        formattedData = this.tableChart(data,
+          {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
+            }]});
+        break; // IG Follower Country - Elenco
 
       case YT_CHART.VIEWS:
         formattedData = this.areaChart( data,
@@ -3050,6 +3269,7 @@ export class ChartsCallsService {
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
         // console.log(intervalDate.last);
+        //console.log(data);
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
         data.length > 0 ?  value = data[data.length - 1].value : value = 0;
 
@@ -3395,6 +3615,164 @@ export class ChartsCallsService {
 
     return chartData;
   }
+
+  public checkControlDate (n, intervalDateComparison, data, flag) {
+    let j = 0;
+    let k = 0;
+
+    /*
+          Primo campo:
+            1 = caso modifica intervalli
+            2 = caso senza modifica intervalli
+
+          Secondo campo: intervalDateComparison
+
+          Terzo campo: data
+
+          Quarto campo:
+            0 = Restituire j
+            1 = Restituire k
+    */
+
+    // Modifica intervalli
+    if(n == 1) {
+
+      for (let i = 0; i < data.length; i++) {
+        //Controllo per colonna 1
+        if ((parseDate(data[i]['end_time']) >= intervalDateComparison[0][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[0][1]) {
+          j += data[i]['value'];
+        }
+        //Controllo per colonna 2
+        if ((parseDate(data[i]['end_time']) >= intervalDateComparison[1][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[1][1]) {
+          k += data[i]['value'];
+        }
+      }
+
+      if (flag == 0) return j;
+      if (flag == 1) return k;
+
+    }
+
+    // Non modifica intervalli
+    if (n == 2) {
+
+      for (let i = 0; i < data.length; i++) {
+
+        // Se il filtro è impostato a "Ultimi 30 giorni"
+        if (data.length == 30) {
+          //Controllo per Colonna 1
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-8]['end_time']))) {
+            j += data[i]['value'];
+          }
+          //Controllo per colonna 2
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-8]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+            k += data[i]['value'];
+          }
+        }
+
+        // Se il filtro è impostato a "Ultimi 7 giorni"
+        if (data.length == 7) {
+          //Controllo per Colonna 1
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-7]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-5]['end_time']))) {
+            j += data[i]['value'];
+          }
+          //Controllo per colonna 2
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-3]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+            k += data[i]['value'];
+          }
+        }
+
+        // Se il filtro è impostato a "Personalizzato"
+        if (data.length != 7 && data.length != 30) {
+
+          // Se imposta la data di lunghezza 1 (es. 09/03 - 09/03)
+          if (data.length == 1) {
+            j = data[0]['value'];  //Controllo per Colonna 1
+            k = data[0]['value']; //Controllo per colonna 2
+          }
+
+          // Se imposta la data di lunghezza 2 (es. 09/03 - 10/03)
+          if (data.length == 2) {
+            j = data[0]['value'];  //Controllo per Colonna 1
+            k = data[1]['value'];  //Controllo per colonna 2
+          }
+
+          // Se imposta la data di lunghezza 3 (es. 09/03 - 11/03)
+          if (data.length == 3) {
+            j = data[0]['value'];  //Controllo per Colonna 1
+            k = data[2]['value'];  //Controllo per colonna 2
+          }
+
+          // Se imposta la data di lunghezza >= 4 (es. 09/03 - 12/03)
+          if (data.length >= 4) {
+            //Controllo per Colonna 1
+            if ((parseDate(data[i]['end_time']) >= parseDate(data[0]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[1]['end_time']))) {
+              j += data[i]['value'];
+            }
+            //Controllo per colonna 2
+            if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-2]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+              k += data[i]['value'];
+            }
+          }
+
+        }
+      }
+
+      if (flag == 0) return j;
+      if (flag == 1) return k;
+
+    }
+
+  }
+
+  public formatInterval (intervalDate, n: number, data) {
+
+    if (!intervalDate) {
+      if (data.length == 30) {
+        if (n == 1) return parseDate(data[data.length-15]['end_time']).getDate() + '/' + (parseDate(data[data.length-15]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-8]['end_time']).getDate() + '/' + (parseDate(data[data.length-8]['end_time']).getMonth()+1);
+        if (n == 2) return parseDate(data[data.length-8]['end_time']).getDate() + '/' + (parseDate(data[data.length-8]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+      } else {
+        if (data.length == 7) {
+          if (n == 1) return parseDate(data[data.length-7]['end_time']).getDate() + '/' + (parseDate(data[data.length-7]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-5]['end_time']).getDate() + '/' + (parseDate(data[data.length-5]['end_time']).getMonth()+1);
+          if (n == 2) return parseDate(data[data.length-3]['end_time']).getDate() + '/' + (parseDate(data[data.length-3]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+        } else {
+
+          // Se imposta la data di lunghezza 1 (es. 09/03 - 09/03)
+          if (data.length == 1) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
+            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
+          }
+
+          // Se imposta la data di lunghezza 2 (es. 09/03 - 10/03)
+          if (data.length == 2) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
+            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
+          }
+
+          // Se imposta la data di lunghezza 3 (es. 09/03 - 11/03)
+          if (data.length == 3) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
+            if (n == 2) return parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth()+1) + ' - ' + parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth()+1);
+          }
+
+          // Se imposta la data di lunghezza >= 4 (es. 09/03 - 12/03)
+          if (data.length >= 4) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' +  (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
+            if (n == 2) return parseDate(data[data.length-2]['end_time']).getDate() + '/' + (parseDate(data[data.length-2]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+          }
+
+        }
+      }
+    } else {
+      /*  DIFFERENZE
+      Il primo If commentato restituisce il giorno nel formato '0d'; es: 04/12
+      Il secondo If (quello non commentato) restituisce il giorno nel formato 'd'; es: 4/12
+       */
+      //if (n == 1) return parseDate(intervalDate[0][0]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][0]).getMonth() + ' - ' + parseDate(intervalDate[0][1]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][1]).getMonth();
+      if (n == 1) return parseDate(intervalDate[0][0]).getDate() + '/' + (parseDate(intervalDate[0][0]).getMonth()+1) + ' - ' + parseDate(intervalDate[0][1]).getDate() + '/' + (parseDate(intervalDate[0][1]).getMonth()+1);
+      if (n == 2) return parseDate(intervalDate[1][0]).getDate() + '/' + (parseDate(intervalDate[1][0]).getMonth()+1) + ' - ' + parseDate(intervalDate[1][1]).getDate() + '/' + (parseDate(intervalDate[1][1]).getMonth()+1);
+        }
+    }
 
   private areaChart(data, format?: object) {
     let formattedData;
