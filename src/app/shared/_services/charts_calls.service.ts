@@ -1073,33 +1073,33 @@ export class ChartsCallsService {
         // console.log(data);
 
         break;
-      // case IG_CHART.COMPARISON_COLONNA:
-      //   header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
-      //
-      //   // Per gestire i filtri degli intervalli
-      //   this.GEservice.checkFilterDateIGComparasion.next(data.length);
-      //
-      //   this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
-      //
-      //     // Sezione nel caso di modifica intervalli
-      //     if (intervalDateComparison != null) {
-      //       j = this.checkControlDate(1, intervalDateComparison, data, 0);
-      //       k = this.checkControlDate(1, intervalDateComparison, data, 1);
-      //     } else {
-      //       // Sezione nel caso di non modifica intervalli/valore di default
-      //       j = this.checkControlDate(2, intervalDateComparison, data, 0);
-      //       k = this.checkControlDate(2, intervalDateComparison, data, 1);
-      //     }
-      //
-      //     chartData = [];
-      //     chartData.push([this.formatInterval(intervalDateComparison, 1, data), j, 0]);
-      //     chartData.push([this.formatInterval(intervalDateComparison, 2, data), 0, k]);
-      //   }, error => {
-      //     console.log(error);
-      //     console.error(error);
-      //   });
-      //
-      //   break; // IG Follower Count Comparasion
+      case IG_CHART.COMPARISON_COLONNA:
+        header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
+
+        // Per gestire i filtri degli intervalli
+        this.GEservice.checkFilterDateIGComparasion.next(data.length);
+
+        this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
+
+          // Sezione nel caso di modifica intervalli
+          if (intervalDateComparison != null) {
+            j = this.checkControlDate(1, intervalDateComparison, data, 0);
+            k = this.checkControlDate(1, intervalDateComparison, data, 1);
+          } else {
+            // Sezione nel caso di non modifica intervalli/valore di default
+            j = this.checkControlDate(2, intervalDateComparison, data, 0);
+            k = this.checkControlDate(2, intervalDateComparison, data, 1);
+          }
+
+          chartData = [];
+          chartData.push([this.formatInterval(intervalDateComparison, 1, data), j, 0]);
+          chartData.push([this.formatInterval(intervalDateComparison, 2, data), 0, k]);
+        }, error => {
+          console.log(error);
+          console.error(error);
+        });
+
+        break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
         header = [['Città', 'Numero fan']];
 
@@ -2251,31 +2251,31 @@ export class ChartsCallsService {
           }
         };
         break;
-      // case IG_CHART.COMPARISON_COLONNA:
-      //   formattedData = {
-      //     chartType: 'ColumnChart',
-      //     dataTable: data,
-      //     formatters: [{
-      //       columns: [1, 2],
-      //       type: 'NumberFormat',
-      //       options: {
-      //         pattern: '###.##'
-      //       }
-      //     }],
-      //     chartClass: 9,
-      //     options: {
-      //       chartArea: {left: 30, right: 0, height: 270, top: 20},
-      //       height: 310,
-      //       vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
-      //       hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-      //       colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
-      //       areaOpacity: 0.4,
-      //       legend: {position: 'top', maxLines: 2},
-      //       bar: {groupWidth: '40%'},
-      //       isStacked: true,
-      //     }
-      //   };
-      //   break; // IG Follower Count Comparasion
+      case IG_CHART.COMPARISON_COLONNA:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1, 2],
+            type: 'NumberFormat',
+            options: {
+              pattern: '###.##'
+            }
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 30, right: 0, height: 270, top: 20},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+            hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
+            areaOpacity: 0.4,
+            legend: {position: 'top', maxLines: 2},
+            bar: {groupWidth: '40%'},
+            isStacked: true,
+          }
+        };
+        break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
         formattedData = this.geoChart(data, { options : {
             region: 'IT',
