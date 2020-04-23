@@ -21,7 +21,7 @@ import {FacebookMarketingService} from './facebook-marketing.service';
 import {FacebookCampaignsService} from './facebook-campaigns.service';
 import {FBM_CHART} from '../_models/FacebookMarketingData';
 import NumberFormat = Intl.NumberFormat;
-import {computeStyle} from '@angular/animations/browser/src/util';
+import {computeStyle, copyObj} from '@angular/animations/browser/src/util';
 import {parse} from 'ts-node';
 import {FBC_CHART} from '../_models/FacebookCampaignsData';
 import {GlobalEventsManagerService} from './global-event-manager.service';
@@ -1854,7 +1854,8 @@ export class ChartsCallsService {
       case FB_CHART.NEGATIVE_FEEDBACK:
         formattedData = this.areaChart( data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+                viewWindowMode: 'explicit', viewWindow: {min: 0, max: this.getMaxChartStep(data)}},
               colors: [FB_PALETTE.BLUE.C7]}
           }
         );
@@ -3041,9 +3042,15 @@ export class ChartsCallsService {
     return chartData;
   }
 
+
+  private getMaxChartStep(data) {
+    const arr = data.slice(1);
+    const max = Math.max.apply(null, arr.map(function(o) { return o[1]; }));
+    return max + 10;
+  }
+
   private getMinChartStep(type, data, perc = 0.8) {
     let min = 0, length;
-
     data = data.slice(1);
 
     if (data) {
