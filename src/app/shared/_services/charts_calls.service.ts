@@ -32,6 +32,7 @@ import {HttpClient} from '@angular/common/http';
 import {forEach} from '@angular/router/src/utils/collection';
 import {dayOfYearFromWeeks} from 'ngx-bootstrap/chronos/units/week-calendar-utils';
 import {error} from 'util';
+import {parseIntAutoRadix} from '@angular/common/src/i18n/format_number';
 
 
 @Injectable()
@@ -158,9 +159,17 @@ export class ChartsCallsService {
     const max = [] ;
     const blockTime = [3, 6, 9, 12, 15, 18, 21, 24];
 
+    const tmpF = [];
+    const tmpF_age = ['F13-17', 'F18-24', 'F25-34', 'F35-44', 'F45-54', 'F55-64', 'F65+'];
+    const tmpM = [];
+    const tmpM_age = ['M13-17', 'M18-24', 'M25-34', 'M35-44', 'M45-54', 'M55-64', 'M65+'];
+    const tmpU = [];
+    const tmpU_age = ['U13-17', 'U18-24', 'U25-34', 'U35-44', 'U45-54', 'U55-64', 'U65+'];
+
     let j = 0;
     let k = 0;
     let acc = 0;
+    let n = 0;
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -1116,18 +1125,37 @@ export class ChartsCallsService {
         chartData = chartData.slice(0, 15);
         break; // IG Follower City - Geomappa
       case IG_CHART.AUD_GENDER_AGE_TORTA:
-        header = [['Boh', 'ok']];
-        let avg1 = 0;
-        for (let i = 0; i < data.length; i++) {
-          avg1 += parseFloat(data[i][1]);
+        header = [['Genere', 'numero']];
+
+        console.log(data);
+
+        // Ciclo le età
+        for(let j = 0; j < tmpF_age.length; j++) {
+          if(parseInt(data[data.length-1].value[tmpF_age[j]])){
+            tmpF[j] = parseInt(data[data.length-1].value[tmpF_age[j]]);
+          } else {
+            tmpF[j] = 0;
+          }
+          if(parseInt(data[data.length-1].value[tmpM_age[j]])){
+            tmpM[j] = parseInt(data[data.length-1].value[tmpM_age[j]]);
+          } else {
+            tmpM[j] = 0;
+          }
+          if(parseInt(data[data.length-1].value[tmpU_age[j]])){
+            tmpU[j] = parseInt(data[data.length-1].value[tmpU_age[j]]);
+          } else {
+            tmpU[j] = 0;
+          }
         }
 
-        avg /= data.length;
+        // Salvo in ChartData
+        for(let i = 0; i < tmpF_age.length; i++){
+          chartData.push([tmpF_age[i], tmpF[i]]);
+          chartData.push([tmpM_age[i], tmpM[i]]);
+          chartData.push([tmpU_age[i], tmpU[i]]);
+        }
+        console.log(chartData);
 
-        chartData.push(['Uomini ', avg1]);
-        chartData.push(['Donne', 100 - avg1]);
-
-        c
         break; // IG Follower Gender/Age - Torta
       case IG_CHART.AUD_COUNTRY_ELENCO:
         header = [['Paese', 'Popolarità']];
@@ -2284,8 +2312,27 @@ export class ChartsCallsService {
             colors: [IG_PALETTE.AMARANTH.C5]}} );
         break; // IG Follower City - Geomappa
       case IG_CHART.AUD_GENDER_AGE_TORTA:
+
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 8,
+          options: {
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
+            colors: ['#0676ff', '#ff32b9', '#b6b6b6'],
+            height: 310,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            areaOpacity: 0.2
+          }
+        };
+        /*
         formattedData = this.pieChart(data,
           {options: {colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7]}});
+         */
         break; // IG Follower Gender/Age - Torta
       case IG_CHART.AUD_COUNTRY_ELENCO:
         formattedData = this.tableChart(data,
@@ -3041,7 +3088,6 @@ export class ChartsCallsService {
 
     return chartData;
   }
-
 
   private getMaxChartStep(data) {
     const arr = data.slice(1);
@@ -3984,4 +4030,3 @@ export class ChartsCallsService {
   }
 
 }
-
