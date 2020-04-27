@@ -788,7 +788,8 @@ export class ChartsCallsService {
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
-          const oldValue = data[data.length - 2]['value'];
+
+          const oldValue = data[data.length - 2] ? data[data.length - 2]['value'] : 0;
           for (const i in chartData) {
             // tslint:disable-next-line:no-shadowed-variable
             const diff = oldValue[chartData[i][0]] ?
@@ -1102,7 +1103,6 @@ export class ChartsCallsService {
         break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
         header = [['Città', 'Numero fan']];
-
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [k, data[data.length - 1].value[k]];
@@ -1127,18 +1127,19 @@ export class ChartsCallsService {
         chartData.push(['Uomini ', avg1]);
         chartData.push(['Donne', 100 - avg1]);
 
-        c
         break; // IG Follower Gender/Age - Torta
       case IG_CHART.AUD_COUNTRY_ELENCO:
         header = [['Paese', 'Popolarità']];
+        chartData =  this.changeNameCountry(data);
+
         if (data.length > 0) {
-          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-            return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
-          });
+          // chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          //   return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+          // });
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
-          const oldValue = data[data.length - 2]['value'];
+          const oldValue = data[data.length - 2] ? data[data.length - 2]['value'] : 0;
           for (const i in chartData) {
             // tslint:disable-next-line:no-shadowed-variable
             const diff = oldValue[chartData[i][0]] ?
@@ -2279,7 +2280,7 @@ export class ChartsCallsService {
         break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
         formattedData = this.geoChart(data, { options : {
-            region: 'IT',
+            region: 'world',
             displayMode: 'markers',
             colors: [IG_PALETTE.AMARANTH.C5]}} );
         break; // IG Follower City - Geomappa
@@ -3840,7 +3841,7 @@ export class ChartsCallsService {
           'hoverTableRow': '',
           'headerCell': 'border-0 py-2 pl-2',
           'tableCell': 'border-0 py-1 pl-2',
-          'rowNumberCell': 'underline-blue-font'
+          'rowNumberCell': 'underline-blue-font',
         },
         alternatingRowStyle: true,
         allowHtml: true,
