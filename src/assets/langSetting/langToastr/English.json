@@ -115,6 +115,10 @@
     "SI_UPDATE_INTERVAL": {
       "TITLE": "Update completed!",
       "MESSAGE": "The intervals have been successfully updated!"
+    },
+    "NO_INFO": {
+      "TITLE": "Error Graphic Info",
+      "MESSAGE": "The chart guide is not available."
     }
   }
 }
