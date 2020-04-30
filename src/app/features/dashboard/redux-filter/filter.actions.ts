@@ -215,14 +215,20 @@ export class FilterActions {
               case D_TYPE.FBM:
                 chart.chartData = chart.chartData.filter(el => parseDate(el.date_stop).getTime() >= filterInterval.first.getTime() && parseDate(el.date_stop).getTime() <= filterInterval.last.getTime());
                 break;
-              case D_TYPE.IG:
+                case D_TYPE.IG:
                 chart.chartData = chart.metric ===
-                'online_followers'  ? chart.chartData.filter(
+                'online_followers' ? chart.chartData.filter(
                   el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last) :
                   chart.period !== 'lifetime' && chart.metric !== 'lost_followers'
-                  ? chart.chartData.filter(
+                    ? chart.chartData.filter(
                     el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last)
-                  : chart.chartData;
+                    : chart.chartData;
+
+
+                if (chart.metric === 'audience_city' || chart.metric === 'audience_gender_age') {
+                  chart.chartData = chart.chartData.filter(
+                    el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
+                }
                 break;
               default:
                 chart.chartData = chart.chartData.filter(el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);

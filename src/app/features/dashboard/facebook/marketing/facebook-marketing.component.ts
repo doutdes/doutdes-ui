@@ -322,13 +322,14 @@ export class FeatureDashboardFacebookMarketingComponent implements OnInit, OnDes
                     }
                     else if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
-                      if (dataArray[i].length === 0) { //if there is no data available
+                      if (dataArray[i].length === 0 || dataArray[i].data.length === 0) { //if there is no data available
                         chart.error = true;
+                        chart.chartData = dataArray[i];
                       }
                       else {
-                        let date;
 
                         chart.chartData = dataArray[i];
+                        let date = new Date(chart.chartData.data[0]['date_stop']);
                         if (chart.chartData.data[0]) //Todo modifica da vedere su Funzione andrea
                           date = new Date(chart.chartData.data[0]['date_stop']);
                         if (date < this.minDate)

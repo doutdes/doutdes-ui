@@ -7,6 +7,7 @@
     <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
         role="menu" aria-labelledby="button-basic">
       <!--<li class="dropdown-item" (click)="getMetricsAvailable()"><i class="fas fa-plus-circle"></i>Aggiungi metrica</li>-->
+      <li class="dropdown-item" (click)="checkInfo(dashChart.chart_id)"><i class="fas fa-info-circle"></i> Interpretazione del grafico</li>
       <li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Modifica titolo</li>
       <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Elimina</li>
       <li *ngIf="checkCard(dashChart.chart_id)" class="dropdown-item" (click)="openModal(editInterval)"><i class="fas fa-calendar-alt"></i> Modifica intervallo</li>
@@ -169,7 +170,6 @@
     </form>
   </div>
 </ng-template>
-
 <ng-template #editInterval>
   <div class="modal-header">
     <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>Modifica Intervalli</h4>
@@ -181,76 +181,76 @@
   <div class="modal-body">
     <!-- <form [formGroup]="editIntervalDate" (ngSubmit)="addMetricToChart()"> -->
 
-      <div class="form-group row">
-        <label class="col-sm-5 col-form-label">Intervallo 1:</label>
-        <div class="col-sm-7">
-          <!-- Se il filtro è impostato ad "Ultimi 30 giorni" -->
-          <input *ngIf="check_int == 30"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-                 [(ngModel)]="bsRangeValue"
-                 [minDate]="minDate_30"
-                 [maxDate]="maxDate_30"
-                 [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-                 (bsValueChange)="onValueChange($event, 'Interval1')"
-                 bsDaterangepicker>
-          <!-- Se il filtro è impostato ad "Ultimi 7 giorni" -->
-          <input *ngIf="check_int == 7"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-                 [(ngModel)]="bsRangeValue"
-                 [minDate]="minDate_7"
-                 [maxDate]="maxDate_7"
-                 [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-                 (bsValueChange)="onValueChange($event, 'Interval1')"
-                 bsDaterangepicker>
-          <!-- Se il filtro è impostato ad "Personalizzato" -->
-          <input *ngIf="check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-                 [(ngModel)]="bsRangeValue"
-                 [minDate]="firstDateRange"
-                 [maxDate]="lastDateRange"
-                 [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-                 (bsValueChange)="onValueChange($event, 'Interval1')"
-                 bsDaterangepicker>
+    <div class="form-group row">
+      <label class="col-sm-5 col-form-label">Intervallo 1:</label>
+      <div class="col-sm-7">
+        <!-- Se il filtro è impostato ad "Ultimi 30 giorni" -->
+        <input *ngIf="check_int == 30"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
+               [(ngModel)]="bsRangeValue"
+               [minDate]="minDate_30"
+               [maxDate]="maxDate_30"
+               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
+               (bsValueChange)="onValueChange($event, 'Interval1')"
+               bsDaterangepicker>
+        <!-- Se il filtro è impostato ad "Ultimi 7 giorni" -->
+        <input *ngIf="check_int == 7"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
+               [(ngModel)]="bsRangeValue"
+               [minDate]="minDate_7"
+               [maxDate]="maxDate_7"
+               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
+               (bsValueChange)="onValueChange($event, 'Interval1')"
+               bsDaterangepicker>
+        <!-- Se il filtro è impostato ad "Personalizzato" -->
+        <input *ngIf="check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
+               [(ngModel)]="bsRangeValue"
+               [minDate]="firstDateRange"
+               [maxDate]="lastDateRange"
+               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
+               (bsValueChange)="onValueChange($event, 'Interval1')"
+               bsDaterangepicker>
 
-          <!--<select class="form-control" formControlName="metricControl">
-            <option *ngFor="let metric of metrics" [ngValue]="metric">{{metric.title}}</option>
-          </select>
-          -->
-        </div>
+        <!--<select class="form-control" formControlName="metricControl">
+          <option *ngFor="let metric of metrics" [ngValue]="metric">{{metric.title}}</option>
+        </select>
+        -->
       </div>
+    </div>
 
-      <div class="form-group row">
-        <label class="col-sm-5 col-form-label">Intervallo 2:</label>
-        <div class="col-sm-7">
-          <!-- Se il filtro è impostato ad "Ultimi 30 giorni" -->
-          <input *ngIf="this.check_int == 30"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-                 [(ngModel)]="bsRangeValue2"
-                 [minDate]="minDate_30"
-                 [maxDate]="maxDate_30"
-                 [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-                 (bsValueChange)="onValueChange($event, 'Interval2')"
-                 bsDaterangepicker>
-          <!-- Se il filtro è impostato ad "Ultimi 7 giorni" -->
-          <input *ngIf="this.check_int == 7"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-                 [(ngModel)]="bsRangeValue2"
-                 [minDate]="minDate_7"
-                 [maxDate]="maxDate_7"
-                 [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-                 (bsValueChange)="onValueChange($event, 'Interval2')"
-                 bsDaterangepicker>
-          <!-- Se il filtro è impostato ad "Personalizzato" -->
-          <input *ngIf="this.check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-                 [(ngModel)]="bsRangeValue2"
-                 [minDate]="firstDateRange"
-                 [maxDate]="lastDateRange"
-                 [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-                 (bsValueChange)="onValueChange($event, 'Interval2')"
-                 bsDaterangepicker>
-        </div>
+    <div class="form-group row">
+      <label class="col-sm-5 col-form-label">Intervallo 2:</label>
+      <div class="col-sm-7">
+        <!-- Se il filtro è impostato ad "Ultimi 30 giorni" -->
+        <input *ngIf="this.check_int == 30"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
+               [(ngModel)]="bsRangeValue2"
+               [minDate]="minDate_30"
+               [maxDate]="maxDate_30"
+               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
+               (bsValueChange)="onValueChange($event, 'Interval2')"
+               bsDaterangepicker>
+        <!-- Se il filtro è impostato ad "Ultimi 7 giorni" -->
+        <input *ngIf="this.check_int == 7"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
+               [(ngModel)]="bsRangeValue2"
+               [minDate]="minDate_7"
+               [maxDate]="maxDate_7"
+               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
+               (bsValueChange)="onValueChange($event, 'Interval2')"
+               bsDaterangepicker>
+        <!-- Se il filtro è impostato ad "Personalizzato" -->
+        <input *ngIf="this.check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
+               [(ngModel)]="bsRangeValue2"
+               [minDate]="firstDateRange"
+               [maxDate]="lastDateRange"
+               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
+               (bsValueChange)="onValueChange($event, 'Interval2')"
+               bsDaterangepicker>
       </div>
+    </div>
 
-      <div class="modal-footer">
-        <!-- <button type="submit" class="btn btn-success" (click)="onValueChange('invio')" >Modifica</button> -->
-        <button type="submit" class="btn btn-success" (click)="onValueChange(null, 'Edit')">Modifica</button>
-        <button type="button" class="btn btn-danger" (click)="closeModal()">Annulla</button>
-      </div>
+    <div class="modal-footer">
+      <!-- <button type="submit" class="btn btn-success" (click)="onValueChange('invio')" >Modifica</button> -->
+      <button type="submit" class="btn btn-success" (click)="onValueChange(null, 'Edit')">Modifica</button>
+      <button type="button" class="btn btn-danger" (click)="closeModal()">Annulla</button>
+    </div>
     <!-- </form> -->
   </div>
 </ng-template>

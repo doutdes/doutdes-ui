@@ -21,7 +21,7 @@ import {FacebookMarketingService} from './facebook-marketing.service';
 import {FacebookCampaignsService} from './facebook-campaigns.service';
 import {FBM_CHART} from '../_models/FacebookMarketingData';
 import NumberFormat = Intl.NumberFormat;
-import {computeStyle} from '@angular/animations/browser/src/util';
+import {computeStyle, copyObj} from '@angular/animations/browser/src/util';
 import {parse} from 'ts-node';
 import {FBC_CHART} from '../_models/FacebookCampaignsData';
 import {GlobalEventsManagerService} from './global-event-manager.service';
@@ -32,6 +32,7 @@ import {HttpClient} from '@angular/common/http';
 import {forEach} from '@angular/router/src/utils/collection';
 import {dayOfYearFromWeeks} from 'ngx-bootstrap/chronos/units/week-calendar-utils';
 import {error} from 'util';
+import {parseIntAutoRadix} from '@angular/common/src/i18n/format_number';
 
 
 @Injectable()
@@ -151,15 +152,24 @@ export class ChartsCallsService {
     const supportArray = [];
     const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['0-3', '3-6', '6-9', '9-12', '12-15', '15-18', '18-21', '21-24']; // temporal range for some fbm charts
+    let elem = 'Like ';
 
     const min = [];
     const average = [];
     const max = [] ;
     const blockTime = [3, 6, 9, 12, 15, 18, 21, 24];
 
+    const tmpF = [];
+    const tmpF_age = ['F13-17', 'F18-24', 'F25-34', 'F35-44', 'F45-54', 'F55-64', 'F65+'];
+    const tmpM = [];
+    const tmpM_age = ['M13-17', 'M18-24', 'M25-34', 'M35-44', 'M45-54', 'M55-64', 'M65+'];
+    const tmpU = [];
+    const tmpU_age = ['U13-17', 'U18-24', 'U25-34', 'U35-44', 'U45-54', 'U55-64', 'U65+'];
+
     let j = 0;
     let k = 0;
     let acc = 0;
+    let n = 0;
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -783,10 +793,12 @@ export class ChartsCallsService {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
           });
+
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
-          const oldValue = data[data.length - 2]['value'];
+
+          const oldValue = data[data.length - 2] ? data[data.length - 2]['value'] : 0;
           for (const i in chartData) {
             // tslint:disable-next-line:no-shadowed-variable
             const diff = oldValue[chartData[i][0]] ?
@@ -975,17 +987,23 @@ export class ChartsCallsService {
         let diff = 0;
 
         if (data.length > 0 && data[0]['business'].length > 1) {
+
           const follower_day = data[1]['follower_count'];
           const business = data[0]['business'];
+
           let i = (business.length - 1);
           while (i >= 1) {
-            diff = Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count));
+
+            diff = business[i].followers_count !== 0 && business[i - 1].followers_count !== 0
+              ? Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count))
+              : 0;
 
             chartData.push([
               moment(business[i].end_time).toDate(),
               diff
             ]);
             i--;
+            i = business[i - 1] === undefined || follower_day[i - 1] === undefined ? 0 : i;
           }
         } else {
           chartData.push([new Date(), diff]);
@@ -1010,23 +1028,59 @@ export class ChartsCallsService {
         }
 
         break;
+      case IG_CHART.MEDIA_COMMENT_DATA:
+        elem = 'Commenti ';
+
+      // tslint:disable-next-line:no-switch-case-fall-through
       case IG_CHART.MEDIA_LIKE_DATA:
-        header = [['Data', 'Like', {role: 'tooltip'}]];
-        let arr = [], date, len;
-        date = data[data.length - 1].end_time.slice(0, 10);
-        date = new Date(Date.parse(date));
-        for (let i = data.length - 1; i >= 0; i--) {
-          arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date));
-          arr.forEach(el => acc += el.like_count);
-          len = arr.length > 0 ? arr.length : 1;
-          chartData.push([
-            parseDate(date),
-            acc,
-            'Like ' + acc + ', N. media ' + arr.length + ', Media like ' + (acc / len) + ', ' + date.toString().slice(3, 15)
-          ]);
-          acc = 0;
-          date = new Date(Date.parse(date) + 1000 * 3600 * 24);
-        }
+        header = [['Data', 'Like'/*, {role: 'tooltip'}*/]];
+
+//         let arr = [], len, date1, date2, diff_time;
+// console.log(data)
+//         const day_time = 1000 * 3600 * 24;
+//         data.push(data[data.length - 1])
+//         for (let i = data.length - 1; i >= 0; i--) {
+//           chartData.push([
+//             data[i].end_time.slice(0, 10),
+//             data[i].value
+//           ])
+          /*date2 = new Date(data[i].end_time.slice(0, 10));
+          if (i > 0) {
+            date1 = new Date(data[i - 1].end_time.slice(0, 10));
+            diff_time = Math.abs(date1.getTime() - date2.getTime()) / day_time;
+          }
+
+          if (chartData.length === 0 || !(chartData[chartData.length - 1][0] === date2.toString().slice(3, 15))) {
+            arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date2));
+            arr.forEach(el => acc += el.value);
+            len = arr.length > 0 ? arr.length : 1;
+            chartData.push([
+              date2.toString().slice(3, 15),
+              acc,
+              elem + acc + ', N. media ' + arr.length + ', Media ' + elem + (acc / len) + ', ' + date2.toString().slice(3, 15)
+            ]);
+          }
+          acc = 0;*/
+
+          // if (diff_time > 1) {
+          //   for (let j = diff_time - 1; j > 0; j--) {
+          //     chartData.push([
+          //       subDays(date1, j).toString().slice(3, 15),
+          //       acc,
+          //       elem + 0 + ', N. media ' + 0 + ', Media ' + elem + 0 + ', ' + subDays(date1, j).toString().slice(3, 15)
+          //     ]);
+          //   }
+          // }
+          // diff_time = 0;
+        // }
+
+        break;
+
+      case IG_CHART.MEDIA_LIKE_TYPE:
+        header = [['Tipo', 'Like', {role: 'tooltip'}]];
+        let images, videos, carousel;
+
+        // console.log(data);
 
         break;
       case IG_CHART.COMPARISON_COLONNA:
@@ -1058,7 +1112,6 @@ export class ChartsCallsService {
         break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
         header = [['Città', 'Numero fan']];
-
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [k, data[data.length - 1].value[k]];
@@ -1072,29 +1125,50 @@ export class ChartsCallsService {
         chartData = chartData.slice(0, 15);
         break; // IG Follower City - Geomappa
       case IG_CHART.AUD_GENDER_AGE_TORTA:
-        header = [['Boh', 'ok']];
-        let avg1 = 0;
-        for (let i = 0; i < data.length; i++) {
-          avg1 += parseFloat(data[i][1]);
+        header = [['Genere', 'numero']];
+
+        console.log(data);
+
+        // Ciclo le età
+        for(let j = 0; j < tmpF_age.length; j++) {
+          if(parseInt(data[data.length-1].value[tmpF_age[j]])){
+            tmpF[j] = parseInt(data[data.length-1].value[tmpF_age[j]]);
+          } else {
+            tmpF[j] = 0;
+          }
+          if(parseInt(data[data.length-1].value[tmpM_age[j]])){
+            tmpM[j] = parseInt(data[data.length-1].value[tmpM_age[j]]);
+          } else {
+            tmpM[j] = 0;
+          }
+          if(parseInt(data[data.length-1].value[tmpU_age[j]])){
+            tmpU[j] = parseInt(data[data.length-1].value[tmpU_age[j]]);
+          } else {
+            tmpU[j] = 0;
+          }
         }
 
-        avg /= data.length;
+        // Salvo in ChartData
+        for(let i = 0; i < tmpF_age.length; i++){
+          chartData.push([tmpF_age[i], tmpF[i]]);
+          chartData.push([tmpM_age[i], tmpM[i]]);
+          chartData.push([tmpU_age[i], tmpU[i]]);
+        }
+        console.log(chartData);
 
-        chartData.push(['Uomini ', avg1]);
-        chartData.push(['Donne', 100 - avg1]);
-
-        c
         break; // IG Follower Gender/Age - Torta
       case IG_CHART.AUD_COUNTRY_ELENCO:
         header = [['Paese', 'Popolarità']];
+        chartData =  this.changeNameCountry(data);
+
         if (data.length > 0) {
-          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
-            return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
-          });
+          // chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          //   return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+          // });
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
-          const oldValue = data[data.length - 2]['value'];
+          const oldValue = data[data.length - 2] ? data[data.length - 2]['value'] : 0;
           for (const i in chartData) {
             // tslint:disable-next-line:no-shadowed-variable
             const diff = oldValue[chartData[i][0]] ?
@@ -1810,7 +1884,8 @@ export class ChartsCallsService {
       case FB_CHART.NEGATIVE_FEEDBACK:
         formattedData = this.areaChart( data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+                viewWindowMode: 'explicit', viewWindow: {min: 0, max: this.getMaxChartStep(data)}},
               colors: [FB_PALETTE.BLUE.C7]}
           }
         );
@@ -2118,9 +2193,94 @@ export class ChartsCallsService {
               areaOpacity: 0.4,
               bar: {groupWidth: '75%'}, isStacked: true}});
         break;
+
       case IG_CHART.MEDIA_LIKE_DATA:
-        formattedData = this.areaChart( data,
-          {options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            isStacked: true,
+            chartArea: {left: 0, right: 0, height: 185, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0},
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+            },
+            colors: [IG_PALETTE.AMARANTH.C5],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+
+      case IG_CHART.MEDIA_COMMENT_DATA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 185, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0},
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+            },
+            colors: [IG_PALETTE.AMARANTH.C5],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+
+      case IG_CHART.MEDIA_LIKE_TYPE:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 270, top: 0},
+            height: 310,
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0, max: 50},
+              gridlines: {color: '#eaeaea', count: 5},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+              format: '#'
+            },
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
+            areaOpacity: 0.4,
+            bar: {groupWidth: '75%'},
+            isStacked: true,
+          }
+        };
         break;
       case IG_CHART.COMPARISON_COLONNA:
         formattedData = {
@@ -2142,20 +2302,39 @@ export class ChartsCallsService {
             colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 2},
-            bar: {groupWidth: '40%'},
+            bar: {groupWidth: '30%'},
             isStacked: true,
           }
         };
         break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
         formattedData = this.geoChart(data, { options : {
-            region: 'IT',
+            region: 'world',
             displayMode: 'markers',
             colors: [IG_PALETTE.AMARANTH.C5]}} );
         break; // IG Follower City - Geomappa
       case IG_CHART.AUD_GENDER_AGE_TORTA:
+
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 8,
+          options: {
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
+            colors: ['#0676ff', '#ff32b9', '#b6b6b6'],
+            height: 310,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            areaOpacity: 0.2
+          }
+        };
+        /*
         formattedData = this.pieChart(data,
           {options: {colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7]}});
+         */
         break; // IG Follower Gender/Age - Torta
       case IG_CHART.AUD_COUNTRY_ELENCO:
         formattedData = this.tableChart(data,
@@ -2912,9 +3091,14 @@ export class ChartsCallsService {
     return chartData;
   }
 
+  private getMaxChartStep(data) {
+    const arr = data.slice(1);
+    const max = Math.max.apply(null, arr.map(function(o) { return o[1]; }));
+    return max + 10;
+  }
+
   private getMinChartStep(type, data, perc = 0.8) {
     let min = 0, length;
-
     data = data.slice(1);
 
     if (data) {
@@ -3704,7 +3888,7 @@ export class ChartsCallsService {
           'hoverTableRow': '',
           'headerCell': 'border-0 py-2 pl-2',
           'tableCell': 'border-0 py-1 pl-2',
-          'rowNumberCell': 'underline-blue-font'
+          'rowNumberCell': 'underline-blue-font',
         },
         alternatingRowStyle: true,
         allowHtml: true,
@@ -3848,4 +4032,3 @@ export class ChartsCallsService {
   }
 
 }
-
