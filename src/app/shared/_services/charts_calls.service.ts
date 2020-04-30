@@ -1154,7 +1154,6 @@ export class ChartsCallsService {
           chartData.push([tmpM_age[i], tmpM[i]]);
           chartData.push([tmpU_age[i], tmpU[i]]);
         }
-        console.log(chartData);
 
         break; // IG Follower Gender/Age - Torta
       case IG_CHART.AUD_COUNTRY_ELENCO:
