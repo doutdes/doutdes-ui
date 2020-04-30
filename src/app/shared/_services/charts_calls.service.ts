@@ -1127,8 +1127,6 @@ export class ChartsCallsService {
       case IG_CHART.AUD_GENDER_AGE_TORTA:
         header = [['Genere', 'numero']];
 
-        console.log(data);
-
         // Ciclo le età
         for(let j = 0; j < tmpF_age.length; j++) {
           if(parseInt(data[data.length-1].value[tmpF_age[j]])){
