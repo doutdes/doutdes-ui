@@ -2300,7 +2300,7 @@ export class ChartsCallsService {
             colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 2},
-            bar: {groupWidth: '40%'},
+            bar: {groupWidth: '30%'},
             isStacked: true,
           }
         };
