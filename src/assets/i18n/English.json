@@ -55,7 +55,10 @@
     "CREA_ACCOUNT": "Create account",
     "STRUMENTI": "Tools",
     "GUIDE": "User guides",
-    "PROFILO": "Update profile"
+    "PROFILO": "Update profile",
+    "GUIDE_1": "Tutorials",
+    "GUIDE_2": "Graphs analysis",
+    "GRAPH_INSTAGRAM": "Graphs Instagram"
   },
   "DASHBOARD": {
     "CUSTOM": "My dashboard",

@@ -1127,8 +1127,6 @@ export class ChartsCallsService {
       case IG_CHART.AUD_GENDER_AGE_TORTA:
         header = [['Genere', 'numero']];
 
-        console.log(data);
-
         // Ciclo le età
         for(let j = 0; j < tmpF_age.length; j++) {
           if(parseInt(data[data.length-1].value[tmpF_age[j]])){
@@ -1154,7 +1152,6 @@ export class ChartsCallsService {
           chartData.push([tmpM_age[i], tmpM[i]]);
           chartData.push([tmpU_age[i], tmpU[i]]);
         }
-        console.log(chartData);
 
         break; // IG Follower Gender/Age - Torta
       case IG_CHART.AUD_COUNTRY_ELENCO:
@@ -2302,7 +2299,7 @@ export class ChartsCallsService {
             colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
             areaOpacity: 0.4,
             legend: {position: 'top', maxLines: 2},
-            bar: {groupWidth: '40%'},
+            bar: {groupWidth: '30%'},
             isStacked: true,
           }
         };
