@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../shared/store/model';
-import {DashboardData, IntervalDate} from './filter.model';
+import {DashboardData, IntervalDate, IntervalDateComparasion} from './filter.model';
 import {ChartsCallsService} from '../../../shared/_services/charts_calls.service';
 import {Observable} from 'rxjs';
 import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
@@ -89,6 +89,13 @@ export class FilterActions {
     this.Redux.dispatch({type: FILTER_BY_DATA, filteredDashboard: filteredDashboard});
   }
 
+  /*
+  filterDataComparasion(dateInterval: IntervalDateComparasion) {
+    const filteredDashboard = this.filterByDateInterval(dateInterval);
+    this.Redux.dispatch({type: FILTER_BY_DATA, filteredDashboard: filteredDashboard});
+  }
+  */
+
   updateChart(chart: DashboardCharts) {
     const index = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
     const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
@@ -104,6 +111,18 @@ export class FilterActions {
       storedDashboards: this.storedDashboards
     });
   }
+/*
+  updateIntervalChart(chart: DashboardCharts) {
+    const index = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
+    const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
+
+    this.currentDashboard.data[index].chartData = chart.chartData;
+    this.filteredDashboard.data[index].chartData = chart.chartData;
+    this.storedDashboards[storedIndex].data[index].chart = chart.title;
+
+  }
+
+ */
 
   updateChartPosition(arrayChart$: DashboardCharts, type: number) {
     const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === type);
@@ -195,14 +214,14 @@ export class FilterActions {
               case D_TYPE.FBM:
                 chart.chartData = chart.chartData.filter(el => parseDate(el.date_stop).getTime() >= filterInterval.first.getTime() && parseDate(el.date_stop).getTime() <= filterInterval.last.getTime());
                 break;
-              case D_TYPE.IG:
+                case D_TYPE.IG:
                 chart.chartData = chart.metric ===
                 'online_followers' ? chart.chartData.filter(
                   el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last) :
                   chart.period !== 'lifetime' && chart.metric !== 'lost_followers'
-                  ? chart.chartData.filter(
+                    ? chart.chartData.filter(
                     el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last)
-                  : chart.chartData;
+                    : chart.chartData;
 
 
                 if (chart.metric === 'audience_city' || chart.metric === 'audience_gender_age') {

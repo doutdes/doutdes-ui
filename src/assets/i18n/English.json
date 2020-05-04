@@ -55,7 +55,10 @@
     "CREA_ACCOUNT": "Create account",
     "STRUMENTI": "Tools",
     "GUIDE": "User guides",
-    "PROFILO": "Update profile"
+    "PROFILO": "Update profile",
+    "GUIDE_1": "Tutorials",
+    "GUIDE_2": "Graphs analysis",
+    "GRAPH_INSTAGRAM": "Graphs Instagram"
   },
   "DASHBOARD": {
     "CUSTOM": "My dashboard",
@@ -235,6 +238,19 @@
     "STEP_3_CON_2": "and click on",
     "STEP_4": "4) Great job! You added your Instagram Insights token to",
     "STEP_4_CON": ". The statistics are now available on the platform!"
+  },
+  "TUTORIAL_YT": {
+    "TITLE": "Tutorial: YouTube data import",
+    "DESCRIZIONE": "In this guide, you can find instructions to import the YouTube Analytics API key (login token) to configure your website's personal dashboard at ",
+    "DESCRIZIONE_1": "You can also click on any image to enlarge it.",
+    "STEP_1": "1) Go up ",
+    "PREFERENZE": "Preferences",
+    "STEP_1_CON": "in the sidebar and click on",
+    "STEP_2": "2) A pop-up will appear as in the image below. Sign in with the Google account associated with your YouTube channel:",
+    "STEP_3": "3) Click on the button",
+    "CONSENTI": "Allow",
+    "STEP_4": "4) Great job! You added your YouTube Analytics token to",
+    "STEP_4_CON": " The statistics related to your channel YouTube are now available on the platform!"
   },
   "API-KEYS": {
     "TITLE": "Data sources",

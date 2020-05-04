@@ -21,7 +21,7 @@ import {FacebookMarketingService} from './facebook-marketing.service';
 import {FacebookCampaignsService} from './facebook-campaigns.service';
 import {FBM_CHART} from '../_models/FacebookMarketingData';
 import NumberFormat = Intl.NumberFormat;
-import {computeStyle} from '@angular/animations/browser/src/util';
+import {computeStyle, copyObj} from '@angular/animations/browser/src/util';
 import {parse} from 'ts-node';
 import {FBC_CHART} from '../_models/FacebookCampaignsData';
 import {GlobalEventsManagerService} from './global-event-manager.service';
@@ -31,6 +31,8 @@ import {UserService} from './user.service';
 import {HttpClient} from '@angular/common/http';
 import {forEach} from '@angular/router/src/utils/collection';
 import {dayOfYearFromWeeks} from 'ngx-bootstrap/chronos/units/week-calendar-utils';
+import {error} from 'util';
+import {parseIntAutoRadix} from '@angular/common/src/i18n/format_number';
 
 
 @Injectable()
@@ -40,6 +42,8 @@ export class ChartsCallsService {
   listCountry = new Map();
   listCountryIng = new Map();
   listLanguageItalian = new Map();
+
+  intervalDateComparison: any;
 
   constructor(
     private facebookService: FacebookService,
@@ -101,6 +105,7 @@ export class ChartsCallsService {
     });
 
   }
+
   public static cutString(str, maxLength) {
     if (str) {
       return str.length > maxLength ? str.substr(0, maxLength) + '...' : str;
@@ -147,12 +152,24 @@ export class ChartsCallsService {
     const supportArray = [];
     const age = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
     const time = ['0-3', '3-6', '6-9', '9-12', '12-15', '15-18', '18-21', '21-24']; // temporal range for some fbm charts
+    let elem = 'Like ';
 
     const min = [];
     const average = [];
     const max = [] ;
     const blockTime = [3, 6, 9, 12, 15, 18, 21, 24];
+
+    const tmpF = [];
+    const tmpF_age = ['F13-17', 'F18-24', 'F25-34', 'F35-44', 'F45-54', 'F55-64', 'F65+'];
+    const tmpM = [];
+    const tmpM_age = ['M13-17', 'M18-24', 'M25-34', 'M35-44', 'M45-54', 'M55-64', 'M65+'];
+    const tmpU = [];
+    const tmpU_age = ['U13-17', 'U18-24', 'U25-34', 'U35-44', 'U45-54', 'U55-64', 'U65+'];
+
+    let j = 0;
+    let k = 0;
     let acc = 0;
+    let n = 0;
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -483,7 +500,7 @@ export class ChartsCallsService {
         });
 
         chartData = this.addPaddingRows(chartData);
-        break; // Facebook fan per città(elenco)
+        break; // Facebook fan per Age (elenco)
 
 
       case GA_CHART.IMPRESSIONS_DAY:
@@ -676,6 +693,98 @@ export class ChartsCallsService {
         }
 
         break;
+      case GA_CHART.AUD_COUNTRY_GO:
+        /** Data array is constructed as follows:
+         * 0 - data
+         * 1 - country
+         * 2 - value
+         **/
+        header = [['Country', 'Value']];
+        let mapData = new Map();
+
+        for (let i = 0; i < data.length; i++) {
+          if(!mapData.has(data[i][1])){
+            mapData.set(data[i][1], parseInt(data[i][2]));
+          } else {
+            const value_0 = parseInt(mapData.get(data[i][1]));
+            const value_1 = parseInt(data[i][2]);
+
+            mapData.delete(mapData.get(data[i][1]));
+            mapData.set(data[i][1], value_0 + value_1);
+          }
+        }
+
+        const chiave = mapData.keys();
+        const valore = mapData.values();
+
+        for (let i = 0; i < mapData.size; i++) {
+          chartData.push([chiave.next().value, valore.next().value]);
+        }
+
+        break; // Google Audience Country
+      case GA_CHART.AUD_REGION_GO:
+        /** Data array is constructed as follows:
+         * 0 - data
+         * 1 - region
+         * 2 - country
+         * 3 - value
+         **/
+        header = [['Region', 'Value']];
+        let mapD = new Map();
+
+        for (let i = 0; i < data.length; i++) {
+          if (data[i][2] == "Italy") {
+            if (!mapD.has(data[i][1])) {
+              mapD.set(data[i][1], parseInt(data[i][3]));
+            } else {
+              const value_0 = parseInt(mapD.get(data[i][1]));
+              const value_1 = parseInt(data[i][3]);
+
+              mapD.delete(mapD.get(data[i][1]));
+              mapD.set(data[i][1], value_0 + value_1);
+            }
+          }
+        }
+
+        const c = mapD.keys();
+        const valu = mapD.values();
+
+        for (let i = 0; i < mapD.size; i++) {
+          chartData.push([c.next().value, valu.next().value]);
+        }
+
+        break; // Google Audience Region
+      case GA_CHART.SESSION_ELENCO_GO:
+        /** Data array is constructed as follows:
+         * 0 - date
+         * 1 -
+         * 2 - value
+         **/
+
+        header = [['Sorgente', 'Sessioni']];
+
+        for (let i = 0; i < data.length; i++) {
+          indexFound = keys.findIndex(el => el === data[i][1]);
+
+          if (indexFound >= 0) {
+            chartData[indexFound][1] += parseInt(data[i][2], 10);
+          } else {
+            keys.push(data[i][1]);
+            chartData.push([ChartsCallsService.cutString(data[i][1], 30), parseInt(data[i][2], 10)]);
+          }
+        }
+
+        chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        paddingRows = chartData.length % 9 ? 9 - (chartData.length % 9) : 0;
+
+        for (let i = 0; i < paddingRows; i++) {
+          chartData.push(['', null]);
+        }
+
+        break; // Google Session elenco
 
         // Instagram chart
       case IG_CHART.AUD_CITY:
@@ -684,10 +793,12 @@ export class ChartsCallsService {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
           });
+
           chartData.sort(function (obj1, obj2) {
             return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
           });
-          const oldValue = data[data.length - 2]['value'];
+
+          const oldValue = data[data.length - 2] ? data[data.length - 2]['value'] : 0;
           for (const i in chartData) {
             // tslint:disable-next-line:no-shadowed-variable
             const diff = oldValue[chartData[i][0]] ?
@@ -699,40 +810,16 @@ export class ChartsCallsService {
                 chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
                 chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
           }
-          // chartData[1] = ['Monserrato, Sardinia', {v : -1, f: '300' }];
-          // chartData[2] = ["Quartu Sant'Elena, Sardinia", {v : 0, f: '287' }];
-          // chartData[3] = ['Elmas, Sardinia', {v : 1, f: '234' }];
-          // chartData[4] = ['Sassari, Sardinia', {v : -1, f: '196' }];
-          // chartData[5] = ['Nuoro, Sardinia', {v : 0, f: '122' }];
-          // chartData[6] = ['Olbia, Sardinia', {v : 0, f: '111' }];
-          // chartData[7] = ['Macomer, Sardinia', {v : 1, f: '96' }];
-          // chartData[8] = ['Selargius, Sardinia', {v : -1, f: '36' }];
-          //  chartData[0] = ["Cagliari, Sardinia	", {v : -1, f: '127' }];
-          //  chartData[1] = ["Paris, Île-de-France", {v : -1, f: '70' }];
-          //  chartData[2] = ['Lille, Hauts-de-France', {v : 1, f: '66' }];
-          //  chartData[3] = ['Rennes, Bretagne', {v : 1, f: '54' }];
-          //  chartData[4] = ['Rouen, Normandie', {v : -1, f: '31' }];
-          //  chartData[5] = ['Marseille, Provence-Alpes-Côte...', {v : 0, f: '16' }];
-          //  chartData[6] = ['Nantes, Pays de la Loire', {v : 1, f: '14' }];
-          //  chartData[7] = ['Toulouse, Occitanie', {v : -1, f: '9' }];
-          //  chartData[8] = ['Bordeaux, Nouvelle-Aquitaine', {v : -1, f: '8' }];
-           //console.log(chartData)
           chartData = this.addPaddingRows(chartData);
         }
-        break; // IG Audience City
+        break; // IG Follower City - Elenco
       case IG_CHART.AUD_COUNTRY:
         header = [['Paese', 'Popolarità']];
         if (data.length > 0) {
           chartData = this.changeNameCountry(data);
         }
-        // console.log(chartData)
-        // chartData=[["Italia", 1000], ["Francia", 3000], ["Regno Unito", 2500], ["Polonia", 1900], ["Russia", 500], ["Australia", 600],
-        // ["Grecia", 1200], ["Stati Uniti", 3500]]
-        // chartData=[["Italia", 1000]]
-        // console.log(chartData)
-        break; // IG Audience Country
+        break; // IG Follower Country
       case IG_CHART.AUD_GENDER_AGE:
-        console.log(data);
         header = [['Età', 'Maschio', 'Femmina']];
 
         const gender_data = data[0] ? Object.keys(data[0]['value']) : null;
@@ -764,11 +851,7 @@ export class ChartsCallsService {
           }
           chartData = chartData.sort();
         }
-       // chartData[1] =["18-24", 1566, 1330]
-       //    chartData[1] =["18-24", 1566, 1530]
-       //   chartData[2] =["25-34", 1400, 1200]
-        // console.log(chartData)
-        break; // IG Audience Gender/Age
+        break; // IG Follower Gender/Age
       case IG_CHART.AUD_LOCALE:
         header = [['Paese', 'Numero']]; /// TODO: fix containsGeoData to use header != 'Country'
         if (data.length > 0) {
@@ -807,19 +890,10 @@ export class ChartsCallsService {
           });
           chartData = chartData.slice(0, 5).concat(other);
         }
-        // console.log(chartData)
-        // chartData=[['Tedesco', 5000],
-        // ['Inglese', 3000],
-        // ['Spagnolo', 2900],
-        // ['Francese', 2250],
-        // ['Italiano', 1650],
-        // ['Altro', 1350]];
-        //
-
 
         break; // IG Audience Locale
       case IG_CHART.ONLINE_FOLLOWERS:
-        console.log(data)
+
         let dayValue = [];
         let day = [];
         let times = [];
@@ -866,17 +940,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), (data[i].value)]);
         }
-        // chartData.push([moment(data[32].end_time).toDate(), 40]);
-        // chartData.push([moment(data[33].end_time).toDate(), 60]);
-        // chartData.push([moment(data[34].end_time).toDate(), 50]);
-        // chartData.push([moment(data[35].end_time).toDate(), 50]);
-        // chartData.push([moment(data[36].end_time).toDate(), 45]);
-        // chartData.push([moment(data[37].end_time).toDate(), 62]);
-        // chartData.push([moment(data[38].end_time).toDate(), 55]);
-        // chartData.push([moment(data[39].end_time).toDate(), 38]);
-        // chartData.push([moment(data[40].end_time).toDate(), 60]);
-        // chartData.push([moment(data[41].end_time).toDate(), 50]);
-        // console.log(data)
+
         break; // IG Impressions by day
       case IG_CHART.REACH:
         header = [['Data', 'Utenti raggiunti']];
@@ -884,16 +948,6 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
-        // chartData.push([moment(data[32].end_time).toDate(), 40]);
-        // chartData.push([moment(data[33].end_time).toDate(), 60]);
-        // chartData.push([moment(data[34].end_time).toDate(), 50]);
-        // chartData.push([moment(data[35].end_time).toDate(), 50]);
-        // chartData.push([moment(data[36].end_time).toDate(), 45]);
-        // chartData.push([moment(data[37].end_time).toDate(), 62]);
-        // chartData.push([moment(data[38].end_time).toDate(), 55]);
-        // chartData.push([moment(data[39].end_time).toDate(), 38]);
-        // chartData.push([moment(data[40].end_time).toDate(), 60]);
-        // chartData.push([moment(data[41].end_time).toDate(), 50]);
         break; // IG Reach
       case IG_CHART.ACTION_PERFORMED:
         header = [['Tipo', 'Numero']];
@@ -927,52 +981,33 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
-        // console.log(chartData[35][1])
-        // chartData[35] = [chartData[35][0], 60]
-        // chartData[36] = [chartData[36][0], 50]
-        // chartData[37] = [chartData[37][0], 40]
-        // chartData[38] = [chartData[38][0], 30]
-        // chartData[39] = [chartData[39][0], 12]
         break; // IG FollowerCount
       case IG_CHART.LOST_FOLLOWERS:
         header = [['Data', 'Follower persi']];
         let diff = 0;
 
         if (data.length > 0 && data[0]['business'].length > 1) {
+
           const follower_day = data[1]['follower_count'];
           const business = data[0]['business'];
+
           let i = (business.length - 1);
           while (i >= 1) {
-            if (business[i] && follower_day[i]) //TODO might have different lengths, check
-              diff = Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count));
+
+            diff = business[i].followers_count !== 0 && business[i - 1].followers_count !== 0
+              ? Math.abs((business[i].followers_count - follower_day[i - 1].value) - (business[i - 1].followers_count))
+              : 0;
 
             chartData.push([
               moment(business[i].end_time).toDate(),
               diff
             ]);
             i--;
+            i = business[i - 1] === undefined || follower_day[i - 1] === undefined ? 0 : i;
           }
-          // chartData.push([moment(business[0].end_time).toDate(), 10]);
-          // chartData.push([moment(business[1].end_time).toDate(), 5]);
-          // chartData.push([moment(business[2].end_time).toDate(), 15]);
-          // chartData.push([moment(business[3].end_time).toDate(), 23]);
-          // chartData.push([moment(business[4].end_time).toDate(), 20]);
-          // chartData.push([moment(business[5].end_time).toDate(), 80]);
-          // chartData.push([moment(business[6].end_time).toDate(), 16]);
-          // chartData.push([moment(business[7].end_time).toDate(), 30]);
-          // chartData.push([moment(business[8].end_time).toDate(), 11]);
-          // chartData.push([moment(business[9].end_time).toDate(), 9]);
-          // chartData.push([moment(business[10].end_time).toDate(), 8]);
         } else {
           chartData.push([new Date(), diff]);
         }
-        //   chartData.push([moment(data[35].end_time).toDate(), 10]);
-        // chartData.push([moment(data[36].end_time).toDate(), 5]);
-        // chartData.push([moment(data[37].end_time).toDate(), 50]);
-        // chartData.push([moment(data[38].end_time).toDate(), 10]);
-        // chartData.push([moment(data[39].end_time).toDate(), 20]);
-        // chartData.push([moment(data[40].end_time).toDate(), 4]);
-        // chartData.push([moment(data[41].end_time).toDate(), 3]);
         break;
       case IG_CHART.INFO_CLICKS_COL:
         header = [['Informazione', 'Valore']];
@@ -993,25 +1028,158 @@ export class ChartsCallsService {
         }
 
         break;
+      case IG_CHART.MEDIA_COMMENT_DATA:
+        elem = 'Commenti ';
+
+      // tslint:disable-next-line:no-switch-case-fall-through
       case IG_CHART.MEDIA_LIKE_DATA:
-        header = [['Data', 'Like', {role: 'tooltip'}]];
-        let arr = [], date, len;
-        date = data[data.length - 1].end_time.slice(0, 10);
-        date = new Date(Date.parse(date));
-        for (let i = data.length - 1; i >= 0; i--) {
-          arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date));
-          arr.forEach(el => acc += el.like_count);
-          len = arr.length > 0 ? arr.length : 1;
-          chartData.push([
-            parseDate(date),
-            acc,
-            'Like ' + acc + ', N. media ' + arr.length + ', Media like ' + (acc / len) + ', ' + date.toString().slice(3, 15)
-          ]);
-          acc = 0;
-          date = new Date(Date.parse(date) + 1000 * 3600 * 24);
-        }
+        header = [['Data', 'Like'/*, {role: 'tooltip'}*/]];
+
+//         let arr = [], len, date1, date2, diff_time;
+// console.log(data)
+//         const day_time = 1000 * 3600 * 24;
+//         data.push(data[data.length - 1])
+//         for (let i = data.length - 1; i >= 0; i--) {
+//           chartData.push([
+//             data[i].end_time.slice(0, 10),
+//             data[i].value
+//           ])
+          /*date2 = new Date(data[i].end_time.slice(0, 10));
+          if (i > 0) {
+            date1 = new Date(data[i - 1].end_time.slice(0, 10));
+            diff_time = Math.abs(date1.getTime() - date2.getTime()) / day_time;
+          }
+
+          if (chartData.length === 0 || !(chartData[chartData.length - 1][0] === date2.toString().slice(3, 15))) {
+            arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date2));
+            arr.forEach(el => acc += el.value);
+            len = arr.length > 0 ? arr.length : 1;
+            chartData.push([
+              date2.toString().slice(3, 15),
+              acc,
+              elem + acc + ', N. media ' + arr.length + ', Media ' + elem + (acc / len) + ', ' + date2.toString().slice(3, 15)
+            ]);
+          }
+          acc = 0;*/
+
+          // if (diff_time > 1) {
+          //   for (let j = diff_time - 1; j > 0; j--) {
+          //     chartData.push([
+          //       subDays(date1, j).toString().slice(3, 15),
+          //       acc,
+          //       elem + 0 + ', N. media ' + 0 + ', Media ' + elem + 0 + ', ' + subDays(date1, j).toString().slice(3, 15)
+          //     ]);
+          //   }
+          // }
+          // diff_time = 0;
+        // }
 
         break;
+
+      case IG_CHART.MEDIA_LIKE_TYPE:
+        header = [['Tipo', 'Like', {role: 'tooltip'}]];
+        let images, videos, carousel;
+
+        // console.log(data);
+
+        break;
+      case IG_CHART.COMPARISON_COLONNA:
+        header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
+
+        // Per gestire i filtri degli intervalli
+        this.GEservice.checkFilterDateIGComparasion.next(data.length);
+
+        this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
+
+          // Sezione nel caso di modifica intervalli
+          if (intervalDateComparison != null) {
+            j = this.checkControlDate(1, intervalDateComparison, data, 0);
+            k = this.checkControlDate(1, intervalDateComparison, data, 1);
+          } else {
+            // Sezione nel caso di non modifica intervalli/valore di default
+            j = this.checkControlDate(2, intervalDateComparison, data, 0);
+            k = this.checkControlDate(2, intervalDateComparison, data, 1);
+          }
+
+          chartData = [];
+          chartData.push([this.formatInterval(intervalDateComparison, 1, data), j, 0]);
+          chartData.push([this.formatInterval(intervalDateComparison, 2, data), 0, k]);
+        }, error => {
+          console.log(error);
+          console.error(error);
+        });
+
+        break; // IG Follower Count Comparasion
+      case IG_CHART.AUD_CITY_GEOMAPPA:
+        header = [['Città', 'Numero fan']];
+        if (data.length > 0) {
+          chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+            return [k, data[data.length - 1].value[k]];
+          });
+        }
+
+        chartData = chartData.sort(function (obj1, obj2) {
+          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+        });
+
+        chartData = chartData.slice(0, 15);
+        break; // IG Follower City - Geomappa
+      case IG_CHART.AUD_GENDER_AGE_TORTA:
+        header = [['Genere', 'numero']];
+
+        // Ciclo le età
+        for(let j = 0; j < tmpF_age.length; j++) {
+          if(parseInt(data[data.length-1].value[tmpF_age[j]])){
+            tmpF[j] = parseInt(data[data.length-1].value[tmpF_age[j]]);
+          } else {
+            tmpF[j] = 0;
+          }
+          if(parseInt(data[data.length-1].value[tmpM_age[j]])){
+            tmpM[j] = parseInt(data[data.length-1].value[tmpM_age[j]]);
+          } else {
+            tmpM[j] = 0;
+          }
+          if(parseInt(data[data.length-1].value[tmpU_age[j]])){
+            tmpU[j] = parseInt(data[data.length-1].value[tmpU_age[j]]);
+          } else {
+            tmpU[j] = 0;
+          }
+        }
+
+        // Salvo in ChartData
+        for(let i = 0; i < tmpF_age.length; i++){
+          chartData.push([tmpF_age[i], tmpF[i]]);
+          chartData.push([tmpM_age[i], tmpM[i]]);
+          chartData.push([tmpU_age[i], tmpU[i]]);
+        }
+
+        break; // IG Follower Gender/Age - Torta
+      case IG_CHART.AUD_COUNTRY_ELENCO:
+        header = [['Paese', 'Popolarità']];
+        chartData =  this.changeNameCountry(data);
+
+        if (data.length > 0) {
+          // chartData = Object.keys(data[data.length - 1].value).map(function (k) {
+          //   return [ChartsCallsService.cutString(k, 30), data[data.length - 1].value[k]];
+          // });
+          chartData.sort(function (obj1, obj2) {
+            return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
+          });
+          const oldValue = data[data.length - 2] ? data[data.length - 2]['value'] : 0;
+          for (const i in chartData) {
+            // tslint:disable-next-line:no-shadowed-variable
+            const diff = oldValue[chartData[i][0]] ?
+              parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]], 10) :
+              1;
+            diff > 0 ?
+              chartData[i] = [chartData[i][0], {v : +1, f: chartData[i][1].toString() }] :
+              diff === 0 ?
+                chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
+                chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
+          }
+          chartData = this.addPaddingRows(chartData);
+        }
+        break; // IG Follower Country - Elenco
 
       case YT_CHART.VIEWS:
         header = [['Data', 'Visualizzazioni']];
@@ -1713,7 +1881,8 @@ export class ChartsCallsService {
       case FB_CHART.NEGATIVE_FEEDBACK:
         formattedData = this.areaChart( data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+                viewWindowMode: 'explicit', viewWindow: {min: 0, max: this.getMaxChartStep(data)}},
               colors: [FB_PALETTE.BLUE.C7]}
           }
         );
@@ -1942,19 +2111,19 @@ export class ChartsCallsService {
         formattedData = this.tableChart(data,
           {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
           }]});
-        break; // IG Audience City
+        break; // IG Follower City
       case IG_CHART.AUD_COUNTRY:
         formattedData = this.geoChart(data, { options : {
             region: 'world',
             ccolors: [IG_PALETTE.AMARANTH.C5],
             colorAxis: {colors: [IG_PALETTE.AMARANTH.C9, IG_PALETTE.AMARANTH.C4]}}} );
-        break; // IG Audience Country
+        break; // IG Follower Country
       case IG_CHART.AUD_GENDER_AGE:
         formattedData = this.columnChart(data,
           {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
             options: { vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
             colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
-        break; // IG Audience Gender/Age
+        break; // IG Follower Gender/Age
       case IG_CHART.AUD_LOCALE:
         formattedData = this.columnChart(data,
           {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
@@ -1963,7 +2132,7 @@ export class ChartsCallsService {
               hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
               colors: [IG_PALETTE.FUCSIA.C5],
               bar: {groupWidth: '50%'}}});
-        break; // IG Audience Locale
+        break; // IG Follower Locale
       case IG_CHART.ONLINE_FOLLOWERS:
         formattedData = this.columnChart(data,
           {formatters: [{columns: [1, 2, 3], type: 'NumberFormat', options: {pattern: '#.##'}}],
@@ -2021,10 +2190,154 @@ export class ChartsCallsService {
               areaOpacity: 0.4,
               bar: {groupWidth: '75%'}, isStacked: true}});
         break;
+
       case IG_CHART.MEDIA_LIKE_DATA:
-        formattedData = this.areaChart( data,
-          {options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            isStacked: true,
+            chartArea: {left: 0, right: 0, height: 185, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0},
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+            },
+            colors: [IG_PALETTE.AMARANTH.C5],
+            areaOpacity: 0.1
+          }
+        };
         break;
+
+      case IG_CHART.MEDIA_COMMENT_DATA:
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          chartClass: 5,
+          options: {
+            chartArea: {left: 0, right: 0, height: 185, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 210,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0},
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+            },
+            colors: [IG_PALETTE.AMARANTH.C5],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+
+      case IG_CHART.MEDIA_LIKE_TYPE:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
+            options: {
+              pattern: '#.##'
+            }
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 0, right: 0, height: 270, top: 0},
+            height: 310,
+            vAxis: {
+              minValue: 0,
+              viewWindowMode: 'explicit',
+              viewWindow: {min: 0, max: 50},
+              gridlines: {color: '#eaeaea', count: 5},
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+              format: '#'
+            },
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
+            areaOpacity: 0.4,
+            bar: {groupWidth: '75%'},
+            isStacked: true,
+          }
+        };
+        break;
+      case IG_CHART.COMPARISON_COLONNA:
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1, 2],
+            type: 'NumberFormat',
+            options: {
+              pattern: '###.##'
+            }
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 30, right: 0, height: 270, top: 20},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+            hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
+            areaOpacity: 0.4,
+            legend: {position: 'top', maxLines: 2},
+            bar: {groupWidth: '30%'},
+            isStacked: true,
+          }
+        };
+        break; // IG Follower Count Comparasion
+      case IG_CHART.AUD_CITY_GEOMAPPA:
+        formattedData = this.geoChart(data, { options : {
+            region: 'world',
+            displayMode: 'markers',
+            colors: [IG_PALETTE.AMARANTH.C5]}} );
+        break; // IG Follower City - Geomappa
+      case IG_CHART.AUD_GENDER_AGE_TORTA:
+
+        formattedData = {
+          chartType: 'PieChart',
+          dataTable: data,
+          chartClass: 8,
+          options: {
+            chartArea: {left: 100, right: 0, height: 290, top: 20},
+            legend: {position: 'right'},
+            colors: ['#0676ff', '#ff32b9', '#b6b6b6'],
+            height: 310,
+            is3D: false,
+            pieHole: 0.55,
+            pieSliceText: 'percentage',
+            pieSliceTextStyle: {fontSize: 12, color: 'white'},
+            areaOpacity: 0.2
+          }
+        };
+        /*
+        formattedData = this.pieChart(data,
+          {options: {colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7]}});
+         */
+        break; // IG Follower Gender/Age - Torta
+      case IG_CHART.AUD_COUNTRY_ELENCO:
+        formattedData = this.tableChart(data,
+          {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
+            }]});
+        break; // IG Follower Country - Elenco
 
       case YT_CHART.VIEWS:
         formattedData = this.areaChart( data,
@@ -2775,9 +3088,14 @@ export class ChartsCallsService {
     return chartData;
   }
 
+  private getMaxChartStep(data) {
+    const arr = data.slice(1);
+    const max = Math.max.apply(null, arr.map(function(o) { return o[1]; }));
+    return max + 10;
+  }
+
   private getMinChartStep(type, data, perc = 0.8) {
     let min = 0, length;
-
     data = data.slice(1);
 
     if (data) {
@@ -3003,6 +3321,7 @@ export class ChartsCallsService {
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
         // console.log(intervalDate.last);
+        //console.log(data);
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
         data.length > 0 ?  value = data[data.length - 1].value : value = 0;
 
@@ -3349,6 +3668,164 @@ export class ChartsCallsService {
     return chartData;
   }
 
+  public checkControlDate (n, intervalDateComparison, data, flag) {
+    let j = 0;
+    let k = 0;
+
+    /*
+          Primo campo:
+            1 = caso modifica intervalli
+            2 = caso senza modifica intervalli
+
+          Secondo campo: intervalDateComparison
+
+          Terzo campo: data
+
+          Quarto campo:
+            0 = Restituire j
+            1 = Restituire k
+    */
+
+    // Modifica intervalli
+    if(n == 1) {
+
+      for (let i = 0; i < data.length; i++) {
+        //Controllo per colonna 1
+        if ((parseDate(data[i]['end_time']) >= intervalDateComparison[0][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[0][1]) {
+          j += data[i]['value'];
+        }
+        //Controllo per colonna 2
+        if ((parseDate(data[i]['end_time']) >= intervalDateComparison[1][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[1][1]) {
+          k += data[i]['value'];
+        }
+      }
+
+      if (flag == 0) return j;
+      if (flag == 1) return k;
+
+    }
+
+    // Non modifica intervalli
+    if (n == 2) {
+
+      for (let i = 0; i < data.length; i++) {
+
+        // Se il filtro è impostato a "Ultimi 30 giorni"
+        if (data.length == 30) {
+          //Controllo per Colonna 1
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-8]['end_time']))) {
+            j += data[i]['value'];
+          }
+          //Controllo per colonna 2
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-8]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+            k += data[i]['value'];
+          }
+        }
+
+        // Se il filtro è impostato a "Ultimi 7 giorni"
+        if (data.length == 7) {
+          //Controllo per Colonna 1
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-7]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-5]['end_time']))) {
+            j += data[i]['value'];
+          }
+          //Controllo per colonna 2
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-3]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+            k += data[i]['value'];
+          }
+        }
+
+        // Se il filtro è impostato a "Personalizzato"
+        if (data.length != 7 && data.length != 30) {
+
+          // Se imposta la data di lunghezza 1 (es. 09/03 - 09/03)
+          if (data.length == 1) {
+            j = data[0]['value'];  //Controllo per Colonna 1
+            k = data[0]['value']; //Controllo per colonna 2
+          }
+
+          // Se imposta la data di lunghezza 2 (es. 09/03 - 10/03)
+          if (data.length == 2) {
+            j = data[0]['value'];  //Controllo per Colonna 1
+            k = data[1]['value'];  //Controllo per colonna 2
+          }
+
+          // Se imposta la data di lunghezza 3 (es. 09/03 - 11/03)
+          if (data.length == 3) {
+            j = data[0]['value'];  //Controllo per Colonna 1
+            k = data[2]['value'];  //Controllo per colonna 2
+          }
+
+          // Se imposta la data di lunghezza >= 4 (es. 09/03 - 12/03)
+          if (data.length >= 4) {
+            //Controllo per Colonna 1
+            if ((parseDate(data[i]['end_time']) >= parseDate(data[0]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[1]['end_time']))) {
+              j += data[i]['value'];
+            }
+            //Controllo per colonna 2
+            if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-2]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+              k += data[i]['value'];
+            }
+          }
+
+        }
+      }
+
+      if (flag == 0) return j;
+      if (flag == 1) return k;
+
+    }
+
+  }
+
+  public formatInterval (intervalDate, n: number, data) {
+
+    if (!intervalDate) {
+      if (data.length == 30) {
+        if (n == 1) return parseDate(data[data.length-15]['end_time']).getDate() + '/' + (parseDate(data[data.length-15]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-8]['end_time']).getDate() + '/' + (parseDate(data[data.length-8]['end_time']).getMonth()+1);
+        if (n == 2) return parseDate(data[data.length-8]['end_time']).getDate() + '/' + (parseDate(data[data.length-8]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+      } else {
+        if (data.length == 7) {
+          if (n == 1) return parseDate(data[data.length-7]['end_time']).getDate() + '/' + (parseDate(data[data.length-7]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-5]['end_time']).getDate() + '/' + (parseDate(data[data.length-5]['end_time']).getMonth()+1);
+          if (n == 2) return parseDate(data[data.length-3]['end_time']).getDate() + '/' + (parseDate(data[data.length-3]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+        } else {
+
+          // Se imposta la data di lunghezza 1 (es. 09/03 - 09/03)
+          if (data.length == 1) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
+            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
+          }
+
+          // Se imposta la data di lunghezza 2 (es. 09/03 - 10/03)
+          if (data.length == 2) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
+            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
+          }
+
+          // Se imposta la data di lunghezza 3 (es. 09/03 - 11/03)
+          if (data.length == 3) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
+            if (n == 2) return parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth()+1) + ' - ' + parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth()+1);
+          }
+
+          // Se imposta la data di lunghezza >= 4 (es. 09/03 - 12/03)
+          if (data.length >= 4) {
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' +  (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
+            if (n == 2) return parseDate(data[data.length-2]['end_time']).getDate() + '/' + (parseDate(data[data.length-2]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+          }
+
+        }
+      }
+    } else {
+      /*  DIFFERENZE
+      Il primo If commentato restituisce il giorno nel formato '0d'; es: 04/12
+      Il secondo If (quello non commentato) restituisce il giorno nel formato 'd'; es: 4/12
+       */
+      //if (n == 1) return parseDate(intervalDate[0][0]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][0]).getMonth() + ' - ' + parseDate(intervalDate[0][1]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][1]).getMonth();
+      if (n == 1) return parseDate(intervalDate[0][0]).getDate() + '/' + (parseDate(intervalDate[0][0]).getMonth()+1) + ' - ' + parseDate(intervalDate[0][1]).getDate() + '/' + (parseDate(intervalDate[0][1]).getMonth()+1);
+      if (n == 2) return parseDate(intervalDate[1][0]).getDate() + '/' + (parseDate(intervalDate[1][0]).getMonth()+1) + ' - ' + parseDate(intervalDate[1][1]).getDate() + '/' + (parseDate(intervalDate[1][1]).getMonth()+1);
+        }
+    }
+
   private areaChart(data, format?: object) {
     let formattedData;
     formattedData = {
@@ -3408,7 +3885,7 @@ export class ChartsCallsService {
           'hoverTableRow': '',
           'headerCell': 'border-0 py-2 pl-2',
           'tableCell': 'border-0 py-1 pl-2',
-          'rowNumberCell': 'underline-blue-font'
+          'rowNumberCell': 'underline-blue-font',
         },
         alternatingRowStyle: true,
         allowHtml: true,
@@ -3551,6 +4028,4 @@ export class ChartsCallsService {
     return formattedData;
   }
 
-
 }
-

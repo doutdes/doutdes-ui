@@ -106,5 +106,19 @@
       "TITLE": ": sorgente eliminata",
       "MESSAGE": "Da adesso non potrai più accedere alle dashboard collegate a "
     }
+  },
+  "CARD": {
+    "NO_UPDATE_INTERVAL": {
+      "TITLE": "Errore intervalli!",
+      "MESSAGE": "Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto."
+    },
+    "SI_UPDATE_INTERVAL": {
+      "TITLE": "Aggiornamento completato!",
+      "MESSAGE": "Gli intervalli sono stati aggiornati con successo!"
+    },
+    "NO_INFO": {
+      "TITLE": "Errore Info grafico!",
+      "MESSAGE": "La guida del grafico non è disponibile."
+    }
   }
 }

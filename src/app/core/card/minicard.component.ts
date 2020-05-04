@@ -68,9 +68,9 @@ export class MiniCardComponent implements OnInit {
   }
 
   formatMeasure(measure: string) {
-    // let result = 0;
-    // return result;
-    return measure === 'bounce-rate' ? '%' : '';
+     //let result = 0;
+     //return result;
+     return measure === 'bounce-rate' ? '%' : '';
   }
 
   getLocaleString() {

@@ -120,7 +120,7 @@ export class AggregatedDataService {
          : chart.chartData.filter(el => (new Date(el.end_time)) >= dateInterval.first && (new Date(el.end_time)) <= dateInterval.last);
  */
       let prevDate = this.getPrevious(dateInterval);
-      if(chart.type === D_TYPE.FBM){
+      if (chart.type === D_TYPE.FBM) {
         prevFilteredData = chart.chartData.filter(el => (new Date(el.date_stop)) >=  prevDate.first && (moment(el.date_stop).toDate()) <= prevDate.last);
       }
       else {

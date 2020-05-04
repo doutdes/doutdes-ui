@@ -106,5 +106,19 @@
       "TITLE": ": source deleted",
       "MESSAGE": "From now on you will no longer be able to access the dashboards connected to"
     }
+  },
+  "CARD": {
+    "NO_UPDATE_INTERVAL": {
+      "TITLE": "Interval Error",
+      "MESSAGE": "It was not possible to update the intervals. Please try again or contact support."
+    },
+    "SI_UPDATE_INTERVAL": {
+      "TITLE": "Update completed!",
+      "MESSAGE": "The intervals have been successfully updated!"
+    },
+    "NO_INFO": {
+      "TITLE": "Error Graphic Info",
+      "MESSAGE": "The chart guide is not available."
+    }
   }
 }

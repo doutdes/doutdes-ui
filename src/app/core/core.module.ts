@@ -9,7 +9,7 @@ import {SidebarComponent} from './sidebar/sidebar.component';
 import {BreadcrumbComponent} from './breadcrumb/breadcrumb.component';
 import {CardComponent} from './card/card.component';
 import {EmptycardComponent} from './card/emptycard.component';
-import {BsDropdownModule, BsModalService, ModalModule, PopoverModule} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule, BsModalService, ModalModule, PopoverModule} from 'ngx-bootstrap';
 import {SelectDropDownModule} from 'ngx-select-dropdown';
 import {DashboardService} from '../shared/_services/dashboard.service';
 import {MiniCardComponent} from './card/minicard.component';
@@ -38,18 +38,19 @@ export function HttpLoaderFactory(http: HttpClient) {
     EmptycardComponent,
     MiniCardComponent
   ],
-  imports: [
-    RouterModule,
-    SharedModule,
-    BsDropdownModule,
-    ReactiveFormsModule,
-    SelectDropDownModule,
-    Ng2GoogleChartsModule,
-    ModalModule.forRoot(),
-    PopoverModule.forRoot(),
-    PopoverModule.forRoot(),
-    TranslateModule
-  ],
+    imports: [
+        RouterModule,
+        SharedModule,
+        BsDropdownModule,
+        ReactiveFormsModule,
+        SelectDropDownModule,
+        Ng2GoogleChartsModule,
+        ModalModule.forRoot(),
+        PopoverModule.forRoot(),
+        PopoverModule.forRoot(),
+        TranslateModule,
+        BsDatepickerModule
+    ],
   providers: [
     LoginActions,
     BsModalService,

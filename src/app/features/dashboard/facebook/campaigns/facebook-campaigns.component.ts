@@ -198,7 +198,6 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
         .subscribe( data => {
           data = this.CCService.formatTable(data, this.marketing);
           this.dataCampaigns = new MatTableDataSource(data);
-          console.log(this.dataCampaigns)
           setTimeout(() => this.dataCampaigns.paginator = this.paginator);
           setTimeout(() => this.dataCampaigns.sort = this.sort);
 
@@ -511,7 +510,8 @@ export class FeatureDashboardFacebookCampaignsComponent  implements OnInit, OnDe
         empty = empty || !results;
 
         this.miniCards[i].value = results['value'];
-        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].progress = 100 + '%';
+        //this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });

@@ -182,7 +182,8 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
 
         this.getNameMinicard(i);
         this.miniCards[i].value = results['value'];
-        this.miniCards[i].progress = results['perc'] + '%';
+        this.miniCards[i].progress = 100 + '%';
+        //this.miniCards[i].progress = results['perc'] + '%';
         this.miniCards[i].step = results['step'];
       }
     });
@@ -488,7 +489,8 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         return;
       }
       await this.getPagesList();
-      this.createForm();
+
+      this.pageList.length > 0 ? this.createForm() : null;
       fb_page_id = await this.getPageID();
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       await this.getFollowers(fb_page_id);

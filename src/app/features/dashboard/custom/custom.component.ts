@@ -680,12 +680,13 @@ export class FeatureDashboardCustomComponent implements OnInit, OnDestroy {
           results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.CUSTOM, this.miniCards[i].measure, intervalDate);
           this.getNameMinicard(i);
           this.miniCards[i].value = results['value'];
-          this.miniCards[i].progress = results['perc'] + '%';
+          this.miniCards[i].progress = 100 + '%';
+          //this.miniCards[i].progress = results['perc'] + '%';
           this.miniCards[i].step = results['step'];
         } else {
           this.getNameMinicard(i);
           this.miniCards[i].value = '-';
-          this.miniCards[i].progress = '0%';
+          this.miniCards[i].progress = '100%';
           this.miniCards[i].step = 0;
         }
       }

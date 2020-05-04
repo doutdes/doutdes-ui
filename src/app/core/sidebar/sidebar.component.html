@@ -122,26 +122,58 @@
       </div>
     </a>
 
-    <a href="#submenu3" data-toggle="collapse" aria-expanded="false"
+    <a href="#submenu7" data-toggle="collapse" aria-expanded="false"
        class="list-group-item list-group-item-action flex-column align-items-start">
-      <div class="d-flex w-100 justify-content-start align-items-center">
+      <div class="d-flex w-100 justify-content-start align-items-center" aria-expanded="false">
         <span class="fa fa-question fa-fw mr-3"></span>
         <span class="menu-collapsed">{{'SIDEBAR.GUIDE' | translate }}</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
-    <!-- Submenu content -->
-    <div id="submenu3" class="collapse sidebar-submenu">
-      <a [routerLink]="[drag ? '#' : '/tutorial/google']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed ml-4">Tutorial Analytics</span>
+
+    <div id="submenu7" class="collapse sidebar-submenu">
+
+      <a href="#submenu3" data-toggle="collapse" aria-expanded="false"
+         class="list-group-item list-group-item-action flex-column align-items-lg-start">
+        <div class="d-flex w-100 justify-content-lg-start align-items-center">
+          <span class="menu-collapsed ml-4">{{'SIDEBAR.GUIDE_1' | translate }}</span>
+          <span class="fas fa-plus ml-auto"></span>
+        </div>
       </a>
-      <a [routerLink]="[drag ? '#' : '/tutorial/facebook']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed ml-4">Tutorial Facebook</span>
+
+      <!-- Submenu content -->
+      <div id="submenu3" class="collapse sidebar-submenu">
+        <a [routerLink]="[drag ? '#' : '/tutorial/google']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Tutorial Analytics</span>
+        </a>
+        <a [routerLink]="[drag ? '#' : '/tutorial/facebook']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Tutorial Facebook</span>
+        </a>
+        <a [routerLink]="[drag ? '#' : '/tutorial/instagram']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Tutorial Instagram</span>
+        </a>
+        <a [routerLink]="[drag ? '#' : '/tutorial/youtube']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Tutorial YouTube</span>
+        </a>
+      </div>
+
+      <a href="#submenu8" data-toggle="collapse" aria-expanded="false"
+         class="list-group-item list-group-item-action flex-column align-items-lg-start">
+        <div class="d-flex w-100 justify-content-lg-start align-items-center">
+          <!--- <span class="fas fa-chart-line fa-fw ml-4 mb-4"></span> -->
+          <span class="menu-collapsed ml-4">{{'SIDEBAR.GUIDE_2' | translate }}</span>
+          <span class="fas fa-plus ml-auto"></span>
+        </div>
       </a>
-      <a [routerLink]="[drag ? '#' : '/tutorial/instagram']" class="list-group-item list-group-item-action">
-        <span class="menu-collapsed ml-4">Tutorial Instagram</span>
-      </a>
+
+      <div id="submenu8" class="collapse sidebar-submenu">
+        <a href="./././assets/InfoGrafici/GuidaCompleta/Instagram.pdf" target="_blank" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">{{'SIDEBAR.GRAPH_INSTAGRAM' | translate }}</span>
+        </a>
+      </div>
+
     </div>
+
   </ul>
   <!-- List Group END-->
   <!--</div>-->
