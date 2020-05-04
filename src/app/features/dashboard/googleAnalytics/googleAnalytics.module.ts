@@ -10,29 +10,48 @@ import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
 import {FeatureDashboardGoogleAnalyticsComponent} from './googleAnalytics.component';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule, BsLocaleService, PopoverModule} from 'ngx-bootstrap';
 import {ngxLoadingAnimationTypes, NgxLoadingModule} from 'ngx-loading';
+import {UserService} from '../../../shared/_services/user.service';
+
+import {defineLocale} from 'ngx-bootstrap';
+import {itLocale} from 'ngx-bootstrap/locale';
+import {DragulaModule} from 'ng2-dragula';
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
     FeatureDashboardGoogleAnalyticsComponent
   ],
-  imports: [
-    SharedModule,
-    CoreModule,
-    ChartsModule,
-    Ng2GoogleChartsModule,
-    AppFooterModule,
-    RouterModule,
-    HttpClientModule,
-    BsDatepickerModule.forRoot(),
-    BsDropdownModule.forRoot(),
-    NgxLoadingModule.forRoot({}),
-  ],
+    imports: [
+        SharedModule,
+        CoreModule,
+        ChartsModule,
+        Ng2GoogleChartsModule,
+        AppFooterModule,
+        RouterModule,
+        HttpClientModule,
+        BsDatepickerModule.forRoot(),
+        BsDropdownModule.forRoot(),
+        NgxLoadingModule.forRoot({
+            animationType: ngxLoadingAnimationTypes.threeBounce,
+            backdropBackgroundColour: 'rgba(0,0,0,0.1)',
+            backdropBorderRadius: '4px',
+            primaryColour: '#FFF',
+            secondaryColour: '#FFF',
+            fullScreenBackdrop: true
+        }),
+        DragulaModule,
+        TranslateModule,
+        PopoverModule
+    ],
   providers: [
     GoogleAnalyticsService,
     BreadcrumbActions,
-    FilterActions
+    UserService,
+    FilterActions,
+    BsLocaleService,
+    UserService
   ],
   exports: [
     FeatureDashboardGoogleAnalyticsComponent

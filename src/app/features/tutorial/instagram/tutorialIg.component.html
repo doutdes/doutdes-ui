@@ -1,0 +1,26 @@
+<div class="row rounded p-4 title-header h-13">
+  <div class="col-md-12 pl-0">
+    <h2 class="my-auto pl-0">{{ 'TUTORIAL_IG.TITLE' | translate }}</h2>
+  </div>
+</div>
+<div class="rounded my-3 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
+  <p>{{ 'TUTORIAL_IG.DESCRIZIONE' | translate }}<b> DoUtDes</b>.{{ 'TUTORIAL_IG.DESCRIZIONE_1' | translate }}</p>
+
+  <p class="pt-5">{{ 'TUTORIAL_IG.STEP_1' | translate }}<b> {{ 'TUTORIAL_IG.PREFERENZE' | translate }}</b> {{ 'TUTORIAL_IG.STEP_1_CON' | translate }} <b>Login with Instagram</b>:</p>
+  <p><img src="/assets/img/tutorialInstagram/chooseService.PNG"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
+
+  <p class="pt-5">{{ 'TUTORIAL_IG.STEP_2' | translate }}<b> {{ 'TUTORIAL_IG.STEP_2_CON' | translate }}</b>:</p>
+  <p><img src="/assets/img/tutorialInstagram/accessi_ig.PNG"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
+
+  <p class="pt-5">{{ 'TUTORIAL_IG.STEP_3' | translate }}<b>{{ 'TUTORIAL_IG.STEP_3_CON' | translate }}</b>{{ 'TUTORIAL_IG.STEP_3_CON_1' | translate }}<b> DoUtDes </b>{{ 'TUTORIAL_IG.STEP_3_CON_2' | translate }}<b> Ok</b>:</p>
+  <p><img src="/assets/img/tutorialInstagram/seleziona_ig.PNG"  (click)="openModal(zooming, 2)" title="Click here to zoom"/></p>
+
+  <p class="pt-5">{{ 'TUTORIAL_IG.STEP_4' | translate }}<b> DoUtDes</b>{{ 'TUTORIAL_IG.STEP_4_CON' | translate }}</p>
+  <p><img src="/assets/img/tutorialInstagram/ig_dash.PNG"  (click)="openModal(zooming, 3)" title="Click here to zoom"/></p>
+
+</div>
+<ng-template #zooming>
+  <div class="modal-body" style="text-align:center">
+    <img src="/assets/img/tutorialInstagram/{{imgSrc}}" class="img-fluid" style="border: 1px solid #ccc;" />
+  </div>
+</ng-template>

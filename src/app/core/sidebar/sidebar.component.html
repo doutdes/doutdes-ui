@@ -1,101 +1,183 @@
-<div id="sidebar-container" class="sidebar-expanded d-none d-lg-block col-1-5" *ngIf="isUserLoggedIn">
+<div id="sidebar-container" class="sidebar-expanded d-none d-lg-block-2 col-1-5 " [ngClass]="{'drag-mode': drag}"
+     [ngStyle]="{'opacity': drag ? '0.2' : '1'}" *ngIf="isUserLoggedIn">
   <ul class="list-group sticky-top sticky-offset" style="margin-top:13px">
     <!-- Separator with title -->
-    <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
-      <small>CONTENTS</small>
+    <li class="list-group-item sidebar-separator-title d-flex align-items-center menu-collapsed">
+      <small class="font-weight-bold text-uppercase">{{'SIDEBAR.CONTENUTI' | translate }}</small>
     </li>
     <!-- /END Separator -->
     <!-- Menu with submenu -->
-    <a href="#submenu1" data-toggle="collapse" aria-expanded="false"
-       class="list-group-item list-group-item-action flex-column align-items-start">
+    <div data-toggle="collapse" aria-expanded="false"
+         class="list-group-item list-group-item-action flex-column align-items-start"
+         style="background-color: #eeeeee;">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-tachometer-alt mr-3"></span>
-        <span class="menu-collapsed">Dashboards</span>
-        <span class="fas fa-plus ml-auto"></span>
+        <span class="menu-collapsed text-black">{{'SIDEBAR.MY_DASHBOARD' | translate }}</span>
       </div>
-    </a>
+    </div>
     <!-- Submenu content -->
-    <div id="submenu1" class="collapse sidebar-submenu">
-      <a [routerLink]="['/dashboard/google']" class="list-group-item list-group-item-action text-white">
-        <span class="menu-collapsed">Website</span>
+    <div id="submenu1" class="sidebar-submenu">
+      <a [routerLink]="[drag ? '#' : '/dashboard/google']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed">{{'MENU.SITO_WEB' | translate }}</span>
       </a>
-      <a [routerLink]="['/dashboard/facebook']" class="list-group-item list-group-item-action text-white">
-        <span class="menu-collapsed">Facebook</span>
+      <a href="#submenu5" data-toggle="collapse" aria-expanded="false"
+         class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-start align-items-center">
+          <span class="menu-collapsed">Facebook</span>
+          <span *ngIf="!fbm_flag" style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="fas fa-info-circle" #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()"></span>
+          <span class="fas fa-plus ml-auto"></span>
+        </div>
       </a>
-      <a [routerLink]="['/dashboard/custom']"  class="list-group-item list-group-item-action text-white">
-        <span class="menu-collapsed">Custom</span>
+      <div id="submenu5" class="collapse sidebar-submenu">
+        <a [routerLink]="[drag ? '#' : '/dashboard/facebook/insights']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Insights</span>
+        </a>
+        <ng-container *ngIf="fbm_flag === true">
+            <a [routerLink]="[drag ? '#' : '/dashboard/facebook/marketing']" class="list-group-item list-group-item-action">
+              <span class="menu-collapsed ml-4">Marketing</span>
+            </a>
+            <a  [routerLink]="[drag ? '#' : '/dashboard/facebook/campaigns']" class="list-group-item list-group-item-action">
+              <span class="menu-collapsed ml-4">Campaigns</span>
+            </a>
+        </ng-container>
+        <ng-container *ngIf="fbm_flag === false">
+          <a [routerLink]="[drag ? '#' : '/dashboard/facebook/marketing']" class="list-group-item list-group-item-action disabled">
+            <span class="menu-collapsed ml-4">Marketing</span>
+          </a>
+          <a  [routerLink]="[drag ? '#' : '/dashboard/facebook/campaigns']" class="list-group-item list-group-item-action disabled">
+            <span class="menu-collapsed ml-4">Campaigns</span>
+          </a>
+        </ng-container>
+      </div>
+      <a [routerLink]="[drag ? '#' : '/dashboard/instagram']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed">Instagram</span>
       </a>
-      <a class="list-group-item list-group-item-action text-white">
-        <span style="color: #777" class="menu-collapsed">Instagram</span>
+      <a [routerLink]="[drag ? '#' : '/dashboard/youtube']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed">Youtube</span>
+      </a>
+      <a [routerLink]="[drag ? '#' : '/dashboard/custom']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed">{{'MENU.PERSONALIZZATA' | translate }}</span>
       </a>
     </div>
     <a href="#submenu2" data-toggle="collapse" aria-expanded="false"
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-user fa-fw mr-3"></span>
-        <span class="menu-collapsed">Preferences</span>
+        <span class="menu-collapsed">{{'MENU.PREFERENZE' | translate }}</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
     <!-- Submenu content -->
     <div id="submenu2" class="collapse sidebar-submenu">
-      <a class="list-group-item list-group-item-action text-white">
-        <span style="color: #777" class="menu-collapsed">Account settings</span>
+      <!--<a [routerLink]="['/preferences/profile']" class="list-group-item list-group-item-action">-->
+      <!--<span class="menu-collapsed">Profilo</span>-->
+      <!--</a>-->
+      <a [routerLink]="[drag ? '#' : '/preferences/api-keys']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed ml-4">{{'SIDEBAR.CONFIGURA_SORGENTI_DATI' | translate }}</span>
       </a>
-      <a [routerLink]="['/preferences/api-keys']" class="list-group-item list-group-item-action text-white">
-        <span class="menu-collapsed">Configure data sources</span>
+
+      <a [routerLink]="[drag ? '#' : '/preferences/language']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed ml-4">{{'SIDEBAR.CONFIGURA_LINGUA' | translate }}</span>
       </a>
     </div>
-    <a class="list-group-item list-group-item-action">
-      <div class="d-flex w-100 justify-content-start align-items-center">
-        <span class="fa fa-tasks fa-fw mr-3"></span>
-        <span style="color: #777" class="menu-collapsed">Reports</span>
-      </div>
-    </a>
-    <!-- Separator with title -->
-    <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
-      <small>TOOLS</small>
-    </li>
-    <!-- /END Separator -->
-    <a class="list-group-item list-group-item-action" [routerLink]="['/calendar']">
-      <div class="d-flex w-100 justify-content-start align-items-center">
-        <span class="fas fa-calendar-alt fa-fw mr-3"></span>
-        <span class="menu-collapsed">Calendar</span>
-      </div>
-    </a>
-    <a class="list-group-item list-group-item-action">
-      <div class="d-flex w-100 justify-content-start align-items-center">
-        <span class="fas fa-envelope fa-fw mr-3"></span>
-        <span style="color: #777" class="menu-collapsed">Messages</span>
-      </div>
-    </a>
 
-    <a href="#submenu3" data-toggle="collapse" aria-expanded="false"
+    <a *ngIf="userType === 0" href="#submenu4" data-toggle="collapse" aria-expanded="false"
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center">
-        <span class="fa fa-question fa-fw mr-3"></span>
-        <span class="menu-collapsed">How to</span>
+        <span class="fas fa-star fa-fw mr-3"></span>
+        <span class="menu-collapsed">{{'SIDEBAR.ADMIN' | translate }}</span>
         <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
+
     <!-- Submenu content -->
-    <div id="submenu3" class="collapse sidebar-submenu">
-      <a [routerLink]="['/tutorial/google']" class="list-group-item list-group-item-action text-white">
-        <span class="menu-collapsed">Tutorial website</span>
-      </a>
-      <a [routerLink]="['/tutorial/facebook']" class="list-group-item list-group-item-action text-white">
-        <span class="menu-collapsed">Tutorial Facebook</span>
+    <div *ngIf="userType === 0" id="submenu4" class="collapse sidebar-submenu">
+      <a [routerLink]="[drag ? '#' : '/authentication/register']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed ml-4">{{'SIDEBAR.CREA_ACCOUNT' | translate }}</span>
       </a>
     </div>
 
-    <a data-toggle="sidebar-collapse"
-       class="list-group-item list-group-item-action d-flex align-items-center">
+    <!--<a class="list-group-item list-group-item-action"> &lt;!&ndash; [routerLink]="['/report']" &ndash;&gt;-->
+    <!--<div class="d-flex w-100 justify-content-start align-items-center" style="color: #777">-->
+    <!--<span class="fa fa-tasks fa-fs mr-3"></span>-->
+    <!--<span class="menu-collapsed">Report</span>-->
+    <!--&lt;!&ndash; [routerLink]="[drag ? '#' : '/authentication/register']" &ndash;&gt;-->
+    <!--</div>-->
+    <!--</a>-->
+    <!-- Separator with title -->
+    <li class="list-group-item sidebar-separator-title text-white d-flex align-items-center menu-collapsed">
+      <small class="font-weight-bold text-uppercase">{{'SIDEBAR.STRUMENTI' | translate }}</small>
+    </li>
+    <!-- /END Separator -->
+    <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/calendar']">
       <div class="d-flex w-100 justify-content-start align-items-center">
-        <span id="collapse-icon" class="fas fa-arrow-circle-left mr-3"></span>
-        <span style="color: #777" id="collapse-text" class="menu-collapsed">Collapse</span>
+        <span class="fas fa-calendar-alt fa-fw mr-3"></span>
+        <span class="menu-collapsed">{{'MENU.CALENDARIO' | translate }}</span>
       </div>
     </a>
+    <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/messages']">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fas fa-envelope fa-fw mr-3"></span>
+        <span class="menu-collapsed">{{'MENU.MESSAGGI' | translate }}</span>
+      </div>
+    </a>
+
+    <a href="#submenu7" data-toggle="collapse" aria-expanded="false"
+       class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-start align-items-center" aria-expanded="false">
+        <span class="fa fa-question fa-fw mr-3"></span>
+        <span class="menu-collapsed">{{'SIDEBAR.GUIDE' | translate }}</span>
+        <span class="fas fa-plus ml-auto"></span>
+      </div>
+    </a>
+
+    <div id="submenu7" class="collapse sidebar-submenu">
+
+      <a href="#submenu3" data-toggle="collapse" aria-expanded="false"
+         class="list-group-item list-group-item-action flex-column align-items-lg-start">
+        <div class="d-flex w-100 justify-content-lg-start align-items-center">
+          <span class="menu-collapsed ml-4">{{'SIDEBAR.GUIDE_1' | translate }}</span>
+          <span class="fas fa-plus ml-auto"></span>
+        </div>
+      </a>
+
+      <!-- Submenu content -->
+      <div id="submenu3" class="collapse sidebar-submenu">
+        <a [routerLink]="[drag ? '#' : '/tutorial/google']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Tutorial Analytics</span>
+        </a>
+        <a [routerLink]="[drag ? '#' : '/tutorial/facebook']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Tutorial Facebook</span>
+        </a>
+        <a [routerLink]="[drag ? '#' : '/tutorial/instagram']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Tutorial Instagram</span>
+        </a>
+        <a [routerLink]="[drag ? '#' : '/tutorial/youtube']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Tutorial YouTube</span>
+        </a>
+      </div>
+
+      <a href="#submenu8" data-toggle="collapse" aria-expanded="false"
+         class="list-group-item list-group-item-action flex-column align-items-lg-start">
+        <div class="d-flex w-100 justify-content-lg-start align-items-center">
+          <!--- <span class="fas fa-chart-line fa-fw ml-4 mb-4"></span> -->
+          <span class="menu-collapsed ml-4">{{'SIDEBAR.GUIDE_2' | translate }}</span>
+          <span class="fas fa-plus ml-auto"></span>
+        </div>
+      </a>
+
+      <div id="submenu8" class="collapse sidebar-submenu">
+        <a href="./././assets/InfoGrafici/GuidaCompleta/Instagram.pdf" target="_blank" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">{{'SIDEBAR.GRAPH_INSTAGRAM' | translate }}</span>
+        </a>
+      </div>
+
+    </div>
+
   </ul>
   <!-- List Group END-->
   <!--</div>-->
 </div>
+<ng-template #popTemplate>
+  <p style="font-size: 14px; margin: 0;">{{ 'DASHBOARD.NO_FBM' | translate }}</p>
+</ng-template>

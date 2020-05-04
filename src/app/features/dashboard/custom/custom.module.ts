@@ -9,10 +9,16 @@ import { Ng2GoogleChartsModule } from 'ng2-google-charts';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
 import {FilterActions} from '../redux-filter/filter.actions';
-import {BsDatepickerModule, BsDropdownModule} from 'ngx-bootstrap';
+import {BsDatepickerModule, BsDropdownModule, BsLocaleService} from 'ngx-bootstrap';
 import {NgxLoadingModule} from 'ngx-loading';
 import {FeatureDashboardCustomComponent} from './custom.component';
 import {FacebookService} from '../../../shared/_services/facebook.service';
+import {InstagramService} from '../../../shared/_services/instagram.service';
+import {YoutubeService} from '../../../shared/_services/youtube.service';
+
+import {DragulaModule} from 'ng2-dragula';
+import {TranslateModule} from '@ngx-translate/core';
+import {UserService} from '../../../shared/_services/user.service';
 
 @NgModule({
   declarations: [
@@ -29,12 +35,18 @@ import {FacebookService} from '../../../shared/_services/facebook.service';
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgxLoadingModule.forRoot({}),
+    DragulaModule,
+    TranslateModule
   ],
   providers: [
     GoogleAnalyticsService,
     FacebookService,
     BreadcrumbActions,
-    FilterActions
+    FilterActions,
+    BsLocaleService,
+    YoutubeService,
+    InstagramService,
+    UserService
   ],
   exports: [
     FeatureDashboardCustomComponent

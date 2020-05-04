@@ -1,0 +1,59 @@
+{
+	"FILTER_DATE": {
+		"LAST_7": "Last 7 days",
+  		"LAST_30": "Last 30 days",
+ 		"LAST_90": "Last 90 days"
+	},
+	"CALENDARIO": {
+		"NEW_EVENT": "New event"
+	},
+	"PLACEHOLDER": {
+		"RAG_SOC": "Business name",
+		"PART_IVA": "VAT number",
+		"IND_SEDE": "Location address",
+		"CITTA": "City",
+		"PROVINCIA": "Province",
+		"CAP": "ZIP",
+		"LUOGO_NASC": "Birth place",
+		"DATA_NAS": "Date of birth",
+		"USERNAME": "Username",
+		"EMAIL": "Email",
+		"PASSWORD": "Password",
+		"RIP_PASS": "Repeat password",
+		"NOME_TIT": "Name holder",
+		"COGN_TIT": "Surname holder",
+		"TIT_GRA": "Title of graphic"
+	},
+	"MINICARD": {
+		"FACEBOOK": {
+			"FAN": "Fan",
+			"POST": "Post",
+			"REAZIONI": "Reaction",
+			"VISITE": "Visits"
+		},
+		"GOOGLE": {
+			"UT_TOT": "Tot. users",
+			"VISITE_TOT": "Tot. visits",
+			"FREQ_RIMB": "Freq. refundable.",
+			"DU_SES": "Ses. duration"
+		},
+		"INSTAGRAM": {
+			"FOLL": "Follower",
+			"POST": "Post",
+			"VIEW_PRO": "Visits profile",
+			"VIS_POST": "View post"
+		},
+		"YT": {
+			"ISCR": "Subscribers",
+			"VIEW": "Views",
+			"MED_DUR_VIS": "Average duration of the visit",
+			"VID_CAR": "videos uploaded"
+		},
+		"CUSTOM": {
+			"UT_TOT": "Tot. users",
+			"FAN": "Fan",
+			"FOLLOWER": "Follower",
+			"ISCR": "Subscribers"
+		}
+	}
+}

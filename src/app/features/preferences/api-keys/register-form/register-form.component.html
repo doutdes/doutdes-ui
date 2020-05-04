@@ -1,21 +1,58 @@
-<div class="container h-100">
+<div class="row rounded p-4 title-header">
+  <div class="col-md-12 pl-0">
+    <h2 class="my-auto pl-0">{{ 'REGISTER_FORM.TITLE' | translate }}</h2>
+  </div>
+</div>
+
+<div class="container-fluid ">
   <div class="row h-100 align-items-center">
-    <div class="col-md-6 mx-auto">
+    <div class="col-md-12 px-0 mt-3">
       <div class="card-group">
-        <div class="card p-4">
+        <div class="card p-2">
           <div class="card-body">
-            <h2 class="text-center display-4 mb-4">Service Login </h2>
-            <div class="form-group row">
-              <!-- TODO add different visual if the user is already logged -->
-              <div>
-                <a *ngIf="!fbLogged" class="btn btn-lg text-white" [href]="fbLoginURL" style="background-color: #3b5998;"><i class="fab fa-facebook-square "></i></a>
-                <button *ngIf="!gaLogged" class="btn btn-lg text-white" (click)="signInWithFB()" style="background-color: #d62d20;"><i class="fab fa-google "></i></button>
+            <ngx-loading [show]="loading | async" [config]="config"></ngx-loading>
+            <div class="row mb-4" *ngIf="!allGranted">
+              <div class="col-md-12">
+                <p class="mb-3" style="font-size: 16px;">{{ 'REGISTER_FORM.INFO_1' | translate }}<b>{{ 'REGISTER_FORM.INFO_2' | translate }}</b>{{ 'REGISTER_FORM.INFO_3' | translate }}</p>
+              </div>
+<!--todo-->
+              <div class="col-md-12 col-12 h-100"      *ngIf="services$[D_TYPE.GA] && !services$[D_TYPE.GA]['granted']">
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">{{ 'REGISTER_FORM.IMPORTARE_GOOGLE' | translate }}</p>
+                <a class="btn btn-lg bg-ga-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px;" [href]="gaLoginURL">
+                  <i class="fab fa-google mr-2"></i>{{ 'REGISTER_FORM.ACCESSO_GOOGLE' | translate }}
+                </a>
+              </div> <!-- Google login -->
+              <div class="col-md-12 col-12 h-100 mt-3" *ngIf="services$[D_TYPE.FB] && !services$[D_TYPE.FB]['granted']">
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">{{ 'REGISTER_FORM.IMPORTARE_FB' | translate }}</p>
+                <a class="btn btn-lg bg-fb-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px" [href]="fbLoginURL">
+                  <i class="fab fa-facebook-square mr-2"></i>{{ 'REGISTER_FORM.ACCESSO_FB' | translate }}
+                </a>
+              </div> <!-- Facebook login -->
+              <div class="col-md-12 col-12 h-100 mt-3" *ngIf="services$[D_TYPE.IG] && !services$[D_TYPE.IG]['granted']">
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">{{ 'REGISTER_FORM.IMPORTARE_INSTA' | translate }}</p>
+                <a class="btn btn-lg bg-ig-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px" [href]="igLoginURL">
+                  <i class="fab fa-instagram mr-2"></i>{{ 'REGISTER_FORM.ACCESSO_INSTA' | translate }}
+                </a>
+              </div>      <!-- Instagram login -->
+              <div class="col-md-12 col-12 h-100 mt-3" *ngIf="services$[D_TYPE.YT] && !services$[D_TYPE.YT]['granted']">
+                <p class="col-md-7 col-12 d-inline-block align-middle" style="font-size: 16px;">{{ 'REGISTER_FORM.IMPORTARE_YT' | translate }}</p>
+                <a class="btn btn-lg bg-yt-color text-white d-inline-block ml-4 mr-md-0" style="min-width: 230px" [href]="ytLoginURL">
+                  <i class="fab fa-youtube mr-2"></i>{{ 'REGISTER_FORM.ACCESSO_YT' | translate }}
+                </a>
+              </div> <!-- YouTube login -->
+
+            </div>
+            <div class="row mb-4" *ngIf="allGranted">
+              <div class="col-md-12">
+                <p style="font-size: 18px;">{{ 'REGISTER_FORM.NO_SERVICE' | translate }}</p>
               </div>
             </div>
+            <button class="btn btn-lg btn-danger mt-4" [routerLink]="['/preferences/api-keys']">
+              <i class="fas fa-arrow-circle-left mr-2"></i>{{ 'REGISTER_FORM.GO_TO_SORGENTE' | translate }}
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-

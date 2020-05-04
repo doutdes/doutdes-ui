@@ -1,0 +1,59 @@
+{
+	"FILTER_DATE": {
+		"LAST_7": "Ultimi 7 giorni",
+  		"LAST_30": "Ultimi 30 giorni",
+ 		"LAST_90": "Ultimi 90 giorni"
+	},
+	"CALENDARIO": {
+		"NEW_EVENT": "Nuovo evento"
+	},
+	"PLACEHOLDER": {
+		"RAG_SOC": "Ragione sociale",
+		"PART_IVA": "Partita Iva",
+		"IND_SEDE": "Indirizzo della sede",
+		"CITTA": "Città",
+		"PROVINCIA": "Provincia",
+		"CAP": "CAP",
+		"LUOGO_NASC": "Luogo di Nascita",
+		"DATA_NAS": "Data di Nascita",
+		"USERNAME": "Username",
+		"EMAIL": "Email",
+		"PASSWORD": "Password",
+		"RIP_PASS": "Ripeti password",
+		"NOME_TIT": "Nome titolare",
+		"COGN_TIT": "Cognome titolare",
+		"TIT_GRA": "Titolo del grafico"
+	},
+	"MINICARD": {
+		"FACEBOOK": {
+			"FAN": "Fan",
+			"POST": "Post",
+			"REAZIONI": "Reazioni",
+			"VISITE": "Visite"
+		},
+		"GOOGLE": {
+			"UT_TOT": "Utenti tot.",
+			"VISITE_TOT": "Visite tot.",
+			"FREQ_RIMB": "Freq. rimb.",
+			"DU_SES": "Durata sess."
+		},
+		"INSTAGRAM": {
+			"FOLL": "Follower",
+			"POST": "Post",
+			"VIEW_PRO": "Visite profilo",
+			"VIS_POST": "Visual. post"
+		},
+		"YT": {
+			"ISCR": "Iscritti",
+			"VIEW": "Visualizzazioni",
+			"MED_DUR_VIS": "Med. durata vis.",
+			"VID_CAR": "Video caricati"
+		},
+		"CUSTOM": {
+			"UT_TOT": "Utenti tot.",
+			"FAN": "Fan",
+			"FOLLOWER": "Follower",
+			"ISCR": "Iscritti"
+		}
+	}
+}

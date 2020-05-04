@@ -1,11 +1,27 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ApiKey} from '../../../shared/_models/ApiKeys';
+import {ApiKey, Service} from '../../../shared/_models/ApiKeys';
+import {D_TYPE, DS_TYPE} from '../../../shared/_models/Dashboard';
+import {FacebookService} from '../../../shared/_services/facebook.service';
+import {GoogleAnalyticsService} from '../../../shared/_services/googleAnalytics.service';
+import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {forkJoin, Observable} from 'rxjs';
+import {GlobalEventsManagerService} from '../../../shared/_services/global-event-manager.service';
+import {ngxLoadingAnimationTypes} from 'ngx-loading';
+import {FilterActions} from '../../dashboard/redux-filter/filter.actions';
+import {ToastrService} from 'ngx-toastr';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../../shared/_services/user.service';
+import {User} from '../../../shared/_models/User';
+import {HttpClient} from '@angular/common/http';
 import {environment} from '../../../../environments/environment';
+import {StoreService} from '../../../shared/_services/store.service';
+import {InstagramService} from '../../../shared/_services/instagram.service';
 
+const PrimaryWhite = '#ffffff';
 
 @Component({
   selector: 'app-feature-preferences-api-keys',
@@ -14,82 +30,219 @@ import {environment} from '../../../../environments/environment';
 
 export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
 
-  apiKeysList$: any;
-  tokenToSave: string;
-  fbLogin = 'http://' + environment.host + ':' + environment.port + '/fb/login/';
+  @ViewChild('oauthError') oauthError: ElementRef;
 
-    constructor(private apiKeyService: ApiKeysService, private breadcrumbActions: BreadcrumbActions, private route: ActivatedRoute, private router: Router) {
+  D_TYPE = D_TYPE;
+
+  loading: Observable<boolean>;
+  services$: {};
+  modalRef: BsModalRef;
+  serviceToDelete: Service;
+  somethingGranted: boolean = false;
+
+  checkbox: Boolean;
+
+  lang: any;
+  value: string;
+  tmp: string;
+  user: User;
+  allGranted = false;
+
+  private envURL = environment.protocol + environment.host + ':' + environment.port;
+
+  fbLoginURL: string;
+  igLoginURL: string;
+
+  public config = {
+    animationType: ngxLoadingAnimationTypes.threeBounce,
+    backdropBackgroundColour: 'rgba(0,0,0,0.1)',
+    backdropBorderRadius: '4px',
+    primaryColour: PrimaryWhite,
+    secondaryColour: PrimaryWhite
+  };
+
+  constructor(
+    private apiKeyService: ApiKeysService,
+    private fbService: FacebookService,
+    private gaService: GoogleAnalyticsService,
+    private breadcrumbActions: BreadcrumbActions,
+    private route: ActivatedRoute,
+    private router: Router,
+    private modalService: BsModalService,
+    private geManager: GlobalEventsManagerService,
+    private filterActions: FilterActions,
+    private toastr: ToastrService,
+    public translate: TranslateService,
+    private userService: UserService,
+    private http: HttpClient,
+    private store: StoreService,
+    private igService: InstagramService,
+  ) {
+    this.loading = this.geManager.loadingScreen.asObservable();
+
+    this.translate.addLangs(['Italiano', 'English']);
+
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    await this.checkPage();
+
+    const error = this.route.snapshot.queryParamMap.get('err');
     this.addBreadcrumb();
-    this.updateList();
+    this.geManager.loadingScreen.next(true);
+    await this.updateList();
 
-    this.route.paramMap.subscribe(params => {
-      this.tokenToSave = params.get('token');
+    if (error == 'true') {
 
-      console.log(this.tokenToSave);
+      this.userService.get().subscribe(data => {
+        this.user = data;
 
-      if(this.tokenToSave) {
+        this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.geManager.langObj.next(file);
 
-        let apiKey: ApiKey = {
-          user_id: null,
-          api_key: this.tokenToSave,
-          service_id: 0
-        };
+            this.toastr.error(this.geManager.getStringToastr(false, true, "PREFERENCES", 'NO_ACCESSO'),
+              this.geManager.getStringToastr(true, false, 'PREFERENCES', 'NO_ACCESSO'));
+          }, error => {
+            console.error(error);
+          });
 
-        this.apiKeyService.registerKey(apiKey).subscribe(data => {
-          this.router.navigate(['/preferences/api-keys/'], {queryParams: {token: null}, queryParamsHandling: 'merge'});
-        }, error => {
-          console.error(error);
-        });
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.removeBreadcrumb();
-  }
-
-  updateList(): void {
-    this.apiKeyService.getAllKeys()
-      .pipe()
-      .subscribe(data => {
-        if (data == null) {
-          this.apiKeysList$ = null;
-        } else {
-          this.apiKeysList$ = data;
-        }
-      }, error => {
-        console.log(error);
+      }, err => {
+        console.error(err);
       });
-  }
 
-  serviceName(id): string {
-    switch (id) {
-      case 0:
-        return 'Facebook Pages';
-      case 1:
-        return 'Google Analytics';
+      this.router.navigate([], { replaceUrl: true});
+    }
+    if (error != null && error == 'false') {
+
+      this.userService.get().subscribe(data => {
+        this.user = data;
+
+        this.http.get("./assets/langSetting/langToastr/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.geManager.langObj.next(file);
+
+            this.toastr.success(this.geManager.getStringToastr(false, true, "PREFERENCES", 'OK_ACCESSO'),
+              this.geManager.getStringToastr(true, false, 'PREFERENCES', 'OK_ACCESSO'));
+          }, error => {
+            console.error(error);
+          });
+
+      }, err => {
+        console.error(err);
+      });
+
+
+
+
+      this.router.navigate([], { replaceUrl: true});
     }
   }
 
-  deleteService(service): void {
-    this.apiKeyService.deleteKey(service)
-      .pipe()
-      .subscribe(data => {
-        this.updateList();
-      }, error => {
-        console.log(error);
-      });
+  async updateList() {
+    this.services$ = {};
+    let observables = [];
+
+    for (const SERVICE in D_TYPE) { // For each service key (FB, GA, ecc) in D_TYPE
+      if (D_TYPE[SERVICE] !== D_TYPE.CUSTOM) {
+        observables.push(this.apiKeyService.isPermissionGranted(D_TYPE[SERVICE]));
+      }
+    }
+
+    forkJoin(observables).subscribe((services: Service[]) => {
+
+      for (const i in services) {
+        if (services[i].scopes) {
+          if (services[i].type === D_TYPE.YT || services[i].type === D_TYPE.GA) {
+            services[i].scopes = services[i].scopes.map(el => el.substr(el.lastIndexOf('/') + 1));
+          }
+
+          services[i].scopes = services[i].scopes.map(el => el.replace(/[^\w\s]|_/g, ' '));
+          this.services$[services[i].type] = services[i];
+          this.allGranted = (this.services$[1] && this.services$[2] && this.services$[3] && this.services$[4]) ? true : false;
+        }
+
+        this.geManager.loadingScreen.next(false);
+        this.somethingGranted = this.somethingGranted || services[i].granted;
+      }
+      this.setURL();
+    });
+  }
+
+  openModal(template: TemplateRef<any>, service: Service) {
+    this.checkbox = false;
+    this.serviceToDelete = service;
+    this.modalRef = this.modalService.show(template, {class: 'modal-md modal-dialog-centered'});
+  }
+
+  async deleteService(serviceType: number) {
+    this.apiKeyService.revokePermissions(serviceType).subscribe(async response => {
+      this.filterActions.removedStoredDashboard(serviceType);
+      delete this.services$[serviceType];
+
+      if(serviceType === D_TYPE.FB && Object.keys(this.services$).includes(D_TYPE.IG+  '')) {
+        delete this.services$[D_TYPE.IG];
+
+        this.toastr.info( this.geManager.getStringToastr(false, true, "PREFERENCES" , 'STOP_ACCESSO') + DS_TYPE[D_TYPE.IG],
+          DS_TYPE[D_TYPE.IG] + this.geManager.getStringToastr(true, false, 'PREFERENCES', 'STOP_ACCESSO'));
+      }
+
+      if (Object.keys(this.services$).length === 0) this.somethingGranted = false;
+
+      this.toastr.info(this.geManager.getStringToastr(false, true, "PREFERENCES", 'STOP_ACCESSO')  + DS_TYPE[serviceType],
+         DS_TYPE[serviceType] + this.geManager.getStringToastr(true, false, 'PREFERENCES', 'STOP_ACCESSO'));
+
+    }, err => {
+      console.error(err);
+    });
+
+    this.modalRef.hide();
+  }
+
+  getLogo(serviceID: number) {
+    let classes = 'mr-2 mt-1 fab ';
+
+    switch (serviceID) {
+      case D_TYPE.FB:
+        classes += 'fa-facebook-square fb-color';
+        break;
+      case D_TYPE.GA:
+        classes += 'fa-google ga-color';
+        break;
+      case D_TYPE.IG:
+        classes += 'fa-instagram ig-color';
+        break;
+      case D_TYPE.YT:
+        classes += 'fa-youtube yt-color';
+        break;
+    }
+
+    return classes;
   }
 
   addBreadcrumb() {
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Preferences', '/preferences/'));
-    bread.push(new Breadcrumb('Api Keys', '/preferences/api-keys/'));
+
+    if ((this.geManager.getStringBreadcrumb('PREFERENZE') == null) &&
+      this.geManager.getStringBreadcrumb('SORGENTE_DATI') == null) {
+
+      this.userService.get().subscribe(value => {
+        this.user = value;
+
+        this.http.get("./assets/langSetting/langBreadcrumb/" + this.conversionSetDefaultLang() + ".json")
+          .subscribe(file => {
+            this.geManager.langBread.next(file);
+            bread.push(new Breadcrumb(this.geManager.getStringBreadcrumb('PREFERENZE'), '/preferences/'));
+            bread.push(new Breadcrumb(this.geManager.getStringBreadcrumb('SORGENTE_DATI'), '/preferences/api-keys'));
+          })
+      })
+
+    } else {
+      bread.push(new Breadcrumb(this.geManager.getStringBreadcrumb('PREFERENZE'), '/preferences/'));
+      bread.push(new Breadcrumb(this.geManager.getStringBreadcrumb('SORGENTE_DATI'), '/preferences/api-keys'));
+    }
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }
@@ -98,4 +251,65 @@ export class FeaturePreferencesApiKeysComponent implements OnInit, OnDestroy {
     this.breadcrumbActions.deleteBreadcrumb();
   }
 
+  ngOnDestroy(): void {
+    this.removeBreadcrumb();
+  }
+
+  check() {
+    this.checkbox = !this.checkbox;
+  }
+
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
+        break;
+      case "en" :
+        this.value = "English";
+        break;
+      default:
+        this.value = "Italiano";
+    }
+
+    return this.value;
+  }
+
+  setURL() {
+    this.fbLoginURL = this.envURL + '/fb/login?user_id=' + this.store.getId();
+    this.igLoginURL = this.envURL + '/ig/login?user_id=' + this.store.getId();
+  }
+
+  async edit(type: number) {
+    switch (type) {
+      case D_TYPE.FB:
+        window.open(this.fbLoginURL, '_self');
+        break;
+      case D_TYPE.IG:
+        window.open(this.igLoginURL, '_self');
+        break;
+    }
+  }
+
+  async checkPage() {
+    let removedPages, pageID;
+    pageID = (await this.apiKeyService.getAllKeys().toPromise());
+    const isPermissionGranted = await this.apiKeyService.isPermissionGranted(D_TYPE.IG).toPromise();
+
+    if (pageID && pageID.fb_page_id && isPermissionGranted.tokenValid) {
+      removedPages = await this.fbService.updatePages().toPromise();
+      removedPages.includes(pageID.fb_page_id) ? await this.apiKeyService.updateKey({
+        fb_page_id: null,
+        service_id: D_TYPE.FB
+      }).toPromise() : null;
+    }
+    if (pageID && pageID.ig_page_id && isPermissionGranted.tokenValid) {
+      removedPages = await this.igService.updatePages().toPromise();
+      removedPages.includes(pageID.ig_page_id) ? await this.apiKeyService.updateKey({
+        ig_page_id: null,
+        service_id: D_TYPE.IG
+      }).toPromise() : null;
+    }
+
+  }
 }

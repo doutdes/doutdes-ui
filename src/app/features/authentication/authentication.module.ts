@@ -1,5 +1,4 @@
 import {NgModule} from '@angular/core';
-import {AlertModule} from 'ngx-bootstrap/alert';
 import {UserService} from '../../shared/_services/user.service';
 import {AuthenticationService} from './authentication.service';
 import {LoginModule} from './login/login.module';
@@ -7,23 +6,29 @@ import {RegisterModule} from './register/register.module';
 import {FeatureAuthenticationRoutingModule} from './authentication.routing';
 import {FeatureAuthenticationComponent} from './authentication.component';
 import {SharedModule} from '../../shared/shared.module';
+import {FeatureAuthenticationAccountVerificationComponent} from './account-verification/account-verification.component';
+import {IsNotAuthenticatedGuard} from '../../shared/_guards/is-not-authenticated.guard';
+import {BsDropdownModule} from 'ngx-bootstrap';
 
 @NgModule({
   declarations: [
-    FeatureAuthenticationComponent
+    FeatureAuthenticationComponent,
+    FeatureAuthenticationAccountVerificationComponent
   ],
   imports: [
     FeatureAuthenticationRoutingModule,
     LoginModule,
     RegisterModule,
-    SharedModule
+    SharedModule,
+    BsDropdownModule
   ],
   providers: [
     AuthenticationService,
     UserService
   ],
   exports: [
-    FeatureAuthenticationComponent
+    FeatureAuthenticationComponent,
+    FeatureAuthenticationAccountVerificationComponent
   ]
 })
 

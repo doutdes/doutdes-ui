@@ -1,0 +1,212 @@
+<!--<div class="container-fluid mb-0">-->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body ">
+        <h1 class="text-center mb-0 mt-3">{{ 'PROFILO.AGG' | translate }}</h1>
+      </div>
+
+      <div class="p-4" *ngIf="user !== null">
+        <form [formGroup]="updateRegistration" (ngSubmit)="onSubmit()">
+
+          <!--<div class="form-inline my-1 mr-2 mb-5">-->
+            <!--<label class="my-1 mr-2" for="language">{{ 'PROFILO.LANGUAGE' | translate }}</label>-->
+            <!--<select #langSelect class="custom-select my-1 mr-sm-2" (change)="checkSelect($event)" id="language"> &lt;!&ndash;(change)="translate.use(langSelect.value)" &ndash;&gt;-->
+              <!--<option *ngFor="let lang of translate.getLangs()" [selected]="lang === translate.currentLang" [value]="lang">{{ lang }}</option>-->
+            <!--</select>-->
+          <!--</div>-->
+
+          <div *ngIf="this.selectedUser === 0"> <!-- If the user is a company -->
+            <h5 class="py-3">{{ 'PROFILO.DATI_IMP' | translate }}</h5>
+
+            <div class="form-row">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto mx-auto icon-briefcase"></i></span>
+                </div>
+                <input type="text" formControlName="company_name" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','RAG_SOC')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.company_name.errors }"/>
+
+                <div *ngIf="this.submitted && f.company_name.errors" class="invalid-feedback">
+                  <div *ngIf="f.company_name.errors.required">{{ 'PROFILO.RAG_SOC' | translate }}</div>
+                </div>
+              </div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto icon-chart"></i></span>
+                </div>
+                <input type="text" formControlName="vat_number" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','PART_IVA')}}" required
+                       [ngClass]="{ 'is-invalid': submitted && f.vat_number.errors }"/>
+
+                <div *ngIf="this.submitted && f.vat_number.errors" class="invalid-feedback">
+                  <div *ngIf="f.vat_number.errors.required">{{ 'PROFILO.PART_IVA_O' | translate }}</div>
+                </div>
+              </div>
+            </div> <!-- Company name and Vat Number -->
+            <div class="form-row">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-map-marker"></i></span>
+                </div>
+                <input type="text" formControlName="address" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','IND_SEDE')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.address.errors }"/>
+
+                <div *ngIf="this.submitted && f.address.errors" class="invalid-feedback">
+                  <div *ngIf="f.address.errors.required">{{ 'REGISTER.IND_SOC_O' | translate }}</div>
+                </div>
+              </div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-globe"></i></span>
+                </div>
+                <input type="text" formControlName="city" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','CITTA')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.city.errors }"/>
+
+                <div *ngIf="submitted && f.city.errors" class="invalid-feedback">
+                  <div *ngIf="f.city.errors.required">{{ 'PROFILO.CITTA_RIC' | translate }}</div>
+                  <div *ngIf="f.city.errors.maxlength">{{ 'PROFILO.CITTA_LUNG' | translate }}</div>
+                </div>
+              </div>
+            </div> <!-- Address and Residence City -->
+            <div class="form-row mb-4">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-map"></i></span>
+                </div>
+                <input type="text" formControlName="province" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','PROVINCIA')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.province.errors }" maxlength="2"/>
+
+                <div *ngIf="submitted && f.province.errors" class="invalid-feedback">
+                  <div *ngIf="f.province.errors.required">{{ 'PROFILO.SIGLA_PRO' | translate }}</div>
+                  <div *ngIf="f.province.errors.maxlength">{{ 'PROFILO.SIGLA_PRO_LUNG' | translate }}</div>
+                </div>
+              </div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-code"></i></span>
+                </div>
+                <input type="text" formControlName="zip" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','CAP')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.zip.errors }" maxlength="5"/>
+
+                <div *ngIf="submitted && f.zip.errors" class="invalid-feedback">
+                  <div *ngIf="f.zip.errors.required">{{ 'PROFILO.CAP_O' | translate }}</div>
+                  <div *ngIf="f.zip.errors.maxlength">{{ 'PROFILO.CAP_ALERT' | translate }}</div>
+                </div>
+              </div>
+            </div> <!-- Province and Zip Code-->
+
+            <h5 class="pb-3">{{ 'PROFILO.DATI_ACC' | translate }}</h5>
+
+            <div class="form-row">
+              <div class="input-group mb-4 col-md-6">
+                <div class="d-block w-100">
+                  <label for="first_name" class="label-tiny"></label>
+                </div>
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="icon-briefcase"></i></span>
+                </div>
+                <input type="text" formControlName="first_name" class="form-control"
+                       placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','NOME_TIT')}}" id="first_name" maxlength="100"
+                       [ngClass]="{ 'is-invalid': submitted && f.first_name.errors }"/>
+
+                <div *ngIf="this.submitted && f.first_name.errors" class="invalid-feedback">
+                  <div *ngIf="f.first_name.errors.required"></div>
+                </div>
+              </div>
+              <div class="input-group mb-5 col-md-6">
+                <div class="d-block w-100">
+                  <label for="last_name" class="label-tiny"></label>
+                </div>
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="icon-briefcase"></i></span>
+                </div>
+                <input type="text" formControlName="last_name" class="form-control"
+                       placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','COGN_TIT')}}" id="last_name" maxlength="100"
+                       [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }"/>
+
+                <div *ngIf="this.submitted && f.last_name.errors" class="invalid-feedback">
+                  <div *ngIf="f.last_name.errors.required">{{ 'PROFILO.COGNOME_TIT' | translate }}</div>
+                </div>
+              </div>
+            </div> <!-- First name and last name -->
+            <div class="form-row">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-user-tie"></i></span>
+                </div>
+                <input type="text" formControlName="username" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','USERNAME')}}"
+                       [ngClass]="{ 'is-invalid': submitted && f.username.errors }"/>
+
+                <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+                  <div *ngIf="f.username.errors.required">{{ 'REGISTER.USERNAME_O' | translate }}</div>
+                  <div *ngIf="f.username.errors.maxlength">{{ 'REGISTER.USERNAME_LUNG' | translate }}</div>
+                </div>
+              </div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto fas fa-at"></i></span>
+                </div>
+                <input type="email" formControlName="email" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','EMAIL')}}" [email]="true"
+                       [ngClass]="{ 'is-invalid': submitted && f.email.errors }"/>
+
+                <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                  <div *ngIf="f.email.errors.required">{{ 'REGISTER.EMAIL_O' | translate }}/div>
+                  <div *ngIf="f.email.errors.email">{{ 'REGISTER.EMAIL_INSERT' | translate }}</div>
+                </div>
+
+              </div>
+            </div> <!-- Email and Username -->
+            </div>
+            <div class="form-row">
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto icon-lock"></i></span>
+                </div>
+                <input type="password" formControlName="password" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','PASSWORD')}}" minlength="10"
+                       [ngClass]="{ 'is-invalid': submitted && f.password.errors }"/>
+
+                <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                  <div *ngIf="f.password.errors.required">{{ 'REGISTER.PASSWORD_O' | translate }}</div>
+                  <div *ngIf="f.password.errors.minlength">{{ 'REGISTER.PASSWORD_MIN' | translate }}</div>
+                </div>
+              </div>
+              <div class="input-group mb-4 col-md-6">
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="mx-auto icon-lock"></i></span>
+                </div>
+                <input type="password" formControlName="r_password" class="form-control" placeholder="{{this.eventManager.getStringFilterDate('PLACEHOLDER','RIP_PASS')}}"
+                       minlength="10">
+              </div>
+
+              <div class="alert alert-danger col-md-12"
+                   *ngIf="submitted && f.r_password.errors?.MatchPassword">{{ 'REGISTER.PASS_NO_COIN' | translate }}
+              </div>
+            </div> <!-- Password and repeat password -->
+
+            <button class="btn btn-block btn-success mx-auto " style="width:40%;" (click)="openModal(updateInfo)">{{ 'PROFILO.SAVE_UP' | translate }}</button>
+
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!--</div>-->
+
+<ng-template #updateInfo>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">{{ 'PROFILO.UPDATE_CONF' | translate }}</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    {{ 'PROFILO.UPDATE_DOM' | translate }}
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'PROFILO.NO' | translate }}</button>
+    <button type="button" class="btn btn-success" (click)="updateUser()">{{ 'PROFILO.SI' | translate }}</button>
+  </div>
+</ng-template>

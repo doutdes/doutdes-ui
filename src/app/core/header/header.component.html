@@ -1,45 +1,165 @@
 <!-- If user is not logged in-->
-<nav class="navbar navbar-expand-md navbar-light bg-white fixed-top">
-  <img src="assets/img/brand/doutdes-logo-alpha-SMALL.png" width="150" />
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+<nav class="navbar navbar-expand-md navbar-light fixed-top">
+  <div class="container">
+    <!-- Menu MD View -->
+    <button class="navbar-toggler bg-white d-inline-block d-lg-none-2 ml-3 ml-md-0 mr-0" *ngIf="isUserLoggedIn" type="button"
+            id="sidebarCollapse" aria-expanded="false" aria-label="Toggle navigation" data-target="#menu"
+            data-toggle="collapse" (click)="showMenu(true)">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div *ngIf="showSidebar && !this.drag" id="menu" class="border-menu dropdown-menu">
+      <ul class="nav navbar-nav scrollable-menu">
+        <li class="nav-item dropdown">
+          <div class="border" style="background-color: white">
+            <div class="dropdown-header">
+              <span class="fa fa-arrow-left fa-fw mr-3" (click)="showMenu(false)"></span>
+              <strong class="text-capitalize">Menu</strong>
+            </div>
+            <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
+               data-toggle="collapse" aria-expanded="false">
+              <strong class="text-capitalize"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</strong></a>
+            <div class="pl-4">
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/google']"
+                 (click)="showMenu(false)">
+                <span class="menu-collapsed">{{'MENU.SITO_WEB' | translate }}</span>
+              </a>
+              <a href="#submenu5" data-toggle="collapse" aria-expanded="false"
+                 class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="menu-collapsed">Facebook</span>
+                  <span *ngIf="!fbm_flag" style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="fas fa-info-circle" #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()"></span>
+                  <span class="fas fa-plus ml-auto"></span>
+                </div>
+              </a>
+              <div id="submenu5" class="collapse sidebar-submenu">
+                <a [routerLink]="[drag ? '#' : '/dashboard/facebook/insights']" class="list-group-item list-group-item-action">
+                  <span class="menu-collapsed ml-4">Insights</span>
+                </a>
+                <a [routerLink]="[drag || hide ? '#' : '/dashboard/facebook/marketing']" [ngClass]="{
+        'list-group-item list-group-item-action' : fbm_flag === true,
+        'list-group-item list-group-item-action disabled' : fbm_flag === false
+        }">
+                  <span class="menu-collapsed ml-4">Marketing</span>
+                </a>
+                <a [routerLink]="[drag || hide ? '#' : '/dashboard/facebook/campaigns']" [ngClass]="{
+        'list-group-item list-group-item-action' : fbm_flag === true,
+        'list-group-item list-group-item-action disabled' : fbm_flag === false
+        }">
+                  <span class="menu-collapsed ml-4">Campaigns</span>
+                </a>
+              </div>
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/instagram']"
+                 (click)="showMenu(false)">
+                <span class="menu-collapsed">Instagram</span>
+              </a>
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/youtube']"
+                 (click)="showMenu(false)">
+                <span class="menu-collapsed">Youtube</span>
+              </a>
+              <a class="list-group-item list-group-item-action py-1" [routerLink]="['/dashboard/custom']"
+                 (click)="showMenu(false)">
+                <span class="menu-collapsed">{{'MENU.PERSONALIZZATA' | translate }}</span>
+              </a>
+            </div>
+            <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
+               data-toggle="collapse" aria-expanded="false">
+              <strong class="text-capitalize"><i class="fa fa-user fa-fw mr-2"></i>{{'MENU.PREFERENZE' | translate }}</strong></a>
+            <div class="pl-4">
+              <!--<a class="list-group-item list-group-item-action py-1">-->
+                <!--<span class="menu-collapsed">Account settings</span>-->
+              <!--</a>-->
+              <a class="list-group-item list-group-item-action py-1"
+                 [routerLink]="['/preferences/api-keys']" (click)="showMenu(false)">
+                <span class="menu-collapsed">{{'MENU.SOREGENTI' | translate }}</span>
+              </a>
+            </div>
+            <!--[routerLink]="['/report']"-->
+            <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
+              (click)="showMenu(false)" data-toggle="collapse" aria-expanded="false">
+              <strong class="text-capitalize text-secondary"><i class="fa fa-tasks fa-fw mr-2"></i>Report</strong></a>
+            <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
+               [routerLink]="['/calendar']" (click)="showMenu(false)"
+               data-toggle="collapse" aria-expanded="false">
+              <strong class="text-capitalize"><i class="fa fa-calendar-alt fa-fw mr-2"></i>{{'MENU.CALENDARIO' | translate }}</strong></a>
+            <a class=" menu-collapsed list-group-item list-group-item-action flex-column align-items-start"
+               data-toggle="collapse" aria-expanded="false">
+              <strong class="text-capitalize text-secondary"><i class="fa fa-envelope fa-fw mr-2"></i>{{'MENU.NOTIFICHE' | translate }}</strong></a>
+          </div>
 
-    <div *ngIf="!isUserLoggedIn">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/authentication/login']">Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/authentication/register']">Sign Up</a>
         </li>
       </ul>
     </div>
 
-    <div *ngIf="isUserLoggedIn" class="ml-auto">
-      <ul class="nav navbar-nav">
-        <li class="nav-item dropdown">
-          <a class="nav-link nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
-             aria-expanded="false">
-            <i class="mr-1">Hi, <b>{{username}}</b>!</i>
-            <!--<i class="fa fa-2x fa-user-tie"></i>-->
-            <img class="img-avatar" src="assets/img/avatars/4.jpg" alt="admin@bootstrapmaster.com">
-          </a>
-          <div class="dropdown-menu dropdown-menu-right">
-            <div class="dropdown-header text-center">
-              <strong class="text-capitalize">{{username}} Settings</strong>
+    <!-- Logo -->
+    <div id="logo-div" class="bg-white rounded ml-lg-3 mx-md-auto py-1 px-2 cursor-pointer" [routerLink]="[drag ? '#' : '/']">
+      <img src="assets/img/brand/doutdes-logo-alpha-SMALL.png" width="90"/>
+    </div>
+
+    <!-- SM Avatar -->
+    <div class="cursor-pointer d-block d-md-none">
+      <a class="nav-link btn-group pl-0" aria-haspopup="true" aria-expanded="false" role="button" data-target="#menu_small" data-toggle="collapse">
+        <img class="img-avatar" src="assets/img/avatars/4.jpg" alt="{{username}}" style="max-height: 42px;">
+      </a>
+    </div>
+
+    <!-- Menu and avatar -->
+    <div id="menu_small" class="dropdown-menu position-menu-small dropdown-menu-right float-right col-2">
+      <div class="dropdown-header text-center">
+        <strong class="text-capitalize ">{{'MENU.IMPOSTAZIONI' | translate }}</strong>
+      </div>
+      <a class="dropdown-item">
+        <i class="fa fa-user"></i>{{'MENU.PROFILO' | translate }}</a>
+      <a class="dropdown-item menu-collapsed text-secondary ">
+        <i class="fa fa-wrench"></i>{{'MENU.IMPOSTAZIONI' | translate }}</a>
+      <a class="dropdown-item">
+        <i class="fa fa-lock"></i>{{'MENU.ESCI' | translate }} </a>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown" style="flex-grow: 0">
+<!--      <div *ngIf="!isUserLoggedIn">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link text-white" [routerLink]="['/authentication/login']">Accedi</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" [routerLink]="['/authentication/register']">Registrati</a>
+          </li>
+        </ul>
+      </div>-->
+
+      <!-- MD Avatar -->
+      <div *ngIf="isUserLoggedIn" class="ml-lg-auto d-none d-md-block">
+        <ul class="nav navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+               aria-expanded="false">
+              <div class="mr-1" style="float:left; margin-top:-4px">
+                <span class="text-white" style="float:right; font-size:10pt">{{'MENU.CIAO' | translate }}<b style="font-size:13pt">{{username}}</b></span><br>
+                <span style="font-size:7pt; color: #ccc; float:right">{{'MENU.OGGI' | translate }}{{today}}</span>
+              </div>
+              <div style="float: right;">
+                <img alt="admin@bootstrapmaster.com" class="img-avatar" src="assets/img/avatars/4.jpg" style="height: 35px;">
+                <i class="fas fa-cog" style="position: absolute;bottom: 0;right: 0;color: #c8ced3;font-size: 16px;text-shadow: 0px -2px black;"></i>
+              </div>
+            </a>
+            <div *ngIf="!drag" class="dropdown-menu dropdown-menu-right">
+              <!--<div class="dropdown-header text-center">
+                <strong>Impostazioni {{username}}</strong>
+              </div>
+              <a class="dropdown-item" href="#">
+                <i class="fa fa-user"></i> Profilo</a>
+              <a class="dropdown-item" href="#">
+                <i class="fa fa-wrench"></i> Impostazioni</a> -->
+              <a class="dropdown-item" (click)="logout()">
+                <i class="fa fa-lock"></i>{{'MENU.DISCONNETTI' | translate }}</a>
             </div>
-            <a class="dropdown-item" href="#">
-              <i class="fa fa-user"></i> Profile</a>
-            <a class="dropdown-item" href="#">
-              <i class="fa fa-wrench"></i> Settings</a>
-            <a class="dropdown-item" (click)="logout()">
-              <i class="fa fa-lock"></i> Logout</a>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </nav>
+
+<ng-template #popTemplate>
+  <p style="font-size: 14px; margin: 0;">{{ 'DASHBOARD.NO_FBM' | translate }}</p>
+</ng-template>
+

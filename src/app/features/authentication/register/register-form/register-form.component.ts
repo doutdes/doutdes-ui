@@ -8,6 +8,11 @@ import {first} from 'rxjs/internal/operators';
 import {Router} from '@angular/router';
 import {NgRedux, select} from '@angular-redux/store';
 import {IAppState} from '../../../../shared/store/model';
+import {ToastrService} from 'ngx-toastr';
+import {StoreService} from '../../../../shared/_services/store.service';
+import {TranslateService} from '@ngx-translate/core';
+import {GlobalEventsManagerService} from '../../../../shared/_services/global-event-manager.service';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-feature-authentication-register-form',
@@ -19,16 +24,25 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
   @select() just_signed;
 
   registrationForm: FormGroup;
-  selectedUser = 'editor';
+  selectedUser = 'company';
   loading = false;
   submitted = false;
+
+  user: User;
+  value: string;
 
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserService,
+    private storeService: StoreService,
     private router: Router,
-    private ngRedux: NgRedux<IAppState>
-  ) { }
+    private ngRedux: NgRedux<IAppState>,
+    private toastr: ToastrService,
+    public translate: TranslateService,
+    private GEService: GlobalEventsManagerService,
+    private http: HttpClient
+  ) {
+  }
 
   ngOnInit(): void {
     this.registrationForm = this.formBuilder.group({
@@ -41,15 +55,40 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       city:        ['', Validators.compose([Validators.maxLength(50), Validators.required])],
       zip:         ['', Validators.compose([Validators.maxLength(5), Validators.required])],
       province:    ['', Validators.compose([Validators.maxLength(2), Validators.required])],
-      username:    ['', Validators.compose([Validators.maxLength(20), Validators.required])],
+      username:    ['', Validators.compose([Validators.maxLength(40), Validators.required])],
       email:       ['', Validators.required],
       password:    ['', Validators.compose([Validators.minLength(10), Validators.required])],
       r_password:  ['', Validators.compose([Validators.minLength(10), Validators.required])],
       company_name: [],
       vat_number: []
     }, {
-      validator: Validators.compose([PasswordValidation.MatchPassword, FiscalCodeValidation.CheckFiscalCode])
+      validator: Validators.compose([PasswordValidation.MatchPassword]) // FiscalCodeValidation.CheckFiscalCode]) TODO: fix fiscal code check
     });
+
+    if (this.selectedUser === 'company') {
+      this.registrationForm.controls['company_name'].setValidators(Validators.required);
+      this.registrationForm.controls['company_name'].updateValueAndValidity();
+
+      this.registrationForm.controls['vat_number'].setValidators(Validators.required);
+      this.registrationForm.controls['vat_number'].updateValueAndValidity();
+
+      this.registrationForm.controls['birth_place'].setValidators(null);
+      this.registrationForm.controls['birth_place'].updateValueAndValidity();
+
+      this.registrationForm.controls['birth_date'].setValidators(null);
+      this.registrationForm.controls['birth_date'].updateValueAndValidity();
+
+      this.registrationForm.controls['fiscal_code'].setValidators(null);
+      this.registrationForm.controls['fiscal_code'].updateValueAndValidity();
+
+    } else {
+      this.registrationForm.controls['company_name'].setValidators(null);
+      this.registrationForm.controls['company_name'].updateValueAndValidity();
+
+      this.registrationForm.controls['vat_number'].setValidators(null);
+      this.registrationForm.controls['vat_number'].updateValueAndValidity();
+    }
+
   }
 
   get f() { return this.registrationForm.controls; }
@@ -63,6 +102,15 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
 
       this.registrationForm.controls['vat_number'].setValidators(Validators.required);
       this.registrationForm.controls['vat_number'].updateValueAndValidity();
+
+      this.registrationForm.controls['birth_place'].setValidators(null);
+      this.registrationForm.controls['birth_place'].updateValueAndValidity();
+
+      this.registrationForm.controls['birth_date'].setValidators(null);
+      this.registrationForm.controls['birth_date'].updateValueAndValidity();
+
+      this.registrationForm.controls['fiscal_code'].setValidators(null);
+      this.registrationForm.controls['fiscal_code'].updateValueAndValidity();
     } else {
       this.registrationForm.controls['company_name'].setValidators(null);
       this.registrationForm.controls['company_name'].updateValueAndValidity();
@@ -73,10 +121,13 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
   }
 
   onSubmit() {
+
     this.submitted = true;
 
     // If the registration form is invalid, return
     if (this.registrationForm.invalid) {
+      console.log (this.registrationForm);
+      console.log('Some fields are invalid!');
       this.loading = false;
       return;
     }
@@ -101,12 +152,58 @@ export class FeatureAuthenticationRegisterFormComponent implements OnInit {
       .subscribe(
         data => {
           // this.setSignedUp(this.registrationForm.value.username);
-          this.router.navigate(['authentication/login']);
+          //
+          if (parseInt(this.storeService.getType()) === 0){
+            this.toastr.success('L\'account \'' + this.registrationForm.value.username + '\' è stato creato con successo.', 'Account creato!');
+          }
+          else {
+            this.toastr.success('Complimenti, hai creato l\'account ' + this.registrationForm.value.username, 'Account creato!');
+            this.router.navigate(['authentication/login']);
+          }
+
+          this.registrationForm.controls.company_name.setValue("");
+          this.registrationForm.controls.vat_number.setValue("");
+          this.registrationForm.controls.first_name.setValue("");
+          this.registrationForm.controls.last_name.setValue("");
+          this.registrationForm.controls.birth_place.setValue("");
+          this.registrationForm.controls.birth_date.setValue("");
+          this.registrationForm.controls.fiscal_code.setValue("");
+          this.registrationForm.controls.address.setValue("");
+          this.registrationForm.controls.city.setValue("");
+          this.registrationForm.controls.zip.setValue("");
+          this.registrationForm.controls.province.setValue("");
+          this.registrationForm.controls.username.setValue("");
+          this.registrationForm.controls.email.setValue("");
+          this.registrationForm.controls.password.setValue("");
+          this.registrationForm.controls.r_password.setValue("");
+
+          this.submitted = false;
+          this.loading = false;
         }, error => {
           this.loading = false;
+
+          this.toastr.error('L\'email o l\'username di \'' + this.registrationForm.value.username + '\' esistono già.', 'Creazione fallita!');
+
           console.log(error);
           console.log('User or email already exists');
         }
       );
   }
+
+  conversionSetDefaultLang () {
+
+    switch (this.user.lang) {
+      case "it" :
+        this.value = "Italiano";
+        break;
+      case "en" :
+        this.value = "English";
+        break;
+      default:
+        this.value = "Italiano";
+    }
+
+    return this.value;
+  }
+
 }

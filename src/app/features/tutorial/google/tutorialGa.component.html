@@ -1,60 +1,23 @@
-<div class="row bg-white rounded p-4 title-header col-xl-10 col-lg-12">
-  <img src="/assets/img/tutorial-head.png" style="height:80px; margin-top:-7px"/>
-  <h1 class="display-4 my-auto ml-3">How to > Configure website analytics</h1>
+<div class="row rounded p-4 title-header">
+  <div class="col-md-12 pl-0">
+    <h2 class="my-auto pl-0">{{ 'TUTORIAL_GO.TITLE' | translate }}</h2>
+  </div>
 </div>
+<div class="rounded my-3 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
+  <p>{{ 'TUTORIAL_GO.DESCRIZIONE' | translate }}<b> DoUtDes</b>. {{ 'TUTORIAL_GO.DESCRIZIONE_1' | translate }}</p>
 
-<div class="rounded mt-2 col-xl-10 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
-  <p>In this tutorial, you can find the instructions to import your Google Analytics API key (access token), in order to configure your website dashboard in <b>DoUtDes</b>.
-  Please perform the following steps in strict order, and do not forget to <b>contact us</b> for any problem.</p>
-  <p>Also remember that you can click over any image, to zoom it.</p>
-  <p class="pt-5">1) Go to <a href="https://console.developer.google.com" target="_blank">console.developer.google.com</a>, accept the service terms, and <b>create a new project</b>, assigning it a custom name:</p>
-    <p><img src="/assets/img/tutorialGoogle/02-NewProject.png"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_GO.STEP_1' | translate }}<b> {{ 'TUTORIAL_GO.PREFERENZE' | translate }}</b> {{ 'TUTORIAL_GO.STEP_1_CON' | translate }}<b> Login with Google</b>:</p>
+  <p><img src="/assets/img/tutorialGoogle/chooseService.PNG"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">2) Click on the <i>Create</i> button and, in the new page, go to <b>Enable APIs and services</b>:</p>
-    <p><img src="/assets/img/tutorialGoogle/03-APIEnable.png"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_GO.STEP_2' | translate }}</p>
+  <p><img src="/assets/img/tutorialGoogle/scegli_google.PNG"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">3) In the search bar, find <em>"Google Analytics Reporting API"</em>, open it and click on <b>Enable</b>:</p>
-    <p><img src="/assets/img/tutorialGoogle/04-AnalyticsReporting.png"  (click)="openModal(zooming, 2)" title="Click here to zoom"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_GO.STEP_3' | translate }}<b> {{ 'TUTORIAL_GO.CONSENTI' | translate }}</b>:</p>
+  <p><img src="/assets/img/tutorialGoogle/scegli_google_2.PNG"  (click)="openModal(zooming, 2)" title="Click here to zoom"/></p>
 
-  <p class="pt-5">4) Come back to the main list, by clicking on the page logo:</p>
-    <p><img src="/assets/img/tutorialGoogle/back-logo.jpg"  (click)="openModal(zooming, 13)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">5) Now, click again to <b>Enable APIs and services</b>, type <em>"Analytics API"</em> and <b>enable</b> it too:</p>
-    <p><img src="/assets/img/tutorialGoogle/05-Analytics.png"  (click)="openModal(zooming, 3)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">6) Once enabled both the APIs, click on <b>Create credentials</b>, then hit the <b>Cancel</b> button:</p>
-  <p><img src="/assets/img/tutorialGoogle/createCredential.jpg"  (click)="openModal(zooming, 14)" title="Click here to zoom"/></p>
-  <p><img src="/assets/img/tutorialGoogle/cancel.jpg"  (click)="openModal(zooming, 15)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">7) Press the blue button <em>Create credentials</em> and choose <b>Service account key</b>:</p>
-    <p><img src="/assets/img/tutorialGoogle/06-ServiceAccountKey.png"  (click)="openModal(zooming, 4)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">8) Fill the form for creating a new service account, and select the <b>JSON</b> key type. Once done, create the account and <b>save the .json file</b> on your PC:</p>
-  <p><img src="/assets/img/tutorialGoogle/07-JSON.png"  (click)="openModal(zooming, 5)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">9) Now, open <b>DoUtDes</b>, search for <em>Preferences</em> -> <em>Configure data sources</em> on the left menu, and click on <b>Add new data source</b>:</p>
-    <p><img src="/assets/img/tutorialGoogle/08-doutdesPreferences.png"  (click)="openModal(zooming, 6)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">10) Choose <b>Google Analytics</b> and upload the <b>.json file</b> that you previously stored locally:</p>
-    <p><img src="/assets/img/tutorialGoogle/09-AddJSON.png"  (click)="openModal(zooming, 7)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">11) Almost done! A few steps more... let us copy the service account e-mail:</p>
-    <p><img src="/assets/img/tutorialGoogle/10-CopyEmail.png"  (click)="openModal(zooming, 8)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">12) Open <a href="https://analytics.google.com"  target="_blank">analytics.google.com</a>, go to <em>Administration</em> -> <em>View</em>, and click on <b>User Management</b>:</p>
-    <p><img src="/assets/img/tutorialGoogle/11-analyticsManagment.png"  (click)="openModal(zooming, 9)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">13) Now, tap on the (<b>+</b>) button and then <b>Add new user</b>:</p>
-    <p><img src="/assets/img/tutorialGoogle/12-AddUser.png"  (click)="openModal(zooming, 10)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">14) Paste here the service account email you copied before and enable the <b>Read and analysis</b> permissions:</p>
-    <p><img src="/assets/img/tutorialGoogle/13-addEmail.png"  (click)="openModal(zooming, 11)" title="Click here to zoom"/></p>
-
-  <p class="pt-5">15) Good job! Your website stats based on Google Analytics are now available on <b>DoUtDes</b> as below:</p>
-    <p><img src="/assets/img/tutorialGoogle/14-end.png"  (click)="openModal(zooming, 12)" title="Click here to zoom"/></p>
+  <p class="pt-5">{{ 'TUTORIAL_GO.STEP_4' | translate }}<b> DoUtDes</b>{{ 'TUTORIAL_GO.STEP_4_CON' | translate }}</p>
+  <p><img src="/assets/img/tutorialGoogle/gaDashboard.PNG"  (click)="openModal(zooming, 3)" title="Click here to zoom"/></p>
 </div>
-
-
 <ng-template #zooming>
   <div class="modal-body" style="text-align:center">
     <img src="/assets/img/tutorialGoogle/{{imgSrc}}" class="img-fluid" style="border: 1px solid #ccc;" />

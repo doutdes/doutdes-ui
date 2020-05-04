@@ -1,69 +1,48 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {
-  FacebookFanCity,
-  FacebookFanCount,
-  FaceBookFanCountry,
-  FacebookImpressions,
-  FacebookPageViewsTotal,
-  FbPage
-} from '../_models/FacebookData';
+import {FbPage, FbData, FbPost} from '../_models/FacebookData';
 import {environment} from '../../../environments/environment';
 import {StoreService} from './store.service';
 
-// TODO Capire perché queste chiamate non vengano intercettate dall'interceptor
-
 @Injectable()
 export class FacebookService {
+  private urlRequest = `${environment.protocol}${environment.host}:${environment.port}/fb`;
 
-  constructor(private http: HttpClient, private storeService: StoreService) {
-  }
-
-  loginWithFacebook(){
-    const user = {user_id: this.storeService.getId()};
-    const headers = this.getAuthorization();
-
-    return this.http.post(this.formatURL('login'), user, {headers});
+  constructor(
+    private http: HttpClient,
+    private storeService: StoreService
+  ) {
   }
 
   getPages() {
     const headers = this.getAuthorization();
-    return this.http.get<FbPage[]>(this.formatURL('pages'), {headers});
+    return this.http.get<FbPage[]>(`${this.urlRequest}/pages`, {headers});
   }
 
-  fbfancount(pageID) {
+  updatePages() {
     const headers = this.getAuthorization();
-    return this.http.get<FacebookFanCount[]>(this.formatURL('fancount', pageID), {headers});
+    return this.http.get<string[]>(`${this.urlRequest}/updatePages`, {headers});
   }
 
-  fbpageimpressions(pageID) {
+  getData(metric: string, pageID: string) {
     const headers = this.getAuthorization();
-    return this.http.get<FacebookImpressions[]>(this.formatURL('pageimpressions', pageID), {headers});
+    const params = {
+      metric: metric,
+      page_id: pageID
+    };
+
+    return this.http.get<FbData>(`${this.urlRequest}/data`, {headers, params});
   }
 
-  fbfancountry(pageID) {
+  fbPosts(pageID) {
     const headers = this.getAuthorization();
-    return this.http.get<FaceBookFanCountry[]>(this.formatURL('fancountry', pageID), {headers});
+    const params = {
+      page_id: pageID
+    };
+    return this.http.get<FbPost[]>(`${this.urlRequest}/posts`, {headers, params});
   }
 
-  fbpageviewstotal(pageID) {
-    const headers = this.getAuthorization();
-    return this.http.get<FacebookPageViewsTotal[]>(this.formatURL('pageviewstotal', pageID), {headers});
-  }
-
-  fbfancity(pageID){
-    const headers = this.getAuthorization();
-    return this.http.get<FacebookFanCity[]>(this.formatURL('fancity', pageID), {headers});
-  }
-
-  private formatURL(call, pageID=null) {
-    const aux = pageID ? (pageID + '/' + call) : call;
-    return 'http://' + environment.host + ':' + environment.port + '/fb/' + aux;
-  }
-
-  private getAuthorization() {
-    return new HttpHeaders()
-      .set('Content-Type', 'application/json')
-      .set('Authorization', `Bearer ${this.storeService.getToken()}`);
-  }
+  private getAuthorization = () => new HttpHeaders()
+    .set('Content-type', 'application/json')
+    .set('Authorization', `Bearer ${this.storeService.getToken()}`);
 }

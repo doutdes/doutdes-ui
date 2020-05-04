@@ -16,8 +16,17 @@ import {P404Component} from '../errors/404.component';
         children: [
           {
             path: '',
-            redirectTo: 'dashboard',
-            pathMatch: 'full'
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './home/home.module#HomeModule'
+          },
+          {
+            path: 'report',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './report/report.module#FeatureReportModule'
           },
           {
             path: 'dashboard',
@@ -27,6 +36,10 @@ import {P404Component} from '../errors/404.component';
             loadChildren: './dashboard/dashboard.module#FeatureDashboardModule',
           },
           {
+            path: 'authentication',
+            loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
+          },
+          {
             path: 'preferences',
             canActivate: [
               IsAuthenticatedGuard
@@ -34,15 +47,18 @@ import {P404Component} from '../errors/404.component';
             loadChildren: './preferences/preferences.module#FeaturePreferencesModule',
           },
           {
-            path: 'authentication',
-            loadChildren: './authentication/authentication.module#FeatureAuthenticationModule'
-          },
-          {
             path: 'calendar',
             canActivate: [
               IsAuthenticatedGuard
             ],
             loadChildren: './calendar/calendar.module#FeatureCalendarModule'
+          },
+          {
+            path: 'messages',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './messages/message.module#FeatureMessageModule'
           },
           {
             path: 'tutorial',

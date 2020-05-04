@@ -1,18 +1,32 @@
+import {DashboardCharts} from '../../../shared/_models/DashboardCharts';
+
 export interface IntervalDate {
-  dataStart: Date;
-  dataEnd: Date;
+  first: Date;
+  last: Date;
+}
+
+export interface IntervalDateComparasion {
+  first_1: Date;
+  last_1: Date;
+  first_2: Date;
+  last_2: Date;
+}
+
+export interface DashboardData {
+  data: DashboardCharts[];
+  interval: IntervalDate;
+  type: number;
+  intervalComparasion?: IntervalDateComparasion;
 }
 
 export interface FilterState {
-  originalData: any;
-  originalInterval: IntervalDate;
-  dataFiltered: any;
-  filterInterval: IntervalDate;
+  currentDashboard: DashboardData;
+  filteredDashboard: DashboardData;
+  storedDashboards: DashboardData[];
 }
 
 export const FILTER_INITIAL_STATE: FilterState = {
-  originalData: null,
-  originalInterval: null,
-  dataFiltered: null,
-  filterInterval: null
+  currentDashboard: null,
+  filteredDashboard: null,
+  storedDashboards: [],
 };

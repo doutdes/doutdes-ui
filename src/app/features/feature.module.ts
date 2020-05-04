@@ -7,7 +7,7 @@ import {IsAuthenticatedGuard} from '../shared/_guards/is-authenticated.guard';
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {P404Component} from '../errors/404.component';
 import {P500Component} from '../errors/500.component';
-
+import {NgxLoadingModule} from 'ngx-loading';
 @NgModule({
   declarations: [
     FeatureComponent,
@@ -19,12 +19,12 @@ import {P500Component} from '../errors/500.component';
     SharedModule,
     CoreModule,
     PerfectScrollbarModule,
+    NgxLoadingModule.forRoot({})
   ],
   providers: [
     IsAuthenticatedGuard
   ],
   exports: [
-
   ]
 })
 

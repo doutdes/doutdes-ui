@@ -1,0 +1,19 @@
+<div class="card mb-0">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-8">
+        <small *ngIf="dtype !== 6" class="text-secondary text-uppercase font-weight-bold">{{month}}</small>
+        <div class="text-value">{{minicard.value + formatMeasure(minicard.measure)}}</div>
+        <small class="text-muted text-uppercase font-weight-bold">{{minicard.name}}</small>
+      </div>
+      <div class="h1 text-muted my-2 col-md-4">
+        <i [class]="minicard.icon + ' d-sm-block d-none'"></i>
+      </div>
+    </div>
+    <div class="progress progress-xs mt-3 mb-0" placement="bottom">
+      <div [ngStyle]="{'left': minicard.progress}" class="w-100 d-none position-absolute" ></div>
+      <div class="progress-bar bg-danger" [class]="progressClassColor" role="progressbar" [ngStyle]="{'width': minicard.progress}" aria-valuenow="25" aria-valuemin="0"
+           aria-valuemax="100" ></div> <!-- (click)="pop.show()"></div>  -->
+    </div>
+  </div>
+</div>

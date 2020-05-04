@@ -14,21 +14,21 @@ export class CalendarService {
   }
 
   getEvents(){
-    return this.http.get<Calendar[]>('http://' + environment.host + ':' + environment.port + this.calendarPath + 'getEvents/');
+    return this.http.get<Calendar[]>(environment.protocol + environment.host + ':' + environment.port + this.calendarPath + 'getEvents/');
   }
 
   addEvent(event) {
-    return this.http.post('http://' + environment.host + ':' + environment.port + this.calendarPath + 'addEvent/', {event});
+    return this.http.post(environment.protocol + environment.host + ':' + environment.port + this.calendarPath + 'addEvent/', {event});
   }
 
   updateEvent(event){
-    return this.http.put('http://' + environment.host + ':' + environment.port + this.calendarPath + 'updateEvent/', {event});
+    return this.http.put(environment.protocol + environment.host + ':' + environment.port + this.calendarPath + 'updateEvent/', {event});
   }
 
   deleteEvent(id) {
     const body = {id: id};
 
-    return this.http.request('delete', 'http://' + environment.host + ':' + environment.port + this.calendarPath + 'deleteEvent/', {
+    return this.http.request('delete', environment.protocol + environment.host + ':' + environment.port + this.calendarPath + 'deleteEvent/', {
       body
     });
   }

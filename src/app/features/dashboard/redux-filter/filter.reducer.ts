@@ -1,51 +1,49 @@
-import {FILTER_INITIAL_STATE, FilterState, IntervalDate} from './filter.model';
-import {FILTER_INIT, FILTER_BY_DATA, FILTER_RESET, FILTER_CLEAR, FILTER_UPDATE} from './filter.actions';
+import {FILTER_INITIAL_STATE, FilterState} from './filter.model';
+import {FILTER_BY_DATA, FILTER_CLEAR, FILTER_INIT, FILTER_REMOVE_CURRENT, FILTER_RESET, FILTER_UPDATE} from './filter.actions';
 
 export function FilterReducer(state: FilterState = FILTER_INITIAL_STATE, action): FilterState {
   switch (action.type) {
     case FILTER_INIT:
-      return Object.assign({}, state, // TODO Per la GeoMap basta inizializzare l'indice 0 come filtered e tutta la lista come original
+      return Object.assign({}, state,
         {
-          originalData: action.originalData,
-          originalInterval: action.originalInterval,
-          dataFiltered: action.dataFiltered,
-          filterInterval: action.originalInterval
-          // dataFiltered: Object.create(action.originalData),
-          // filterInterval: Object.create(action.originalInterval)
+          currentDashboard: action.currentDashboard,
+          filteredDashboard: action.filteredDashboard,
+          storedDashboards: action.storedDashboards
         });
 
     case FILTER_UPDATE:
       return Object.assign({}, state,
         {
-          originalData: action.originalData,
-          originalInterval: state.originalInterval,
-          dataFiltered: action.dataFiltered,
-          filterInterval: state.filterInterval
+          currentDashboard: action.currentDashboard,
+          filteredDashboard: action.filteredDashboard,
+          storedDashboards: action.storedDashboards
         });
 
     case FILTER_BY_DATA:
       return Object.assign({}, state,
         {
-          originalData: state.originalData,
-          originalInterval: state.originalInterval,
-          dataFiltered: action.dataFiltered,
-          filterInterval: action.filterInterval
+          filteredDashboard: action.filteredDashboard,
         });
 
     case FILTER_CLEAR:
       return Object.assign({}, state, {
-        originalData: null,
-        originalInterval: null,
-        dataFiltered: null,
-        filterInterval: null
+        currentDashboard: null,
+        filteredDashboard: null,
+        storedDashboards: []
+      });
+
+    case FILTER_REMOVE_CURRENT:
+      return Object.assign({}, state, {
+        currentDashboard:  null,
+        filteredDashboard:  null,
       });
 
     case FILTER_RESET:
-      return Object.assign({}, state,
-        {
-          dataFiltered: state.originalData,
-          filterInterval: state.originalInterval
-        });
+      return Object.assign({}, state, {
+        currentDashboard: null,
+        filteredDashboard: null,
+        storedDashboards: []
+      });
 
     default:
       return state;

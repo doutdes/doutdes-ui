@@ -1,0 +1,25 @@
+<div class="row rounded p-4 title-header">
+  <div class="col-md-12 pl-0">
+    <h2 class="my-auto pl-0">{{ 'TUTORIAL_YT.TITLE' | translate }}</h2>
+  </div>
+</div>
+<div class="rounded my-3 col-lg-12 tutorial" style="border: 1px solid #ccc; background: #fff; padding:50px">
+  <p>{{ 'TUTORIAL_YT.DESCRIZIONE' | translate }}<b> DoUtDes</b>. {{ 'TUTORIAL_YT.DESCRIZIONE_1' | translate }}</p>
+
+  <p class="pt-5">{{ 'TUTORIAL_YT.STEP_1' | translate }}<b> {{ 'TUTORIAL_YT.PREFERENZE' | translate }}</b> {{ 'TUTORIAL_YT.STEP_1_CON' | translate }}<b> Login with YouTube</b>:</p>
+  <p><img src="/assets/img/tutorialYouTube/chooseService.png"  (click)="openModal(zooming, 0)" title="Click here to zoom"/></p>
+
+  <p class="pt-5">{{ 'TUTORIAL_YT.STEP_2' | translate }}</p>
+  <p><img src="/assets/img/tutorialYouTube/scegli_youtube.png"  (click)="openModal(zooming, 1)" title="Click here to zoom"/></p>
+
+  <p class="pt-5">{{ 'TUTORIAL_YT.STEP_3' | translate }}<b> {{ 'TUTORIAL_YT.CONSENTI' | translate }}</b>:</p>
+  <p><img src="/assets/img/tutorialYouTube/scegli_youtube_2.png"  (click)="openModal(zooming, 2)" title="Click here to zoom"/></p>
+
+  <p class="pt-5">{{ 'TUTORIAL_YT.STEP_4' | translate }}<b> DoUtDes</b>{{ 'TUTORIAL_YT.STEP_4_CON' | translate }}</p>
+  <p><img src="/assets/img/tutorialYouTube/ytDashboard.png"  (click)="openModal(zooming, 3)" title="Click here to zoom"/></p>
+</div>
+<ng-template #zooming>
+  <div class="modal-body" style="text-align:center">
+    <img src="/assets/img/tutorialGoogle/{{imgSrc}}" class="img-fluid" style="border: 1px solid #ccc;" />
+  </div>
+</ng-template>

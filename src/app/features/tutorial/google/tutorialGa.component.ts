@@ -2,6 +2,9 @@ import {Component, OnDestroy, OnInit, TemplateRef, ViewEncapsulation} from '@ang
 import {Breadcrumb} from '../../../core/breadcrumb/Breadcrumb';
 import {BreadcrumbActions} from '../../../core/breadcrumb/breadcrumb.actions';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../../../shared/_services/user.service';
+import {User} from '../../../shared/_models/User';
 
 @Component({
   selector: 'app-feature-tutorial-google',
@@ -15,9 +18,16 @@ export class FeatureTutorialGaComponent implements OnInit, OnDestroy {
   modalRef: BsModalRef;
   imgSrc: string;
 
-  constructor(private breadcrumbActions: BreadcrumbActions,
-              private modalService: BsModalService) {
-  }
+  lang: string;
+  value: string;
+  tmp: string;
+  user: User;
+
+  constructor(
+    private breadcrumbActions: BreadcrumbActions,
+    private modalService: BsModalService,
+    public translate: TranslateService
+    ) { }
 
   ngOnInit(): void {
     this.addBreadcrumb();
@@ -45,60 +55,23 @@ export class FeatureTutorialGaComponent implements OnInit, OnDestroy {
     this.modalRef = this.modalService.show(template, {class: 'modal-xl modal-dialog-centered'});
 
     switch (imgNumber) {
-
       case 0:
-        this.imgSrc = '02-NewProject.png';
+        this.imgSrc = 'chooseService.PNG';
         break;
       case 1:
-        this.imgSrc = '03-APIEnable.png';
+        this.imgSrc = 'scegli_google.PNG';
         break;
       case 2:
-        this.imgSrc = '04-AnalyticsReporting.png';
+        this.imgSrc = 'scegli_google_2.PNG';
         break;
       case 3:
-        this.imgSrc = '05-Analytics.png';
+        this.imgSrc = 'gaDashboard.PNG';
         break;
-      case 4:
-        this.imgSrc = '06-ServiceAccountKey.png';
-        break;
-      case 5:
-        this.imgSrc = '07-JSON.png';
-        break;
-      case 6:
-        this.imgSrc = '08-doutdesPreferences.png';
-        break;
-      case 7:
-        this.imgSrc = '09-AddJSON.png';
-        break;
-      case 8:
-        this.imgSrc = '10-CopyEmail.png';
-        break;
-      case 9:
-        this.imgSrc = '11-analyticsManagment.png';
-        break;
-      case 10:
-        this.imgSrc = '12-AddUser.png';
-        break;
-      case 11:
-        this.imgSrc = '13-addEmail.png';
-        break;
-      case 12:
-        this.imgSrc = '14-end.png';
-        break;
-      case 13:
-        this.imgSrc = 'back-logo.jpg';
-        break;
-      case 14:
-        this.imgSrc = 'createCredential.jpg';
-        break;
-      case 15:
-        this.imgSrc = 'cancel.jpg';
-        break;
-
     }
   }
 
   closeModal(): void {
     this.modalRef.hide();
   }
+
 }

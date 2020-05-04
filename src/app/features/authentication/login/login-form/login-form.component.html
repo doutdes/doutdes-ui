@@ -1,5 +1,5 @@
 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-  <p class="text-muted">Sign into your account:</p>
+  <p class="text-muted">Accedi al tuo account:</p>
   <div class="input-group mb-3">
     <div class="input-group-prepend">
       <span class="input-group-text"><i class="icon-user"></i></span>
@@ -8,10 +8,10 @@
            [ngClass]="{ 'is-invalid': submitted && f.username.errors }"/>
 
     <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
-      <div *ngIf="f.username.errors.required">Username is required</div>
+      <div *ngIf="f.username.errors.required">Lo username è obbligatorio</div>
     </div>
   </div>
-  <div class="input-group mb-4">
+  <div class="input-group">
     <div class="input-group-prepend">
       <span class="input-group-text"><i class="icon-lock"></i></span>
     </div>
@@ -19,18 +19,21 @@
            [ngClass]="{ 'is-invalid': submitted && f.password.errors }"/>
 
     <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
-      <div *ngIf="f.password.errors.required">Password is required</div>
+      <div *ngIf="f.password.errors.required">La password è obbligatoria</div>
     </div>
   </div>
+  <!--<button type="button" class="btn btn-link px-0 d-block mb-4">Password dimenticata?</button>-->
 
-  <div *ngIf="failed"><p class="text-danger">Username or Password not corrected</p></div>
+  <div *ngIf="failed"><p class="text-danger">Lo username o la password non sono corretti.</p></div>
+
+  <p class="mt-4"></p> <!-- TODO eliminare con abilitazione password dimenticata -->
 
   <div class="row">
     <div class="col-6">
       <button [disabled]="loading" class="btn btn-primary px-4">Login</button>
     </div>
-    <div class="col-6 text-right">
-      <button type="button" class="btn btn-link px-0">Forgot password?</button>
-    </div>
+    <!--<div class="col-6 text-right">-->
+
+    <!--</div>-->
   </div>
 </form>

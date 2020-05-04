@@ -1,9 +1,105 @@
 html, body {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
+  background-color: #FCFCFC !important;
 }
 
-.modal-xl {max-width: 1000px;}
+.modal-xl {
+  max-width: 1000px;
+}
+
+@media (min-width: 1400px) and (max-width: 1600px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1240px) and (max-width: 1400px) {
+  .container {
+    max-width: 800px;
+  }
+
+  .title-header {
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+#sidebar-container .list-group a.list-group-item:hover {
+  background-color: #abc9d4 !important;
+  color:black;
+}
+
+#sidebar-container .list-group a.list-group-item:focus {
+  color:black;
+}
+
+app-core-header button.navbar-toggler {
+  margin-right: 15px;
+}
+
+app-core-sidebar {
+  position:absolute;
+  left: -230px;
+  margin-left: 1rem;
+  background: #eee !important;
+  border: 1px solid #c8ced3;
+}
+
+@media (min-width: 1030px) and (max-width: 1430px) {
+  #body-row, app-core-header nav > .container {
+    width: 100%;
+    padding-right: 0px;
+    padding-left: 230px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 100%;
+  }
+
+  #navbarNavDropdown li > a {
+    padding-right: 0;
+
+    img {
+      margin-right: 0;
+    }
+  }
+
+  .title-header {
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+@media only screen and (max-width: 1030px) {
+  #body-row, app-core-header nav > .container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 100%;
+  }
+
+  #navbarNavDropdown li > a {
+    padding-right: 0;
+
+    img {
+      margin-right: 0;
+    }
+  }
+
+  app-emptycard {
+    padding-right: 15px!important;
+    padding-left:  15px!important;
+  }
+}
+
+.list-group-item-action {
+  color: black;
+
+}
 
 .alert-registration {
   position: fixed;
@@ -11,13 +107,29 @@ html, body {
   right: 10px;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 61px;
-  line-height: 60px;
+app-core-footer {
   background-color: #f5f5f5;
+  width: 100%;
+  height: auto;
+  line-height: 60px;
+  display: -webkit-box;
+  display: -moz-box;
+  flex-shrink: 0;
+}
+
+#main-container {
+  flex: 1 0 auto;
+}
+
+#main-content {
+  display: flex;
+  flex-direction: column;
+}
+
+@media only screen and (min-width: 1030px) {
+  #main-content {
+    padding-left: 2rem;
+  }
 }
 
 .nav-item .nav-link > .img-avatar, .nav-item .avatar.nav-link > img {
@@ -40,14 +152,7 @@ body {
   //padding-bottom: 20px;
 }
 
-#body-row {
-  margin-left: 0;
-  margin-right: 0;
-}
-
 #sidebar-container {
-  min-height: calc(100vh - 69px);
-  background-color: #2f353a;
   padding: 0;
 }
 
@@ -67,7 +172,6 @@ body {
 /* Menu item*/
 #sidebar-container .list-group a {
   height: 50px;
-  color: white;
 }
 
 /* Submenu item*/
@@ -82,18 +186,18 @@ body {
 
 /* Separators */
 .sidebar-separator-title {
-  background-color: #2f353a;
   height: 35px;
+  background-color: transparent;
+  color: #2f353a !important;
 }
 
 .sidebar-separator {
-  background-color: #2f353a;
   height: 25px;
 }
 
 .logo-separator {
-/*  background-color: #333;
-  height: 60px;*/
+  /*  background-color: #333;
+    height: 60px;*/
 }
 
 /* Closed submenu icon */
@@ -132,10 +236,7 @@ body {
 
 app-core-header .navbar {
   height: 56px;
-}
-
-app-core-sidebar {
-  background-color: #2f353a;
+  background: #24526A !important;
 }
 
 .col-1-5 {
@@ -145,11 +246,16 @@ app-core-sidebar {
 }
 
 app-core-breadcrumb nav {
-  height: 50px;
+  height: 46px;
 }
 
-app-feature-authentication-login .container {
-  //margin-top: calc(25% - 28px - 25px );
+.massiform input:hover {
+  cursor: url('https://cdn-idoli-a.facciabuco.com/232/pamela-prati/idolopic.jpg'), auto;
+}
+@media only screen and (min-width: 1301px) {
+  #logo-div {
+    margin-left: 2rem !important;
+  }
 }
 
 ul {
@@ -164,7 +270,7 @@ ul {
 }
 
 .add-card {
-  font-size: 100px;
+  font-size: 50px;
   color: #BEBEBE;
 }
 
@@ -175,86 +281,178 @@ ul {
 
 .title-header {
 
+  margin-right: 0px;
+  margin-left: 0px;
+  border: 1px solid #c8ced3;
+  background-color: #eee;
+
   img {
-    height:80px;
-    margin-top:-7px
+    height: 80px;
+    margin-top: -7px
   }
 
-  margin-right:0px;
-  margin-left:0px;
-  margin-top: 10px;
-  border:1px solid #c8ced3;
+  h2 {
+    color: black;
+    padding-left: 1.25rem;
+  }
+
+  .filter-div {
+    padding-right: 1.25rem;
+  }
+
 }
 
 .filterDatePicker {
-  width: 60%!important;
+  max-width: 187px;
 }
 
 /* FILTER */
-@media only screen and (min-width: 1100px) and (max-width: 1200px){
-  .title-header {
-    h1 {
-      font-size: 2.5rem !important;
-    }
-    img {
-      height: 69px!important;
-    }
-  }
-
-  .filterDatePicker {
-    width: 50%!important;
-  }
-
-}
-
-@media only screen and (min-width: 992px) and (max-width: 1099px){
-  .title-header {
-    h1 {
-      font-size: 2rem !important;
-    }
-    img {
-      height: 69px!important;
-    }
-  }
-
-  .filterDatePicker {
-    width: 50%!important;
+@media only screen and (min-width: 820px) and (max-width: 1029px) {
+  .title-header h2 {
+    font-size: 25px;
   }
 }
 
-@media only screen and (min-width: 768px) and (max-width: 991px){
-  .title-header {
-    h1 {
-      font-size: 2.5rem !important;
-    }
-    img {
-      height: 69px!important;
-    }
-  }
-
-  .filterDatePicker {
-    width: 55%!important;
+@media only screen and (min-width: 576px) and (max-width: 820px){
+  .title-header h2 {
+    font-size: 1.5rem;
   }
 }
 
-@media only screen and (max-width: 600px){
+@media only screen and (max-width: 415px) {
   .title-header {
-    h1 {
-      font-size: 2rem !important;
-    }
-    img {
-      height: 69px!important;
-    }
-  }
-}
-
-@media only screen and (max-width: 415px){
-  .title-header {
-    h1 {
+    h2 {
       font-size: 1.5rem !important;
     }
     img {
-      height: 60px!important;
+      height: 60px !important;
     }
   }
 }
+
+.bg-ga-color {
+  background-color: #d62d20;
+}
+
+.bg-fb-color {
+  background-color: #4267B2;
+}
+
+.bg-ig-color {
+  background-color: #e7008a;
+}
+
+.bg-yt-color {
+  background-color: #cc181e;
+}
+
+.ga-color {
+  color: #d62d20;
+}
+
+.fb-color {
+  color: #4267B2;
+}
+
+.ig-color {
+  color: #e7008a;
+}
+
+.yt-color {
+  color: #cc181e;
+}
+
+.api-key-card {
+  padding: 4px 7px;
+  background-color: #c6e3ec;
+  border: 1px solid #aaa;
+  text-transform: uppercase;
+  font-size: 12px;
+  display: inline-flex;
+}
+
+@media only screen and (min-width: 1030px){
+  .card-container:nth-child(odd) {
+    padding-right: 0.5rem;
+  }
+
+  .card-container:nth-child(even) {
+    padding-left: 0.5rem;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+#menu a {
+  color: black;
+}
+
+.btn:focus, .btn.focus {
+  box-shadow: none;
+}
+
+popover-container {
+  float: right!important;
+}
+
+.gradient {
+  background: #fff !important;
+}
+
+.google-visualization-table-table {
+  padding:4px;
+}
+
+.headercellbg {
+  background: #fff;
+  font-size:10pt;
+  text-transform: uppercase;
+}
+
+.toast-top-right {
+  top: 71px!important;
+}
+
+@media only screen and (max-width: 767px) {
+  app-core-header > nav {
+    padding-top: 0 !important;
+  }
+}
+
+.input-group-text {
+  width:50px;
+}
+
+.input-group {
+  max-height:35px;
+}
+
+@media (min-width: 1030px) {
+  .d-lg-none-2 {
+    display: none !important;
+  }
+  .d-lg-inline-2 {
+    display: inline !important;
+  }
+  .d-lg-inline-block-2 {
+    display: inline-block !important;
+  }
+  .d-lg-block-2 {
+    display: block !important;
+  }
+}
+
+#sidebar-container.drag-mode .list-group a.list-group-item:hover, #sidebar-container.drag-mode .list-group-item-action:hover {
+  background-color: inherit !important;
+  color: inherit;
+  cursor: default;
+}
+
+/*
+div#body-row.container.drag-mode {
+  background-color: rgb(210, 209, 209) ;
+}
+ */
+

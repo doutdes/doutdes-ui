@@ -1,5 +1,5 @@
 .icon-card {
-  color: whitesmoke;
+  color: black;
   background-color: transparent;
 }
 
@@ -9,4 +9,8 @@
 
 .dropdown-item {
   cursor: pointer;
+}
+
+.deep-maio:hover {
+  cursor: grab;
 }

@@ -1,14 +1,19 @@
-<footer class="footer border-top border-info">
+<footer class="footer border rounded w-100">
   <div class="container-fluid">
     <div class="float-left">
-      <span><a href="http://' + environment.host + ':' + environment.port + '">DoUtDes</a> © {{this.copyrightYear}} UniCA</span>
+      <span>© {{this.copyrightYear}} DoUtDes </span>
+      <span style="color: #000000">| </span>
+      <a href="../../../assets/Info_privacy.pdf" target="_blank" style="color:#666; margin-left:5px ">{{ 'FOOTER.INFO' | translate }}</a>
     </div>
+
     <div class="float-right">
-      <span>
-        Powered by
-        <a href="https://www.unica.it/unica/it/dip_matinfo.page" target="_blank">
-          Dipartimento di Matematica e Informatica
-        </a>
+
+      <span > {{ 'FOOTER.START' | translate }}<b>
+
+          <a *ngIf="!drag" href="http://dmi.unica.it" target="_blank" style="color:#666;"> {{ 'FOOTER.DIP' | translate }} </a>
+
+          <a *ngIf="drag" target="_blank" style="color:#666;"> {{ 'FOOTER.DIP' | translate }} </a>
+       </b> (UniCA)
       </span>
     </div>
   </div>

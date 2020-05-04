@@ -31,6 +31,7 @@ export class LoginActions {
     this.storeLocal.setToken(token);
     this.storeLocal.setId(user.id);
     this.storeLocal.setUserNames(user.first_name);
+    this.storeLocal.setType(user.user_type);
 
     this.eventManager.isUserLoggedIn.next(true);
   }
@@ -45,10 +46,12 @@ export class LoginActions {
     this.storeLocal.removeToken();
     this.storeLocal.removeId();
     this.storeLocal.removeUserNames();
+    this.storeLocal.removeType();
     this.storeLocal.clear();
 
     this.eventManager.isUserLoggedIn.next(false);
 
-    this.router.navigate(['/authentication/login']);
+    window.location.reload();
+    //this.router.navigate(['/authentication/login']);
   }
 }

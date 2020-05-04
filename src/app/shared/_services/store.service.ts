@@ -31,12 +31,28 @@ export class StoreService {
     localStorage.removeItem('id');
   }
 
+  setType(type) {
+    localStorage.setItem('type', type);
+  }
+
+  getType() {
+    return localStorage.getItem('type');
+  }
+
+  removeType() {
+    localStorage.removeItem('type');
+  }
+
   setUserNames(name: string) {
     localStorage.setItem('usernames', name);
   }
 
   getUserNames() {
     return localStorage.getItem('usernames');
+  }
+
+  getLang () {
+    return localStorage.getItem('lang');
   }
 
   removeUserNames() {

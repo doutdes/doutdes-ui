@@ -1,0 +1,217 @@
+
+<div class="row rounded py-sm-4 title-header">
+  <div class="col-xl-6 col-md-6 col-sm-6 col-12 pl-0 d-sm-block d-none">
+    <h2 class="my-auto float-left"> {{title}} </h2>
+  </div>
+
+  <div *ngIf="loaded" class="col-xl-6 col-sm-6 col-md-8 col-12 my-md-auto">
+    <div class="btn-group float-right ml-lg-1 ml-sm-2 d-md-block d-none" dropdown>
+      <button id="button-settings" dropdownToggle type="button" class="btn dropdown-toggle icon-card"
+              aria-controls="button-settings"><span class="caret"><i class="fas fa-cog"></i></span>
+      </button>
+
+      <ul id="dropdown-settings" *dropdownMenu class="dropdown-menu dropdown-menu-right" role="menu"
+          aria-labelledby="button-settings">
+        <li class="dropdown-item cursor-pointer" (click)="closeTable()">
+          <i class="fas fa-trash-alt mr-2"></i> {{ 'DASHBOARD.CHIUDI' | translate }}
+        </li>
+<!--
+        <li class="dropdown-item cursor-pointer" (click)="htmltoPDF()">
+          <i class="fas fa-file-pdf mr-2"></i> {{ 'DASHBOARD.ESPORT' | translate }}
+        </li>
+-->
+        <li class="dropdown-item cursor-pointer" (click)="changeData()">
+          <i class="fas fa-chart-line mr-2"></i> {{ 'DASHBOARD.' + changeDataTitle | translate }}
+        </li>
+
+      </ul>
+    </div> <!-- PDF export -->
+  </div>
+  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
+</div>
+
+<div *ngIf="dashErrors.noPages" class="alert alert-danger px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5><i class="fas fa-exclamation-triangle fa-2x float-left mt-1 mr-3"></i>
+    {{ 'DASHBOARD.NO_FBM' | translate }}
+  </h5>
+</div> <!-- ERR => No pages -->
+
+<div *ngIf="dashErrors.emptyMiniCards" class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">
+  <h5>{{ 'DASHBOARD.MINICARD' | translate }}</h5>
+</div> <!-- ERR => No mini cards -->
+
+<div *ngIf="isApiKeySet && !dashErrors.emptyMiniCards && !dashErrors.noPages && loaded" class="row px-3 pt-3">
+  <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.FBC"></app-minicard>
+</div> <!-- Mini cards -->
+
+<div *ngIf="loaded" class="table-campaigns">
+  <mat-form-field>
+    <label>
+      <input matInput (keyup)="applyFilter($event.target.value, 'filterCampaings')" placeholder="Cerca">
+    </label>
+  </mat-form-field>
+
+  <table id="campaigns-table" mat-table #MatSort='matSort' [dataSource]="dataCampaigns" matSort class="table-striped w-100">
+
+    <ng-container *ngFor="let d of displayedColumnsCampaigns" matColumnDef={{d}}>
+      <th *matHeaderCellDef mat-sort-header>{{ ('FBM.' + d | translate).toUpperCase() }}</th>
+      <td *matCellDef="let element">
+        <i *ngIf= "d === 'name' && clickedCamp == element['id']" (click) = "showAdsets(element['id'], element['name'])" class="far fa-folder fa-2x col_hover"></i>
+        <i *ngIf= "d === 'name' && clickedCamp != element['id']" (click) = "showAdsets(element['id'], element['name'])" class="fas fa-folder fa-2x col_hover"></i>
+        <div *ngIf="!('FBM.' + element[d] | translate).includes('FBM.'); else elseBlock"> <!--TODO improve-->
+          {{ ('FBM.' + element[d] | translate) }}
+        </div>
+        <ng-template #elseBlock>
+          {{element[d]}}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsCampaigns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsCampaigns;"></tr>
+  </table>
+  <div *ngIf="dataCampaigns.filteredData !== undefined">
+  <div *ngIf="dataCampaigns.filteredData.length === 0" class="empty-elem">{{ 'DASHBOARD.NO_ELEM' | translate }}</div>
+  </div>
+  <mat-paginator #MatPaginator [pageSizeOptions]="[5, 10]" showFirstLastButtons></mat-paginator>
+</div>
+
+<div *ngIf="adSets && !this.marketing" class="table-adsets  mt-5">
+  <h4 class="my-auto float-left"> {{ 'DASHBOARD.DETTAGLI' | translate }} {{titleCamp}} </h4>
+  <mat-form-field>
+    <label>
+      <input matInput (keyup)="applyFilter($event.target.value, 'filterAdsets')" placeholder="Cerca">
+    </label>
+  </mat-form-field>
+
+  <table mat-table #MatSort2='matSort' [dataSource]="dataAdsets" matSort class="table-striped w-100">
+
+    <ng-container *ngFor="let d of displayedColumnsAdsets" matColumnDef={{d}}>
+      <th *matHeaderCellDef mat-sort-header> {{ ('FBM.' + d | translate).toUpperCase() }} </th>
+      <td *matCellDef="let element">
+        <i *ngIf= "d === 'name' && clickedAdset == element['id']" (click) = "showAds(element['id'], element['name'])" class="far fa-folder fa-2x col_hover"></i>
+        <i *ngIf= "d === 'name' && clickedAdset != element['id']" (click) = "showAds(element['id'], element['name'])" class="fas fa-folder fa-2x col_hover"></i>
+        <div *ngIf="!('FBM.' + element[d] | translate).includes('FBM.'); else elseBlock"> <!--TODO improve-->
+          {{ ('FBM.' + element[d] | translate) }}
+        </div>
+        <ng-template #elseBlock>
+          {{element[d]}}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsAdsets; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsAdsets;"></tr>
+  </table>
+  <div *ngIf="dataAdsets.filteredData.length === 0">{{ 'DASHBOARD.NO_ELEM' | translate }}</div>
+  <mat-paginator #MatPaginator2 [pageSizeOptions]="[5, 10]" showFirstLastButtons></mat-paginator>
+</div>
+
+<div *ngIf="adSets && this.marketing" class="table-adsets2 mt-5">
+  <h4 class="my-auto float-left"> {{ 'DASHBOARD.DETTAGLI' | translate }} {{titleCamp}} </h4>
+  <mat-form-field>
+    <label>
+      <input matInput (keyup)="applyFilter($event.target.value, 'filterAdsets')" placeholder="Cerca">
+    </label>
+  </mat-form-field>
+
+  <table mat-table #MatSort2='matSort' [dataSource]="dataAdsets" matSort class="table-striped w-100"> <!--[ngClass]="{'font-weight': true ? 'bold' : '400'}"-->
+
+    <ng-container *ngFor="let d of displayedColumnsAdsets" matColumnDef={{d}}>
+      <th *matHeaderCellDef mat-sort-header>  {{ ('FBM.' + d | translate).toUpperCase() }} </th>
+      <td *matCellDef="let element">
+        <i *ngIf= "d === 'name' && clickedAdset == element['id']" (click) = "showAdsets(idCamp,titleCamp)" class="far fa-folder fa-2x col_hover"></i>
+        <i *ngIf= "d === 'name' && clickedAdset != element['id'] && !clickedAds" (click) = "showAds(element['id'], element['name'])" class="fas fa-folder fa-2x col_hover"></i>
+        <div *ngIf="!('FBM.' + element[d] | translate).includes('FBM.'); else elseBlock"> <!--TODO improve-->
+          {{ ('FBM.' + element[d] | translate) }}
+        </div>
+        <ng-template #elseBlock>
+          {{element[d]}}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsAdsets; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsAdsets;"></tr>
+  </table>
+  <div *ngIf="dataAdsets.filteredData.length === 0">{{ 'DASHBOARD.NO_ELEM' | translate }}</div>
+  <mat-paginator #MatPaginator2 [pageSizeOptions] = "[5, 10]" showFirstLastButtons></mat-paginator>
+</div>
+
+<div *ngIf="ads && !this.marketing" class="table-ads mt-5">
+  <h4 class="my-auto float-left"> {{ 'DASHBOARD.DETTAGLI' | translate }} {{titleAdset}} </h4>
+
+  <table mat-table #MatSort3='matSort' [dataSource] = "dataAds" matSort class="table-striped w-100">
+
+    <ng-container *ngFor="let d of displayedColumnsAds" matColumnDef = {{d}}>
+      <th *matHeaderCellDef mat-sort-header> {{ ('FBM.' + d | translate).toUpperCase() }} </th>
+      <td *matCellDef="let element">
+        <div *ngIf="!('FBM.' + element[d] | translate).includes('FBM.'); else elseBlock"> <!--TODO improve-->
+          {{ ('FBM.' + element[d] | translate) }}
+        </div>
+        <ng-template #elseBlock>
+          {{element[d]}}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsAds; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsAds;"></tr>
+  </table>
+  <div *ngIf="dataAds.filteredData.length === 0">{{ 'DASHBOARD.NO_ELEM' | translate }}</div>
+</div>
+
+<ng-template #selectView>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-flask mr-3"></i>{{ 'DASHBOARD.SELECT_IMPORT' | translate }}</h4>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="selectViewForm" (ngSubmit)="selectViewSubmit()">
+      <div class="form-group row">
+        <p class="col-sm-12 text-justify">
+          {{ 'DASHBOARD.FACEBOOK_PAGE' | translate }}
+        </p>
+        <div class="col-sm-12">
+          <select class="form-control mx-auto" style="width: 70%;" formControlName="fbm_page_id" [ngClass]="{ 'is-invalid': submitted && selectViewForm.controls['fbm_page_id'].errors }">
+            <option *ngFor="let page of pageList" [value]="page.id">{{page.name}}</option>
+          </select>
+
+          <div *ngIf="this.submitted && selectViewForm.controls['fbm_page_id'].errors" class="invalid-feedback">
+            <div>{{ 'DASHBOARD.FACEBOOK_PAGE_ALERT' | translate }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer pr-0 pb-0">
+        <button type="submit" class="btn btn-success">{{ 'LANGUAGE.CONFERMA' | translate }}</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<div *ngIf="!isApiKeySet" class="row">
+  <div class="col-md-12 mt-3">
+    <div class="card-group">
+      <div class="card p-2" style="background-color: #eee;">
+        <div class="card-body">
+          <i class="fas fa-crow mr-1" style="font-size:30pt"></i><h5 class="mt-3"> {{ 'DASHBOARD.ALERT' | translate}}
+          <b>{{ 'DASHBOARD.SORGENTE' | translate }}</b> "Facebook".</h5><br/>
+          <button class="btn btn-success ml-1" [routerLink]="['/preferences/api-keys/insert']">
+            {{ 'DASHBOARD.ADD_SORGENTE' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #reportWait>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fas fa-hourglass-half"></i> {{ 'DASHBOARD.ESPORTA' | translate }}</h4>
+  </div>
+
+  <div class="modal-body">
+    {{ 'DASHBOARD.NEW_REPORT' | translate }}
+  </div>
+</ng-template>

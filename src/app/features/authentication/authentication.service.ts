@@ -1,13 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Credentials, LoginState} from './login/login.model';
-import {NgRedux, select} from '@angular-redux/store';
+import {Credentials} from './login/login.model';
+import {NgRedux} from '@angular-redux/store';
 import {IAppState} from '../../shared/store/model';
-import {LOGIN_USER_ERROR, LOGIN_USER_SUCCESS, LoginActions} from './login/login.actions';
-import {Router} from '@angular/router';
+import {LoginActions} from './login/login.actions';
 import {map} from 'rxjs/internal/operators';
-import {BehaviorSubject, Observable, of} from 'rxjs';
-import {StoreService} from '../../shared/_services/store.service';
 import {environment} from '../../../environments/environment';
 
 @Injectable()
@@ -29,7 +26,9 @@ export class AuthenticationService {
       headers: headers
     };
 
-    return this.http.post<any>('http://' + environment.host + ':' + environment.port + '/login', {}, httpOptions)
+    console.warn(environment.protocol + environment.host + ':' + environment.port + '/login');
+
+    return this.http.post<any>(environment.protocol + environment.host + ':' + environment.port + '/login', {}, httpOptions)
       .pipe(map(response => {
 
         if (response['User'] && response['token']) {
@@ -42,6 +41,32 @@ export class AuthenticationService {
         }
       }));
   }
+/*
+  verification(credentialsVerification: CredentialsVerification) {
+
+    let headers = new HttpHeaders();
+    headers = headers.set('Authorization', 'Basic' + btoa(credentialsVerification.email + ':' + credentialsVerification.token));
+
+    const httpOptions = {
+      headers: headers
+    };
+
+    console.warn( environment.protocol + environment.host + ':' + environment.port + '/account-verification');
+
+    return this.http.post<any>(environment.protocol + environment.host + ':' + environment.port + '/account-verification', {}, httpOptions)
+      .pipe(map(response => {
+
+        if (response['User'] && response['token']) {
+
+          // this.
+
+          return response;
+        } else {
+          // this.
+        }
+      }));
+
+  }*/
 
   logout() {
   }
