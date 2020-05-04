@@ -489,7 +489,8 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
         return;
       }
       await this.getPagesList();
-      this.createForm();
+
+      this.pageList.length > 0 ? this.createForm() : null;
       fb_page_id = await this.getPageID();
       // We check if the user has already set a preferred page if there is more than one in his permissions.
       await this.getFollowers(fb_page_id);
