@@ -487,19 +487,37 @@ export class ChartsCallsService {
         chartData = this.addPaddingRows(chartData);
         break; // Facebook fan per città(elenco)
       case FB_CHART.PAGE_FANS_AGE_ELENCO:
-        header = [['Età', 'Numero fan']];
-        chartData = [ ];
-        const tempAge = Object.keys(data[data.length - 1]['value']);
-        if (data.length > 0) {
-          for (const el of tempAge) {
-            chartData.push([el, data[data.length - 1]['value'][el]]);
-          }
-        }
-        chartData.sort(function (obj1, obj2) {
-          return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
-        });
+        header = [['Età', 'Maschio', 'Femmina']];
 
-        chartData = this.addPaddingRows(chartData);
+        const gender_data_fb = data[0] ? Object.keys(data[0]['value']) : null;
+
+        if (gender_data_fb && gender_data_fb.length > 0) {
+          keys = Object.keys(data[0]['value']); // getting all the gender/age data
+
+          const subIndex = (keys[0].indexOf('.') !== -1) ? 2 : 1;
+
+          // putting a unique entry in chartArray for every existent age range
+          for (let i = 0; i < keys.length; i++) {
+            index = 0;
+            if (!(chartData.find(e => e[0] === (keys[i].substr(subIndex, keys[i].length))))) {
+              chartData.push([keys[i].substr(subIndex, keys[i].length), 0, 0]);
+              index = (chartData.length - 1);
+            } else {
+              index = chartData.findIndex(e => e[0] === (keys[i].substr(subIndex, keys[i].length)));
+            }
+            // and collecting data
+
+            if (keys[i].substr(0, 1) === 'M') {
+              chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10);
+            } else {
+              if (keys[i].substr(0, 1) === 'F') {
+                chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
+              }
+            }
+
+          }
+          chartData = chartData.sort();
+        }
         break; // Facebook fan per Age (elenco)
 
 
@@ -2009,7 +2027,10 @@ export class ChartsCallsService {
         formattedData = this.tableChart(data);
         break; // Facebook Fan City per elenco
       case FB_CHART.PAGE_FANS_AGE_ELENCO:
-        formattedData = this.tableChart(data);
+        formattedData = this.columnChart(data,
+          {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: { vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+              colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
         break; // Facebook Fan Age per elenco
 
       case GA_CHART.IMPRESSIONS_DAY:
