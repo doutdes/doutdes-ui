@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   closeModal() {
-    this.cookieService.set(this.id, 'read');
+    this.cookieService.set(this.id, 'new_version');
     this.modalRef.hide();
   }
 }
