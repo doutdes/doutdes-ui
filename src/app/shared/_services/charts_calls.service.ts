@@ -1050,57 +1050,45 @@ export class ChartsCallsService {
         break;
       case IG_CHART.MEDIA_COMMENT_DATA:
         elem = 'Commenti ';
+        console.log(data)
 
       // tslint:disable-next-line:no-switch-case-fall-through
       case IG_CHART.MEDIA_LIKE_DATA:
-        header = [['Data', 'Like'/*, {role: 'tooltip'}*/]];
-
-//         let arr = [], len, date1, date2, diff_time;
-// console.log(data)
-//         const day_time = 1000 * 3600 * 24;
-//         data.push(data[data.length - 1])
-//         for (let i = data.length - 1; i >= 0; i--) {
-//           chartData.push([
-//             data[i].end_time.slice(0, 10),
-//             data[i].value
-//           ])
-          /*date2 = new Date(data[i].end_time.slice(0, 10));
-          if (i > 0) {
-            date1 = new Date(data[i - 1].end_time.slice(0, 10));
-            diff_time = Math.abs(date1.getTime() - date2.getTime()) / day_time;
-          }
-
-          if (chartData.length === 0 || !(chartData[chartData.length - 1][0] === date2.toString().slice(3, 15))) {
-            arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(date2));
-            arr.forEach(el => acc += el.value);
-            len = arr.length > 0 ? arr.length : 1;
-            chartData.push([
-              date2.toString().slice(3, 15),
-              acc,
-              elem + acc + ', N. media ' + arr.length + ', Media ' + elem + (acc / len) + ', ' + date2.toString().slice(3, 15)
-            ]);
-          }
-          acc = 0;*/
-
-          // if (diff_time > 1) {
-          //   for (let j = diff_time - 1; j > 0; j--) {
-          //     chartData.push([
-          //       subDays(date1, j).toString().slice(3, 15),
-          //       acc,
-          //       elem + 0 + ', N. media ' + 0 + ', Media ' + elem + 0 + ', ' + subDays(date1, j).toString().slice(3, 15)
-          //     ]);
-          //   }
-          // }
-          // diff_time = 0;
-        // }
+        header = [['Data', 'Like', {role: 'tooltip'}]];
+        let arr = [], len;
+        const now = new Date();
+        for (const d = new Date(data[0].end_time); d <= now; d.setDate(d.getDate() + 1)) {
+          // @ts-ignore
+          arr = data.filter(el => Date.parse(el.end_time) === Date.parse(d));
+          arr.forEach(el => acc += el.value);
+          len = arr.length > 0 ? arr.length : 1;
+          const avgValue = arr.length > 1 ? ', in media ' + (acc / len) + ' ' + elem : '';
+          const note = acc + ' ' + elem + ' di ' + arr.length + ' post' + avgValue + ', il ' + d.toString().slice(3, 15);
+          chartData.push([
+            d.toString().slice(3, 15),
+            acc,
+            note
+          ]);
+          acc = 0;
+        }
 
         break;
+      case IG_CHART.MEDIA_COMMENT_TYPE:
+        elem = 'Commenti ';
 
       case IG_CHART.MEDIA_LIKE_TYPE:
-        header = [['Tipo', 'Like', {role: 'tooltip'}]];
-        let images, videos, carousel;
+        header = [['Tipo', 'Like', {role: 'tooltip'}, { role: 'style' }]];
+        const media = [], names = [' Immagini', ' Video', ' Caroselli'], colors = ['#fc7ed2', '#bf5dca', '#8c7cd0'];
+        const images = data.filter(el => el.media_type === 'IMAGE');
+        const video = data.filter(el => el.media_type === 'VIDEO');
+        const carousel = data.filter(el => el.media_type === 'CAROUSEL_ALBUM');
+        media.push(images, video, carousel);
 
-        // console.log(data);
+        for (let i = 0; i < media.length; i++) {
+          media[i].forEach(el => acc += el.value);
+          chartData.push([names[i], acc, acc + ' ' + elem + ' di ' + images.length + names[i], colors[i]]);
+          acc = 0;
+        }
 
         break;
       case IG_CHART.COMPARISON_COLONNA:
@@ -2215,65 +2203,24 @@ export class ChartsCallsService {
         break;
 
       case IG_CHART.MEDIA_LIKE_DATA:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            isStacked: true,
-            chartArea: {left: 0, right: 0, height: 185, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              minValue: 0,
-              viewWindowMode: 'explicit',
-              viewWindow: {min: 0},
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-            },
-            colors: [IG_PALETTE.AMARANTH.C5],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options :  {chartArea: {left: 0, right: 0, height: 185, top: 0}, vAxis: {
+                viewWindowMode: 'explicit',
+                viewWindow: {min: 0},
+              }, colors: [IG_PALETTE.AMARANTH.C1]}});
         break;
 
       case IG_CHART.MEDIA_COMMENT_DATA:
-        formattedData = {
-          chartType: 'AreaChart',
-          dataTable: data,
-          chartClass: 5,
-          options: {
-            chartArea: {left: 0, right: 0, height: 185, top: 0},
-            legend: {position: 'none'},
-            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 210,
-            pointSize: data.length > 15 ? 0 : 7,
-            pointShape: 'circle',
-            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
-            vAxis: {
-              minValue: 0,
-              viewWindowMode: 'explicit',
-              viewWindow: {min: 0},
-              gridlines: {color: '#eaeaea', count: 5},
-              minorGridlines: {color: 'transparent'},
-              textPosition: 'in',
-              textStyle: {color: '#999'},
-            },
-            colors: [IG_PALETTE.AMARANTH.C5],
-            areaOpacity: 0.1
-          }
-        };
+        formattedData = this.areaChart( data,
+          {options :  {chartArea: {left: 0, right: 0, height: 185, top: 0}, vAxis: {
+                viewWindowMode: 'explicit',
+                viewWindow: {min: 0},
+              }, colors: [IG_PALETTE.AMARANTH.C1]}});
         break;
 
       case IG_CHART.MEDIA_LIKE_TYPE:
         formattedData = {
-          chartType: 'ColumnChart',
+          chartType: 'BarChart',
           dataTable: data,
           formatters: [{
             columns: [1],
@@ -2284,24 +2231,48 @@ export class ChartsCallsService {
           }],
           chartClass: 9,
           options: {
-            chartArea: {left: 0, right: 0, height: 270, top: 0},
+            chartArea: {left: 5, right: 20, height: 270, top: 0},
             height: 310,
             vAxis: {
               minValue: 0,
-              viewWindowMode: 'explicit',
-              viewWindow: {min: 0, max: 50},
               gridlines: {color: '#eaeaea', count: 5},
               textPosition: 'in',
-              textStyle: {color: '#999'},
+              textStyle: {color: '#999', fontSize: 13},
               format: '#'
             },
-            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1, IG_PALETTE.FUCSIA.C1],
             areaOpacity: 0.4,
-            bar: {groupWidth: '75%'},
-            isStacked: true,
+            bar: {groupWidth: '50%'},
           }
         };
         break;
+        case IG_CHART.MEDIA_COMMENT_TYPE:
+          formattedData = {
+            chartType: 'BarChart',
+            dataTable: data,
+            formatters: [{
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: '#.##'
+              }
+            }],
+            chartClass: 9,
+            options: {
+              chartArea: {left: 5, right: 20, height: 270, top: 0},
+              height: 310,
+              vAxis: {
+                minValue: 0,
+                gridlines: {color: '#eaeaea', count: 5},
+                textPosition: 'in',
+                textStyle: {color: '#999', fontSize: 13},
+                format: '#'
+              },
+              areaOpacity: 0.4,
+              bar: {groupWidth: '50%'},
+            }
+          };
+        break;
+
       case IG_CHART.COMPARISON_COLONNA:
         formattedData = {
           chartType: 'ColumnChart',
