@@ -8,6 +8,7 @@ import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {P404Component} from '../errors/404.component';
 import {P500Component} from '../errors/500.component';
 import {NgxLoadingModule} from 'ngx-loading';
+
 @NgModule({
   declarations: [
     FeatureComponent,
@@ -24,8 +25,8 @@ import {NgxLoadingModule} from 'ngx-loading';
   providers: [
     IsAuthenticatedGuard
   ],
-  exports: [
-  ]
+  exports: []
 })
 
-export class FeatureModule { }
+export class FeatureModule {
+}
