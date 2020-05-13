@@ -940,11 +940,12 @@ export class ChartsCallsService {
             maxArray[j].push(blockDay[i][j].reduce((m, x) => m > x ? m : x));
             minArray[j].push(blockDay[i][j].reduce((m, x) => m < x ? m : x));
             averageArray[j].push((blockDay[i][j].reduce((a, b) => a + b)) / 3);
-
             if ( i === blockDay.length - 1 ) {
-              max.push(maxArray[j].reduce((a, b) => a + b) / blockTime.length);
-              min.push(minArray[j].reduce((a, b) => a + b) / blockTime.length);
-              average.push(averageArray[j].reduce((a, b) => a + b) / blockTime.length);
+
+              const period = blockDay.length - 1; //blockTime.lenght
+              max.push(maxArray[j].reduce((a, b) => a + b) / period);
+              min.push(minArray[j].reduce((a, b) => a + b) / period );
+              average.push(averageArray[j].reduce((a, b) => a + b) / period);
             }
           }
         }
