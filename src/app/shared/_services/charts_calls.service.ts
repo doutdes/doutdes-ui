@@ -943,9 +943,9 @@ export class ChartsCallsService {
             if ( i === blockDay.length - 1 ) {
 
               const period = blockDay.length - 1; //blockTime.lenght
-              max.push(maxArray[j].reduce((a, b) => a + b) / period);
-              min.push(minArray[j].reduce((a, b) => a + b) / period );
-              average.push(averageArray[j].reduce((a, b) => a + b) / period);
+              max.push( ~~(maxArray[j].reduce((a, b) => a + b) / period));
+              min.push( ~~(minArray[j].reduce((a, b) => a + b) / period ));
+              average.push( ~~(averageArray[j].reduce((a, b) => a + b) / period));
             }
           }
         }
