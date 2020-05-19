@@ -25,7 +25,7 @@
   </div>
   <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
 
-    <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea'">
+    <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea' && !bannedChart.includes(dashChart.chart_id)">
       <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>
       <ng-container *ngIf="this.avgTrend > 0">
         (<b style="color:#267F00">{{this.avgShift}}</b>
