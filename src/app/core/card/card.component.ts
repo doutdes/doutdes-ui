@@ -129,8 +129,8 @@ export class CardComponent implements OnInit {
         });
     });
 
-    this.edit_2 = false;
-    this.edit_1 = false;
+    //this.edit_2 = false;
+    //this.edit_1 = false;
   }
 
   ngOnInit() {
@@ -433,44 +433,54 @@ export class CardComponent implements OnInit {
       last: this.checkBsRangeValue(2, this.bsRangeValue, this.bsRangeValue2),
     };
 
-      try {
+    if (check == 'Interval1' && value) {
+      //console.log(value);
+      this.intervalFinal[0] = [value[0], value[1]];
+    }
 
-        if (check == 'Interval1' && value) {
-          this.intervalFinal[0] = [value[0], value[1]];
-          this.edit_1 = true;
-        }
+    if (check == 'Interval2' && value) {
+      this.intervalFinal[1] = [value[0], value[1]];
+      //console.log(this.intervalFinal);
+    }
+    /** STAMPA DENTRO **/
+    //console.log("dentro", this.intervalFinal);
 
-        if (check == 'Interval2' && value) {
-          this.intervalFinal[1] = [value[0], value[1]];
-          this.edit_2 = true;
-        }
+    //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
+    /*
+    this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
+      this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
+     */
 
-      }
-      catch (e) {
-        console.error(e);
-        this.edit_1 = false;
-        this.edit_2 = false;
-
-        //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
-        this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
-          this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
-      }
-
+    /** STAMPA FUORI **/
+    //console.log("fuori", this.intervalFinal);
+    //console.log(intervalDate);
 
     if (!value && check == 'Edit') {
+      this.edit_1 = true;
+      this.edit_2 = true;
+
       if (this.edit_1 && this.edit_2) {
         try {
+          /** STAMPA INTERNA**/
+          //console.log("send", this.intervalFinal);
           this.GEService.ComparisonIntervals.next(this.intervalFinal);
+          this.intervalFinal = [];
           this.closeModal();
 
+          /**** START TEST *****/
+
+          //console.log("FILTER DATE" ,intervalDate);
+
+          /** LA FILTER DATA STA DANDO PROBLEMI PERCHè DOPO L'UPDATE DEGLI INTERVALLI RESETTA TUTTO AGLI INTERVALLI ORIGINALI**/
           this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+          //console.log("dopo", intervalDate);
+
+          /***   END TEST   ***/
 
           //this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
           this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
             this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_INTERVAL'));
 
-          this.edit_1 = false;
-          this.edit_2 = false;
         } catch (e) {
           console.log(e);
           //console.error(e);
@@ -478,14 +488,9 @@ export class CardComponent implements OnInit {
           //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
           this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
             this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
-
-          this.edit_1 = false;
-          this.edit_2 = false;
         }
       } else {
         console.log('Errore');
-        this.edit_1 = false;
-        this.edit_2 = false;
       }
     }
 
@@ -516,7 +521,6 @@ export class CardComponent implements OnInit {
 
   checkMinMaxDate (): any {
     let tmp_data_1 = 0;
-
     this.GEService.checkFilterDateIGComparasion.subscribe(data => {
 
       if (data == 30) {
@@ -546,6 +550,7 @@ export class CardComponent implements OnInit {
       if (data != 7 && data != 30) {
         this.GEService.checkInterval.subscribe(value => {
           if (value) {
+
             this.firstDateRange = value['first'];
             this.lastDateRange = value['last'];
             this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
