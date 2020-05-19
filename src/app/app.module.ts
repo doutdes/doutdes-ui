@@ -27,6 +27,7 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {FacebookCampaignsService} from './shared/_services/facebook-campaigns.service';
+import {CookieService} from 'ngx-cookie-service';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient) {
@@ -66,13 +67,15 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
   ],
   providers: [
+    CookieService,
     StoreService,
     GlobalEventsManagerService,
     FacebookCampaignsService,
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    {provide: LocationStrategy, useClass: HashLocationStrategy},
   ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [AppComponent]
 })
 
-export class AppModule { }
+export class AppModule {
+}
