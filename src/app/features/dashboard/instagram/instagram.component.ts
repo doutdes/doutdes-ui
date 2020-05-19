@@ -383,7 +383,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
       this.GEService.checkInterval.next(dateInterval);
 
-      //console.log(dateInterval);
     }
   }
 

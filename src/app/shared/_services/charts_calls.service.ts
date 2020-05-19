@@ -146,6 +146,7 @@ export class ChartsCallsService {
     let myMap;
     let limit;
     const countryList = require('country-list');
+    let flag = true;
 
     const female = [];
     const male = [];
@@ -545,6 +546,7 @@ export class ChartsCallsService {
          * 1 - page
          * 2 - value
          **/
+        //console.log(data);
         header = [['Sorgente', 'Numero']];
 
         for (let i = 0; i < data.length; i++) {
@@ -591,7 +593,7 @@ export class ChartsCallsService {
          **/
 
         header = [['Tipo', 'Numero']];
-
+        console.log(data);
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
 
@@ -807,6 +809,7 @@ export class ChartsCallsService {
 
         // Instagram chart
       case IG_CHART.AUD_CITY:
+        //console.log("ELENCO", data);
         header = [['Città', 'Popolarità']];
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
@@ -1096,15 +1099,16 @@ export class ChartsCallsService {
         this.GEservice.checkFilterDateIGComparasion.next(data.length);
 
         this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
-
           // Sezione nel caso di modifica intervalli
           if (intervalDateComparison != null) {
+            console.log("Bau", intervalDateComparison);
             j = this.checkControlDate(1, intervalDateComparison, data, 0);
             k = this.checkControlDate(1, intervalDateComparison, data, 1);
           } else {
             // Sezione nel caso di non modifica intervalli/valore di default
-            j = this.checkControlDate(2, intervalDateComparison, data, 0);
-            k = this.checkControlDate(2, intervalDateComparison, data, 1);
+              console.log('Ok');
+              j = this.checkControlDate(2, intervalDateComparison, data, 0);
+              k = this.checkControlDate(2, intervalDateComparison, data, 1);
           }
 
           chartData = [];
@@ -1118,17 +1122,18 @@ export class ChartsCallsService {
         break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
         header = [['Città', 'Numero fan']];
+        //console.log("GEOMAPPA", data);
         if (data.length > 0) {
           chartData = Object.keys(data[data.length - 1].value).map(function (k) {
             return [k, data[data.length - 1].value[k]];
           });
         }
-
+        //console.log(chartData);
         chartData = chartData.sort(function (obj1, obj2) {
           return obj2[1] > obj1[1] ? 1 : ((obj1[1] > obj2[1]) ? -1 : 0);
         });
 
-        chartData = chartData.slice(0, 15);
+        //chartData = chartData.slice(0, 15);
         break; // IG Follower City - Geomappa
       case IG_CHART.AUD_GENDER_AGE_TORTA:
         header = [['Genere', 'numero']];
@@ -1145,18 +1150,12 @@ export class ChartsCallsService {
           } else {
             tmpM[j] = 0;
           }
-          if(parseInt(data[data.length-1].value[tmpU_age[j]])){
-            tmpU[j] = parseInt(data[data.length-1].value[tmpU_age[j]]);
-          } else {
-            tmpU[j] = 0;
-          }
         }
 
         // Salvo in ChartData
         for(let i = 0; i < tmpF_age.length; i++){
           chartData.push([tmpF_age[i], tmpF[i]]);
           chartData.push([tmpM_age[i], tmpM[i]]);
-          chartData.push([tmpU_age[i], tmpU[i]]);
         }
 
         break; // IG Follower Gender/Age - Torta
@@ -2311,7 +2310,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 100, right: 0, height: 290, top: 20},
             legend: {position: 'right'},
-            colors: ['#0676ff', '#ff32b9', '#b6b6b6'],
+            colors: ['#ff32b9', '#0676ff'],
             height: 310,
             is3D: false,
             pieHole: 0.55,
@@ -3680,7 +3679,6 @@ export class ChartsCallsService {
 
     // Modifica intervalli
     if(n == 1) {
-
       for (let i = 0; i < data.length; i++) {
         //Controllo per colonna 1
         if ((parseDate(data[i]['end_time']) >= intervalDateComparison[0][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[0][1]) {
