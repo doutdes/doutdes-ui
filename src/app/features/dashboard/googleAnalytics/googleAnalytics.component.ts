@@ -169,7 +169,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
           this.dashErrors.noPages = true;
           return;
         }
-
         if (this.viewList.length === 1) {
           key = {ga_view_id: this.viewList[0]['id'], service_id: D_TYPE.GA};
           view_id = key['ga_view_id'];
@@ -305,7 +304,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             chart = charts[i];
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
-              let date = parseDate(chart['chartData'][0][0]);
+              let date = new Date();
+              if (chart['chartData'].length > 0)
+                date = parseDate(chart['chartData'][0][0]);
 
               if (date < this.minDate) {
                 this.minDate = date;

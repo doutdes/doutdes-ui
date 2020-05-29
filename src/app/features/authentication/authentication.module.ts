@@ -13,7 +13,7 @@ import {BsDropdownModule} from 'ngx-bootstrap';
 @NgModule({
   declarations: [
     FeatureAuthenticationComponent,
-    FeatureAuthenticationAccountVerificationComponent
+    FeatureAuthenticationAccountVerificationComponent,
   ],
   imports: [
     FeatureAuthenticationRoutingModule,
