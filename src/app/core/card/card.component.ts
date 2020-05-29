@@ -74,6 +74,7 @@ export class CardComponent implements OnInit {
 
   D_TYPE = D_TYPE;
   drag: boolean;
+  bannedChart = [101, 117];
 
   datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
   dateChoice: String = null;
