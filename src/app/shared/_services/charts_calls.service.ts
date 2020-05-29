@@ -166,6 +166,9 @@ export class ChartsCallsService {
     const tmpU = [];
     const tmpU_age = ['U13-17', 'U18-24', 'U25-34', 'U35-44', 'U45-54', 'U55-64', 'U65+'];
 
+    const now = new Date();
+    let reach = 0, impression = 0;
+
     let j = 0;
     let k = 0;
     let acc = 0;
@@ -1002,7 +1005,7 @@ export class ChartsCallsService {
         }
         break; // IG FollowerCount
       case IG_CHART.LOST_FOLLOWERS:
-        header = [['Data', 'Follower persi']];
+        header = [['Data', 'Follower persi', { role: 'style' }]];
         let diff = 0;
 
         if (data.length > 0 && data[0]['business'].length > 1) {
@@ -1019,7 +1022,8 @@ export class ChartsCallsService {
 
             chartData.push([
               moment(business[i].end_time).toDate(),
-              diff
+              diff,
+              IG_PALETTE.AMARANTH.C5
             ]);
             i--;
             i = business[i - 1] === undefined || follower_day[i - 1] === undefined ? 0 : i;
@@ -1049,18 +1053,16 @@ export class ChartsCallsService {
         break;
       case IG_CHART.MEDIA_COMMENT_DATA:
         elem = 'Commenti ';
-
       // tslint:disable-next-line:no-switch-case-fall-through
       case IG_CHART.MEDIA_LIKE_DATA:
         header = [['Data', 'Like', {role: 'tooltip'}]];
         let arr = [], len;
-        const now = new Date();
-        for (const d = new Date(data[0].end_time); d <= now; d.setDate(d.getDate() + 1)) {
+        for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
           // @ts-ignore
-          arr = data.filter(el => Date.parse(el.end_time) === Date.parse(d));
+          arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(d));
           arr.forEach(el => acc += el.value);
           len = arr.length > 0 ? arr.length : 1;
-          const avgValue = arr.length > 1 ? ', in media ' + (acc / len) + ' ' + elem : '';
+          const avgValue = arr.length > 1 ? ', in media ' + (acc / len).toFixed(2) + ' ' + elem : '';
           const note = acc + ' ' + elem + ' di ' + arr.length + ' post' + avgValue + ', il ' + d.toString().slice(3, 15);
           chartData.push([
             d.toString().slice(3, 15),
@@ -1073,7 +1075,7 @@ export class ChartsCallsService {
         break;
       case IG_CHART.MEDIA_COMMENT_TYPE:
         elem = 'Commenti ';
-
+      // tslint:disable-next-line:no-switch-case-fall-through
       case IG_CHART.MEDIA_LIKE_TYPE:
         header = [['Tipo', 'Like', {role: 'tooltip'}, { role: 'style' }]];
         const media = [], names = [' Immagini', ' Video', ' Caroselli'], colors = ['#fc7ed2', '#bf5dca', '#8c7cd0'];
@@ -1087,6 +1089,55 @@ export class ChartsCallsService {
           chartData.push([names[i], acc, acc + ' ' + elem + ' di ' + images.length + names[i], colors[i]]);
           acc = 0;
         }
+
+        break;
+
+      case IG_CHART.REACH_IMPRESSION_DATA:
+        header = [['Data', ' Reach', { role: 'style' }, 'Impression', { role: 'style' }]];
+        let supArr = [];
+        for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
+          // @ts-ignore
+          supArr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(d));
+          supArr.forEach(el => {
+            reach += el.reach;
+            impression += el.impressions;
+          });
+          chartData.push([
+            d.toString().slice(3, 15),
+            reach,
+            '#fc7ed2',
+            impression,
+            '#8c7cd0'
+          ]);
+          reach = 0;
+          impression = 0;
+        }
+        break;
+      case IG_CHART.REACH_IMPRESSION_TYPE:
+        header = [['Tipo post', ' Reach', { role: 'style' }, 'Impression', { role: 'style' }]];
+
+        const img = data.filter( el => el.media_type === 'image');
+        const vid = data.filter( el => el.media_type === 'video');
+        const album = data.filter( el => el.media_type === 'album');
+        img.forEach(el => {
+          reach += el.reach;
+          impression += el.impressions;
+        });
+        chartData.push(['Immagini', reach, IG_PALETTE.LAVENDER.C1, impression, '#ffbb5c']);
+        reach = 0; impression = 0;
+
+        vid.forEach(el => {
+          reach += el.reach;
+          impression += el.impressions;
+        });
+        chartData.push(['Video', reach, IG_PALETTE.LAVENDER.C1, impression, '#ffbb5c']);
+        reach = 0; impression = 0;
+
+        album.forEach(el => {
+          reach += el.reach;
+          impression += el.impressions;
+        });
+        chartData.push(['Album', reach, IG_PALETTE.LAVENDER.C1, impression, '#ffbb5c']);
 
         break;
       case IG_CHART.COMPARISON_COLONNA:
@@ -2185,8 +2236,28 @@ export class ChartsCallsService {
 
         break; // IG Follower count
       case IG_CHART.LOST_FOLLOWERS:
-        formattedData = this.areaChart( data,
-          {options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
+        formattedData = {
+          chartType: 'AreaChart',
+          dataTable: data,
+          options: {
+            chartArea: {left: 0, right: 0, height: 290, top: 0},
+            legend: {position: 'none'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 330,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 15},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+              colors: [IG_PALETTE.AMARANTH.C5]
+            },
+            areaOpacity: 0.1
+          }
+        };
         break;
       case IG_CHART.INFO_CLICKS_COL:
         formattedData = this.columnChart(data,
@@ -2234,6 +2305,7 @@ export class ChartsCallsService {
             vAxis: {
               minValue: 0,
               gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
               textPosition: 'in',
               textStyle: {color: '#999', fontSize: 13},
               format: '#'
@@ -2243,7 +2315,7 @@ export class ChartsCallsService {
           }
         };
         break;
-        case IG_CHART.MEDIA_COMMENT_TYPE:
+      case IG_CHART.MEDIA_COMMENT_TYPE:
           formattedData = {
             chartType: 'BarChart',
             dataTable: data,
@@ -2261,6 +2333,7 @@ export class ChartsCallsService {
               vAxis: {
                 minValue: 0,
                 gridlines: {color: '#eaeaea', count: 5},
+                minorGridlines: {color: '#ffffff', count: 0},
                 textPosition: 'in',
                 textStyle: {color: '#999', fontSize: 13},
                 format: '#'
@@ -2270,6 +2343,45 @@ export class ChartsCallsService {
             }
           };
         break;
+
+      case IG_CHART.REACH_IMPRESSION_DATA:
+        formattedData = {
+          chartType: 'LineChart',
+          dataTable: data,
+          options: {
+            chartArea: {left: 0, right: 0, height: 270, top: 20},
+            legend: {position: 'top'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 330,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 20},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+            },
+            colors: ['#fc7ed2', '#bf5dca'],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+
+      case IG_CHART.REACH_IMPRESSION_TYPE:
+        formattedData = this.columnChart(data,
+          {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: { chartArea: {left: 0, right: 0, height: 270, top: 20},
+              vAxis: { minValue: 0, viewWindowMode: 'explicit', viewWindow: {min: 0}, gridlines: {color: '#000000', count: 5},
+                textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+              hAxis: {
+                gridlines: {color: '#000000', count: 5},
+                minorGridlines: {color: 'trasparent'}
+                },
+              areaOpacity: 0.4,
+              bar: {groupWidth: '50%'}, isStacked: false}});
+      break;
 
       case IG_CHART.COMPARISON_COLONNA:
         formattedData = {
@@ -2300,7 +2412,8 @@ export class ChartsCallsService {
         formattedData = this.geoChart(data, { options : {
             region: 'world',
             displayMode: 'markers',
-            colors: [IG_PALETTE.AMARANTH.C5]}} );
+            colorAxis: {colors: [IG_PALETTE.AMARANTH.C5]}
+        }});
         break; // IG Follower City - Geomappa
       case IG_CHART.AUD_GENDER_AGE_TORTA:
 
