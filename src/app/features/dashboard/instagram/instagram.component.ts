@@ -271,8 +271,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
                   chart.chartData = dataArray[i];
                   let date = new Date(chart.chartData[0]['end_time']);
-
                     if (date < this.minDate) {
+                      let date = new Date(chart.chartData[0]['end_time']);
                       this.minDate = date;
                     }
                     // chart.color = chart.chartData.options.color ? chart.chartData.options.colors[0] : null;
@@ -381,7 +381,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         this.dateChoice = 'Personalizzato';
       }
 
-      this.GEService.checkInterval.next(dateInterval);
+      //this.GEService.checkInterval.next(dateInterval);
 
     }
   }

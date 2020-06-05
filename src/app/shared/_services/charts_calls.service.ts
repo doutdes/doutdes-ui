@@ -1,11 +1,11 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Input} from '@angular/core';
 import {FacebookService} from './facebook.service';
 import {InstagramService} from './instagram.service';
 import {Observable, of} from 'rxjs';
 import {GoogleAnalyticsService} from './googleAnalytics.service';
 import {YoutubeService} from './youtube.service';
 import {parseDate} from 'ngx-bootstrap/chronos';
-import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
+import {DashboardData, IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {D_TYPE} from '../_models/Dashboard';
 import {GA_CHART, GA_PALETTE} from '../_models/GoogleData';
 import {FB_CHART, FB_PALETTE} from '../_models/FacebookData';
@@ -33,6 +33,7 @@ import {forEach} from '@angular/router/src/utils/collection';
 import {dayOfYearFromWeeks} from 'ngx-bootstrap/chronos/units/week-calendar-utils';
 import {error} from 'util';
 import {parseIntAutoRadix} from '@angular/common/src/i18n/format_number';
+import {DashboardCharts} from '../_models/DashboardCharts';
 
 
 @Injectable()
@@ -178,6 +179,8 @@ export class ChartsCallsService {
     let k = 0;
     let acc = 0;
     let n = 0;
+
+    let params: ChartParams = {};
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -1184,23 +1187,34 @@ export class ChartsCallsService {
         header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
 
         // Per gestire i filtri degli intervalli
-        this.GEservice.checkFilterDateIGComparasion.next(data.length);
+        //this.GEservice.checkFilterDateIGComparasion.next(data.length);
 
         this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
           // Sezione nel caso di modifica intervalli
           if (intervalDateComparison != null) {
-            console.log("Bau", intervalDateComparison);
             j = this.checkControlDate(1, intervalDateComparison, data, 0);
             k = this.checkControlDate(1, intervalDateComparison, data, 1);
+
+            chartData = [];
+            chartData.push([this.formatInterval(intervalDateComparison, 1, data), j, 0]);
+            chartData.push([this.formatInterval(intervalDateComparison, 2, data), 0, k]);
           } else {
             // Sezione nel caso di non modifica intervalli/valore di default
-              j = this.checkControlDate(2, intervalDateComparison, data, 0);
-              k = this.checkControlDate(2, intervalDateComparison, data, 1);
+            /*
+            j = this.checkControlDate(2, intervalDateComparison, data, 0);
+            k = this.checkControlDate(2, intervalDateComparison, data, 1);
+            */
+
+            chartData.push(['null', 0, 0]);
+
+            //console.log(chartData);
           }
 
+          /*
           chartData = [];
           chartData.push([this.formatInterval(intervalDateComparison, 1, data), j, 0]);
           chartData.push([this.formatInterval(intervalDateComparison, 2, data), 0, k]);
+           */
         }, error => {
           console.log(error);
           console.error(error);
@@ -2422,29 +2436,33 @@ export class ChartsCallsService {
       break;
 
       case IG_CHART.COMPARISON_COLONNA:
-        formattedData = {
-          chartType: 'ColumnChart',
-          dataTable: data,
-          formatters: [{
-            columns: [1, 2],
-            type: 'NumberFormat',
+
+          formattedData = {
+            chartType: 'ColumnChart',
+            dataTable: data,
+            formatters: [{
+              columns: [1, 2],
+              type: 'NumberFormat',
+              options: {
+                pattern: '###.##'
+              }
+            }],
+            chartClass: 9,
             options: {
-              pattern: '###.##'
+              chartArea: {left: 30, right: 0, height: 270, top: 20},
+              height: 310,
+              vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+              hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+              colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
+              areaOpacity: 0.4,
+              legend: {position: 'top', maxLines: 2},
+              bar: {groupWidth: '30%'},
+              isStacked: true,
             }
-          }],
-          chartClass: 9,
-          options: {
-            chartArea: {left: 30, right: 0, height: 270, top: 20},
-            height: 310,
-            vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
-            hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
-            areaOpacity: 0.4,
-            legend: {position: 'top', maxLines: 2},
-            bar: {groupWidth: '30%'},
-            isStacked: true,
-          }
-        };
+          };
+
+        console.log(formattedData);
+
         break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
         formattedData = this.geoChart(data, { options : {
@@ -4147,9 +4165,11 @@ export class ChartsCallsService {
         backgroundColor: '#fff',
         datalessRegionColor: '#eee',
         defaultColor: '#333',
-        height: '300'
+        height: '300',
+        //magnifyingGlass: {enable: true, msContentZoomFactor: 7.5}
       }
     };
+
     if (format) {
       for (const el of Object.keys(format)) {
         if (el !== 'options') {
