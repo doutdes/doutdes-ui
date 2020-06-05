@@ -632,11 +632,12 @@ export class CardComponent implements OnInit {
 
   checkInfoBoolComp() {
 
-    if (this.dashChart.chartData.dataTable[1][0] == 'null')
-      return false;
-        else
-          return true;
-
+    if (this.dashChart.chart_id == 108) {
+      if (this.dashChart.chartData.dataTable[1][0] == 'null')
+        return true;
+      else
+        return false;
+    }
         /*
     if (controlHTML == true) {
       if (this.dashChart.chart_id == ID) {
