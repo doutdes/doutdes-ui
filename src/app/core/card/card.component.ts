@@ -9,7 +9,7 @@ import {GA_CHART} from '../../shared/_models/GoogleData';
 import {D_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject, forkJoin, Observable, Subject} from 'rxjs';
 import {retry, takeUntil} from 'rxjs/operators';
 import {FilterActions} from '../../features/dashboard/redux-filter/filter.actions';
 import {Chart} from '../../shared/_models/Chart';
@@ -19,6 +19,10 @@ import {User} from '../../shared/_models/User';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {subDays} from "date-fns";
 import {HttpClient} from '@angular/common/http';
+import {select} from '@angular-redux/store';
+import {ChartsCallsService} from '../../shared/_services/charts_calls.service';
+import {InstagramService} from '../../shared/_services/instagram.service';
+import {ChartParams} from '../../shared/_models/Chart';
 
 @Component({
   selector: 'app-card',
@@ -34,6 +38,8 @@ export class CardComponent implements OnInit {
   @HostBinding('class') elementClass = 'pt-3';
   @ViewChild('mychart') mychart: GoogleChartComponent;
   @ViewChild('addMetric') addMetric: ElementRef;
+
+  @select() filter: Observable<any>;
 
   public FILTER_DAYS = {
     yesterday: 1,
@@ -86,6 +92,9 @@ export class CardComponent implements OnInit {
   maxDate_7: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
   minDate_7: Date = subDays(this.maxDate_7, this.FILTER_DAYS.seven);
 
+  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+
+
   bsRangeValue: Date[];
   bsRangeValue2: Date[];
   intervalFinal = [];
@@ -103,12 +112,16 @@ export class CardComponent implements OnInit {
   tmp: string;
   user: User;
 
+  checkComp: boolean;
+
   constructor(
     private formBuilder: FormBuilder,
+    private IGService: InstagramService,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
     private DService: DashboardService,
+    private CCService: ChartsCallsService,
     private toastr: ToastrService,
     private filterActions: FilterActions,
     public translate: TranslateService,
@@ -146,8 +159,9 @@ export class CardComponent implements OnInit {
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });
 
-
-    this.checkMinMaxDate();
+    //this.checkMinMaxDate();
+    //this.checkComp = false;
+    if (this.dashChart.chart_id == 108) return this.checkMinMaxDate(this.dashChart.chart_id);
   }
 
   setColorStyle = (): void => {
@@ -425,7 +439,7 @@ export class CardComponent implements OnInit {
       });
   }
 
-  onValueChange(value, check: string) {
+  onValueChange(value, check: string, IDChart) {
 
     const intervalDate: IntervalDate = {
       first: this.checkBsRangeValue(1, this.bsRangeValue, this.bsRangeValue2),
@@ -433,64 +447,38 @@ export class CardComponent implements OnInit {
     };
 
     if (check == 'Interval1' && value) {
-      //console.log(value);
       this.intervalFinal[0] = [value[0], value[1]];
     }
 
     if (check == 'Interval2' && value) {
       this.intervalFinal[1] = [value[0], value[1]];
-      //console.log(this.intervalFinal);
     }
-    /** STAMPA DENTRO **/
-    //console.log("dentro", this.intervalFinal);
-
-    //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
-    /*
-    this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
-      this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
-     */
-
-    /** STAMPA FUORI **/
-    //console.log("fuori", this.intervalFinal);
-    //console.log(intervalDate);
 
     if (!value && check == 'Edit') {
-      this.edit_1 = true;
-      this.edit_2 = true;
 
-      if (this.edit_1 && this.edit_2) {
-        try {
-          /** STAMPA INTERNA**/
-          //console.log("send", this.intervalFinal);
-          this.GEService.ComparisonIntervals.next(this.intervalFinal);
-          this.intervalFinal = [];
-          this.closeModal();
+      try {
 
-          /**** START TEST *****/
+        this.GEService.ComparisonIntervals.next(this.intervalFinal);
+        this.intervalFinal = [];
+        this.closeModal();
 
-          //console.log("FILTER DATE" ,intervalDate);
+        this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
+        //this.checkInfoBoolComp(IDChart, false);
+        //console.log(this.dashChart.startComp);
 
-          /** LA FILTER DATA STA DANDO PROBLEMI PERCHè DOPO L'UPDATE DEGLI INTERVALLI RESETTA TUTTO AGLI INTERVALLI ORIGINALI**/
-          this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
-          //console.log("dopo", intervalDate);
 
-          /***   END TEST   ***/
+        //this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
+        this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
+          this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_INTERVAL'));
 
-          //this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
-          this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
-            this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_INTERVAL'));
+      } catch (e) {
+        console.error(e);
 
-        } catch (e) {
-          console.log(e);
-          //console.error(e);
-
-          //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
-          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
-            this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
-        }
-      } else {
-        console.log('Errore');
+        //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
+        this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
+          this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
       }
+
     }
 
    }
@@ -518,8 +506,30 @@ export class CardComponent implements OnInit {
     }
   }
 
-  checkMinMaxDate (): any {
-    let tmp_data_1 = 0;
+  checkMinMaxDate (IDChart): any {
+    let n = 0;
+
+    for (let i = 0; i < this.filterActions.currentDashboard.data.length; i++) {
+      if (this.filterActions.currentDashboard.data[i].chart_id === IDChart) {
+        n = i;
+        i = this.filterActions.currentDashboard.data.length;
+      }
+    }
+
+    let tmp = this.filterActions.currentDashboard.data[n].chartData.length;
+    let minDate: Date = subDays(this.maxDate_30, tmp);
+
+    this.firstDateRange = minDate;
+    this.lastDateRange = this.maxDate;
+    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+
+    this.firstDateRange = minDate;
+    this.lastDateRange = this.maxDate;
+    this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
+
+    this.check_int = 0;
+
+    /**
     this.GEService.checkFilterDateIGComparasion.subscribe(data => {
 
       if (data == 30) {
@@ -564,6 +574,8 @@ export class CardComponent implements OnInit {
       }
 
     }); //End
+
+    **/
 
   }
 
@@ -617,4 +629,32 @@ export class CardComponent implements OnInit {
     }
 
   }
+
+  checkInfoBoolComp() {
+
+    if (this.dashChart.chartData.dataTable[1][0] == 'null')
+      return false;
+        else
+          return true;
+
+        /*
+    if (controlHTML == true) {
+      if (this.dashChart.chart_id == ID) {
+          //if (this.dashChart.startComp != true) this.dashChart.startComp = false;
+          //return this.dashChart.startComp;
+          let i = 0;
+        }
+    }
+
+    if (controlHTML == false) {
+      if (this.dashChart.chart_id == ID) {
+        //this.dashChart.startComp = true;
+        //return this.dashChart.startComp;
+        let i = 0;
+      }
+    }
+*/
+  }
+
+
 }

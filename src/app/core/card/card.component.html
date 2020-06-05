@@ -23,8 +23,7 @@
     <span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="far fa-question-circle" #pop="bs-popover" [popover]="popTemplate"></span>
 
   </div>
-  <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
-
+  <div *ngIf="(!dashChart.error && dashChart.chartData.dataTable.length > 0) && checkInfoBoolComp()" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
     <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea'">
       <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>
       <ng-container *ngIf="this.avgTrend > 0">
@@ -74,6 +73,23 @@
 
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
     </google-chart>
+
+
+  </div>
+
+  <div *ngIf="(!dashChart.error || dashChart.chartData.dataTable.length > 0 && !checkInfoBoolComp())" style="background:#fff; min-height:351px; max-height: 351px; padding:20px"
+       class="rounded-bottom border d-table w-100 h-100">
+
+    <div class="align-middle d-table-cell">
+      <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
+        <h4 class="text-center mb-0" style="font-size: 17px;">
+          <i class="mr-1 d-block" aria-hidden="true"></i> <b>Scelta guidata della comparazione </b></h4>
+            <p class="mt-3 text-justify">1) Clicca sul menù della card</p>
+            <p class="mt-3 text-justify">2) Clicca su "Modifica intervallo"</p>
+            <p class="mt-3 text-justify">2) Seleziona gli intervalli che vuoi comparare e clicca "Modifica"</p>
+      </div>
+    </div>
+
   </div>
 
   <!-- CARD WITH ERROR -->
@@ -94,7 +110,9 @@
         <p *ngIf="dashChart.type === D_TYPE.FB || dashChart.type === D_TYPE.FBM" class="mt-3 text-justify">{{ 'CARD.NO_DATI' | translate }}</p>
       </div>
     </div>
+
   </div>
+
 </div>
 
 <ng-template #popTemplate> <!-- *ngIf="minicard.step || minicard.step >= 0"  -->
@@ -184,6 +202,7 @@
     <div class="form-group row">
       <label class="col-sm-5 col-form-label">Intervallo 1:</label>
       <div class="col-sm-7">
+
         <!-- Se il filtro è impostato ad "Ultimi 30 giorni" -->
         <input *ngIf="check_int == 30"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
                [(ngModel)]="bsRangeValue"
@@ -200,6 +219,7 @@
                [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
                (bsValueChange)="onValueChange($event, 'Interval1')"
                bsDaterangepicker>
+
         <!-- Se il filtro è impostato ad "Personalizzato" -->
         <input *ngIf="check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
                [(ngModel)]="bsRangeValue"
@@ -248,7 +268,7 @@
 
     <div class="modal-footer">
       <!-- <button type="submit" class="btn btn-success" (click)="onValueChange('invio')" >Modifica</button> -->
-      <button type="submit" class="btn btn-success" (click)="onValueChange(null, 'Edit')">Modifica</button>
+      <button type="submit" class="btn btn-success" (click)="onValueChange(null, 'Edit', this.dashChart.chart_id)">Modifica</button>
       <button type="button" class="btn btn-danger" (click)="closeModal()">Annulla</button>
     </div>
     <!-- </form> -->

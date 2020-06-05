@@ -133,6 +133,14 @@
 
     <div id="submenu7" class="collapse sidebar-submenu">
 
+      <a [routerLink]="[drag ? '#' : '/guideIntro']" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-lg-start align-items-center">
+          <!--- <span class="fas fa-chart-line fa-fw ml-4 mb-4"></span> -->
+          <span class="menu-collapsed ml-4">{{'SIDEBAR.GUIDE_INTRO' | translate }}</span>
+        </div>
+      </a>
+
+
       <a href="#submenu3" data-toggle="collapse" aria-expanded="false"
          class="list-group-item list-group-item-action flex-column align-items-lg-start">
         <div class="d-flex w-100 justify-content-lg-start align-items-center">
@@ -172,7 +180,29 @@
         </a>
       </div>
 
+
     </div>
+
+
+
+
+
+
+
+
+
+    <!---
+
+    <a href="#submenu9" data-toggle="collapse" aria-expanded="false"
+       class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="far fa-lightbulb mr-3"></span>
+        <span class="menu-collapsed">{{'SIDEBAR.GUIDE_INTRO' | translate }}</span>
+        <span class="fas fa-plus ml-auto"></span>
+      </div>
+    </a>
+
+    -->
 
   </ul>
   <!-- List Group END-->
