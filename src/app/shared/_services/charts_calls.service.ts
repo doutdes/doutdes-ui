@@ -1098,9 +1098,6 @@ export class ChartsCallsService {
       case IG_CHART.COMPARISON_COLONNA:
         header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
 
-        // Per gestire i filtri degli intervalli
-        //this.GEservice.checkFilterDateIGComparasion.next(data.length);
-
         this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
           // Sezione nel caso di modifica intervalli
           if (intervalDateComparison != null) {
@@ -1112,21 +1109,8 @@ export class ChartsCallsService {
             chartData.push([this.formatInterval(intervalDateComparison, 2, data), 0, k]);
           } else {
             // Sezione nel caso di non modifica intervalli/valore di default
-            /*
-            j = this.checkControlDate(2, intervalDateComparison, data, 0);
-            k = this.checkControlDate(2, intervalDateComparison, data, 1);
-            */
-
             chartData.push(['null', 0, 0]);
-
-            //console.log(chartData);
           }
-
-          /*
-          chartData = [];
-          chartData.push([this.formatInterval(intervalDateComparison, 1, data), j, 0]);
-          chartData.push([this.formatInterval(intervalDateComparison, 2, data), 0, k]);
-           */
         }, error => {
           console.log(error);
           console.error(error);
@@ -2308,8 +2292,6 @@ export class ChartsCallsService {
               isStacked: true,
             }
           };
-
-        console.log(formattedData);
 
         break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
