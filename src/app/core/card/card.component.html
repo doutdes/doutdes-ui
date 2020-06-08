@@ -7,7 +7,7 @@
     <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
         role="menu" aria-labelledby="button-basic">
       <!--<li class="dropdown-item" (click)="getMetricsAvailable()"><i class="fas fa-plus-circle"></i>Aggiungi metrica</li>-->
-      <li class="dropdown-item" (click)="checkInfo(dashChart.chart_id)"><i class="fas fa-info-circle"></i> Interpretazione del grafico</li>
+      <li *ngIf="dashChart.type == 3 && checkCardInfo(dashChart.chart_id)" class="dropdown-item" (click)="checkInfo(dashChart.chart_id)"><i class="fas fa-info-circle"></i> Interpretazione del grafico</li>
       <li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Modifica titolo</li>
       <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Elimina</li>
       <li *ngIf="checkCard(dashChart.chart_id)" class="dropdown-item" (click)="openModal(editInterval)"><i class="fas fa-calendar-alt"></i> Modifica intervallo</li>
@@ -89,10 +89,10 @@
         <div class="align-middle d-table-cell">
           <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
             <h4 class="text-center mb-0" style="font-size: 17px;">
-              <i class="mr-1 d-block" aria-hidden="true"></i> <b>Scelta guidata della comparazione </b></h4>
-            <p class="mt-3 text-justify">1) Clicca sul menù della card</p>
-            <p class="mt-3 text-justify">2) Clicca su "Modifica intervallo"</p>
-            <p class="mt-3 text-justify">2) Seleziona gli intervalli che vuoi comparare e clicca "Modifica"</p>
+              <i class="mr-1 d-block" aria-hidden="true"></i> <b>{{ 'CARD.SCELTA_TITOLO' | translate }}</b></h4>
+            <p class="mt-3 text-justify">1) {{ 'CARD.SCELTA_TITOLO_1' | translate }}</p>
+            <p class="mt-3 text-justify">2) {{ 'CARD.SCELTA_TITOLO_2' | translate }}</p>
+            <p class="mt-3 text-justify">2) {{ 'CARD.SCELTA_TITOLO_3' | translate }}</p>
           </div>
         </div>
 
@@ -257,7 +257,7 @@
 </ng-template>
 <ng-template #editInterval>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>Modifica Intervalli</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>{{ 'CARD.EDIT' | translate }}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -266,7 +266,7 @@
   <div class="modal-body">
 
     <div class="form-group row">
-      <label class="col-sm-5 col-form-label">Intervallo 1:</label>
+      <label class="col-sm-5 col-form-label">{{ 'CARD.INTERVAL' | translate }} 1:</label>
       <div class="col-sm-7">
         <input *ngIf="check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
                [(ngModel)]="bsRangeValue"
@@ -279,7 +279,7 @@
     </div>
 
     <div class="form-group row">
-      <label class="col-sm-5 col-form-label">Intervallo 2:</label>
+      <label class="col-sm-5 col-form-label">{{ 'CARD.INTERVAL' | translate }} 2:</label>
       <div class="col-sm-7">
         <input *ngIf="this.check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
                [(ngModel)]="bsRangeValue2"
@@ -292,8 +292,8 @@
     </div>
 
     <div class="modal-footer">
-      <button type="submit" class="btn btn-success" (click)="onValueChange(null, 'Edit')">Modifica</button>
-      <button type="button" class="btn btn-danger" (click)="closeModal()">Annulla</button>
+      <button type="submit" class="btn btn-success" (click)="onValueChange(null, 'Edit')">{{ 'CARD.EDIT_1' | translate }}</button>
+      <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'CARD.ANNULLA' | translate }}</button>
     </div>
 
   </div>

@@ -534,35 +534,54 @@ export class CardComponent implements OnInit {
 
   checkInfo (chart) {
 
+      switch (chart) {
+        case 15:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/Visualizzazioni.pdf', '_blank');
+          break;
+        case 16:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerGenere_Eta.pdf', '_blank');
+          break;
+        case 17:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/LinguaFollower.pdf', '_blank');
+          break;
+        case 18:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/UtentiUniciRag.pdf', '_blank');
+          break;
+        case 19:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerCitta.pdf', '_blank');
+          break;
+        case 20:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerPaese.pdf', '_blank');
+          break;
+        case 22:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerOnline.pdf', '_blank');
+          break;
+        case 28:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/NuoviFollower.pdf', '_blank');
+          break;
+        default:
+          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_INFO'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'NO_INFO'));
+          break;
+      }
+
+  }
+
+  checkCardInfo (chart) {
+
     switch (chart) {
       case 15:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/Visualizzazioni.pdf', '_blank');
-        break;
       case 16:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerGenere_Eta.pdf', '_blank');
-        break;
       case 17:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/LinguaFollower.pdf', '_blank');
-        break;
       case 18:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/UtentiUniciRag.pdf', '_blank');
-        break;
       case 19:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerCitta.pdf', '_blank');
-        break;
       case 20:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerPaese.pdf', '_blank');
-        break;
       case 22:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerOnline.pdf', '_blank');
-        break;
       case 28:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/NuoviFollower.pdf', '_blank');
-        break;
+        return true;
+
       default:
-        this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_INFO'),
-          this.GEService.getStringToastr(true, false, 'CARD', 'NO_INFO'));
-        break;
+        return false;
     }
 
   }

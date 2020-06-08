@@ -293,7 +293,14 @@
     "TIT_LUNG": "The length of the title cannot exceed 30 characters.",
     "NEW_TIT": "New title:",
     "UPDATE": "Update",
-    "ANNULLA": "Cancel"
+    "ANNULLA": "Cancel",
+    "EDIT": "Edit Intervals",
+    "INTERVAL": "Interval",
+    "EDIT_1": "Edit",
+    "SCELTA_TITOLO": "Comparison Guided Choice",
+    "SCELTA_TITOLO_1": "Click on the card menu",
+    "SCELTA_TITOLO_2": "Click on 'Edit Interval'",
+    "SCELTA_TITOLO_3": "Select the intervals you want to compare and click 'Edit'"
   },
   "EMPTYCARD": {
     "NEW_GRA": "Add chart",

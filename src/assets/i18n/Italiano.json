@@ -294,7 +294,14 @@
     "TIT_LUNG": "La lunghezza del titolo non può superare i 30 caratteri.",
     "NEW_TIT": "Nuovo titolo:",
     "UPDATE": "Aggiorna",
-    "ANNULLA": "Annulla"
+    "ANNULLA": "Annulla",
+    "EDIT": "Modifica Intervalli",
+    "INTERVAL": "Intervallo",
+    "EDIT_1": "Modifica",
+    "SCELTA_TITOLO": "Scelta guidata della comparazione ",
+    "SCELTA_TITOLO_1": "Clicca sul menù della card",
+    "SCELTA_TITOLO_2": "Clicca su 'Modifica intervallo'",
+    "SCELTA_TITOLO_3": "Seleziona gli intervalli che vuoi comparare e clicca 'Modifica' "
   },
   "EMPTYCARD": {
     "NEW_GRA": "Aggiungi grafico",
