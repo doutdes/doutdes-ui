@@ -219,11 +219,17 @@
     "STEP_1": "1) Vai su ",
     "PREFERENZE": "Preferenze",
     "STEP_1_CON": " nella sidebar e clicca su ",
-    "STEP_2": "2) Apparirà un pop-up come nell'immagine sotto. Eseguite l'accesso con l'account Google associato al vostro sito web:",
-    "STEP_3": "3) Clicca sul bottone ",
+    "STEP_2": "2) Qualora dovesse apparire l'avviso ",
+    "STEP_2_CONT": "Quest'app non è verificata",
+    "STEP_2_CONT_1": "clicca su",
+    "STEP_2_CONT_2": "Avanzate",
+    "STEP_2_CONT_3": " e successivamente su ",
+    "STEP_2_CONT_4": "Apri doutes-cluster.it (non sicura)",
+    "STEP_3": "3) Apparirà un pop-up come nell'immagine sotto. Eseguite l'accesso con l'account Google associato al vostro sito web:",
+    "STEP_4": "4) Clicca sul bottone ",
     "CONSENTI": "Consenti",
-    "STEP_4": "4) Ottimo lavoro! Hai aggiunto il tuo token di Google Analytics su ",
-    "STEP_4_CON": ". Le statistiche relative al tuo sito web sono ora disponibili nella piattaforma!"
+    "STEP_5": "5) Ottimo lavoro! Hai aggiunto il tuo token di Google Analytics su ",
+    "STEP_5_CON": ". Le statistiche relative al tuo sito web sono ora disponibili nella piattaforma!"
   },
   "TUTORIAL_IG": {
     "TITLE": "Tutorial: importazione dati Instagram",

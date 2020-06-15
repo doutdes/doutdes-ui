@@ -218,11 +218,17 @@
     "STEP_1": "1) Go up",
     "PREFERENZE": "Preferences",
     "STEP_1_CON": "in the sidebar and click on",
-    "STEP_2": "2) A pop-up will appear as in the image below. Sign in with the Google account associated with your website:",
-    "STEP_3": "3) Click on the button",
+    "STEP_2": "2) Should the notice appear ",
+    "STEP_2_CONT": "This app is not verified",
+    "STEP_2_CONT_1": "click on",
+    "STEP_2_CONT_2": "Advanced",
+    "STEP_2_CONT_3": " and then on ",
+    "STEP_2_CONT_4": "Open doutdes-cluster.it (unsafe)",
+    "STEP_3": "3) A pop-up will appear as in the image below. Sign in with the Google account associated with your website:",
+    "STEP_4": "4) Click on the button",
     "CONSENTI": "Allow",
-    "STEP_4": "4) Great job! You added your Google Analytics token to",
-    "STEP_4_CON": ". The statistics related to your website are now available on the platform!"
+    "STEP_5": "5) Great job! You added your Google Analytics token to",
+    "STEP_5_CON": ". The statistics related to your website are now available on the platform!"
   },
   "TUTORIAL_IG": {
     "TITLE": "Tutorial: importing Instagram data",
