@@ -73,6 +73,13 @@ import {P404Component} from '../errors/404.component';
               IsAuthenticatedGuard
             ],
             loadChildren: './guideIntro/guideIntro.module#FeautureGuideIntroModule'
+          },
+          {
+            path: 'tutorialDashboard',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './tutorialDashboard/tutorialDashboard.module#FeatureTutorialDashboardModule'
           }
         ],
       },
