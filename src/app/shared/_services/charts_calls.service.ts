@@ -1191,9 +1191,11 @@ export class ChartsCallsService {
         break;
       case YT_CHART.COMMENTS:
         header = [['Data', 'Commenti']];
+
         for (let i = 0; i < data.length; i++) {
           chartData.push([parseDate(data[i].date), parseInt(data[i].value, 10)]);
         }
+
         break;
       case YT_CHART.LIKES:
         header = [['Data', 'Mi Piace']];
