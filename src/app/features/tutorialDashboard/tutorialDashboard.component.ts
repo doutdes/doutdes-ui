@@ -106,4 +106,5 @@ export class tutorialDashboardComponent implements OnInit, OnDestroy {
 
     return this.value;
   }
+
 }
