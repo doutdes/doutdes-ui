@@ -206,7 +206,9 @@ export class FilterActions {
           if (!chart.error) {
             switch (chart.type) {
               case D_TYPE.GA:
-                chart.chartData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime());
+                if (chart.chart_id !== 119 && chart.chart_id !== 121 && chart.chart_id !== 122) {
+                  chart.chartData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime());
+                }
                 break;
               case D_TYPE.YT:
                 chart.chartData = chart.chartData.filter(el => parseDate(el.date).getTime() >= filterInterval.first.getTime() && parseDate(el.date).getTime() <= filterInterval.last.getTime());

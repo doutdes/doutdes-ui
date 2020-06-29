@@ -23,6 +23,9 @@
     <span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="far fa-question-circle" #pop="bs-popover" [popover]="popTemplate"></span>
 
   </div>
+
+  <div *ngIf="!checkCard(dashChart.chart_id)">
+
   <div *ngIf="(!dashChart.error && dashChart.chartData.dataTable.length > 0) && checkInfoBoolComp()" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
 
     <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea' && !bannedChart.includes(dashChart.chart_id)">
@@ -88,20 +91,85 @@
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
     </google-chart>
 
-
+  </div>
   </div>
 
-  <div *ngIf="(!dashChart.error || dashChart.chartData.dataTable.length > 0 && !checkInfoBoolComp())" style="background:#fff; min-height:351px; max-height: 351px; padding:20px"
-       class="rounded-bottom border d-table w-100 h-100">
+  <div *ngIf="checkCard(dashChart.chart_id)">
+    <!-- checkInfoBoolComp() = true -->
+    <div *ngIf="checkInfoBoolComp()">
 
-    <div class="align-middle d-table-cell">
-      <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
-        <h4 class="text-center mb-0" style="font-size: 17px;">
-          <i class="mr-1 d-block" aria-hidden="true"></i> <b>Scelta guidata della comparazione </b></h4>
+      <div *ngIf="(!dashChart.error || dashChart.chartData.dataTable.length > 0)" style="background:#fff; min-height:351px; max-height: 351px; padding:20px"
+           class="rounded-bottom border d-table w-100 h-100">
+
+        <div class="align-middle d-table-cell">
+          <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
+            <h4 class="text-center mb-0" style="font-size: 17px;">
+              <i class="mr-1 d-block" aria-hidden="true"></i> <b>Scelta guidata della comparazione </b></h4>
             <p class="mt-3 text-justify">1) Clicca sul menù della card</p>
             <p class="mt-3 text-justify">2) Clicca su "Modifica intervallo"</p>
             <p class="mt-3 text-justify">2) Seleziona gli intervalli che vuoi comparare e clicca "Modifica"</p>
+          </div>
+        </div>
+
       </div>
+
+    </div>
+    <!-- checkInfoBoolComp() = false -->
+    <div *ngIf="!checkInfoBoolComp()">
+
+      <div *ngIf="(!dashChart.error && dashChart.chartData.dataTable.length > 0)" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
+        <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea'">
+          <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>
+          <ng-container *ngIf="this.avgTrend > 0">
+            (<b style="color:#267F00">{{this.avgShift}}</b>
+            <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+          </ng-container>
+          <ng-container *ngIf="this.avgTrend < 0">
+            (<b style="color:#7F0200">{{this.avgShift}}</b>
+            <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+          </ng-container>
+          <ng-container *ngIf="this.avgTrend === 0">
+            (<b style="color:#979896">{{this.avgShift}}</b>
+            <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
+          </ng-container>
+
+          <div style="font-size:12px; margin-top:10px">
+            <i class="fas fa-arrow-down" style="margin-right: 9px; color:#168aad"></i> Min: <b>{{this.low}}</b>
+            <ng-container *ngIf="this.lowTrend > 0">
+              (<b style="color:#267F00">{{this.lowShift}}</b>
+              <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+            </ng-container>
+            <ng-container *ngIf="this.lowTrend < 0">
+              (<b style="color:#7F0200">{{this.lowShift}}</b>
+              <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+            </ng-container>
+            <ng-container *ngIf="this.lowTrend === 0">
+              (<b style="color:#979896">{{this.lowShift}}</b>
+              <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
+            </ng-container>
+
+            <i class="fas fa-arrow-up" style="margin-right: 9px; color:#7F0200"></i> Max: <b>{{this.high}}</b>
+            <ng-container *ngIf="this.highTrend > 0">
+              (<b style="color:#267F00">{{this.highShift}}</b>
+              <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+            </ng-container>
+            <ng-container *ngIf="this.highTrend < 0">
+              (<b style="color:#7F0200">{{this.highShift}}</b>
+              <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+            </ng-container>
+            <ng-container *ngIf="this.highTrend === 0">
+              (<b style="color:#979896">{{this.highShift}}</b>
+              <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
+            </ng-container>
+
+          </div>
+        </div>
+
+        <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
+        </google-chart>
+
+      </div>
+
     </div>
 
   </div>

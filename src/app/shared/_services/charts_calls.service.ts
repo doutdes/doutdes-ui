@@ -817,7 +817,58 @@ export class ChartsCallsService {
 
         break; // Google Session elenco
 
-        // Instagram chart
+      case GA_CHART.GENDER_AGE :
+
+        header = [['Età', 'Donne', {role: 'style'}, {role: 'annotation'}, 'Uomini', {role: 'style'}, {role: 'annotation'}]];
+        age.forEach(a =>
+          data.filter(d => d[0] === 'female' && d[1] === a).length !== 0
+            ? (v = data.filter(d => d[0] === 'female' && d[1] === a),
+              female.push(parseInt(v[0][2], 10) * -1))
+            : female.push(0));
+
+        age.forEach(a =>
+          data.filter(d => d[0] === 'male' && d[1] === a).length !== 0
+            ? (v = data.filter(d => d[0] === 'male' && d[1] === a),
+              male.push(parseInt(v[0][2], 10)))
+            : male.push(0));
+
+        for (let i = 0; i < 6; i++) {
+          chartData.push([
+            age[i],
+            parseFloat(female[i]), GA_PALETTE.ORANGE.C5, age[i],
+            parseFloat(male[i]), GA_PALETTE.LIME.C5, ''
+          ]);
+        }
+
+        break;
+      case GA_CHART.USER_ONLINE:
+        header = [['Data', 'Utenti online']];
+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([
+            moment(data[i][0]).toDate().toLocaleString('en-En', {month: 'short', day: 'numeric'}),
+            parseInt(data[i][1], 10)
+          ]);
+        }
+        break;
+
+      case GA_CHART.ADS:
+        console.log(data);
+        break;
+
+      case GA_CHART.USER_LAST_SESSION:
+        header = [['Giorni ultima sessione', 'Utenti']];
+
+        // 0 7 14 21 30+
+        for (let i = 0; i < data.length; i++) {
+          chartData.push([
+            parseInt(data[i][0], 10),
+            parseInt(data[i][1], 10)
+          ]);
+        }
+        break;
+
+      // Instagram chart
       case IG_CHART.AUD_CITY:
         //console.log("ELENCO", data);
         header = [['Città', 'Popolarità']];
@@ -1017,7 +1068,6 @@ export class ChartsCallsService {
       case IG_CHART.LOST_FOLLOWERS:
         header = [['Data', 'Follower persi', { role: 'style' }]];
         let diff = 0;
-
         if (data.length > 0 && data[0]['business'].length > 1) {
 
           const follower_day = data[1]['follower_count'];
@@ -1039,7 +1089,7 @@ export class ChartsCallsService {
             i = business[i - 1] === undefined || follower_day[i - 1] === undefined ? 0 : i;
           }
         } else {
-          chartData.push([new Date(), diff]);
+          chartData.push([new Date(), diff, IG_PALETTE.AMARANTH.C5]);
         }
         break;
       case IG_CHART.INFO_CLICKS_COL:
@@ -1915,7 +1965,7 @@ export class ChartsCallsService {
   public formatChart(ID, data) {
     let formattedData;
     let type;
-    let val = 0;
+    let val = 0, val2 = 0;
 
     data = data.length > 0 ? this.initFormatting(ID, data) : data;
 
@@ -2214,7 +2264,134 @@ export class ChartsCallsService {
             areaOpacity: 0.3
           }
         };
+        break;
 
+      case GA_CHART.GENDER_AGE:
+        data.forEach(d => d[4] > val ? val = d[4] : val);
+        data.forEach(d => d[1] < val2 ? val2 = d[1] : val2);
+        val2 = val2 * -1;
+
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          chartClass: 9, // TODO delete
+          formatters: [
+            {
+              columns: [1],
+              type: 'NumberFormat',
+              options: {
+                pattern: ';',
+              }
+            },
+          ],
+          options: {
+            isStacked: true,
+            chartArea: {
+              left: '3%',
+              top: '0%',
+              width: '94%',
+              height: '90%'
+            },
+            height: 310,
+            bar: {
+              groupWidth: '70%'
+            },
+            legend: {
+              position: 'none'
+            },
+            hAxis: {
+              ticks: [
+                {v: this.searchStep(val) , f: this.searchStep(val).toString()},
+                {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
+                {v: 0, f: '0'},
+                {v: this.searchStep(val2 / 2) * -1, f: this.searchStep(val2 / 2).toString()},
+                {v: this.searchStep(val2) * -1, f: this.searchStep(val2).toString()}
+              ],
+              format: ';',
+            }, // horizontal label
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 7},
+              direction: -1 /* value responsible for inverse the bar chart from desending to accending order */
+            },
+            animation: {
+              duration: 1000,
+              easing: 'out',
+              startup: true
+            },
+            annotations: {
+              textStyle: {
+                fontSize: 13,
+                bold: true,
+                italic: true,
+                // The color of the text.
+                color: '#000000',
+                // The color of the text outline.
+                auraColor: '#FFFFFF',
+                // The transparency of the text.
+                opacity: 1.4
+              }
+            }
+          }
+        };
+        break;
+
+      case GA_CHART.USER_ONLINE:
+        formattedData = {
+          chartType: 'LineChart',
+          dataTable: data,
+          options: {
+            chartArea: {left: 0, right: 0, height: 270, top: 20},
+            legend: {position: 'top'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 330,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 20},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+            },
+            colors: [IG_PALETTE.IG_COLORS.C6, IG_PALETTE.IG_COLORS.C1],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+
+      case GA_CHART.ADS:
+        formattedData = {
+          chartType: 'LineChart',
+          dataTable: data,
+          options: {
+            chartArea: {left: 0, right: 0, height: 270, top: 20},
+            legend: {position: 'top'},
+            lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
+            height: 330,
+            pointSize: data.length > 15 ? 0 : 7,
+            pointShape: 'circle',
+            hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 20},
+            vAxis: {
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: 'transparent'},
+              minValue: 0,
+              textPosition: 'in',
+              textStyle: {color: '#999'},
+            },
+            colors: [IG_PALETTE.IG_COLORS.C6, IG_PALETTE.IG_COLORS.C1],
+            areaOpacity: 0.1
+          }
+        };
+        break;
+
+      case GA_CHART.USER_LAST_SESSION:
+        console.log(data)
+        formattedData = this.areaChart( data,
+          {
+            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+            options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.LAVENDER.C3]}});
+        break;
       // Instragram chart
       case IG_CHART.AUD_CITY:
         formattedData = this.tableChart(data,
@@ -3660,7 +3837,7 @@ export class ChartsCallsService {
   }
 
   private searchStep(value, measure?) {
-    const nextStep = [10, 25, 50, 250, 1000, 5000, 10000, 15000, 20000, 30000, 40000, 50000, 100000, 350000, 500000];
+    const nextStep = [10, 25, 50, 250, 500, 1000, 2000, 3000, 5000, 10000, 15000, 20000, 30000, 40000, 50000, 100000, 350000, 500000];
     let step;
     let done = false;
     let i = 0;
@@ -3689,7 +3866,6 @@ export class ChartsCallsService {
       step = nextStep[i + 1];
       i++;
     }
-
     return step;
   }
 
