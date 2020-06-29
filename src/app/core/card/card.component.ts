@@ -80,6 +80,7 @@ export class CardComponent implements OnInit {
 
   D_TYPE = D_TYPE;
   drag: boolean;
+  bannedChart = [101, 117];
 
   dateChoice: String = null;
 
