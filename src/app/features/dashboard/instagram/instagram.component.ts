@@ -365,6 +365,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
   onValueChange(value): void {
 
+    console.log(value);
+
     if (value && this.datePickerEnabled) {
 
       const dateInterval: IntervalDate = {

@@ -450,9 +450,14 @@ popover-container {
   cursor: default;
 }
 
-/*
-div#body-row.container.drag-mode {
-  background-color: rgb(210, 209, 209) ;
+.nav-link {
+  color: #20a8d8;
 }
- */
 
+#myTab.nav.nav-pills {
+  background-color: #fafafa;
+}
+
+#home.tab-pane.fade {
+  background-color: #fcfcfc;
+}

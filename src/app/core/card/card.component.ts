@@ -84,16 +84,9 @@ export class CardComponent implements OnInit {
   bannedChart = [101, 117];
   nPost = 0;
 
-  datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
   dateChoice: String = null;
 
-  // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
   maxDate_30: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate_30: Date = subDays(this.maxDate_30, this.FILTER_DAYS.thirty);
-
-  // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
-  maxDate_7: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate_7: Date = subDays(this.maxDate_7, this.FILTER_DAYS.seven);
 
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
 
@@ -143,9 +136,6 @@ export class CardComponent implements OnInit {
           console.error(error);
         });
     });
-
-    //this.edit_2 = false;
-    //this.edit_1 = false;
   }
 
   ngOnInit() {
@@ -162,8 +152,6 @@ export class CardComponent implements OnInit {
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });
 
-    //this.checkMinMaxDate();
-    //this.checkComp = false;
     if (this.dashChart.chart_id == 108) return this.checkMinMaxDate(this.dashChart.chart_id);
   }
 
@@ -450,7 +438,7 @@ export class CardComponent implements OnInit {
       });
   }
 
-  onValueChange(value, check: string, IDChart) {
+  onValueChange(value, check: string) {
 
     const intervalDate: IntervalDate = {
       first: this.checkBsRangeValue(1, this.bsRangeValue, this.bsRangeValue2),
@@ -474,9 +462,6 @@ export class CardComponent implements OnInit {
         this.closeModal();
 
         this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
-        //this.checkInfoBoolComp(IDChart, false);
-        //console.log(this.dashChart.startComp);
-
 
         //this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
         this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
@@ -540,54 +525,6 @@ export class CardComponent implements OnInit {
 
     this.check_int = 0;
 
-    /**
-    this.GEService.checkFilterDateIGComparasion.subscribe(data => {
-
-      if (data == 30) {
-        this.firstDateRange = this.minDate_30;
-        this.lastDateRange = this.maxDate_30;
-        this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-
-        this.firstDateRange = this.minDate_30;
-        this.lastDateRange = this.maxDate_30;
-        this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
-
-        this.check_int = 30;
-      }
-
-      if (data == 7) {
-          this.firstDateRange = this.minDate_7;
-          this.lastDateRange = this.maxDate_7;
-          this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-
-          this.firstDateRange = this.minDate_7;
-          this.lastDateRange = this.maxDate_7;
-          this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
-
-          this.check_int = 7;
-      }
-
-      if (data != 7 && data != 30) {
-        this.GEService.checkInterval.subscribe(value => {
-          if (value) {
-
-            this.firstDateRange = value['first'];
-            this.lastDateRange = value['last'];
-            this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-
-            this.firstDateRange = value['first'];
-            this.lastDateRange = value['last'];
-            this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
-
-            this.check_int = 0;
-          }
-        });
-      }
-
-    }); //End
-
-    **/
-
   }
 
   conversionSetDefaultLang() {
@@ -608,35 +545,54 @@ export class CardComponent implements OnInit {
 
   checkInfo (chart) {
 
+      switch (chart) {
+        case 15:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/Visualizzazioni.pdf', '_blank');
+          break;
+        case 16:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerGenere_Eta.pdf', '_blank');
+          break;
+        case 17:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/LinguaFollower.pdf', '_blank');
+          break;
+        case 18:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/UtentiUniciRag.pdf', '_blank');
+          break;
+        case 19:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerCitta.pdf', '_blank');
+          break;
+        case 20:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerPaese.pdf', '_blank');
+          break;
+        case 22:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerOnline.pdf', '_blank');
+          break;
+        case 28:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/NuoviFollower.pdf', '_blank');
+          break;
+        default:
+          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_INFO'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'NO_INFO'));
+          break;
+      }
+
+  }
+
+  checkCardInfo (chart) {
+
     switch (chart) {
       case 15:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/Visualizzazioni.pdf', '_blank');
-        break;
       case 16:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerGenere_Eta.pdf', '_blank');
-        break;
       case 17:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/LinguaFollower.pdf', '_blank');
-        break;
       case 18:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/UtentiUniciRag.pdf', '_blank');
-        break;
       case 19:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerCitta.pdf', '_blank');
-        break;
       case 20:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerPaese.pdf', '_blank');
-        break;
       case 22:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerOnline.pdf', '_blank');
-        break;
       case 28:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/NuoviFollower.pdf', '_blank');
-        break;
+        return true;
+
       default:
-        this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_INFO'),
-          this.GEService.getStringToastr(true, false, 'CARD', 'NO_INFO'));
-        break;
+        return false;
     }
 
   }
@@ -651,24 +607,7 @@ export class CardComponent implements OnInit {
       }
     }
     return true;
-        /*
-    if (controlHTML == true) {
-      if (this.dashChart.chart_id == ID) {
-          //if (this.dashChart.startComp != true) this.dashChart.startComp = false;
-          //return this.dashChart.startComp;
-          let i = 0;
-        }
-    }
 
-    if (controlHTML == false) {
-      if (this.dashChart.chart_id == ID) {
-        //this.dashChart.startComp = true;
-        //return this.dashChart.startComp;
-        let i = 0;
-      }
-    }
-*/
   }
-
 
 }

@@ -122,16 +122,16 @@
       </div>
     </a>
 
-    <a href="#submenu7" data-toggle="collapse" aria-expanded="false"
+    <a [routerLink]="[drag ? '#' : '/tutorialDashboard']" data-toggle="collapse" aria-expanded="false"
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center" aria-expanded="false">
         <span class="fa fa-question fa-fw mr-3"></span>
         <span class="menu-collapsed">{{'SIDEBAR.GUIDE' | translate }}</span>
-        <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
 
-    <div id="submenu7" class="collapse sidebar-submenu">
+
+      <div id="submenu7" class="collapse sidebar-submenu">
 
       <a [routerLink]="[drag ? '#' : '/guideIntro']" class="list-group-item list-group-item-action">
         <div class="d-flex w-100 justify-content-lg-start align-items-center">
@@ -182,13 +182,6 @@
 
 
     </div>
-
-
-
-
-
-
-
 
 
     <!---
