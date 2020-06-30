@@ -853,19 +853,35 @@ export class ChartsCallsService {
         break;
 
       case GA_CHART.ADS:
-        console.log(data);
         break;
 
       case GA_CHART.USER_LAST_SESSION:
-        header = [['Giorni ultima sessione', 'Utenti']];
+        /*header = [['Giorni ultima sessione', 'Utenti']];
+        let rangeDay = {'0': 0, '7': 0, '14': 0, '21': 0, '30+': 0};
 
         // 0 7 14 21 30+
         for (let i = 0; i < data.length; i++) {
-          chartData.push([
-            parseInt(data[i][0], 10),
-            parseInt(data[i][1], 10)
-          ]);
+          if (data[i][0] === 0) {
+            rangeDay['0'] += parseInt(data[i][1], 10);
+          }
+          if (0 < data[i][0] && data[i][0] <= 7) {
+            rangeDay['7'] +=  parseInt(data[i][1], 10);
+          }
+          if (7 < data[i][0] && data[i][0] <= 14) {
+            rangeDay['14'] +=  parseInt(data[i][1], 10);
+          }
+          if (14 < data[i][0] && data[i][0] <= 21) {
+            rangeDay['21'] +=  parseInt(data[i][1], 10);
+          }
+          if (21 < data[i][0]) {
+            rangeDay['30+'] +=  parseInt(data[i][1], 10);
+          }
         }
+
+        for (let el in rangeDay) {
+          chartData.push([el, rangeDay[el]]);
+        }
+        console.log(chartData)*/
         break;
 
       // Instagram chart
@@ -2386,11 +2402,12 @@ export class ChartsCallsService {
         break;
 
       case GA_CHART.USER_LAST_SESSION:
-        console.log(data)
-        formattedData = this.areaChart( data,
-          {
-            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
-            options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.LAVENDER.C3]}});
+        formattedData = this.columnChart(data,
+          {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {
+              vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: '#ffffff'}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+              hAxis: {gridlines: {color: 'transparent', count: 5}, minorGridlines: {color: '#ffffff'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
+              colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
         break;
       // Instragram chart
       case IG_CHART.AUD_CITY:
