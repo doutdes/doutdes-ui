@@ -58,7 +58,8 @@
     "PROFILO": "Update profile",
     "GUIDE_1": "Tutorials",
     "GUIDE_2": "Graphs analysis",
-    "GRAPH_INSTAGRAM": "Graphs Instagram"
+    "GRAPH_INSTAGRAM": "Graphs Instagram",
+    "GUIDE_INTRO": "Introductory guides"
   },
   "DASHBOARD": {
     "CUSTOM": "My dashboard",
@@ -217,11 +218,17 @@
     "STEP_1": "1) Go up",
     "PREFERENZE": "Preferences",
     "STEP_1_CON": "in the sidebar and click on",
-    "STEP_2": "2) A pop-up will appear as in the image below. Sign in with the Google account associated with your website:",
-    "STEP_3": "3) Click on the button",
+    "STEP_2": "2) Should the notice appear ",
+    "STEP_2_CONT": "This app is not verified",
+    "STEP_2_CONT_1": "click on",
+    "STEP_2_CONT_2": "Advanced",
+    "STEP_2_CONT_3": " and then on ",
+    "STEP_2_CONT_4": "Open doutdes-cluster.it (unsafe)",
+    "STEP_3": "3) A pop-up will appear as in the image below. Sign in with the Google account associated with your website:",
+    "STEP_4": "4) Click on the button",
     "CONSENTI": "Allow",
-    "STEP_4": "4) Great job! You added your Google Analytics token to",
-    "STEP_4_CON": ". The statistics related to your website are now available on the platform!"
+    "STEP_5": "5) Great job! You added your Google Analytics token to",
+    "STEP_5_CON": ". The statistics related to your website are now available on the platform!"
   },
   "TUTORIAL_IG": {
     "TITLE": "Tutorial: importing Instagram data",
@@ -292,7 +299,14 @@
     "TIT_LUNG": "The length of the title cannot exceed 30 characters.",
     "NEW_TIT": "New title:",
     "UPDATE": "Update",
-    "ANNULLA": "Cancel"
+    "ANNULLA": "Cancel",
+    "EDIT": "Edit Intervals",
+    "INTERVAL": "Interval",
+    "EDIT_1": "Edit",
+    "SCELTA_TITOLO": "Comparison Guided Choice",
+    "SCELTA_TITOLO_1": "Click on the card menu",
+    "SCELTA_TITOLO_2": "Click on 'Edit Interval'",
+    "SCELTA_TITOLO_3": "Select the intervals you want to compare and click 'Edit'"
   },
   "EMPTYCARD": {
     "NEW_GRA": "Add chart",

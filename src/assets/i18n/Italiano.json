@@ -58,7 +58,8 @@
     "PROFILO": "Aggiorna profilo",
     "GUIDE_1": "Tutorial",
     "GUIDE_2": "Analisi dei grafici",
-    "GRAPH_INSTAGRAM": "Grafici Instagram"
+    "GRAPH_INSTAGRAM": "Grafici Instagram",
+    "GUIDE_INTRO": "Guide Introduttive"
   },
   "DASHBOARD": {
   	"CUSTOM": "La mia dashboard",
@@ -218,11 +219,17 @@
     "STEP_1": "1) Vai su ",
     "PREFERENZE": "Preferenze",
     "STEP_1_CON": " nella sidebar e clicca su ",
-    "STEP_2": "2) Apparirà un pop-up come nell'immagine sotto. Eseguite l'accesso con l'account Google associato al vostro sito web:",
-    "STEP_3": "3) Clicca sul bottone ",
+    "STEP_2": "2) Qualora dovesse apparire l'avviso ",
+    "STEP_2_CONT": "Quest'app non è verificata",
+    "STEP_2_CONT_1": "clicca su",
+    "STEP_2_CONT_2": "Avanzate",
+    "STEP_2_CONT_3": " e successivamente su ",
+    "STEP_2_CONT_4": "Apri doutes-cluster.it (non sicura)",
+    "STEP_3": "3) Apparirà un pop-up come nell'immagine sotto. Eseguite l'accesso con l'account Google associato al vostro sito web:",
+    "STEP_4": "4) Clicca sul bottone ",
     "CONSENTI": "Consenti",
-    "STEP_4": "4) Ottimo lavoro! Hai aggiunto il tuo token di Google Analytics su ",
-    "STEP_4_CON": ". Le statistiche relative al tuo sito web sono ora disponibili nella piattaforma!"
+    "STEP_5": "5) Ottimo lavoro! Hai aggiunto il tuo token di Google Analytics su ",
+    "STEP_5_CON": ". Le statistiche relative al tuo sito web sono ora disponibili nella piattaforma!"
   },
   "TUTORIAL_IG": {
     "TITLE": "Tutorial: importazione dati Instagram",
@@ -293,7 +300,14 @@
     "TIT_LUNG": "La lunghezza del titolo non può superare i 30 caratteri.",
     "NEW_TIT": "Nuovo titolo:",
     "UPDATE": "Aggiorna",
-    "ANNULLA": "Annulla"
+    "ANNULLA": "Annulla",
+    "EDIT": "Modifica Intervalli",
+    "INTERVAL": "Intervallo",
+    "EDIT_1": "Modifica",
+    "SCELTA_TITOLO": "Scelta guidata della comparazione ",
+    "SCELTA_TITOLO_1": "Clicca sul menù della card",
+    "SCELTA_TITOLO_2": "Clicca su 'Modifica intervallo'",
+    "SCELTA_TITOLO_3": "Seleziona gli intervalli che vuoi comparare e clicca 'Modifica' "
   },
   "EMPTYCARD": {
     "NEW_GRA": "Aggiungi grafico",
