@@ -172,7 +172,7 @@ export class ChartsCallsService {
     let j = 0;
     let k = 0;
     let acc = 0;
-    let n = 0;
+    const n = 0;
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -722,10 +722,10 @@ export class ChartsCallsService {
          * 2 - value
          **/
         header = [['Country', 'Value']];
-        let mapData = new Map();
+        const mapData = new Map();
 
         for (let i = 0; i < data.length; i++) {
-          if(!mapData.has(data[i][1])){
+          if (!mapData.has(data[i][1])) {
             mapData.set(data[i][1], parseInt(data[i][2]));
           } else {
             const value_0 = parseInt(mapData.get(data[i][1]));
@@ -752,10 +752,10 @@ export class ChartsCallsService {
          * 3 - value
          **/
         header = [['Region', 'Value']];
-        let mapD = new Map();
+        const mapD = new Map();
 
         for (let i = 0; i < data.length; i++) {
-          if (data[i][2] == "Italy") {
+          if (data[i][2] == 'Italy') {
             if (!mapD.has(data[i][1])) {
               mapD.set(data[i][1], parseInt(data[i][3]));
             } else {
@@ -832,7 +832,20 @@ export class ChartsCallsService {
                 chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
                 chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
           }
+          // chartData[0] = ['Cagliari, Sardinia', {v : +1, f: '521' }];
+          // chartData[1] = ['Quartu Sant\'Elena Sardinia', {v : +1, f: '498' }];
+          // chartData[2] = ['Selargius, Sardinia', {v : +1, f: '477' }];
+          // chartData[3] = ['Quartucciu, Sardinia', {v : 0, f: '445' }];
+          // chartData[4] = ['Elmas, Sardinia', {v : +1, f: '438' }];
+          // chartData[5] = ['Monserrato, Sardinia', {v : 0, f: '412' }];
+          // chartData[6] = ['Sassari, Sardinia', {v : +1, f: '411' }];
+          // chartData[7] = ['Oristano, Sardinia', {v : +1, f: '405' }];
+          // chartData[8] = ['Olbia, Sardinia', {v : +1, f: '401' }];
+
           chartData = this.addPaddingRows(chartData);
+
+
+          // console.log(chartData);
         }
         break; // IG Follower City - Elenco
       case IG_CHART.AUD_COUNTRY:
@@ -872,6 +885,25 @@ export class ChartsCallsService {
 
           }
           chartData = chartData.sort();
+          // chartData[0][1]=302
+          // chartData[1][1]=332
+          // chartData[2][1]=345
+          // chartData[3][1]=177
+          // chartData[4][1]=155
+          // chartData[5][1]=135
+          // chartData[6][1]=145
+          //
+          // chartData[0][2]=322
+          // // chartData[1][2]=452
+          // // chartData[2][2]=368
+          // chartData[1][2]=471
+          // chartData[2][2]=408
+          // chartData[3][2]=294
+          // chartData[4][2]=165
+          // chartData[5][2]=176
+          // chartData[6][2]=155
+
+          // console.log(chartData);
         }
         break; // IG Follower Gender/Age
       case IG_CHART.AUD_LOCALE:
@@ -945,7 +977,7 @@ export class ChartsCallsService {
             averageArray[j].push((blockDay[i][j].reduce((a, b) => a + b)) / 3);
             if ( i === blockDay.length - 1 ) {
 
-              const period = blockDay.length - 1; //blockTime.lenght
+              const period = blockDay.length - 1; // blockTime.lenght
               max.push( ~~(maxArray[j].reduce((a, b) => a + b) / period));
               min.push( ~~(minArray[j].reduce((a, b) => a + b) / period ));
               average.push( ~~(averageArray[j].reduce((a, b) => a + b) / period));
@@ -1001,9 +1033,15 @@ export class ChartsCallsService {
         break; // IG composed clicks
       case IG_CHART.FOLLOWER_COUNT:
         header = [['Data', 'Nuovi utenti']];
+
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+        //   chartData[2][1] = 25
+        //   chartData[3][1] = 15
+        // chartData[4][1] = 10
+        // chartData[5][1] = 10
+        // console.log(chartData)
         break; // IG FollowerCount
       case IG_CHART.LOST_FOLLOWERS:
         header = [['Data', 'Follower persi', { role: 'style' }]];
@@ -1031,6 +1069,7 @@ export class ChartsCallsService {
           }
         } else {
           chartData.push([new Date(), diff]);
+          console.log(chartData)
         }
         break;
       case IG_CHART.INFO_CLICKS_COL:
@@ -1050,7 +1089,11 @@ export class ChartsCallsService {
             chartData.push([metrics[i], arr_acc[i]]);
           }
         }
-
+          // chartData.push([metrics[0], 2]);
+          // chartData.push([metrics[1], 5]);
+          // chartData.push([metrics[2], 20]);
+          // chartData.push([metrics[3], 15]);
+          // chartData.push([metrics[4], 2]);
         break;
       case IG_CHART.MEDIA_COMMENT_DATA:
         elem = 'Commenti ';
@@ -1186,26 +1229,26 @@ export class ChartsCallsService {
         header = [['Genere', 'numero']];
 
         // Ciclo le età
-        for(let j = 0; j < tmpF_age.length; j++) {
-          if(parseInt(data[data.length-1].value[tmpF_age[j]])){
-            tmpF[j] = parseInt(data[data.length-1].value[tmpF_age[j]]);
+        for (let j = 0; j < tmpF_age.length; j++) {
+          if (parseInt(data[data.length - 1].value[tmpF_age[j]])) {
+            tmpF[j] = parseInt(data[data.length - 1].value[tmpF_age[j]]);
           } else {
             tmpF[j] = 0;
           }
-          if(parseInt(data[data.length-1].value[tmpM_age[j]])){
-            tmpM[j] = parseInt(data[data.length-1].value[tmpM_age[j]]);
+          if (parseInt(data[data.length - 1].value[tmpM_age[j]])) {
+            tmpM[j] = parseInt(data[data.length - 1].value[tmpM_age[j]]);
           } else {
             tmpM[j] = 0;
           }
-          if(parseInt(data[data.length-1].value[tmpU_age[j]])){
-            tmpU[j] = parseInt(data[data.length-1].value[tmpU_age[j]]);
+          if (parseInt(data[data.length - 1].value[tmpU_age[j]])) {
+            tmpU[j] = parseInt(data[data.length - 1].value[tmpU_age[j]]);
           } else {
             tmpU[j] = 0;
           }
         }
 
         // Salvo in ChartData
-        for(let i = 0; i < tmpF_age.length; i++){
+        for (let i = 0; i < tmpF_age.length; i++) {
           chartData.push([tmpF_age[i], tmpF[i]]);
           chartData.push([tmpM_age[i], tmpM[i]]);
           chartData.push([tmpU_age[i], tmpU[i]]);
@@ -2425,7 +2468,7 @@ export class ChartsCallsService {
           options: {
             chartArea: {left: 100, right: 0, height: 290, top: 20},
             legend: {position: 'right'},
-            colors: ['#0676ff', '#ff32b9', '#b6b6b6'],
+            colors: ['#ff32b9', '#0676ff', '#b6b6b6'],
             height: 310,
             is3D: false,
             pieHole: 0.55,
@@ -3427,7 +3470,7 @@ export class ChartsCallsService {
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
         // console.log(intervalDate.last);
-        //console.log(data);
+        // console.log(data);
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
         data.length > 0 ?  value = data[data.length - 1].value : value = 0;
 
@@ -3793,21 +3836,21 @@ export class ChartsCallsService {
     */
 
     // Modifica intervalli
-    if(n == 1) {
+    if (n == 1) {
 
       for (let i = 0; i < data.length; i++) {
-        //Controllo per colonna 1
+        // Controllo per colonna 1
         if ((parseDate(data[i]['end_time']) >= intervalDateComparison[0][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[0][1]) {
           j += data[i]['value'];
         }
-        //Controllo per colonna 2
+        // Controllo per colonna 2
         if ((parseDate(data[i]['end_time']) >= intervalDateComparison[1][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[1][1]) {
           k += data[i]['value'];
         }
       }
 
-      if (flag == 0) return j;
-      if (flag == 1) return k;
+      if (flag == 0) { return j; }
+      if (flag == 1) { return k; }
 
     }
 
@@ -3818,24 +3861,24 @@ export class ChartsCallsService {
 
         // Se il filtro è impostato a "Ultimi 30 giorni"
         if (data.length == 30) {
-          //Controllo per Colonna 1
-          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-8]['end_time']))) {
+          // Controllo per Colonna 1
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 8]['end_time']))) {
             j += data[i]['value'];
           }
-          //Controllo per colonna 2
-          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-8]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+          // Controllo per colonna 2
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 8]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 1]['end_time']))) {
             k += data[i]['value'];
           }
         }
 
         // Se il filtro è impostato a "Ultimi 7 giorni"
         if (data.length == 7) {
-          //Controllo per Colonna 1
-          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-7]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-5]['end_time']))) {
+          // Controllo per Colonna 1
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 7]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 5]['end_time']))) {
             j += data[i]['value'];
           }
-          //Controllo per colonna 2
-          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-3]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+          // Controllo per colonna 2
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 3]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 1]['end_time']))) {
             k += data[i]['value'];
           }
         }
@@ -3845,30 +3888,30 @@ export class ChartsCallsService {
 
           // Se imposta la data di lunghezza 1 (es. 09/03 - 09/03)
           if (data.length == 1) {
-            j = data[0]['value'];  //Controllo per Colonna 1
-            k = data[0]['value']; //Controllo per colonna 2
+            j = data[0]['value'];  // Controllo per Colonna 1
+            k = data[0]['value']; // Controllo per colonna 2
           }
 
           // Se imposta la data di lunghezza 2 (es. 09/03 - 10/03)
           if (data.length == 2) {
-            j = data[0]['value'];  //Controllo per Colonna 1
-            k = data[1]['value'];  //Controllo per colonna 2
+            j = data[0]['value'];  // Controllo per Colonna 1
+            k = data[1]['value'];  // Controllo per colonna 2
           }
 
           // Se imposta la data di lunghezza 3 (es. 09/03 - 11/03)
           if (data.length == 3) {
-            j = data[0]['value'];  //Controllo per Colonna 1
-            k = data[2]['value'];  //Controllo per colonna 2
+            j = data[0]['value'];  // Controllo per Colonna 1
+            k = data[2]['value'];  // Controllo per colonna 2
           }
 
           // Se imposta la data di lunghezza >= 4 (es. 09/03 - 12/03)
           if (data.length >= 4) {
-            //Controllo per Colonna 1
+            // Controllo per Colonna 1
             if ((parseDate(data[i]['end_time']) >= parseDate(data[0]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[1]['end_time']))) {
               j += data[i]['value'];
             }
-            //Controllo per colonna 2
-            if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-2]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+            // Controllo per colonna 2
+            if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 2]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 1]['end_time']))) {
               k += data[i]['value'];
             }
           }
@@ -3876,8 +3919,8 @@ export class ChartsCallsService {
         }
       }
 
-      if (flag == 0) return j;
-      if (flag == 1) return k;
+      if (flag == 0) { return j; }
+      if (flag == 1) { return k; }
 
     }
 
@@ -3887,36 +3930,36 @@ export class ChartsCallsService {
 
     if (!intervalDate) {
       if (data.length == 30) {
-        if (n == 1) return parseDate(data[data.length-15]['end_time']).getDate() + '/' + (parseDate(data[data.length-15]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-8]['end_time']).getDate() + '/' + (parseDate(data[data.length-8]['end_time']).getMonth()+1);
-        if (n == 2) return parseDate(data[data.length-8]['end_time']).getDate() + '/' + (parseDate(data[data.length-8]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+        if (n == 1) { return parseDate(data[data.length - 15]['end_time']).getDate() + '/' + (parseDate(data[data.length - 15]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 8]['end_time']).getDate() + '/' + (parseDate(data[data.length - 8]['end_time']).getMonth() + 1); }
+        if (n == 2) { return parseDate(data[data.length - 8]['end_time']).getDate() + '/' + (parseDate(data[data.length - 8]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 1]['end_time']).getDate() + '/' + (parseDate(data[data.length - 1]['end_time']).getMonth() + 1); }
       } else {
         if (data.length == 7) {
-          if (n == 1) return parseDate(data[data.length-7]['end_time']).getDate() + '/' + (parseDate(data[data.length-7]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-5]['end_time']).getDate() + '/' + (parseDate(data[data.length-5]['end_time']).getMonth()+1);
-          if (n == 2) return parseDate(data[data.length-3]['end_time']).getDate() + '/' + (parseDate(data[data.length-3]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+          if (n == 1) { return parseDate(data[data.length - 7]['end_time']).getDate() + '/' + (parseDate(data[data.length - 7]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 5]['end_time']).getDate() + '/' + (parseDate(data[data.length - 5]['end_time']).getMonth() + 1); }
+          if (n == 2) { return parseDate(data[data.length - 3]['end_time']).getDate() + '/' + (parseDate(data[data.length - 3]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 1]['end_time']).getDate() + '/' + (parseDate(data[data.length - 1]['end_time']).getMonth() + 1); }
         } else {
 
           // Se imposta la data di lunghezza 1 (es. 09/03 - 09/03)
           if (data.length == 1) {
-            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
-            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
+            if (n == 1) { return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1); }
+            if (n == 2) { return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1); }
           }
 
           // Se imposta la data di lunghezza 2 (es. 09/03 - 10/03)
           if (data.length == 2) {
-            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
-            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
+            if (n == 1) { return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth() + 1); }
+            if (n == 2) { return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth() + 1); }
           }
 
           // Se imposta la data di lunghezza 3 (es. 09/03 - 11/03)
           if (data.length == 3) {
-            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
-            if (n == 2) return parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth()+1) + ' - ' + parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth()+1);
+            if (n == 1) { return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1); }
+            if (n == 2) { return parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth() + 1); }
           }
 
           // Se imposta la data di lunghezza >= 4 (es. 09/03 - 12/03)
           if (data.length >= 4) {
-            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' +  (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
-            if (n == 2) return parseDate(data[data.length-2]['end_time']).getDate() + '/' + (parseDate(data[data.length-2]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+            if (n == 1) { return parseDate(data[0]['end_time']).getDate() + '/' +  (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth() + 1); }
+            if (n == 2) { return parseDate(data[data.length - 2]['end_time']).getDate() + '/' + (parseDate(data[data.length - 2]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 1]['end_time']).getDate() + '/' + (parseDate(data[data.length - 1]['end_time']).getMonth() + 1); }
           }
 
         }
@@ -3926,9 +3969,9 @@ export class ChartsCallsService {
       Il primo If commentato restituisce il giorno nel formato '0d'; es: 04/12
       Il secondo If (quello non commentato) restituisce il giorno nel formato 'd'; es: 4/12
        */
-      //if (n == 1) return parseDate(intervalDate[0][0]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][0]).getMonth() + ' - ' + parseDate(intervalDate[0][1]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][1]).getMonth();
-      if (n == 1) return parseDate(intervalDate[0][0]).getDate() + '/' + (parseDate(intervalDate[0][0]).getMonth()+1) + ' - ' + parseDate(intervalDate[0][1]).getDate() + '/' + (parseDate(intervalDate[0][1]).getMonth()+1);
-      if (n == 2) return parseDate(intervalDate[1][0]).getDate() + '/' + (parseDate(intervalDate[1][0]).getMonth()+1) + ' - ' + parseDate(intervalDate[1][1]).getDate() + '/' + (parseDate(intervalDate[1][1]).getMonth()+1);
+      // if (n == 1) return parseDate(intervalDate[0][0]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][0]).getMonth() + ' - ' + parseDate(intervalDate[0][1]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][1]).getMonth();
+      if (n == 1) { return parseDate(intervalDate[0][0]).getDate() + '/' + (parseDate(intervalDate[0][0]).getMonth() + 1) + ' - ' + parseDate(intervalDate[0][1]).getDate() + '/' + (parseDate(intervalDate[0][1]).getMonth() + 1); }
+      if (n == 2) { return parseDate(intervalDate[1][0]).getDate() + '/' + (parseDate(intervalDate[1][0]).getMonth() + 1) + ' - ' + parseDate(intervalDate[1][1]).getDate() + '/' + (parseDate(intervalDate[1][1]).getMonth() + 1); }
         }
     }
 
