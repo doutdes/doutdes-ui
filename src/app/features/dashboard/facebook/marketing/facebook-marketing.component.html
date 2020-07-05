@@ -45,7 +45,7 @@
            [(ngModel)]="bsRangeValue"
            [minDate]="minDate"
            [maxDate]="maxDate"
-           [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
+           [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue',dateInputFormat: 'DD/MM/YYYY'}"
            (bsValueChange)="onValueChange($event)"
            bsDaterangepicker>
   </div>

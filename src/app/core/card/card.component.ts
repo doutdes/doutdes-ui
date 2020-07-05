@@ -9,7 +9,7 @@ import {GA_CHART} from '../../shared/_models/GoogleData';
 import {D_TYPE} from '../../shared/_models/Dashboard';
 import {ToastrService} from 'ngx-toastr';
 import {AggregatedDataService} from '../../shared/_services/aggregated-data.service';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject, forkJoin, Observable, Subject} from 'rxjs';
 import {retry, takeUntil} from 'rxjs/operators';
 import {FilterActions} from '../../features/dashboard/redux-filter/filter.actions';
 import {Chart} from '../../shared/_models/Chart';
@@ -19,6 +19,10 @@ import {User} from '../../shared/_models/User';
 import {IntervalDate} from '../../features/dashboard/redux-filter/filter.model';
 import {subDays} from "date-fns";
 import {HttpClient} from '@angular/common/http';
+import {select} from '@angular-redux/store';
+import {ChartsCallsService} from '../../shared/_services/charts_calls.service';
+import {InstagramService} from '../../shared/_services/instagram.service';
+import {ChartParams} from '../../shared/_models/Chart';
 
 @Component({
   selector: 'app-card',
@@ -35,6 +39,8 @@ export class CardComponent implements OnInit {
   @ViewChild('mychart') mychart: GoogleChartComponent;
   @ViewChild('addMetric') addMetric: ElementRef;
 
+  @select() filter: Observable<any>;
+
   public FILTER_DAYS = {
     yesterday: 1,
     seven: 7,
@@ -48,6 +54,7 @@ export class CardComponent implements OnInit {
   avg: string;
   high: string;
   low: string;
+  tot: string;
   // aggregated data regarding the previous period
   prevAvg: string;
   prevHigh: string;
@@ -75,17 +82,14 @@ export class CardComponent implements OnInit {
   D_TYPE = D_TYPE;
   drag: boolean;
   bannedChart = [101, 117];
+  nPost = 0;
 
-  datePickerEnabled = false; // Used to avoid calling onValueChange() on component init
   dateChoice: String = null;
 
-  // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
   maxDate_30: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate_30: Date = subDays(this.maxDate_30, this.FILTER_DAYS.thirty);
 
-  // Caso in cui il filtro è impostato per "Ultimi 30 giorni"
-  maxDate_7: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
-  minDate_7: Date = subDays(this.maxDate_7, this.FILTER_DAYS.seven);
+  maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
+
 
   bsRangeValue: Date[];
   bsRangeValue2: Date[];
@@ -104,12 +108,16 @@ export class CardComponent implements OnInit {
   tmp: string;
   user: User;
 
+  checkComp: boolean;
+
   constructor(
     private formBuilder: FormBuilder,
+    private IGService: InstagramService,
     private modalService: BsModalService,
     private dashboardService: DashboardService,
     private GEService: GlobalEventsManagerService,
     private DService: DashboardService,
+    private CCService: ChartsCallsService,
     private toastr: ToastrService,
     private filterActions: FilterActions,
     public translate: TranslateService,
@@ -128,9 +136,6 @@ export class CardComponent implements OnInit {
           console.error(error);
         });
     });
-
-    this.edit_2 = false;
-    this.edit_1 = false;
   }
 
   ngOnInit() {
@@ -147,8 +152,7 @@ export class CardComponent implements OnInit {
       chartTitle: [this.dashChart.title, Validators.compose([Validators.maxLength(30), Validators.required])],
     });
 
-
-    this.checkMinMaxDate();
+    if (this.dashChart.chart_id == 108) return this.checkMinMaxDate(this.dashChart.chart_id);
   }
 
   setColorStyle = (): void => {
@@ -233,6 +237,13 @@ export class CardComponent implements OnInit {
     this.avgTrend = 0;
     this.percentual = false;
 
+    if (this.dashChart.chart_id === 103 || this.dashChart.chart_id === 104) {
+      this.dashChart.chartData.dataTable.forEach(el => {
+        if (typeof el[1] !== 'string' && el[1] !== 0) {
+          this.nPost += parseInt(el[2].slice(el[2].indexOf('post') - 2, el[2].indexOf('post') - 1), 10);
+        }});
+    }
+
     let unit = '';
 
     if (this.aggregated) {
@@ -260,6 +271,7 @@ export class CardComponent implements OnInit {
           this.prevHigh = this.dashChart.aggregated.prevHighest;
           break;
       }
+      this.tot = this.dashChart.aggregated.tot;
       this.avg = this.dashChart.aggregated.average.toFixed(2);
       this.prevAvg = this.dashChart.aggregated.prevAverage.toFixed(2);
 
@@ -434,60 +446,36 @@ export class CardComponent implements OnInit {
       last: this.checkBsRangeValue(2, this.bsRangeValue, this.bsRangeValue2),
     };
 
+    if (check == 'Interval1' && value) {
+      this.intervalFinal[0] = [value[0], value[1]];
+    }
+
+    if (check == 'Interval2' && value) {
+      this.intervalFinal[1] = [value[0], value[1]];
+    }
+
+    if (!value && check == 'Edit') {
+
       try {
 
-        if (check == 'Interval1' && value) {
-          this.intervalFinal[0] = [value[0], value[1]];
-          this.edit_1 = true;
-        }
+        this.GEService.ComparisonIntervals.next(this.intervalFinal);
+        this.intervalFinal = [];
+        this.closeModal();
 
-        if (check == 'Interval2' && value) {
-          this.intervalFinal[1] = [value[0], value[1]];
-          this.edit_2 = true;
-        }
+        this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
 
-      }
-      catch (e) {
+        //this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
+        this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
+          this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_INTERVAL'));
+
+      } catch (e) {
         console.error(e);
-        this.edit_1 = false;
-        this.edit_2 = false;
 
         //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
         this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
           this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
       }
 
-
-    if (!value && check == 'Edit') {
-      if (this.edit_1 && this.edit_2) {
-        try {
-          this.GEService.ComparisonIntervals.next(this.intervalFinal);
-          this.closeModal();
-
-          this.filterActions.filterData(intervalDate); //Dopo aver aggiunto un grafico, li porta tutti alla stessa data
-
-          //this.toastr.success('Gli intervalli sono stati aggiornati con successo!', 'Aggiornamento completato!');
-          this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_INTERVAL'),
-            this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_INTERVAL'));
-
-          this.edit_1 = false;
-          this.edit_2 = false;
-        } catch (e) {
-          console.log(e);
-          //console.error(e);
-
-          //this.toastr.error('Non è stato possibile aggiornare gli intervalli. Riprova oppure contatta il supporto.', 'Errore intervalli!');
-          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_INTERVAL'),
-            this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_INTERVAL'));
-
-          this.edit_1 = false;
-          this.edit_2 = false;
-        }
-      } else {
-        console.log('Errore');
-        this.edit_1 = false;
-        this.edit_2 = false;
-      }
     }
 
    }
@@ -515,52 +503,28 @@ export class CardComponent implements OnInit {
     }
   }
 
-  checkMinMaxDate (): any {
-    let tmp_data_1 = 0;
+  checkMinMaxDate (IDChart): any {
+    let n = 0;
 
-    this.GEService.checkFilterDateIGComparasion.subscribe(data => {
-
-      if (data == 30) {
-        this.firstDateRange = this.minDate_30;
-        this.lastDateRange = this.maxDate_30;
-        this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-
-        this.firstDateRange = this.minDate_30;
-        this.lastDateRange = this.maxDate_30;
-        this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
-
-        this.check_int = 30;
+    for (let i = 0; i < this.filterActions.currentDashboard.data.length; i++) {
+      if (this.filterActions.currentDashboard.data[i].chart_id === IDChart) {
+        n = i;
+        i = this.filterActions.currentDashboard.data.length;
       }
+    }
 
-      if (data == 7) {
-          this.firstDateRange = this.minDate_7;
-          this.lastDateRange = this.maxDate_7;
-          this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
+    let tmp = this.filterActions.currentDashboard.data[n].chartData.length;
+    let minDate: Date = subDays(this.maxDate_30, tmp);
 
-          this.firstDateRange = this.minDate_7;
-          this.lastDateRange = this.maxDate_7;
-          this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
+    this.firstDateRange = minDate;
+    this.lastDateRange = this.maxDate;
+    this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
 
-          this.check_int = 7;
-      }
+    this.firstDateRange = minDate;
+    this.lastDateRange = this.maxDate;
+    this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
 
-      if (data != 7 && data != 30) {
-        this.GEService.checkInterval.subscribe(value => {
-          if (value) {
-            this.firstDateRange = value['first'];
-            this.lastDateRange = value['last'];
-            this.bsRangeValue = [this.firstDateRange, this.lastDateRange];
-
-            this.firstDateRange = value['first'];
-            this.lastDateRange = value['last'];
-            this.bsRangeValue2 = [this.firstDateRange, this.lastDateRange];
-
-            this.check_int = 0;
-          }
-        });
-      }
-
-    }); //End
+    this.check_int = 0;
 
   }
 
@@ -582,36 +546,69 @@ export class CardComponent implements OnInit {
 
   checkInfo (chart) {
 
+      switch (chart) {
+        case 15:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/Visualizzazioni.pdf', '_blank');
+          break;
+        case 16:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerGenere_Eta.pdf', '_blank');
+          break;
+        case 17:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/LinguaFollower.pdf', '_blank');
+          break;
+        case 18:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/UtentiUniciRag.pdf', '_blank');
+          break;
+        case 19:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerCitta.pdf', '_blank');
+          break;
+        case 20:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerPaese.pdf', '_blank');
+          break;
+        case 22:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerOnline.pdf', '_blank');
+          break;
+        case 28:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/NuoviFollower.pdf', '_blank');
+          break;
+        default:
+          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_INFO'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'NO_INFO'));
+          break;
+      }
+
+  }
+
+  checkCardInfo (chart) {
+
     switch (chart) {
       case 15:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/Visualizzazioni.pdf', '_blank');
-        break;
       case 16:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerGenere_Eta.pdf', '_blank');
-        break;
       case 17:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/LinguaFollower.pdf', '_blank');
-        break;
       case 18:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/UtentiUniciRag.pdf', '_blank');
-        break;
       case 19:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerCitta.pdf', '_blank');
-        break;
       case 20:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerPaese.pdf', '_blank');
-        break;
       case 22:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/FollowerOnline.pdf', '_blank');
-        break;
       case 28:
-        window.open('./././assets/InfoGrafici/GuideSingole/Instagram/NuoviFollower.pdf', '_blank');
-        break;
+        return true;
+
       default:
-        this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_INFO'),
-          this.GEService.getStringToastr(true, false, 'CARD', 'NO_INFO'));
-        break;
+        return false;
     }
 
   }
+
+  checkInfoBoolComp() {
+
+    if (this.dashChart.chart_id == 108) {
+      if (this.dashChart.chartData.dataTable[1][0] == 'null') {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
+
+  }
+
 }
