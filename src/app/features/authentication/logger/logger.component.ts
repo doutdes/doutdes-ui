@@ -27,7 +27,7 @@ export class LoggerComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(){
     this.usr.loggerGet().subscribe((data) => {
       if (this.selected === 'option1')
-      for (const i in data){
+      for (const i in data) {
         const tmp = {
           dash_Custom: moment(data[i]['dash_custom'][data[i]['dash_custom'].length - 1]).format('DD-MMM-YYYY HH:mm:ss').toString(),
           count_custom: data[i]['dash_custom'].length,
@@ -47,12 +47,12 @@ export class LoggerComponent implements OnInit, AfterViewInit {
           userid: data[i]['userid'],
           username: data[i]['username']
         };
-        console.log(tmp)
+        console.log(tmp);
         this.data.push(tmp);
       }
       this.dataSource = new MatTableDataSource<Info>(this.data);
       console.log(this.dataSource);
-    })
+    });
 
   }
 
