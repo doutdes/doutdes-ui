@@ -34,12 +34,6 @@ export class tutorialDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.addBreadcrumb();
-    this.id = this.localStore.getId();
-    const cookieExists: boolean = this.cookieService.check(this.id);
-    if (!cookieExists) {
-      this.openModal(this.newVersionTemplate);
-    }
-
   }
 
   ngOnDestroy() {
