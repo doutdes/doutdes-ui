@@ -1,7 +1,7 @@
 <div class="row rounded py-sm-4 title-header">
-
-    <h2 class="my-auto text-center" style="width:100px; margin:0 auto;">Doutdes Analytics</h2>
-
+  <div class="col-xl-4 col-md-4 col-sm-6 col-12 pl-0 d-sm-block d-none">
+    <h2 class="my-auto float-left">Doutdes Analytics</h2>
+  </div> <!-- title -->
 </div>
 
 <div class="row">
@@ -10,8 +10,13 @@
       <div class="card p-2" style="background-color: #fff;">
         <div class="card-body">
           <div class="row">
+            <div class="col-md-4">
+              <img src="/assets/img/home_charts.png" class="img-fluid"/>
+            </div>
 
-            <div class="col-md ">
+            <div class="col-md-8">
+
+              <h3>{{ 'HOME.TITLE' | translate }}</h3>
 
               <p>{{ 'HOME.DESCRIPTION' | translate }}<i> {{ 'HOME.DESCRIPTION_1' | translate }}</i> {{
                 'HOME.DESCRIPTION_2' | translate }}</p>
@@ -25,35 +30,7 @@
 
           </div>
 
-          <div class="row">
-            <img src="/assets/1.png" class="img-fluid "/>
-            <div class="container">
-              <div style="width:100px; margin:0 auto;">
-                <a [routerLink]="['/tutorial/youtube']" class="btn btn-primary">Vai a</a>
-              </div>
-            </div>
-
-            <img src="/assets/2.png" class="img-fluid "/>
-            <div class="container align-text-bottom">
-                <a [routerLink]="['/tutorial/youtube']" class="btn btn-primary float-left">Vai a</a>
-                <a [routerLink]="['/tutorial/youtube']" class="btn btn-primary float-right">Vai a</a>
-            </div>
-
-            <img src="/assets/3.png" class="img-fluid "/>
-            <div class="container">
-              <div style="width:100px; margin:0 auto;">
-                <a [routerLink]="['/tutorial/youtube']" class="btn btn-primary">Vai a</a>
-              </div>
-            </div>
-
-            <!--
-            <div class="text-center">
-
-            </div>
-            -->
-
-
-            <!---
+          <div class="row mt-5">
             <div class="col-md-4">
 
               <div class="card p-3" style="min-height:350px; background: #fbfbfb">
@@ -81,8 +58,6 @@
                   }} &raquo;</a></div>
               </div>
             </div>
-
-            -->
           </div>
 
         </div>
@@ -90,8 +65,6 @@
     </div>
   </div>
 </div>
-
-
 
 <ng-template #newVersion>
   <div class="modal-header">
