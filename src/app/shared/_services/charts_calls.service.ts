@@ -162,7 +162,7 @@ export class ChartsCallsService {
 
     const min = [];
     const average = [];
-    const max = [] ;
+    const max = [];
     const blockTime = [3, 6, 9, 12, 15, 18, 21, 24];
 
     const tmpF = [];
@@ -181,6 +181,11 @@ export class ChartsCallsService {
     let n = 0;
 
     let params: ChartParams = {};
+
+    //controllo se la prima riga non sia un un valore anomalo
+    if (data[0].value === undefined) {
+      data[0].value = '';
+    }
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
@@ -485,7 +490,7 @@ export class ChartsCallsService {
         break; // Facebook Vista contenuti per Paese (elenco)
       case FB_CHART.PAGE_FANS_CITY_ELENCO:
         header = [['Città', 'Numero fan']];
-        chartData = [ ];
+        chartData = [];
         const tempCity = Object.keys(data[data.length - 1]['value']);
         if (data.length > 0) {
           for (const el of tempCity) {
@@ -734,7 +739,7 @@ export class ChartsCallsService {
         let mapData = new Map();
 
         for (let i = 0; i < data.length; i++) {
-          if(!mapData.has(data[i][1])){
+          if (!mapData.has(data[i][1])) {
             mapData.set(data[i][1], parseInt(data[i][2]));
           } else {
             const value_0 = parseInt(mapData.get(data[i][1]));
@@ -764,7 +769,7 @@ export class ChartsCallsService {
         let mapD = new Map();
 
         for (let i = 0; i < data.length; i++) {
-          if (data[i][2] == "Italy") {
+          if (data[i][2] == 'Italy') {
             if (!mapD.has(data[i][1])) {
               mapD.set(data[i][1], parseInt(data[i][3]));
             } else {
@@ -902,12 +907,12 @@ export class ChartsCallsService {
             // tslint:disable-next-line:no-shadowed-variable
             const diff = oldValue[chartData[i][0]] ?
               parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]], 10) :
-            1;
-              diff > 0 ?
-              chartData[i] = [chartData[i][0], {v : +1, f: chartData[i][1].toString() }] :
+              1;
+            diff > 0 ?
+              chartData[i] = [chartData[i][0], {v: +1, f: chartData[i][1].toString()}] :
               diff === 0 ?
-                chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
-                chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
+                chartData[i] = [chartData[i][0], {v: 0 * chartData[i][1], f: chartData[i][1].toString()}] :
+                chartData[i] = [chartData[i][0], {v: -1, f: chartData[i][1].toString()}];
           }
           chartData = this.addPaddingRows(chartData);
         }
@@ -966,15 +971,15 @@ export class ChartsCallsService {
               const tmp = this.listLanguageItalian.get((keys[i].slice(0, 2)));
               chartData.push([tmp, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
             } else {
-            chartData.push([locale.parse(keys[i].replace('_', '-')).language, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
-           }
+              chartData.push([locale.parse(keys[i].replace('_', '-')).language, parseInt(data[data.length - 1]['value'][keys[i]], 10)]);
+            }
           }
 
           chartData.sort(function (obj1, obj2) {
             // Ascending: first age less than the previous
             return -(obj1[1] - obj2[1]);
           });
-         // chartData = this.changeNameCountry(data);
+          // chartData = this.changeNameCountry(data);
           for (let i = 0; i < chartData.length; i++) {
             const arr = chartData.filter(el2 => chartData[i][0] === el2[0]);
             if (arr.length > 1) {
@@ -1021,14 +1026,14 @@ export class ChartsCallsService {
             minArray[j].push(blockDay[i][j].reduce((m, x) => m < x ? m : x));
             averageArray[j].push((blockDay[i][j].reduce((a, b) => a + b)) / 3);
 
-            if ( i === blockDay.length - 1 ) {
+            if (i === blockDay.length - 1) {
               max.push(maxArray[j].reduce((a, b) => a + b) / blockTime.length);
               min.push(minArray[j].reduce((a, b) => a + b) / blockTime.length);
               average.push(averageArray[j].reduce((a, b) => a + b) / blockTime.length);
             }
           }
         }
-        for (const i in time ) { // MIN | AVG | MAX
+        for (const i in time) { // MIN | AVG | MAX
           chartData.push([time[i], min[i], average[i], max[i]]);
         }
 
@@ -1082,7 +1087,7 @@ export class ChartsCallsService {
         }
         break; // IG FollowerCount
       case IG_CHART.LOST_FOLLOWERS:
-        header = [['Data', 'Follower persi', { role: 'style' }]];
+        header = [['Data', 'Follower persi', {role: 'style'}]];
         let diff = 0;
         if (data.length > 0 && data[0]['business'].length > 1) {
 
@@ -1166,7 +1171,7 @@ export class ChartsCallsService {
 
         break;
       case IG_CHART.MEDIA_ENGAGEMENT_TYPE:
-        header = [['Tipo', 'Interazioni', {role: 'tooltip'}, { role: 'style' }]];
+        header = [['Tipo', 'Interazioni', {role: 'tooltip'}, {role: 'style'}]];
 
         images = data.filter(el => el.media_type === 'image');
         video = data.filter(el => el.media_type === 'video');
@@ -1184,7 +1189,7 @@ export class ChartsCallsService {
         }
         break;
       case IG_CHART.MEDIA_LIKE_TYPE:
-        header = [['Tipo', 'Like', {role: 'tooltip'}, { role: 'style' }]];
+        header = [['Tipo', 'Like', {role: 'tooltip'}, {role: 'style'}]];
 
         images = data.filter(el => el.media_type === 'image');
         video = data.filter(el => el.media_type === 'video');
@@ -1201,7 +1206,7 @@ export class ChartsCallsService {
         break;
 
       case IG_CHART.REACH_IMPRESSION_DATA:
-        header = [['Data', ' Visualizzazioni utenti unici', { role: 'style' }, 'Visualizzazioni utenti totali', { role: 'style' }]];
+        header = [['Data', ' Visualizzazioni utenti unici', {role: 'style'}, 'Visualizzazioni utenti totali', {role: 'style'}]];
         let supArr = [];
         for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
           // @ts-ignore
@@ -1222,25 +1227,27 @@ export class ChartsCallsService {
         }
         break;
       case IG_CHART.REACH_IMPRESSION_TYPE:
-        header = [['Tipo post', 'Visualizzazioni utenti unici', { role: 'style' }, 'Visualizzazioni utenti totali', { role: 'style' }]];
+        header = [['Tipo post', 'Visualizzazioni utenti unici', {role: 'style'}, 'Visualizzazioni utenti totali', {role: 'style'}]];
 
-        images = data.filter( el => el.media_type === 'image');
-        video = data.filter( el => el.media_type === 'video');
-        album = data.filter( el => el.media_type === 'album');
+        images = data.filter(el => el.media_type === 'image');
+        video = data.filter(el => el.media_type === 'video');
+        album = data.filter(el => el.media_type === 'album');
 
         images.forEach(el => {
           reach += el.reach;
           impression += el.impressions;
         });
         chartData.push(['Immagini', reach, IG_PALETTE.IG_COLORS.C6, impression, IG_PALETTE.IG_COLORS.C1]);
-        reach = 0; impression = 0;
+        reach = 0;
+        impression = 0;
 
         video.forEach(el => {
           reach += el.reach;
           impression += el.impressions;
         });
         chartData.push(['Video', reach, IG_PALETTE.IG_COLORS.C6, impression, IG_PALETTE.IG_COLORS.C1]);
-        reach = 0; impression = 0;
+        reach = 0;
+        impression = 0;
 
         album.forEach(el => {
           reach += el.reach;
@@ -1290,21 +1297,21 @@ export class ChartsCallsService {
         header = [['Genere', 'numero']];
 
         // Ciclo le età
-        for(let j = 0; j < tmpF_age.length; j++) {
-          if(parseInt(data[data.length-1].value[tmpF_age[j]])){
-            tmpF[j] = parseInt(data[data.length-1].value[tmpF_age[j]]);
+        for (let j = 0; j < tmpF_age.length; j++) {
+          if (parseInt(data[data.length - 1].value[tmpF_age[j]])) {
+            tmpF[j] = parseInt(data[data.length - 1].value[tmpF_age[j]]);
           } else {
             tmpF[j] = 0;
           }
-          if(parseInt(data[data.length-1].value[tmpM_age[j]])){
-            tmpM[j] = parseInt(data[data.length-1].value[tmpM_age[j]]);
+          if (parseInt(data[data.length - 1].value[tmpM_age[j]])) {
+            tmpM[j] = parseInt(data[data.length - 1].value[tmpM_age[j]]);
           } else {
             tmpM[j] = 0;
           }
         }
 
         // Salvo in ChartData
-        for(let i = 0; i < tmpF_age.length; i++){
+        for (let i = 0; i < tmpF_age.length; i++) {
           chartData.push([tmpF_age[i], tmpF[i]]);
           chartData.push([tmpM_age[i], tmpM[i]]);
         }
@@ -1312,7 +1319,7 @@ export class ChartsCallsService {
         break; // IG Follower Gender/Age - Torta
       case IG_CHART.AUD_COUNTRY_ELENCO:
         header = [['Paese', 'Popolarità']];
-        chartData =  this.changeNameCountry(data);
+        chartData = this.changeNameCountry(data);
 
         if (data.length > 0) {
           // chartData = Object.keys(data[data.length - 1].value).map(function (k) {
@@ -1328,10 +1335,10 @@ export class ChartsCallsService {
               parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]], 10) :
               1;
             diff > 0 ?
-              chartData[i] = [chartData[i][0], {v : +1, f: chartData[i][1].toString() }] :
+              chartData[i] = [chartData[i][0], {v: +1, f: chartData[i][1].toString()}] :
               diff === 0 ?
-                chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
-                chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
+                chartData[i] = [chartData[i][0], {v: 0 * chartData[i][1], f: chartData[i][1].toString()}] :
+                chartData[i] = [chartData[i][0], {v: -1, f: chartData[i][1].toString()}];
           }
           chartData = this.addPaddingRows(chartData);
         }
@@ -1961,6 +1968,7 @@ export class ChartsCallsService {
         }
         break;
     }
+
     return chartData.length > 0 ? header.concat(chartData) : [];
   }
 
@@ -1973,32 +1981,41 @@ export class ChartsCallsService {
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.BLUE.C1]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C1]
+            }
           }
-          );
+        );
         break;  // Fb Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
-        formattedData = this.geoChart(data, { options : {
+        formattedData = this.geoChart(data, {
+          options: {
             region: 'world',
-            colors: [FB_PALETTE.BLUE.C1]}} );
+            colors: [FB_PALETTE.BLUE.C1]
+          }
+        });
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.TURQUOISE.C10]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.TURQUOISE.C10]
+            }
           }
         );
 
         break;  // Page Impressions
       case FB_CHART.PAGE_VIEWS:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.BLUE.C7]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C7]
+            }
           }
         );
 
@@ -2008,91 +2025,117 @@ export class ChartsCallsService {
         break; // Facebook Fan City in realtà per paese
       case FB_CHART.FANS_COUNTRY_PIE:
         formattedData = this.pieChart(data,
-          {options: {sliceVisibilityThreshold: 0.05,
-              colors: [FB_PALETTE.BLUE.C2, FB_PALETTE.BLUE.C3, FB_PALETTE.TURQUOISE.C1, FB_PALETTE.STIFFKEY.C2]}});
+          {
+            options: {
+              sliceVisibilityThreshold: 0.05,
+              colors: [FB_PALETTE.BLUE.C2, FB_PALETTE.BLUE.C3, FB_PALETTE.TURQUOISE.C1, FB_PALETTE.STIFFKEY.C2]
+            }
+          });
         break;  // Fan Country Pie
       case FB_CHART.ENGAGED_USERS:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.BLUE.C4]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C4]
+            }
           }
         );
 
         break;  // Fb Interazioni Totali
       case FB_CHART.PAGE_CONSUMPTION:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.TURQUOISE.C4]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.TURQUOISE.C4]
+            }
           }
         );
         break; // Fb Click sui contenuti
       case FB_CHART.PAGE_PLACES_CHECKIN:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.STIFFKEY.C4]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.STIFFKEY.C4]
+            }
           }
         );
         break; // Fb Condivisione del luogo
       case FB_CHART.NEGATIVE_FEEDBACK:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
-                viewWindowMode: 'explicit', viewWindow: {min: 0, max: this.getMaxChartStep(data)}},
-              colors: [FB_PALETTE.BLUE.C7]}
+            options: {
+              vAxis: {
+                minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8),
+                viewWindowMode: 'explicit', viewWindow: {min: 0, max: this.getMaxChartStep(data)}
+              },
+              colors: [FB_PALETTE.BLUE.C7]
+            }
           }
         );
 
         break; // Fb Feedback negativi
       case FB_CHART.ONLINE_FANS:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.TURQUOISE.C7]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.TURQUOISE.C7]
+            }
           }
         );
         break; // Fb Fan online giornalieri
       case FB_CHART.FANS_ADD:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.STIFFKEY.C7]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.STIFFKEY.C7]
+            }
           }
         );
 
         break; // Fb Nuovi fan
       case FB_CHART.FANS_REMOVES:
 
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.BLUE.C10]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C10]
+            }
           }
         );
         break; // Fb Fan cancellati
       case FB_CHART.IMPRESSIONS_PAID:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.TURQUOISE.C10]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.TURQUOISE.C10]
+            }
           }
         );
         break;  // Fb Visualizzazioni di inserzioni
       case FB_CHART.VIDEO_VIEWS:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.STIFFKEY.C10]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.STIFFKEY.C10]
+            }
           }
         );
         break; // Fb Riproduzioni di video
       case FB_CHART.POST_IMPRESSIONS:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.BLUE.C8]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.BLUE.C8]
+            }
           }
         );
         break; // Fb Post visualizzati
@@ -2123,42 +2166,56 @@ export class ChartsCallsService {
       //   break; // Fb Annunci pub. visualizzati
       case FB_CHART.REACTIONS:
         formattedData = this.pieChart(data,
-          {options: {
+          {
+            options: {
               colors: [FB_PALETTE.BLUE.C3, FB_PALETTE.BLUE.C8, FB_PALETTE.BLUE.C6,
                 FB_PALETTE.TURQUOISE.C12, FB_PALETTE.TURQUOISE.C4, FB_PALETTE.TURQUOISE.C9,
-                FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9]}});
+                FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9]
+            }
+          });
         break; // Fb Reazioni torta
       case FB_CHART.REACTIONS_LINEA:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.STIFFKEY.C8]}
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.STIFFKEY.C8]
+            }
           }
         );
         break; // Fb Reazioni linea
       case FB_CHART.REACTIONS_COLUMN_CHART:
         formattedData = this.columnChart(data,
-          {options: { colors: [FB_PALETTE.TURQUOISE.C6, FB_PALETTE.TURQUOISE.C8, FB_PALETTE.TURQUOISE.C10],
-          }});
+          {
+            options: {
+              colors: [FB_PALETTE.TURQUOISE.C6, FB_PALETTE.TURQUOISE.C8, FB_PALETTE.TURQUOISE.C10],
+            }
+          });
         break; // Fb Reazioni colonna
       case FB_CHART.PAGE_VIEW_EXTERNALS:
         formattedData = this.tableChart(data);
         break; // Fb Domini dei referenti esterni (elenco)
       case FB_CHART.PAGE_VIEW_EXTERNALS_LINEA:
-         formattedData = this.areaChart( data,
-              {
-                options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-                  colors: [FB_PALETTE.TURQUOISE.C3]}});
+        formattedData = this.areaChart(data,
+          {
+            options: {
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
+              colors: [FB_PALETTE.TURQUOISE.C3]
+            }
+          });
 
         break; // Fb Domini dei referenti esterni (linea)
       case FB_CHART.PAGE_IMPRESSIONS_CITY:
         formattedData = this.tableChart(data);
         break; // Fb Vista contenuti per città (elenco)
       case FB_CHART.PAGE_IMPRESSIONS_CITY_GEO:
-        formattedData = this.geoChart(data, { options : {
+        formattedData = this.geoChart(data, {
+          options: {
             region: 'IT',
             displayMode: 'markers',
-            colors: [FB_PALETTE.BLUE.C2]}} );
+            colors: [FB_PALETTE.BLUE.C2]
+          }
+        });
         break; // //Fb Vista contenuti per città (geomappa)
       case FB_CHART.PAGE_IMPRESSIONS_COUNTRY_ELENCO:
         formattedData = this.tableChart(data);
@@ -2168,26 +2225,35 @@ export class ChartsCallsService {
         break; // Facebook Fan City per elenco
       case FB_CHART.PAGE_FANS_AGE_ELENCO:
         formattedData = this.columnChart(data,
-          {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
-            options: { vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
-              colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
+          {
+            formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {
+              vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+              colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]
+            }
+          });
         break; // Facebook Fan Age per elenco
 
       case GA_CHART.IMPRESSIONS_DAY:
 
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {hAxis: { textStyle: {color: '#666', fontName: 'Roboto'}},
-              vAxis : {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
-              colors: [GA_PALETTE.LIME.C6]}
+            options: {
+              hAxis: {textStyle: {color: '#666', fontName: 'Roboto'}},
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
+              colors: [GA_PALETTE.LIME.C6]
+            }
           }
         );
         break;  // Google PageViews (impressions by day)
       case GA_CHART.SESSION_DAY:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            options : {hAxis: { textStyle: {color: '#666', fontName: 'Roboto'}},
-              colors: [GA_PALETTE.OCHER.C8]}}
+            options: {
+              hAxis: {textStyle: {color: '#666', fontName: 'Roboto'}},
+              colors: [GA_PALETTE.OCHER.C8]
+            }
+          }
         );
         break;  // Google Sessions
       case GA_CHART.SOURCES_PIE:
@@ -2199,43 +2265,55 @@ export class ChartsCallsService {
         break;  // Google List Referral
       case GA_CHART.SOURCES_COLUMNS:
         formattedData = this.columnChart(data,
-          {options: {chartArea: {left: 0, right: 0, height: 310, top: 0},
+          {
+            options: {
+              chartArea: {left: 0, right: 0, height: 310, top: 0},
               height: 330,
-              vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'},
-                textPosition: 'in', textStyle: {color: '#999'}}, colors: [GA_PALETTE.ORANGE.C9],
-              bar: {groupWidth: '70%'},  areaOpacity: 0.3 } } );
+              vAxis: {
+                gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'},
+                textPosition: 'in', textStyle: {color: '#999'}
+              }, colors: [GA_PALETTE.ORANGE.C9],
+              bar: {groupWidth: '70%'}, areaOpacity: 0.3
+            }
+          });
         console.log(formattedData);
         break;  // Google Sources Column Chart
       case GA_CHART.BOUNCE_RATE:
         type = 'ga_bounce';
         // average = sum / data.length;
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
-            options : { chartArea: {left: 0, right: 0, height: 210, top: 0},
-              vAxis : {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
-              colors: [GA_PALETTE.OCHER.C11]},
+            formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {
+              chartArea: {left: 0, right: 0, height: 210, top: 0},
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
+              colors: [GA_PALETTE.OCHER.C11]
+            },
           });
         break; // Google BounceRate
       case GA_CHART.AVG_SESS_DURATION:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
-            options : { chartArea: {left: 0, right: 0, height: 210, top: 0},
-              vAxis : {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
-              colors: [GA_PALETTE.ORANGE.C3]},
+            formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {
+              chartArea: {left: 0, right: 0, height: 210, top: 0},
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
+              colors: [GA_PALETTE.ORANGE.C3]
+            },
           });
         break; // Google Average Session Duration
       case GA_CHART.BROWSER_SESSION:
         formattedData = this.tableChart(data);
         break; // Google list sessions per browser
       case GA_CHART.NEW_USERS:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
-            options : { chartArea: {left: 0, right: 0, height: 210, top: 0},
-              vAxis : {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
-              colors: [GA_PALETTE.OCHER.C11]},
+            formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {
+              chartArea: {left: 0, right: 0, height: 210, top: 0},
+              vAxis: {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
+              colors: [GA_PALETTE.OCHER.C11]
+            },
           });
         break; // GA new users
       case GA_CHART.MOBILE_DEVICES:
@@ -2303,7 +2381,7 @@ export class ChartsCallsService {
             },
             hAxis: {
               ticks: [
-                {v: this.searchStep(val) , f: this.searchStep(val).toString()},
+                {v: this.searchStep(val), f: this.searchStep(val).toString()},
                 {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
                 {v: this.searchStep(val2 / 2) * -1, f: this.searchStep(val2 / 2).toString()},
@@ -2389,69 +2467,113 @@ export class ChartsCallsService {
 
       case GA_CHART.USER_LAST_SESSION:
         formattedData = this.columnChart(data,
-          {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
+          {
+            formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
             options: {
-              vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: '#ffffff'}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
-              hAxis: {gridlines: {color: 'transparent', count: 5}, minorGridlines: {color: '#ffffff'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
-              colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
+              vAxis: {
+                gridlines: {color: '#eaeaea', count: 5},
+                minorGridlines: {color: '#ffffff'},
+                textPosition: 'in',
+                textStyle: {color: '#999'},
+                format: '#'
+              },
+              hAxis: {
+                gridlines: {color: 'transparent', count: 5},
+                minorGridlines: {color: '#ffffff'},
+                textStyle: {color: '#000000', fontName: 'Roboto'}
+              },
+              colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]
+            }
+          });
         break;
       // Instragram chart
       case IG_CHART.AUD_CITY:
         formattedData = this.tableChart(data,
-          {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
-          }]});
+          {
+            formatters: [{
+              columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
+            }]
+          });
         break; // IG Follower City
       case IG_CHART.AUD_COUNTRY:
-        formattedData = this.geoChart(data, { options : {
+        formattedData = this.geoChart(data, {
+          options: {
             region: 'world',
             ccolors: [IG_PALETTE.AMARANTH.C5],
-            colorAxis: {colors: [IG_PALETTE.AMARANTH.C9, IG_PALETTE.AMARANTH.C4]}}} );
+            colorAxis: {colors: [IG_PALETTE.AMARANTH.C9, IG_PALETTE.AMARANTH.C4]}
+          }
+        });
         break; // IG Follower Country
       case IG_CHART.AUD_GENDER_AGE:
         formattedData = this.columnChart(data,
-          {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
+          {
+            formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
             options: {
-              vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: '#ffffff'}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
-              hAxis: {gridlines: {color: 'transparent', count: 5}, minorGridlines: {color: '#ffffff'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
-              colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
+              vAxis: {
+                gridlines: {color: '#eaeaea', count: 5},
+                minorGridlines: {color: '#ffffff'},
+                textPosition: 'in',
+                textStyle: {color: '#999'},
+                format: '#'
+              },
+              hAxis: {
+                gridlines: {color: 'transparent', count: 5},
+                minorGridlines: {color: '#ffffff'},
+                textStyle: {color: '#000000', fontName: 'Roboto'}
+              },
+              colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]
+            }
+          });
         break; // IG Follower Gender/Age
       case IG_CHART.AUD_LOCALE:
         formattedData = this.columnChart(data,
-          {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
-            options: { chartArea: {left: 30, right: 0, height: 270, top: 5},
-            height: 315, vAxis: {  textPosition: 'out', format: '#'},
+          {
+            formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {
+              chartArea: {left: 30, right: 0, height: 270, top: 5},
+              height: 315, vAxis: {textPosition: 'out', format: '#'},
               hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
               colors: [IG_PALETTE.FUCSIA.C5],
               areaOpacity: 0.4,
-              bar: {groupWidth: '50%'}}});
+              bar: {groupWidth: '50%'}
+            }
+          });
         break; // IG Follower Locale
       case IG_CHART.ONLINE_FOLLOWERS:
         formattedData = this.columnChart(data,
-          {formatters: [{columns: [1, 2, 3], type: 'NumberFormat', options: {pattern: '#.##'}}],
-            options: { chartArea: {left: 0, right: 0, height: 270, top: 20},  height: 310,
+          {
+            formatters: [{columns: [1, 2, 3], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {
+              chartArea: {left: 0, right: 0, height: 270, top: 20}, height: 310,
               vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
               hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
               colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.AMARANTH.C3, IG_PALETTE.LAVENDER.C3],
               areaOpacity: 0.4,
               legend: {position: 'top', maxLines: 3},
-              bar: {groupWidth: '60%'}}});
+              bar: {groupWidth: '60%'}
+            }
+          });
         break; // IG Online followers
       case IG_CHART.IMPRESSIONS:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
-            options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.LAVENDER.C3]}});
+            formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {vAxis: {minValue: 0}, colors: [IG_PALETTE.LAVENDER.C3]}
+          });
         break; // IG Impressions by day
       case IG_CHART.REACH:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-          formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
-          options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.FUCSIA.C3]}});
+            formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {vAxis: {minValue: 0}, colors: [IG_PALETTE.FUCSIA.C3]}
+          });
         break; // IG Reach
       case IG_CHART.ACTION_PERFORMED:
         formattedData = this.pieChart(data,
-          {sliceVisibilityThreshold: 0.05,
-            options: {colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C3, IG_PALETTE.LAVENDER.C1, IG_PALETTE.AMARANTH.C11]}});
+          {
+            sliceVisibilityThreshold: 0.05,
+            options: {colors: [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C3, IG_PALETTE.LAVENDER.C1, IG_PALETTE.AMARANTH.C11]}
+          });
         if (data.filter(e => e[1] === true).length == 0) {
           formattedData.options.colors = [IG_PALETTE.FUCSIA.C5, IG_PALETTE.FUCSIA.C2, IG_PALETTE.LAVENDER.C9, IG_PALETTE.AMARANTH.C7];
           formattedData.dataTable = data;
@@ -2461,10 +2583,11 @@ export class ChartsCallsService {
         }
         break; // IG clicks pie
       case IG_CHART.FOLLOWER_COUNT:
-        formattedData = this.areaChart( data,
+        formattedData = this.areaChart(data,
           {
-            formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
-            options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}});
+            formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {vAxis: {minValue: 0}, colors: [IG_PALETTE.AMARANTH.C5]}
+          });
 
         break; // IG Follower count
       case IG_CHART.LOST_FOLLOWERS:
@@ -2493,30 +2616,44 @@ export class ChartsCallsService {
         break;
       case IG_CHART.INFO_CLICKS_COL:
         formattedData = this.columnChart(data,
-          {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
-            options: { chartArea: {left: 0, right: 0, height: 270, top: 0},
-              vAxis: { minValue: 0, viewWindowMode: 'explicit', viewWindow: {min: 0, max: 50}, gridlines: {color: '#eaeaea', count: 5},
-                textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+          {
+            formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {
+              chartArea: {left: 0, right: 0, height: 270, top: 0},
+              vAxis: {
+                minValue: 0, viewWindowMode: 'explicit', viewWindow: {min: 0, max: 50}, gridlines: {color: '#eaeaea', count: 5},
+                textPosition: 'in', textStyle: {color: '#999'}, format: '#'
+              },
               colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8, IG_PALETTE.FUCSIA.C9, IG_PALETTE.AMARANTH.C1,
                 IG_PALETTE.FUCSIA.C1],
               areaOpacity: 0.4,
-              bar: {groupWidth: '75%'}, isStacked: true}});
+              bar: {groupWidth: '75%'}, isStacked: true
+            }
+          });
         break;
 
       case IG_CHART.MEDIA_LIKE_DATA:
-        formattedData = this.areaChart( data,
-          {options :  {chartArea: {left: 0, right: 0, height: 185, top: 0}, vAxis: {
+        formattedData = this.areaChart(data,
+          {
+            options: {
+              chartArea: {left: 0, right: 0, height: 185, top: 0}, vAxis: {
                 viewWindowMode: 'explicit',
                 viewWindow: {min: 0},
-              }, colors: [IG_PALETTE.AMARANTH.C1]}});
+              }, colors: [IG_PALETTE.AMARANTH.C1]
+            }
+          });
         break;
 
       case IG_CHART.MEDIA_ENGAGEMENT_DATA:
-        formattedData = this.areaChart( data,
-          {options :  {chartArea: {left: 0, right: 0, height: 185, top: 0}, vAxis: {
+        formattedData = this.areaChart(data,
+          {
+            options: {
+              chartArea: {left: 0, right: 0, height: 185, top: 0}, vAxis: {
                 viewWindowMode: 'explicit',
                 viewWindow: {min: 0},
-              }, colors: [IG_PALETTE.AMARANTH.C1]}});
+              }, colors: [IG_PALETTE.AMARANTH.C1]
+            }
+          });
         break;
 
       case IG_CHART.MEDIA_LIKE_TYPE:
@@ -2548,32 +2685,32 @@ export class ChartsCallsService {
         };
         break;
       case IG_CHART.MEDIA_ENGAGEMENT_TYPE:
-          formattedData = {
-            chartType: 'BarChart',
-            dataTable: data,
-            formatters: [{
-              columns: [1],
-              type: 'NumberFormat',
-              options: {
-                pattern: '#.##'
-              }
-            }],
-            chartClass: 9,
+        formattedData = {
+          chartType: 'BarChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1],
+            type: 'NumberFormat',
             options: {
-              chartArea: {left: 5, right: 20, height: 270, top: 0},
-              height: 310,
-              vAxis: {
-                minValue: 0,
-                gridlines: {color: '#eaeaea', count: 5},
-                minorGridlines: {color: '#ffffff', count: 0},
-                textPosition: 'in',
-                textStyle: {color: '#999', fontSize: 13},
-                format: '#'
-              },
-              areaOpacity: 0.4,
-              bar: {groupWidth: '50%'},
+              pattern: '#.##'
             }
-          };
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 5, right: 20, height: 270, top: 0},
+            height: 310,
+            vAxis: {
+              minValue: 0,
+              gridlines: {color: '#eaeaea', count: 5},
+              minorGridlines: {color: '#ffffff', count: 0},
+              textPosition: 'in',
+              textStyle: {color: '#999', fontSize: 13},
+              format: '#'
+            },
+            areaOpacity: 0.4,
+            bar: {groupWidth: '50%'},
+          }
+        };
         break;
 
       case IG_CHART.REACH_IMPRESSION_DATA:
@@ -2603,51 +2740,59 @@ export class ChartsCallsService {
 
       case IG_CHART.REACH_IMPRESSION_TYPE:
         formattedData = this.columnChart(data,
-          {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
-            options: { chartArea: {left: 0, right: 0, height: 270, top: 20},
-              vAxis: { minValue: 0, viewWindowMode: 'explicit', viewWindow: {min: 0}, gridlines: {color: '#eaeaea', count: 5},
-                textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+          {
+            formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+            options: {
+              chartArea: {left: 0, right: 0, height: 270, top: 20},
+              vAxis: {
+                minValue: 0, viewWindowMode: 'explicit', viewWindow: {min: 0}, gridlines: {color: '#eaeaea', count: 5},
+                textPosition: 'in', textStyle: {color: '#999'}, format: '#'
+              },
               hAxis: {
                 gridlines: {color: '#eaeaea', count: 5},
                 minorGridlines: {color: 'trasparent'}
-                },
+              },
               areaOpacity: 0.4,
-              bar: {groupWidth: '50%'}, isStacked: false}});
-      break;
+              bar: {groupWidth: '50%'}, isStacked: false
+            }
+          });
+        break;
 
       case IG_CHART.COMPARISON_COLONNA:
 
-          formattedData = {
-            chartType: 'ColumnChart',
-            dataTable: data,
-            formatters: [{
-              columns: [1, 2],
-              type: 'NumberFormat',
-              options: {
-                pattern: '###.##'
-              }
-            }],
-            chartClass: 9,
+        formattedData = {
+          chartType: 'ColumnChart',
+          dataTable: data,
+          formatters: [{
+            columns: [1, 2],
+            type: 'NumberFormat',
             options: {
-              chartArea: {left: 30, right: 0, height: 270, top: 20},
-              height: 310,
-              vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
-              hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
-              colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
-              areaOpacity: 0.4,
-              legend: {position: 'top', maxLines: 2},
-              bar: {groupWidth: '30%'},
-              isStacked: true,
+              pattern: '###.##'
             }
-          };
+          }],
+          chartClass: 9,
+          options: {
+            chartArea: {left: 30, right: 0, height: 270, top: 20},
+            height: 310,
+            vAxis: {gridlines: {color: '#eaeaea', count: 10}, textPosition: 'out', textStyle: {color: '#999'}, format: '#'},
+            hAxis: {textStyle: {color: '#000000', fontName: 'Roboto', fontSize: 9}},
+            colors: [IG_PALETTE.LAVENDER.C6, IG_PALETTE.AMARANTH.C8],
+            areaOpacity: 0.4,
+            legend: {position: 'top', maxLines: 2},
+            bar: {groupWidth: '30%'},
+            isStacked: true,
+          }
+        };
 
         break; // IG Follower Count Comparasion
       case IG_CHART.AUD_CITY_GEOMAPPA:
-        formattedData = this.geoChart(data, { options : {
+        formattedData = this.geoChart(data, {
+          options: {
             region: 'world',
             displayMode: 'markers',
             colorAxis: {colors: [IG_PALETTE.AMARANTH.C5]}
-        }});
+          }
+        });
         break; // IG Follower City - Geomappa
       case IG_CHART.AUD_GENDER_AGE_TORTA:
 
@@ -2674,112 +2819,131 @@ export class ChartsCallsService {
         break; // IG Follower Gender/Age - Torta
       case IG_CHART.AUD_COUNTRY_ELENCO:
         formattedData = this.tableChart(data,
-          {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
-            }]});
+          {
+            formatters: [{
+              columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}
+            }]
+          });
         break; // IG Follower Country - Elenco
 
       case YT_CHART.VIEWS:
-        formattedData = this.areaChart( data,
-          {options : {colors: [YT_PALETTE.RED.C11]}});
+        formattedData = this.areaChart(data,
+          {options: {colors: [YT_PALETTE.RED.C11]}});
         break;
       case YT_CHART.COMMENTS:
-        formattedData = this.areaChart( data,
-          {options : {colors: [YT_PALETTE.OPAL.C2]}});
+        formattedData = this.areaChart(data,
+          {options: {colors: [YT_PALETTE.OPAL.C2]}});
         break;
       case YT_CHART.LIKES:
-        formattedData = this.areaChart( data,
-          {options : {colors: [YT_PALETTE.BROWN.C9]}});
+        formattedData = this.areaChart(data,
+          {options: {colors: [YT_PALETTE.BROWN.C9]}});
         break;
       case YT_CHART.DISLIKES:
-        formattedData = this.areaChart( data,
-          {options : {colors: [YT_PALETTE.RED.C12]}});
+        formattedData = this.areaChart(data,
+          {options: {colors: [YT_PALETTE.RED.C12]}});
         break;
       case YT_CHART.SHARES:
-        formattedData = this.areaChart( data,
-          {options : {colors: [YT_PALETTE.OPAL.C8]}});
+        formattedData = this.areaChart(data,
+          {options: {colors: [YT_PALETTE.OPAL.C8]}});
         break;
       case YT_CHART.AVGVIEW:
-        formattedData = this.areaChart( data,
-          {options : {colors: [YT_PALETTE.BROWN.C10]}});
+        formattedData = this.areaChart(data,
+          {options: {colors: [YT_PALETTE.BROWN.C10]}});
         break;
       case YT_CHART.ESTWATCH:
-        formattedData = this.areaChart( data,
-          {options : {colors: [YT_PALETTE.RED.C3]}});
+        formattedData = this.areaChart(data,
+          {options: {colors: [YT_PALETTE.RED.C3]}});
         break;
 
       case FBM_CHART.AGE_REACH:
 
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_IMPRESSIONS:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_SPEND:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_INLINE:
         formattedData = this.columnChart(data,
-        {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_CLICKS:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_CPC:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_CPP:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.AGE_CTR:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
 
       case FBM_CHART.GENDER_REACH:
         formattedData = this.pieChart(data,
-          {sliceVisibilityThreshold: 0.05,
-            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
+          {
+            sliceVisibilityThreshold: 0.05,
+            options: {colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}
+          });
         break;
       case FBM_CHART.GENDER_IMPRESSIONS:
         formattedData = this.pieChart(data,
-          {sliceVisibilityThreshold: 0.05,
-            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
+          {
+            sliceVisibilityThreshold: 0.05,
+            options: {colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}
+          });
         break;
       case FBM_CHART.GENDER_SPEND:
         formattedData = this.pieChart(data,
-          {sliceVisibilityThreshold: 0.05,
-            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
+          {
+            sliceVisibilityThreshold: 0.05,
+            options: {colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}
+          });
         break;
       case FBM_CHART.GENDER_INLINE:
         formattedData = this.pieChart(data,
-        {sliceVisibilityThreshold: 0.05,
-          options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
+          {
+            sliceVisibilityThreshold: 0.05,
+            options: {colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}
+          });
         break;
       case FBM_CHART.GENDER_CLICKS:
         formattedData = this.pieChart(data,
-          {sliceVisibilityThreshold: 0.05,
-            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
+          {
+            sliceVisibilityThreshold: 0.05,
+            options: {colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}
+          });
         break;
       case FBM_CHART.GENDER_CPC:
         formattedData = this.pieChart(data,
-          {sliceVisibilityThreshold: 0.05,
-            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
+          {
+            sliceVisibilityThreshold: 0.05,
+            options: {colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}
+          });
         break;
       case FBM_CHART.GENDER_CPP:
         formattedData = this.pieChart(data,
-          {sliceVisibilityThreshold: 0.05,
-            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
+          {
+            sliceVisibilityThreshold: 0.05,
+            options: {colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}
+          });
         break;
       case FBM_CHART.GENDER_CTR:
         formattedData = this.pieChart(data,
-          {sliceVisibilityThreshold: 0.05,
-            options: { colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}});
+          {
+            sliceVisibilityThreshold: 0.05,
+            options: {colors: ['#FF19FF', '#1940FF', '#F1C85B', '#D9C9B6']}
+          });
         break;
 
       case FBM_CHART.GENDER_AGE_REACH:
@@ -3357,60 +3521,60 @@ export class ChartsCallsService {
 
       case FBM_CHART.HOURLYADVERTISER_IMPRESSIONS:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_SPEND:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_INLINE:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_CLICKS:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_CPC:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYADVERTISER_CTR:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
 
       case FBM_CHART.HOURLYAUDIENCE_REACH:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_IMPRESSIONS:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_SPEND:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_INLINE:
-          formattedData = this.columnChart(data,
-            {options: { colors: ['#1b53ff']}});
+        formattedData = this.columnChart(data,
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_CLICKS:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_CPC:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_CPP:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
       case FBM_CHART.HOURLYAUDIENCE_CTR:
         formattedData = this.columnChart(data,
-          {options: { colors: ['#1b53ff']}});
+          {options: {colors: ['#1b53ff']}});
         break;
 
     }
@@ -3429,7 +3593,9 @@ export class ChartsCallsService {
 
   private getMaxChartStep(data) {
     const arr = data.slice(1);
-    const max = Math.max.apply(null, arr.map(function(o) { return o[1]; }));
+    const max = Math.max.apply(null, arr.map(function (o) {
+      return o[1];
+    }));
     return max + 10;
   }
 
@@ -3633,7 +3799,7 @@ export class ChartsCallsService {
         break;
       case 'avg_view_time':
         sum = data.map(el => el.value).reduce((a, b) => a + b, 0);
-        data.length > 0 ? value = (sum / data.length).toFixed(2) : value = 0 ;
+        data.length > 0 ? value = (sum / data.length).toFixed(2) : value = 0;
 
         break;
       case 'n_videos':
@@ -3655,20 +3821,20 @@ export class ChartsCallsService {
         // console.log('FB', data);
         data['data'] = data['data'].filter(el => (moment(el['created_time'])) >= intervalDate.first && (moment(el['created_time'])) <= intervalDate.last);
 
-        data.length > 0 ? value = data['data'].length : value = 0 ;
+        data.length > 0 ? value = data['data'].length : value = 0;
 
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
         // console.log(intervalDate.last);
         //console.log(data);
         data = data.filter(el => (moment(el.end_time)) >= intervalDate.first && (moment(el.end_time)) <= intervalDate.last);
-        data.length > 0 ?  value = data[data.length - 1].value : value = 0;
+        data.length > 0 ? value = data[data.length - 1].value : value = 0;
 
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
       case 'reactions':
         data = data.filter(el => (new Date(el.end_time)) >= intervalDate.first && (new Date(el.end_time)) <= intervalDate.last);
         max = [];
-        if (data.length > 0 ) {
+        if (data.length > 0) {
           for (const i in data) {
             aux = 0;
             if (data[i]['value']) {
@@ -3758,12 +3924,12 @@ export class ChartsCallsService {
         value2 = value;
         break;
       case 'spend':
-        supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend, 10)) : (media++, support += 0) );
+        supportArray.forEach(d => d.spend ? (media++, support += parseInt(d.spend, 10)) : (media++, support += 0));
         value2 = Number(support / media).toFixed(2);
         value = value2 + ' €';
         break;
       case 'reach':
-        supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach, 10)) : (media++, support += 0) );
+        supportArray.forEach(d => d.reach ? (media++, support += parseInt(d.reach, 10)) : (media++, support += 0));
         value = Math.round(support / media).toString();
         value2 = value;
         break;
@@ -3787,7 +3953,7 @@ export class ChartsCallsService {
         value = data[data.length - 1]['followers_count'];
         break; // The value is the last fan count, the perc is the value divided for the max fan count had in the last 2 years
       case 'post-sum':
-        data = data.filter(el => (new Date(moment(el.timestamp).toDate())) >= intervalDate.first && (new Date(moment(el.timestamp).toDate())) );
+        data = data.filter(el => (new Date(moment(el.timestamp).toDate())) >= intervalDate.first && (new Date(moment(el.timestamp).toDate())));
         value = data.length;
         break;
       default:
@@ -4006,7 +4172,7 @@ export class ChartsCallsService {
     return chartData;
   }
 
-  public checkControlDate (n, intervalDateComparison, data, flag) {
+  public checkControlDate(n, intervalDateComparison, data, flag) {
     let j = 0;
     let k = 0;
 
@@ -4025,7 +4191,7 @@ export class ChartsCallsService {
     */
 
     // Modifica intervalli
-    if(n == 1) {
+    if (n == 1) {
       for (let i = 0; i < data.length; i++) {
         //Controllo per colonna 1
         if ((parseDate(data[i]['end_time']) >= intervalDateComparison[0][0]) && parseDate(data[i]['end_time']) <= intervalDateComparison[0][1]) {
@@ -4050,11 +4216,11 @@ export class ChartsCallsService {
         // Se il filtro è impostato a "Ultimi 30 giorni"
         if (data.length == 30) {
           //Controllo per Colonna 1
-          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-8]['end_time']))) {
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 15]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 8]['end_time']))) {
             j += data[i]['value'];
           }
           //Controllo per colonna 2
-          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-8]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 8]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 1]['end_time']))) {
             k += data[i]['value'];
           }
         }
@@ -4062,11 +4228,11 @@ export class ChartsCallsService {
         // Se il filtro è impostato a "Ultimi 7 giorni"
         if (data.length == 7) {
           //Controllo per Colonna 1
-          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-7]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-5]['end_time']))) {
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 7]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 5]['end_time']))) {
             j += data[i]['value'];
           }
           //Controllo per colonna 2
-          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-3]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+          if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 3]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 1]['end_time']))) {
             k += data[i]['value'];
           }
         }
@@ -4099,7 +4265,7 @@ export class ChartsCallsService {
               j += data[i]['value'];
             }
             //Controllo per colonna 2
-            if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length-2]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length-1]['end_time']))) {
+            if ((parseDate(data[i]['end_time']) >= parseDate(data[data.length - 2]['end_time'])) && (parseDate(data[i]['end_time']) <= parseDate(data[data.length - 1]['end_time']))) {
               k += data[i]['value'];
             }
           }
@@ -4114,40 +4280,40 @@ export class ChartsCallsService {
 
   }
 
-  public formatInterval (intervalDate, n: number, data) {
+  public formatInterval(intervalDate, n: number, data) {
 
     if (!intervalDate) {
       if (data.length == 30) {
-        if (n == 1) return parseDate(data[data.length-15]['end_time']).getDate() + '/' + (parseDate(data[data.length-15]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-8]['end_time']).getDate() + '/' + (parseDate(data[data.length-8]['end_time']).getMonth()+1);
-        if (n == 2) return parseDate(data[data.length-8]['end_time']).getDate() + '/' + (parseDate(data[data.length-8]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+        if (n == 1) return parseDate(data[data.length - 15]['end_time']).getDate() + '/' + (parseDate(data[data.length - 15]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 8]['end_time']).getDate() + '/' + (parseDate(data[data.length - 8]['end_time']).getMonth() + 1);
+        if (n == 2) return parseDate(data[data.length - 8]['end_time']).getDate() + '/' + (parseDate(data[data.length - 8]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 1]['end_time']).getDate() + '/' + (parseDate(data[data.length - 1]['end_time']).getMonth() + 1);
       } else {
         if (data.length == 7) {
-          if (n == 1) return parseDate(data[data.length-7]['end_time']).getDate() + '/' + (parseDate(data[data.length-7]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-5]['end_time']).getDate() + '/' + (parseDate(data[data.length-5]['end_time']).getMonth()+1);
-          if (n == 2) return parseDate(data[data.length-3]['end_time']).getDate() + '/' + (parseDate(data[data.length-3]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+          if (n == 1) return parseDate(data[data.length - 7]['end_time']).getDate() + '/' + (parseDate(data[data.length - 7]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 5]['end_time']).getDate() + '/' + (parseDate(data[data.length - 5]['end_time']).getMonth() + 1);
+          if (n == 2) return parseDate(data[data.length - 3]['end_time']).getDate() + '/' + (parseDate(data[data.length - 3]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 1]['end_time']).getDate() + '/' + (parseDate(data[data.length - 1]['end_time']).getMonth() + 1);
         } else {
 
           // Se imposta la data di lunghezza 1 (es. 09/03 - 09/03)
           if (data.length == 1) {
-            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
-            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1);
+            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1);
           }
 
           // Se imposta la data di lunghezza 2 (es. 09/03 - 10/03)
           if (data.length == 2) {
-            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
-            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth() + 1);
+            if (n == 2) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth() + 1);
           }
 
           // Se imposta la data di lunghezza 3 (es. 09/03 - 11/03)
           if (data.length == 3) {
-            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth()+1);
-            if (n == 2) return parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth()+1) + ' - ' + parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth()+1);
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1);
+            if (n == 2) return parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[2]['end_time']).getDate() + '/' + (parseDate(data[2]['end_time']).getMonth() + 1);
           }
 
           // Se imposta la data di lunghezza >= 4 (es. 09/03 - 12/03)
           if (data.length >= 4) {
-            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' +  (parseDate(data[0]['end_time']).getMonth()+1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth()+1);
-            if (n == 2) return parseDate(data[data.length-2]['end_time']).getDate() + '/' + (parseDate(data[data.length-2]['end_time']).getMonth()+1) + ' - ' + parseDate(data[data.length-1]['end_time']).getDate() + '/' + (parseDate(data[data.length-1]['end_time']).getMonth()+1);
+            if (n == 1) return parseDate(data[0]['end_time']).getDate() + '/' + (parseDate(data[0]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[1]['end_time']).getDate() + '/' + (parseDate(data[1]['end_time']).getMonth() + 1);
+            if (n == 2) return parseDate(data[data.length - 2]['end_time']).getDate() + '/' + (parseDate(data[data.length - 2]['end_time']).getMonth() + 1) + ' - ' + parseDate(data[data.length - 1]['end_time']).getDate() + '/' + (parseDate(data[data.length - 1]['end_time']).getMonth() + 1);
           }
 
         }
@@ -4158,10 +4324,10 @@ export class ChartsCallsService {
       Il secondo If (quello non commentato) restituisce il giorno nel formato 'd'; es: 4/12
        */
       //if (n == 1) return parseDate(intervalDate[0][0]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][0]).getMonth() + ' - ' + parseDate(intervalDate[0][1]).toDateString().slice(8, -5) + '/' +  parseDate(intervalDate[0][1]).getMonth();
-      if (n == 1) return parseDate(intervalDate[0][0]).getDate() + '/' + (parseDate(intervalDate[0][0]).getMonth()+1) + ' - ' + parseDate(intervalDate[0][1]).getDate() + '/' + (parseDate(intervalDate[0][1]).getMonth()+1);
-      if (n == 2) return parseDate(intervalDate[1][0]).getDate() + '/' + (parseDate(intervalDate[1][0]).getMonth()+1) + ' - ' + parseDate(intervalDate[1][1]).getDate() + '/' + (parseDate(intervalDate[1][1]).getMonth()+1);
-        }
+      if (n == 1) return parseDate(intervalDate[0][0]).getDate() + '/' + (parseDate(intervalDate[0][0]).getMonth() + 1) + ' - ' + parseDate(intervalDate[0][1]).getDate() + '/' + (parseDate(intervalDate[0][1]).getMonth() + 1);
+      if (n == 2) return parseDate(intervalDate[1][0]).getDate() + '/' + (parseDate(intervalDate[1][0]).getMonth() + 1) + ' - ' + parseDate(intervalDate[1][1]).getDate() + '/' + (parseDate(intervalDate[1][1]).getMonth() + 1);
     }
+  }
 
   private areaChart(data, format?: object) {
     let formattedData;
