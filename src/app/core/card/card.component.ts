@@ -218,6 +218,7 @@ export class CardComponent implements OnInit {
 
   chartResizer(): void {
     this.mychart.draw();
+
   }
 
   handleAggregated(): void {
