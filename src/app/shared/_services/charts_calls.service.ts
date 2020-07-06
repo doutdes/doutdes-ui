@@ -1974,7 +1974,7 @@ export class ChartsCallsService {
     let type;
     let val = 0, val2 = 0;
 
-    data = data.length > 0 ? this.initFormatting(ID, data) : data;
+    data = data && data.length > 0 ? this.initFormatting(ID, data) : data;
 
     switch (ID) {
       case FB_CHART.FANS_DAY:
