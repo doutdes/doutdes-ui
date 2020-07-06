@@ -818,7 +818,6 @@ export class ChartsCallsService {
         break; // Google Session elenco
 
       case GA_CHART.GENDER_AGE :
-
         header = [['Età', 'Donne', {role: 'style'}, {role: 'annotation'}, 'Uomini', {role: 'style'}, {role: 'annotation'}]];
         age.forEach(a =>
           data.filter(d => d[0] === 'female' && d[1] === a).length !== 0
