@@ -823,7 +823,7 @@ export class ChartsCallsService {
         header = [['Età', 'Donne', {role: 'style'}, {role: 'annotation'}, 'Uomini', {role: 'style'}, {role: 'annotation'}]];
         age.forEach(a =>
           data.filter(d => d[0] === 'female' && d[1] === a).length !== 0
-            ? (v = data.filter(d => d[1] === 'female' && d[1] === a),
+            ? (v = data.filter(d => d[0] === 'female' && d[1] === a),
               female.push(parseInt(v[0][2], 10) * -1))
             : female.push(0));
 
