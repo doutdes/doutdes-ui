@@ -19,7 +19,7 @@ import {PopoverModule} from 'ngx-bootstrap';
 
 @NgModule({
   declarations: [
-    FeatureDashboardComponent
+    FeatureDashboardComponent,
   ],
   imports: [
     CoreModule,
