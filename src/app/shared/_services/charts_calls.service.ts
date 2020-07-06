@@ -818,18 +818,19 @@ export class ChartsCallsService {
         break; // Google Session elenco
 
       case GA_CHART.GENDER_AGE :
+        console.log(data)
 
         header = [['Età', 'Donne', {role: 'style'}, {role: 'annotation'}, 'Uomini', {role: 'style'}, {role: 'annotation'}]];
         age.forEach(a =>
-          data.filter(d => d[1] === 'female' && d[2] === a).length !== 0
-            ? (v = data.filter(d => d[1] === 'female' && d[2] === a),
-              female.push(parseInt(v[0][3], 10) * -1))
+          data.filter(d => d[0] === 'female' && d[1] === a).length !== 0
+            ? (v = data.filter(d => d[1] === 'female' && d[1] === a),
+              female.push(parseInt(v[0][2], 10) * -1))
             : female.push(0));
 
         age.forEach(a =>
-          data.filter(d => d[1] === 'male' && d[2] === a).length !== 0
-            ? (v = data.filter(d => d[1] === 'male' && d[2] === a),
-              male.push(parseInt(v[0][3], 10)))
+          data.filter(d => d[0] === 'male' && d[1] === a).length !== 0
+            ? (v = data.filter(d => d[0] === 'male' && d[1] === a),
+              male.push(parseInt(v[0][2], 10)))
             : male.push(0));
 
         for (let i = 0; i < 6; i++) {
@@ -853,7 +854,6 @@ export class ChartsCallsService {
         break;
 
       case GA_CHART.ADS:
-        console.log(data)
         break;
 
       case GA_CHART.USER_LAST_SESSION:
