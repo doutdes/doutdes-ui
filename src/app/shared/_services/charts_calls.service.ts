@@ -821,15 +821,15 @@ export class ChartsCallsService {
 
         header = [['Età', 'Donne', {role: 'style'}, {role: 'annotation'}, 'Uomini', {role: 'style'}, {role: 'annotation'}]];
         age.forEach(a =>
-          data.filter(d => d[0] === 'female' && d[1] === a).length !== 0
-            ? (v = data.filter(d => d[0] === 'female' && d[1] === a),
-              female.push(parseInt(v[0][2], 10) * -1))
+          data.filter(d => d[1] === 'female' && d[2] === a).length !== 0
+            ? (v = data.filter(d => d[1] === 'female' && d[2] === a),
+              female.push(parseInt(v[0][3], 10) * -1))
             : female.push(0));
 
         age.forEach(a =>
-          data.filter(d => d[0] === 'male' && d[1] === a).length !== 0
-            ? (v = data.filter(d => d[0] === 'male' && d[1] === a),
-              male.push(parseInt(v[0][2], 10)))
+          data.filter(d => d[1] === 'male' && d[2] === a).length !== 0
+            ? (v = data.filter(d => d[1] === 'male' && d[2] === a),
+              male.push(parseInt(v[0][3], 10)))
             : male.push(0));
 
         for (let i = 0; i < 6; i++) {
@@ -853,35 +853,34 @@ export class ChartsCallsService {
         break;
 
       case GA_CHART.ADS:
+        console.log(data)
         break;
 
       case GA_CHART.USER_LAST_SESSION:
-        /*header = [['Giorni ultima sessione', 'Utenti']];
+        header = [['Giorni ultima sessione', 'Utenti']];
         let rangeDay = {'0': 0, '7': 0, '14': 0, '21': 0, '30+': 0};
 
-        // 0 7 14 21 30+
         for (let i = 0; i < data.length; i++) {
-          if (data[i][0] === 0) {
-            rangeDay['0'] += parseInt(data[i][1], 10);
+          if (data[i][1] == 0) {
+            rangeDay['0'] += parseInt(data[i][2], 10);
           }
-          if (0 < data[i][0] && data[i][0] <= 7) {
-            rangeDay['7'] +=  parseInt(data[i][1], 10);
+          if (0 < data[i][1] && data[i][1] <= 7) {
+            rangeDay['7'] +=  parseInt(data[i][2], 10);
           }
-          if (7 < data[i][0] && data[i][0] <= 14) {
-            rangeDay['14'] +=  parseInt(data[i][1], 10);
+          if (7 < data[i][1] && data[i][1] <= 14) {
+            rangeDay['14'] +=  parseInt(data[i][2], 10);
           }
-          if (14 < data[i][0] && data[i][0] <= 21) {
-            rangeDay['21'] +=  parseInt(data[i][1], 10);
+          if (14 < data[i][1] && data[i][1] <= 21) {
+            rangeDay['21'] +=  parseInt(data[i][2], 10);
           }
-          if (21 < data[i][0]) {
-            rangeDay['30+'] +=  parseInt(data[i][1], 10);
+          if (21 < data[i][1]) {
+            rangeDay['30+'] +=  parseInt(data[i][2], 10);
           }
         }
 
-        for (let el in rangeDay) {
+        for (const el in rangeDay) {
           chartData.push([el, rangeDay[el]]);
         }
-        console.log(chartData)*/
         break;
 
       // Instagram chart
@@ -2403,8 +2402,8 @@ export class ChartsCallsService {
 
       case GA_CHART.USER_LAST_SESSION:
         formattedData = this.columnChart(data,
-          {formatters: [{columns: [1, 2], type: 'NumberFormat', options: {pattern: '#.##'}}],
-            options: {
+          {
+              options: {
               vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: '#ffffff'}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
               hAxis: {gridlines: {color: 'transparent', count: 5}, minorGridlines: {color: '#ffffff'}, textStyle: {color: '#000000', fontName: 'Roboto'}},
               colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
