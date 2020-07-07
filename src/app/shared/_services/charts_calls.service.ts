@@ -2352,10 +2352,10 @@ export class ChartsCallsService {
           chartType: 'LineChart',
           dataTable: data,
           options: {
-            chartArea: {left: 0, right: 0, height: 270, top: 20},
+            chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'top'},
             lineWidth: data.length > 15 ? (data.length > 40 ? 2 : 3) : 4,
-            height: 330,
+            height: 220,
             pointSize: data.length > 15 ? 0 : 7,
             pointShape: 'circle',
             hAxis: {gridlines: {color: 'transparent'}, textStyle: {color: '#999', fontName: 'Roboto'}, minTextSpacing: 20},
