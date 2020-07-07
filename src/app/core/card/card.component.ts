@@ -272,7 +272,7 @@ export class CardComponent implements OnInit {
           this.prevHigh = this.dashChart.aggregated.prevHighest;
           break;
       }
-      this.tot = this.dashChart.aggregated.tot;
+      this.tot = this.dashChart.aggregated.tot.toFixed(2);
       this.avg = this.dashChart.aggregated.average.toFixed(2);
       this.prevAvg = this.dashChart.aggregated.prevAverage.toFixed(2);
 

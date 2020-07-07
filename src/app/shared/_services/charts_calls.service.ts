@@ -2236,7 +2236,7 @@ export class ChartsCallsService {
         formattedData = this.areaChart( data,
           {
             formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
-            options : { chartArea: {left: 0, right: 0, height: 210, top: 0},
+            options : { chartArea: {left: 0, right: 0, height: 192, top: 0},
               vAxis : {minValue: this.getMinChartStep(D_TYPE.GA, data, 0.8)},
               colors: [GA_PALETTE.OCHER.C11]},
           });
