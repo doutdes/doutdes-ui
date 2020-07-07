@@ -372,6 +372,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
+        if (miniDatas[i]['status'] === 500){
+          this.toastr.warning("Non sono presenti dati nella pagina", "Pagina priva di dati");
+          return empty;
+        }
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
 
         this.getNameMinicard(i);
