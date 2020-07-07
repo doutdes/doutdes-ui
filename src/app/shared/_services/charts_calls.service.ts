@@ -241,6 +241,20 @@ export class ChartsCallsService {
         // });
 
         chartData = this.changeNameCountry(data); // next release
+
+        const oldValue = chartData[data.length - 2] ? data[data.length - 2]['value'] : 0;
+        for (const i in chartData) {
+          // tslint:disable-next-line:no-shadowed-variable
+          const diff = oldValue[chartData[i][0]] ?
+            parseInt(chartData[i][1], 10) - parseInt(oldValue[chartData[i][0]], 10) :
+            1;
+          diff > 0 ?
+            chartData[i] = [chartData[i][0], {v : +1, f: chartData[i][1].toString() }] :
+            diff === 0 ?
+              chartData[i] = [chartData[i][0], {v : 0 * chartData[i][1], f: chartData[i][1].toString() }] :
+              chartData[i] = [chartData[i][0], {v : -1, f: chartData[i][1].toString() }];
+        }
+
         chartData = this.addPaddingRows(chartData);
         break; // Facebook Fan City in realtà è per conuntry
       case FB_CHART.ENGAGED_USERS:
@@ -2014,7 +2028,7 @@ export class ChartsCallsService {
 
         break; // Facebook Page Views
       case FB_CHART.FANS_CITY:
-        formattedData = this.tableChart(data);
+        formattedData = this.tableChart(data, {formatters: [{columns: [1], type: 'ArrowFormat', options: {pattern: '#.##'}}]} );
         break; // Facebook Fan City in realtà per paese
       case FB_CHART.FANS_COUNTRY_PIE:
         formattedData = this.pieChart(data,
