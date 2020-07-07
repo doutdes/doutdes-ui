@@ -46,4 +46,11 @@ export class UserService {
     return this.http.post(environment.protocol + environment.host + ':' + environment.port + '/mongo/',
       {user: user.id, username: user.username, type: type}, {headers});
   }
+
+  loggerGet() {
+    console.log('ci arrivo')
+    const headers = this.getAuthorization();
+
+    return this.http.get(environment.protocol + environment.host + ':' + environment.port + '/mongo/get', {headers});
+  }
 }

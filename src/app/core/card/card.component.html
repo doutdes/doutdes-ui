@@ -25,8 +25,24 @@
   </div>
 
   <div *ngIf="!checkCard(dashChart.chart_id)">
-    <div *ngIf="(!dashChart.error && dashChart.chartData.dataTable.length > 0)" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
-    <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea'">
+
+  <div *ngIf="(!dashChart.error && dashChart.chartData.dataTable.length > 0) && checkInfoBoolComp()" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
+
+    <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea' && !bannedChart.includes(dashChart.chart_id)">
+      <div style="margin-bottom:5px">
+      <ng-container *ngIf="this.dashChart.chart_id === 103 || this.dashChart.chart_id === 104">
+        <i class="fab fa-instagram" style="margin-right: 9px; color:#168aad"></i> Numero post: <b>{{this.nPost}}</b>
+      </ng-container>
+      </div>
+
+      <div style="margin-bottom:5px">
+        <ng-container>
+          <i class="fab" [ngClass]="icon" style="margin-right: 9px; color:#168aad"></i>
+          Totale:
+          <b>{{this.tot}}</b>
+        </ng-container>
+      </div>
+
       <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>
       <ng-container *ngIf="this.avgTrend > 0">
         (<b style="color:#267F00">{{this.avgShift}}</b>
@@ -45,18 +61,18 @@
           <i class="fas fa-arrow-down" style="margin-right: 9px; color:#168aad"></i> Min: <b>{{this.low}}</b>
           <ng-container *ngIf="this.lowTrend > 0">
             (<b style="color:#267F00">{{this.lowShift}}</b>
-            <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+            <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span>
           </ng-container>
           <ng-container *ngIf="this.lowTrend < 0">
             (<b style="color:#7F0200">{{this.lowShift}}</b>
-            <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+            <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span>
           </ng-container>
          <ng-container *ngIf="this.lowTrend === 0">
            (<b style="color:#979896">{{this.lowShift}}</b>
-           <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
+           <span style="color:#979896"></span>)<span style="color:#979896"></span>
           </ng-container>
 
-        <i class="fas fa-arrow-up" style="margin-right: 9px; color:#7F0200"></i> Max: <b>{{this.high}}</b>
+        <i class="fas fa-arrow-up" style="margin-right: 9px; margin-left: 15px; color:#7F0200"></i> Max: <b>{{this.high}}</b>
         <ng-container *ngIf="this.highTrend > 0">
           (<b style="color:#267F00">{{this.highShift}}</b>
           <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
@@ -69,7 +85,6 @@
           (<b style="color:#979896">{{this.highShift}}</b>
           <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
         </ng-container>
-
       </div>
     </div>
 

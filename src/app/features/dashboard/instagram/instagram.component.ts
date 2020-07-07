@@ -270,7 +270,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                 if (!dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
 
                   chart.chartData = dataArray[i];
-                  let date = new Date(chart.chartData[0]['end_time']);
+                  let date = chart.chartData.length > 0 ? new Date(chart.chartData[0]['end_time']) : this.minDate;
                     if (date < this.minDate) {
                       let date = new Date(chart.chartData[0]['end_time']);
                       this.minDate = date;
@@ -364,8 +364,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   }
 
   onValueChange(value): void {
-
-    console.log(value);
 
     if (value && this.datePickerEnabled) {
 

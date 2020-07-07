@@ -13,12 +13,15 @@ export const IG_CHART = { // ID charts in the database
   INFO_CLICKS_COL: 102,
   COMPARISON_COLONNA: 108,
   MEDIA_LIKE_DATA: 103,
-  MEDIA_COMMENT_DATA: 104,
+  MEDIA_ENGAGEMENT_DATA: 104,
   MEDIA_LIKE_TYPE: 116,
-  MEDIA_COMMENT_TYPE: 115,
+  MEDIA_ENGAGEMENT_TYPE: 115,
   AUD_CITY_GEOMAPPA: 112,
   AUD_GENDER_AGE_TORTA: 113,
-  AUD_COUNTRY_ELENCO: 114
+  AUD_COUNTRY_ELENCO: 114,
+  REACH_IMPRESSION_DATA: 117,
+  REACH_IMPRESSION_TYPE: 118,
+  MEDIA_INFO: 119
 };
 
 export const IG_PALETTE = {
@@ -67,6 +70,15 @@ export const IG_PALETTE = {
     C10: '#ffb6d3',
     C11: '#ffcee2',
     C12: '#ffe7f0',
+  },
+
+  'IG_COLORS': {
+    C1: '#833AB4',
+    C2: '#C13584',
+    C3: '#E1306C',
+    C4: '#F56040',
+    C5: '#F77737',
+    C6: '#FCAF45'
   }
 };
 

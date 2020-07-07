@@ -305,7 +305,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             chart = charts[i];
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
-              let date = parseDate(chart['chartData'][0][0]);
+              let date = chart.chartData.length > 0 ? parseDate(chart['chartData'][0][0]) : this.minDate;
 
               if (date < this.minDate) {
                 this.minDate = date;

@@ -54,6 +54,7 @@ export class CardComponent implements OnInit {
   avg: string;
   high: string;
   low: string;
+  tot: string;
   // aggregated data regarding the previous period
   prevAvg: string;
   prevHigh: string;
@@ -80,6 +81,8 @@ export class CardComponent implements OnInit {
 
   D_TYPE = D_TYPE;
   drag: boolean;
+  bannedChart = [101, 117];
+  nPost = 0;
 
   dateChoice: String = null;
 
@@ -215,6 +218,7 @@ export class CardComponent implements OnInit {
 
   chartResizer(): void {
     this.mychart.draw();
+
   }
 
   handleAggregated(): void {
@@ -232,6 +236,13 @@ export class CardComponent implements OnInit {
     this.highTrend = 0;
     this.avgTrend = 0;
     this.percentual = false;
+
+    if (this.dashChart.chart_id === 103 || this.dashChart.chart_id === 104) {
+      this.dashChart.chartData.dataTable.forEach(el => {
+        if (typeof el[1] !== 'string' && el[1] !== 0) {
+          this.nPost += parseInt(el[2].slice(el[2].indexOf('post') - 2, el[2].indexOf('post') - 1), 10);
+        }});
+    }
 
     let unit = '';
 
@@ -260,6 +271,7 @@ export class CardComponent implements OnInit {
           this.prevHigh = this.dashChart.aggregated.prevHighest;
           break;
       }
+      this.tot = this.dashChart.aggregated.tot;
       this.avg = this.dashChart.aggregated.average.toFixed(2);
       this.prevAvg = this.dashChart.aggregated.prevAverage.toFixed(2);
 
