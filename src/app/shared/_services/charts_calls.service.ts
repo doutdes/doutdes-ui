@@ -182,8 +182,6 @@ export class ChartsCallsService {
 
     let params: ChartParams = {};
 
-
-    console.log("data ",data);
     //controllo se la prima riga non sia un un valore anomalo
     if (data[0].value === undefined) {
       data[0].value = '';
