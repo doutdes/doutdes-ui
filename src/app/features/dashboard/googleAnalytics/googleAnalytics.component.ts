@@ -775,7 +775,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
         this.drag = false;
         this.GEService.dragAndDrop.next(this.drag);
 
-        this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'SUC_ORD'),
+        this.toastr.success(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'SUC_ORD'),
           this.GEService.getStringToastr(true, false, 'DASHBOARD', 'SUC_ORD'));
       }, error => {
 
