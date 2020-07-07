@@ -153,6 +153,7 @@ export class CardComponent implements OnInit {
     });
 
     if (this.dashChart.chart_id == 108) return this.checkMinMaxDate(this.dashChart.chart_id);
+    console.log(this.dashChart)
   }
 
   setColorStyle = (): void => {
