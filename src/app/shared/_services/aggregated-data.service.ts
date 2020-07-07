@@ -247,7 +247,9 @@ export class AggregatedDataService {
 
     let prevAverage = (prevNValues === 0) ? 0 : (prevSum / prevNValues);
     let average = (nValues === 0) ? 0 : (sum / nValues);
+
     let result = {
+      tot: sum,
       average: average,
       prevAverage: prevAverage,
       highest: highest,

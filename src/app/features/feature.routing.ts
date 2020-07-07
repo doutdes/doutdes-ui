@@ -66,6 +66,13 @@ import {P404Component} from '../errors/404.component';
               IsAuthenticatedGuard
             ],
             loadChildren: './tutorial/tutorial.module#FeatureTutorialModule'
+          },
+          {
+            path: 'tutorialDashboard',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './tutorialDashboard/tutorialDashboard.module#FeatureTutorialDashboardModule'
           }
         ],
       },

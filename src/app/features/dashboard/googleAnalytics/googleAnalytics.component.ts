@@ -305,7 +305,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
             chart = charts[i];
             if (dataArray[i] && !dataArray[i].status && chart) { // If no error is occurred when retrieving chart data
               chart.chartData = dataArray[i];
-              let date = parseDate(chart['chartData'][0][0]);
+              let date = chart.chartData.length > 0 ? parseDate(chart['chartData'][0][0]) : this.minDate;
 
               if (date < this.minDate) {
                 this.minDate = date;
@@ -372,6 +372,10 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
     forkJoin(observables).subscribe(miniDatas => {
       for (const i in miniDatas) {
+        if (miniDatas[i]['status'] === 500){
+          this.toastr.warning("Non sono presenti dati nella pagina", "Pagina priva di dati");
+          return empty;
+        }
         results = this.CCService.formatMiniChartData(miniDatas[i], D_TYPE.GA, this.miniCards[i].measure);
 
         this.getNameMinicard(i);

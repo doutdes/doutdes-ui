@@ -7,7 +7,7 @@
     <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
         role="menu" aria-labelledby="button-basic">
       <!--<li class="dropdown-item" (click)="getMetricsAvailable()"><i class="fas fa-plus-circle"></i>Aggiungi metrica</li>-->
-      <li class="dropdown-item" (click)="checkInfo(dashChart.chart_id)"><i class="fas fa-info-circle"></i> Interpretazione del grafico</li>
+      <li *ngIf="dashChart.type == 3 && checkCardInfo(dashChart.chart_id)" class="dropdown-item" (click)="checkInfo(dashChart.chart_id)"><i class="fas fa-info-circle"></i> Interpretazione del grafico</li>
       <li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Modifica titolo</li>
       <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Elimina</li>
       <li *ngIf="checkCard(dashChart.chart_id)" class="dropdown-item" (click)="openModal(editInterval)"><i class="fas fa-calendar-alt"></i> Modifica intervallo</li>
@@ -23,9 +23,26 @@
     <span style="margin-left:5px; padding-bottom:4px; font-size:8pt; text-transform: uppercase;" class="far fa-question-circle" #pop="bs-popover" [popover]="popTemplate"></span>
 
   </div>
-  <div *ngIf="!dashChart.error && dashChart.chartData.dataTable.length > 0" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
+
+  <div *ngIf="!checkCard(dashChart.chart_id)">
+
+  <div *ngIf="(!dashChart.error && dashChart.chartData.dataTable.length > 0) && checkInfoBoolComp()" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
 
     <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea' && !bannedChart.includes(dashChart.chart_id)">
+      <div style="margin-bottom:5px">
+      <ng-container *ngIf="this.dashChart.chart_id === 103 || this.dashChart.chart_id === 104">
+        <i class="fab fa-instagram" style="margin-right: 9px; color:#168aad"></i> Numero post: <b>{{this.nPost}}</b>
+      </ng-container>
+      </div>
+
+      <div style="margin-bottom:5px">
+        <ng-container>
+          <i class="fab" [ngClass]="icon" style="margin-right: 9px; color:#168aad"></i>
+          Totale:
+          <b>{{this.tot}}</b>
+        </ng-container>
+      </div>
+
       <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>
       <ng-container *ngIf="this.avgTrend > 0">
         (<b style="color:#267F00">{{this.avgShift}}</b>
@@ -44,18 +61,18 @@
           <i class="fas fa-arrow-down" style="margin-right: 9px; color:#168aad"></i> Min: <b>{{this.low}}</b>
           <ng-container *ngIf="this.lowTrend > 0">
             (<b style="color:#267F00">{{this.lowShift}}</b>
-            <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+            <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span>
           </ng-container>
           <ng-container *ngIf="this.lowTrend < 0">
             (<b style="color:#7F0200">{{this.lowShift}}</b>
-            <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+            <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span>
           </ng-container>
          <ng-container *ngIf="this.lowTrend === 0">
            (<b style="color:#979896">{{this.lowShift}}</b>
-           <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
+           <span style="color:#979896"></span>)<span style="color:#979896"></span>
           </ng-container>
 
-        <i class="fas fa-arrow-up" style="margin-right: 9px; color:#7F0200"></i> Max: <b>{{this.high}}</b>
+        <i class="fas fa-arrow-up" style="margin-right: 9px; margin-left: 15px; color:#7F0200"></i> Max: <b>{{this.high}}</b>
         <ng-container *ngIf="this.highTrend > 0">
           (<b style="color:#267F00">{{this.highShift}}</b>
           <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
@@ -68,12 +85,93 @@
           (<b style="color:#979896">{{this.highShift}}</b>
           <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
         </ng-container>
-
       </div>
     </div>
 
     <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
     </google-chart>
+
+  </div>
+  </div>
+
+  <div *ngIf="checkCard(dashChart.chart_id)">
+    <!-- checkInfoBoolComp() = true -->
+    <div *ngIf="checkInfoBoolComp()">
+
+      <div *ngIf="(!dashChart.error || dashChart.chartData.dataTable.length > 0)" style="background:#fff; min-height:351px; max-height: 351px; padding:20px"
+           class="rounded-bottom border d-table w-100 h-100">
+
+        <div class="align-middle d-table-cell">
+          <div class="bg-light rounded p-3 mx-auto align-middle" style="width: fit-content">
+            <h4 class="text-center mb-0" style="font-size: 17px;">
+              <i class="mr-1 d-block" aria-hidden="true"></i> <b>{{ 'CARD.SCELTA_TITOLO' | translate }}</b></h4>
+            <p class="mt-3 text-justify">1) {{ 'CARD.SCELTA_TITOLO_1' | translate }}</p>
+            <p class="mt-3 text-justify">2) {{ 'CARD.SCELTA_TITOLO_2' | translate }}</p>
+            <p class="mt-3 text-justify">2) {{ 'CARD.SCELTA_TITOLO_3' | translate }}</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <!-- checkInfoBoolComp() = false -->
+    <div *ngIf="!checkInfoBoolComp()">
+
+      <div *ngIf="(!dashChart.error && dashChart.chartData.dataTable.length > 0)" style="background:#fff; min-height:351px; max-height: 351px; padding: 15px 8px 8px; border-top: 0px !important;" class="border">
+        <div  style="font-size:15px; min-height: 100px; margin-left:22px; font-family:Roboto;" *ngIf="dashChart.format === 'linea'">
+          <i class="fas fa-chart-line mr-2" style="color:rgba(249,193,0,0.88)"></i>Media del periodo: <b>{{this.avg}}</b>
+          <ng-container *ngIf="this.avgTrend > 0">
+            (<b style="color:#267F00">{{this.avgShift}}</b>
+            <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+          </ng-container>
+          <ng-container *ngIf="this.avgTrend < 0">
+            (<b style="color:#7F0200">{{this.avgShift}}</b>
+            <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+          </ng-container>
+          <ng-container *ngIf="this.avgTrend === 0">
+            (<b style="color:#979896">{{this.avgShift}}</b>
+            <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
+          </ng-container>
+
+          <div style="font-size:12px; margin-top:10px">
+            <i class="fas fa-arrow-down" style="margin-right: 9px; color:#168aad"></i> Min: <b>{{this.low}}</b>
+            <ng-container *ngIf="this.lowTrend > 0">
+              (<b style="color:#267F00">{{this.lowShift}}</b>
+              <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+            </ng-container>
+            <ng-container *ngIf="this.lowTrend < 0">
+              (<b style="color:#7F0200">{{this.lowShift}}</b>
+              <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+            </ng-container>
+            <ng-container *ngIf="this.lowTrend === 0">
+              (<b style="color:#979896">{{this.lowShift}}</b>
+              <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
+            </ng-container>
+
+            <i class="fas fa-arrow-up" style="margin-right: 9px; color:#7F0200"></i> Max: <b>{{this.high}}</b>
+            <ng-container *ngIf="this.highTrend > 0">
+              (<b style="color:#267F00">{{this.highShift}}</b>
+              <span class="fas fa-caret-up ml-1" style="color:#267F00"></span>)<span style="color:#267F00"></span><br />
+            </ng-container>
+            <ng-container *ngIf="this.highTrend < 0">
+              (<b style="color:#7F0200">{{this.highShift}}</b>
+              <span class="fas fa-caret-down ml-1" style="color:#7F0200"></span>)<span style="color:#7F0200"></span><br />
+            </ng-container>
+            <ng-container *ngIf="this.highTrend === 0">
+              (<b style="color:#979896">{{this.highShift}}</b>
+              <span style="color:#979896"></span>)<span style="color:#979896"></span><br />
+            </ng-container>
+
+          </div>
+        </div>
+
+        <google-chart style="height:310px" [data]="dashChart.chartData" #mychart (window:resize)="chartResizer()">
+        </google-chart>
+
+      </div>
+
+    </div>
+
   </div>
 
   <!-- CARD WITH ERROR -->
@@ -94,7 +192,9 @@
         <p *ngIf="dashChart.type === D_TYPE.FB || dashChart.type === D_TYPE.FBM" class="mt-3 text-justify">{{ 'CARD.NO_DATI' | translate }}</p>
       </div>
     </div>
+
   </div>
+
 </div>
 
 <ng-template #popTemplate> <!-- *ngIf="minicard.step || minicard.step >= 0"  -->
@@ -172,35 +272,17 @@
 </ng-template>
 <ng-template #editInterval>
   <div class="modal-header">
-    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>Modifica Intervalli</h4>
+    <h4 class="modal-title pull-left"><i class="fas fa-plus-circle mr-3"></i>{{ 'CARD.EDIT' | translate }}</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
 
   <div class="modal-body">
-    <!-- <form [formGroup]="editIntervalDate" (ngSubmit)="addMetricToChart()"> -->
 
     <div class="form-group row">
-      <label class="col-sm-5 col-form-label">Intervallo 1:</label>
+      <label class="col-sm-5 col-form-label">{{ 'CARD.INTERVAL' | translate }} 1:</label>
       <div class="col-sm-7">
-        <!-- Se il filtro è impostato ad "Ultimi 30 giorni" -->
-        <input *ngIf="check_int == 30"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-               [(ngModel)]="bsRangeValue"
-               [minDate]="minDate_30"
-               [maxDate]="maxDate_30"
-               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-               (bsValueChange)="onValueChange($event, 'Interval1')"
-               bsDaterangepicker>
-        <!-- Se il filtro è impostato ad "Ultimi 7 giorni" -->
-        <input *ngIf="check_int == 7"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-               [(ngModel)]="bsRangeValue"
-               [minDate]="minDate_7"
-               [maxDate]="maxDate_7"
-               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-               (bsValueChange)="onValueChange($event, 'Interval1')"
-               bsDaterangepicker>
-        <!-- Se il filtro è impostato ad "Personalizzato" -->
         <input *ngIf="check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
                [(ngModel)]="bsRangeValue"
                [minDate]="firstDateRange"
@@ -208,34 +290,12 @@
                [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
                (bsValueChange)="onValueChange($event, 'Interval1')"
                bsDaterangepicker>
-
-        <!--<select class="form-control" formControlName="metricControl">
-          <option *ngFor="let metric of metrics" [ngValue]="metric">{{metric.title}}</option>
-        </select>
-        -->
       </div>
     </div>
 
     <div class="form-group row">
-      <label class="col-sm-5 col-form-label">Intervallo 2:</label>
+      <label class="col-sm-5 col-form-label">{{ 'CARD.INTERVAL' | translate }} 2:</label>
       <div class="col-sm-7">
-        <!-- Se il filtro è impostato ad "Ultimi 30 giorni" -->
-        <input *ngIf="this.check_int == 30"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-               [(ngModel)]="bsRangeValue2"
-               [minDate]="minDate_30"
-               [maxDate]="maxDate_30"
-               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-               (bsValueChange)="onValueChange($event, 'Interval2')"
-               bsDaterangepicker>
-        <!-- Se il filtro è impostato ad "Ultimi 7 giorni" -->
-        <input *ngIf="this.check_int == 7"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
-               [(ngModel)]="bsRangeValue2"
-               [minDate]="minDate_7"
-               [maxDate]="maxDate_7"
-               [bsConfig]="{ rangeInputFormat: 'DD/MM/YYYY', containerClass: 'theme-dark-blue' }"
-               (bsValueChange)="onValueChange($event, 'Interval2')"
-               bsDaterangepicker>
-        <!-- Se il filtro è impostato ad "Personalizzato" -->
         <input *ngIf="this.check_int == 0"  type="text" class="form-control float-right mr-lg-1 mr-sm-2 filterDatePicker" #drp="bsDaterangepicker"
                [(ngModel)]="bsRangeValue2"
                [minDate]="firstDateRange"
@@ -247,10 +307,9 @@
     </div>
 
     <div class="modal-footer">
-      <!-- <button type="submit" class="btn btn-success" (click)="onValueChange('invio')" >Modifica</button> -->
-      <button type="submit" class="btn btn-success" (click)="onValueChange(null, 'Edit')">Modifica</button>
-      <button type="button" class="btn btn-danger" (click)="closeModal()">Annulla</button>
+      <button type="submit" class="btn btn-success" (click)="onValueChange(null, 'Edit')">{{ 'CARD.EDIT_1' | translate }}</button>
+      <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'CARD.ANNULLA' | translate }}</button>
     </div>
-    <!-- </form> -->
+
   </div>
 </ng-template>
