@@ -753,6 +753,7 @@ export class ChartsCallsService {
          * 2 - country
          * 3 - value
          **/
+
         header = [['Region', 'Value']];
         let mapD = new Map();
 
@@ -2112,6 +2113,13 @@ export class ChartsCallsService {
             areaOpacity: 0.3
           }
         };
+      case GA_CHART.AUD_REGION_GO:
+        formattedData = this.geoChart(data, { options : {
+            region: 'IT',
+            displayMode: 'markers',
+            colors: [FB_PALETTE.BLUE.C1]}} );
+        break;  // Geo Map
+
 
       // Instragram chart
       case IG_CHART.AUD_CITY:
