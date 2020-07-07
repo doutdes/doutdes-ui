@@ -2119,6 +2119,9 @@ export class ChartsCallsService {
             displayMode: 'markers',
             colors: [FB_PALETTE.BLUE.C1]}} );
         break;  // Geo Map
+      case GA_CHART.SESSION_ELENCO_GO:
+        formattedData = this.tableChart(data);
+        break;
 
 
       // Instragram chart
