@@ -572,6 +572,9 @@ export class CardComponent implements OnInit {
         case 28:
           window.open('./././assets/InfoGrafici/GuideSingole/Instagram/NuoviFollower.pdf', '_blank');
           break;
+        case 102:
+          window.open('./././assets/InfoGrafici/GuideSingole/Instagram/ClickInfo.pdf', '_blank');
+          break;
         default:
           this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_INFO'),
             this.GEService.getStringToastr(true, false, 'CARD', 'NO_INFO'));
@@ -591,6 +594,7 @@ export class CardComponent implements OnInit {
       case 20:
       case 22:
       case 28:
+      case 102:
         return true;
 
       default:

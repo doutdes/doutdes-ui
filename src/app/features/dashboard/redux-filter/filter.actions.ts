@@ -206,7 +206,7 @@ export class FilterActions {
           if (!chart.error) {
             switch (chart.type) {
               case D_TYPE.GA:
-                if (chart.chart_id !== 119 && chart.chart_id !== 121 && chart.chart_id !== 122) {
+                if (chart.chart_id !== 121 && chart.chart_id !== 119) {
                   chart.chartData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime());
                 }
                 break;
