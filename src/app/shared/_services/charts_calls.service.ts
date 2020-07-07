@@ -765,6 +765,7 @@ export class ChartsCallsService {
          * 2 - country
          * 3 - value
          **/
+
         header = [['Region', 'Value']];
         let mapD = new Map();
 
@@ -2370,6 +2371,16 @@ export class ChartsCallsService {
           }
         };
         break;
+      case GA_CHART.AUD_REGION_GO:
+        formattedData = this.geoChart(data, { options : {
+            region: 'IT',
+            displayMode: 'markers',
+            colors: [FB_PALETTE.BLUE.C1]}} );
+        break;  // Geo Map
+      case GA_CHART.SESSION_ELENCO_GO:
+        formattedData = this.tableChart(data);
+        break;
+
 
       case GA_CHART.ADS:
         formattedData = {
