@@ -3872,7 +3872,7 @@ export class ChartsCallsService {
   }
 
   private searchStep(value, measure?) {
-    const nextStep = [10, 25, 50, 250, 500, 1000, 2000, 3000, 5000, 10000, 15000, 20000, 30000, 40000, 50000, 100000, 350000, 500000];
+    const nextStep = [0.5, 1, 10, 25, 50, 250, 500, 1000, 2000, 3000, 5000, 10000, 15000, 20000, 30000, 40000, 50000, 100000, 350000, 500000];
     let step;
     let done = false;
     let i = 0;
