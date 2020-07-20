@@ -11,88 +11,116 @@
 
           <!-- DESCRIPTION -->
           <div class="col-md mt-3 text-center">
-              <p style="font-size: 1.1rem;" >Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-              sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-              ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-              in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            <p style="font-size: 1.1rem;">{{ 'HOME.DESCRIPTION' | translate }}<b>Doutdes </b> {{ 'HOME.DESCRIPTION_1' | translate}}
+              </p>
+            <p style="font-size: 1.1rem;">
+              <b>Doutdes</b> {{ 'HOME.DESCRIPTION_2' | translate }}
               </p>
           </div>
 
-          <!-- CARD 1 -->
-          <!--
-          <div class="card mb-3" style="max-width: 1000px;">
-            <div class="row no-gutters">
-              <div class="col-md-4">
+          <!-- MINICARDS -->
+          <div class="main">
+            <div class="main-card-body">
+              <div class="main-card main-card-front main-card-front-1">
+                <h1></h1>
+              </div>
+              <div class="main-card main-card-back main-card-back-1">
                 <div class="image middle">
-                  <img src="/assets/img/card1.png">
+                  <img src="/assets/img/backgroundcolor.png">
                   <div class="image-content">
                     <div class="icons">
-                      <a href="#" class="icon fa fa-link"></a>
+                      <a href="https://www.doutdes-cluster.it/" class="icon fa fa-link" ></a>
                     </div>
                   </div>
                 </div>
-
               </div>
-              <div class="col-md-8">
-                <div class="card-body">
-                  <h5 class="card-title">Card title</h5>
-                  <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                    ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+            </div>
+
+            <div class="main-card-body">
+              <div class="main-card main-card-front main-card-front-2">
+                <h1></h1>
+              </div>
+              <div class="main-card main-card-back main-card-back-2">
+                <div class="image middle">
+                  <img src="/assets/img/backgroundcolor.png">
+                  <div class="image-content">
+                    <div class="icons">
+                      <a href="https://flipboard.com/@DoutdesCluster" class="icon fa fa-link"></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="main-card-body">
+              <div class="main-card main-card-front main-card-front-3">
+                <h1></h1>
+              </div>
+              <div class="main-card main-card-back main-card-back-3">
+                <div class="image middle">
+                  <img src="/assets/img/backgroundcolor.png">
+                  <div class="image-content">
+                    <div class="icons">
+                      <a href="https://www.doutdes-cluster.it/wiki" class="icon fa fa-link"></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="main-card-body">
+              <div class="main-card main-card-front main-card-front-4">
+                <h1></h1>
+              </div>
+              <div class="main-card main-card-back main-card-back-4">
+                <div class="image middle">
+                  <img src="/assets/img/backgroundcolor.png">
+                  <div class="image-content">
+                    <div class="icons">
+                      <a [routerLink]="['./tutorialDashboard/']" class="icon fa fa-link"></a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          -->
-
-          <!-- CARD 2 -->
-          <!--
-          <div class="card mb-3" style="max-width: 1000px;">
-            <div class="row no-gutters">
-              <div class="col-md-4">
-
-                <div class="image middle">
-                  <img src="/assets/img/card1.png">
-                  <div class="image-content">
-                    <div class="icons">
-                      <a href="#" class="icon fa fa-link"></a>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              <div class="col-md-8">
-                <div class="card-body">
-                  <h5 class="card-title">Card title</h5>
-                  <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                    ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          -->
 
           <!-- SOCIAL -->
-          <div class="card-body" style="height: 150px">
-            <div class="middle1">
-              <a class="btnSocial" href="#">
-                <i class="fab fa-facebook-f"></i>
-              </a>
-              <a class="btnSocial" href="#">
-                <i class="fab fa-flipboard"></i>
-              </a>
-              <a class="btnSocial" href="#">
-                <i class="fab fa-wikipedia-w"></i>
-              </a>
+            <div class="container border p-4" style="background-color: white">
+              <h1 style="color: #212121;">{{ 'HOME.CONTATTI' | translate }}</h1>
+              <div class="row mt-4">
+                  <div class="col-sm col-xs-60">
+                    <h3>
+                      <i class="fas fa-map-marker-alt" style="padding-right: 8px; padding-bottom: 15px; color: #0087a6; font-size: 38px;"></i>
+                      <strong style="font-weight: bold !important;">{{ 'HOME.INDIRIZZO' | translate }}</strong>
+                    </h3>
+                    <p style="font-size: 20px; font-family: Roboto, sans-serif">
+                      {{ 'HOME.INDIRIZZO_1' | translate }}
+                    </p>
+                  </div>
+                  <div class="col-sm col-xs-60">
+                    <h3>
+                      <i class="fas fa-envelope" style="padding-right: 8px; padding-bottom: 15px; color: #0087a6; font-size: 38px;"></i>
+                      <strong style="font-weight: bold !important;">Email</strong>
+                    </h3>
+                    <p style="font-size: 20px; font-family: Roboto, sans-serif" href="mailto:doutdes.unica@gmail.com">
+                      doutdes.unica@gmail.com
+                    </p>
+                  </div>
+                  <div class="col-sm col-xs-60">
+                    <h3>
+                      <i class="fas fa-user-friends" style="padding-right: 8px; padding-bottom: 15px; color: #0087a6; font-size: 38px;"></i>
+                      <strong style="font-weight: bold !important;">Social</strong>
+                    </h3>
+
+                    <!-- <i class="fab fa-facebook-f" style="font-size: 28px;"></i> -->
+                    <a href="https://www.facebook.com/doutdes.cluster" style="position: relative; display: block; width: 50px; height: 50px; border-radius: 50%; background-color: blue; text-align: center; "><i class="fab fa-facebook-f" style="color: white; font-size: 25px; line-height: 50px; transition: .5s"></i></a>
+                    <!-- transition: 0.5s; transform: translate(0,0px); box-shadow: 0px 7px 5px rgba(0, 0, 0, 0.5); -->
+                  </div>
+
+              </div>
             </div>
-          </div>
 
         </div>
       </div>

@@ -1,20 +1,11 @@
 {
   "HOME": {
-    "TITLE": "Benvenuto in Doutdes!",
-    "DESCRIPTION": "Doutdes è una piattaforma di analisi dati per imprese. Attraverso Doutdes, è possibile integrare",
-    "DESCRIPTION_1": "i dati di servizi esterni ",
-    "DESCRIPTION_2": "come Google Analytics, Facebook e Instagram Insights, Youtube Studio e non solo.",
-    "DESCRIPTION2": "Grazie a Doutdes, dunque, potrai semplificare e centralizzare la gestione tue performance sui canali web e social, finalmente da un'unica interfaccia. L'intuitività e la facilità di utilizzo,inoltre, ti consentiranno  di imparare rapidamente a ",
-	  "DESCRIPTION2_1": "personalizzare gli strumenti",
-  	"DESCRIPTION2_2": " di Doutdes per le tue esigenze.",
-  	"DESCRIPTION3": "Doutdes è finanziato da Sardegna Ricerche e realizzato dal Dipartimento  di Matematica e Informatica dell'Università di Cagliari, ed è in continua evoluzione. Periodicamente vengono integrate nuove funzionalità, grazie ai suggerimenti e feedback delle imprese che collaborano allo sviluppo.",
-  	"DASHBOARD_REPORT": "Dashboard e report ",
-  	"DASHBOARD_REPORT_1": "Doutdes offre la possibilità di configurare dashboard predefinite e personalizzate, con tutti i grafici necessari ad analizzare le performance dei propri canali, generando i report associati.",
-  	"GO_TO": "Vai ora",
-  	"IMPO_EASY": "Importazione semplice",
-  	"IMPO_EASY_1": "Importare sulla piattaforma Doutdes i dati di sorgenti esterne come Google Analytics o Facebook Insights è estremamente semplice. Autorizza l'operazione in totale sicurezza dai tuoi account. ",
-  	"USO": "Guide d'uso",
-  	"USO_1": "Se riscontri problemi nella configurazione delle tue dashboard, nessun problema! Un'apposita sezione è dedicata ai tutorial passo-passo per aiutarti a prendere confidenza con gli strumenti."
+    "DESCRIPTION": "Il progetto cluster «",
+    "DESCRIPTION_1": "– trasferimento di tecnologie e competenze di Business Intelligence alle aziende dei settori innovativi e tradizionali», si pone come obiettivo quello di fornire alle imprese del cluster gli strumenti e le competenze per sfruttare adeguatamente i dati dei propri clienti attuali e prospettici provenienti dai propri canali di comunicazione, sia social che web o dall’utilizzo dei propri servizi digitali, al fine di creare nuove opportunità di marketing e affiliazione.",
+    "DESCRIPTION_2": "mette a disposizione delle imprese del cluster una piattaforma integrata tramite interfaccia web, per analizzare in maniera efficace i dati di fruizione dei propri canali di comunicazione, senza la necessità di competenze specifiche, e ciò comporta un minor dispendio di tempo. La piattaforma consente di salvare e mantenere i propri dati all’interno dell’account personale, e questo permette alle imprese di analizzare le informazioni relative a periodi di tempo più lunghi, non avendo limiti sul periodo storico da considerare.",
+  	"CONTATTI": "Contatti",
+  	"INDIRIZZO": "Indirizzo",
+  	"INDIRIZZO_1": "Dipartimento di Matematica e Informatica, Via Ospedale, 72, 09124 Cagliari CA"
   },
   "LANGUAGE": {
     "TITLE": "Impostazione lingua",
