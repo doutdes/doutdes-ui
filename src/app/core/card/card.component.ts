@@ -23,6 +23,7 @@ import {select} from '@angular-redux/store';
 import {ChartsCallsService} from '../../shared/_services/charts_calls.service';
 import {InstagramService} from '../../shared/_services/instagram.service';
 import {ChartParams} from '../../shared/_models/Chart';
+//import {EmptycardComponent} from './emptycard.component';
 
 @Component({
   selector: 'app-card',
@@ -90,6 +91,7 @@ export class CardComponent implements OnInit {
 
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
 
+  updateGraph: any;
 
   bsRangeValue: Date[];
   bsRangeValue2: Date[];
@@ -102,11 +104,15 @@ export class CardComponent implements OnInit {
 
   metrics: Array<Chart>;
   addMetricForm: FormGroup;
+  styles = [];
+
 
   lang: string;
   value: string;
   tmp: string;
   user: User;
+
+  chartRemaining;
 
   checkComp: boolean;
 
@@ -122,7 +128,8 @@ export class CardComponent implements OnInit {
     private filterActions: FilterActions,
     public translate: TranslateService,
     private userService: UserService,
-    private http: HttpClient
+    private http: HttpClient,
+   // private addChart: EmptycardComponent,
   ) {
     this.GEService.draggable.subscribe(value => this.drag = value);
 
@@ -424,6 +431,7 @@ export class CardComponent implements OnInit {
   }
 
   getMetricsAvailable() {
+
     this.dashboardService.getChartsByFormat('linea')
       .subscribe(charts => {
         this.metrics = charts
@@ -614,6 +622,65 @@ export class CardComponent implements OnInit {
     }
     return true;
 
+  }
+
+  getStyles(id) {
+    this.styles = ['Ciao', 'We'];
+
+    this.dashboardService.getChartsNotAddedByDashboardType(12, 3).subscribe(value => {
+      this.styles = value;
+    });
+
+    /*
+    this.styles = this.chartRemaining
+      .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10))
+      .map(item => item.format);
+     */
+
+
+  }
+
+  async updateStyles(dashboard_id, chart_id) {
+    let selected
+
+    //elimino grafico corrente
+    this.removeChart(dashboard_id, chart_id);
+
+    //add grafico con nuovo stile
+    selected = this.chartRemaining.find(chart =>
+      chart.type === parseInt(this.insertChartForm.value.channel, 10) &&
+      chart.title === this.insertChartForm.value.title &&
+      chart.format === this.insertChartForm.value.style
+    );
+
+    const chart: DashboardCharts = {
+      dashboard_id: dashboard_id,
+      chart_id: 28,
+      title: 'ciao',
+      format: 'linea',
+      description: 'ciaooo'
+      //position: this.dashChart.position
+    };
+
+    try {
+      await this.dashboardService.addChartToDashboard(chart).toPromise();
+      this.closeModal();
+
+      this.GEService.showChartInDashboard.next(chart);
+      //this.insertChartForm.reset();
+      /*
+      if (this.dropdownOptions.length > 0) {
+        this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
+      }
+      await this.updateDropdownOptions();
+      */
+
+    } catch (error) {
+      this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_ADD'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ADD'));
+      console.error('Error inserting the Chart in the dashboard');
+      console.error(error);
+    }
   }
 
 }

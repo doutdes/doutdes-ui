@@ -304,7 +304,9 @@ export class EmptycardComponent implements OnInit {
     if (updateChannel) {
       // this.breakdowns = this.breakdowns.filter(b => this.chartRemaining.filter(chart => chart.title.includes(b)).length > 0);
       this.chartRemaining.forEach(chart => !this.breakdowns.includes(chart.metric) ? this.breakdowns.push(chart.metric) : null);
+      //console.log(this.chartRemaining);
       this.insertChartForm.value.break === undefined ? this.insertChartForm.controls['break'].setValue('reach') : null;
+      //console.log(this.insertChartForm);
 
       this.metrics = this.getUnique(this.chartRemaining
         .filter(chart => chart.type === parseInt(this.insertChartForm.value.channel, 10))
@@ -327,6 +329,8 @@ export class EmptycardComponent implements OnInit {
       this.styles = this.chartRemaining
         .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10))
         .map(item => item.format);
+      //console.log(this.chartRemaining);
+      //console.log(this.styles);
 
       this.insertChartForm.controls['style'].setValue(this.styles[0]);
       // Update title
