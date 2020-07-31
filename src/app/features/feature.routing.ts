@@ -6,6 +6,7 @@ import {FeatureComponent} from './feature.component';
 import {IsAuthenticatedGuard} from '../shared/_guards/is-authenticated.guard';
 import {AuthenticationService} from './authentication/authentication.service';
 import {P404Component} from '../errors/404.component';
+import {AdminMessagesComponent} from './messages/admin-messages/admin-messages.component';
 
 @NgModule({
   imports: [
@@ -55,6 +56,13 @@ import {P404Component} from '../errors/404.component';
           },
           {
             path: 'messages',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './messages/message.module#FeatureMessageModule'
+          },
+          {
+            path: 'messages/admin-messages',
             canActivate: [
               IsAuthenticatedGuard
             ],

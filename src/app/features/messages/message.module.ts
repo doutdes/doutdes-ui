@@ -7,11 +7,13 @@ import {FeatureMessageComponent} from './message.component';
 import {MatPaginatorModule, MatTableModule} from '@angular/material';
 import {MessageService} from '../../shared/_services/message.service';
 import {TranslateModule} from '@ngx-translate/core';
+import { AdminMessagesComponent } from './admin-messages/admin-messages.component';
 
 
 @NgModule({
   declarations: [
-    FeatureMessageComponent
+    FeatureMessageComponent,
+    AdminMessagesComponent
   ],
   imports: [
     SharedModule,
@@ -26,7 +28,8 @@ import {TranslateModule} from '@ngx-translate/core';
     MessageService
   ],
   exports: [
-    FeatureMessageComponent
+    FeatureMessageComponent,
+    AdminMessagesComponent
   ]
 })
 
