@@ -50,6 +50,11 @@ export class CardComponent implements OnInit {
     ninety: 89,
   };
 
+  tmpProva: ['ciao', 'wee'];
+
+  styles: any;
+  formatID = [];
+
   aggregated: boolean;
   type: string;
   avg: string;
@@ -104,7 +109,6 @@ export class CardComponent implements OnInit {
 
   metrics: Array<Chart>;
   addMetricForm: FormGroup;
-  styles = [];
 
 
   lang: string;
@@ -115,6 +119,7 @@ export class CardComponent implements OnInit {
   chartRemaining;
 
   checkComp: boolean;
+  checkFormatNew;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -143,6 +148,7 @@ export class CardComponent implements OnInit {
           console.error(error);
         });
     });
+
   }
 
   ngOnInit() {
@@ -160,6 +166,14 @@ export class CardComponent implements OnInit {
     });
 
     if (this.dashChart.chart_id == 108) return this.checkMinMaxDate(this.dashChart.chart_id);
+
+    this.dashboardService.getChartsNotAddedByDashboardType(this.dashChart.dashboard_id, this.dashChart.type).subscribe(value => {
+      //console.log(value);
+      this.styles = value;
+
+    });
+
+    //this.getStyles();
 
   }
 
@@ -624,63 +638,29 @@ export class CardComponent implements OnInit {
 
   }
 
-  getStyles(id) {
-    this.styles = ['Ciao', 'We'];
+  getStyles(metric) {
 
-    this.dashboardService.getChartsNotAddedByDashboardType(12, 3).subscribe(value => {
-      this.styles = value;
-    });
-
-    /*
-    this.styles = this.chartRemaining
-      .filter(chart => chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10))
-      .map(item => item.format);
-     */
-
-
+    if (this.styles) {
+      //Ciclo per salvarmi tutti i "format" per quella metrica
+      for (let i = 0; i < this.styles.length; i++) {
+        if (this.styles[i]['metric'] == metric) {
+          this.formatID.push([this.styles[i]['format']]);
+        }
+      }
+      return this.formatID;
+    }
+    //this.formatID = [];
   }
 
-  async updateStyles(dashboard_id, chart_id) {
-    let selected
+  checkFormat(value) {
+      this.checkFormatNew = value.target.value;
+  }
 
-    //elimino grafico corrente
-    this.removeChart(dashboard_id, chart_id);
+  updateStyles(dashboard_id, chart_id) {
+     //Ci sarà l'aggiornamento
 
-    //add grafico con nuovo stile
-    selected = this.chartRemaining.find(chart =>
-      chart.type === parseInt(this.insertChartForm.value.channel, 10) &&
-      chart.title === this.insertChartForm.value.title &&
-      chart.format === this.insertChartForm.value.style
-    );
-
-    const chart: DashboardCharts = {
-      dashboard_id: dashboard_id,
-      chart_id: 28,
-      title: 'ciao',
-      format: 'linea',
-      description: 'ciaooo'
-      //position: this.dashChart.position
-    };
-
-    try {
-      await this.dashboardService.addChartToDashboard(chart).toPromise();
-      this.closeModal();
-
-      this.GEService.showChartInDashboard.next(chart);
-      //this.insertChartForm.reset();
-      /*
-      if (this.dropdownOptions.length > 0) {
-        this.dropdownOptions = this.dropdownOptions.filter(options => options.id !== dashChart.chart_id);
-      }
-      await this.updateDropdownOptions();
-      */
-
-    } catch (error) {
-      this.toastr.error(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'NO_ADD'),
-        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'NO_ADD'));
-      console.error('Error inserting the Chart in the dashboard');
-      console.error(error);
-    }
+    console.log(this.checkFormatNew);
+    this.closeModal();
   }
 
 }
