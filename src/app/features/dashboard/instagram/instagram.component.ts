@@ -77,6 +77,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
     backdropBorderRadius: '4px',
+    fullScreenBackdrop: 'true',
     primaryColour: PrimaryWhite,
     secondaryColour: PrimaryWhite
   };
@@ -189,7 +190,12 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     });
     return empty;
   }
-
+  async alertTime(chart) {
+    if (this.loading && chart.metric.includes('media')) {
+      this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'MEDIA'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MEDIA'));
+    }
+  }
   async loadDashboard() {
 
     let dash, chartParams: ChartParams = {};
@@ -210,7 +216,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.GEService.loadingScreen.next(true);
     this.dragulaService.find('REVERT');
     try {
-
 
       // Retrieving dashboard ID
       dash = await this.DService.getDashboardByType(D_TYPE.IG).toPromise(); // Instagram type
@@ -260,6 +265,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                 observables.push(this.CCService.retrieveChartData(chart.type, chartParams, this.pageID));
 
             });
+
+            this.alertTime(chartParams)
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -345,6 +352,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
           chartToPush.error = false;
+          this.alertTime(chartToPush)
 
           this.toastr.success( dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'ADD'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
@@ -567,7 +575,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
         this.GEService.addSubscriber(dash_type);
       }
-
 
       this.addBreadcrumb();
       await this.loadDashboard();

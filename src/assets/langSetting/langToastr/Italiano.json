@@ -1,5 +1,9 @@
 {
   "DASHBOARD": {
+    "MEDIA": {
+      "TITLE": "Caricamenteo post",
+      "MESSAGE": "Caricamento dati dei post, per favore attendere"
+    },
     "ERR_GETDATA": {
       "TITLE": "Mancato recupero dati",
       "MESSAGE": "Non sono stati concessi i permessi per questa pagina. Si possono aggiungere da Preferenze -> Configura Sorgenti Dati "

@@ -197,7 +197,6 @@ export class CardComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
 
-
     if (this.updateChartForm.invalid) {
       this.loading = false;
       return;

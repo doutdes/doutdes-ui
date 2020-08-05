@@ -62,6 +62,7 @@
     "GUIDE_INTRO": "Introductory guides"
   },
   "DASHBOARD": {
+    "ADS": "Average value for 30 days of the metrics of Google ads",
     "CUSTOM": "My dashboard",
     "CLEAR": "Clean the dashboard",
     "ESPORT": "Export to PDF",

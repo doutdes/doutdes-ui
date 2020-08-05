@@ -184,7 +184,7 @@ export class AggregatedDataService {
         }
         break;
       case D_TYPE.FBM:
-        const type_value = chart.title.substring(chart.title.indexOf('_')+1);
+        const type_value = chart.title.substring(chart.title.indexOf('_') + 1);
 
         for (let i = 0; i < filteredData.length; i++) {
           const value = parseFloat(filteredData[i][type_value.toLowerCase()]);
