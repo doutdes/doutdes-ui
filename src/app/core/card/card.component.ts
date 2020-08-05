@@ -170,7 +170,6 @@ export class CardComponent implements OnInit {
     this.dashboardService.getChartsNotAddedByDashboardType(this.dashChart.dashboard_id, this.dashChart.type).subscribe(value => {
       //console.log(value);
       this.styles = value;
-
     });
 
     //this.getStyles();
@@ -639,17 +638,18 @@ export class CardComponent implements OnInit {
   }
 
   getStyles(metric) {
-
-    if (this.styles) {
-      //Ciclo per salvarmi tutti i "format" per quella metrica
-      for (let i = 0; i < this.styles.length; i++) {
-        if (this.styles[i]['metric'] == metric) {
-          this.formatID.push([this.styles[i]['format']]);
+      this.formatID = [];
+      //this.openModal(template);
+      if (this.styles) {
+        //Ciclo per salvarmi tutti i "format" per quella metrica
+        for (let i = 0; i < this.styles.length; i++) {
+          if (this.styles[i]['title'] === metric) {
+            this.formatID.push([this.styles[i]['format']]);
+          }
         }
+        //console.log(this.formatID)
+        return this.formatID;
       }
-      return this.formatID;
-    }
-    //this.formatID = [];
   }
 
   checkFormat(value) {

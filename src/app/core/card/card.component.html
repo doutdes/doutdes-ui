@@ -11,7 +11,7 @@
       <li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Modifica titolo</li>
       <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Elimina</li>
       <li *ngIf="checkCard(dashChart.chart_id)" class="dropdown-item" (click)="openModal(editInterval)"><i class="fas fa-calendar-alt"></i> Modifica intervallo</li>
-      <li class="dropdown-item" (click)="openModal(choiceGraph)"><i class="fas fa-chart-bar"></i> Modifica stile grafico</li>
+      <li *ngIf="this.getStyles(this.dashChart.title).length > 0" class="dropdown-item" (click)="openModal(choiceGraph)"><i class="fas fa-chart-bar"></i> Modifica stile grafico</li>
     </ul>
   </div>
 
@@ -331,7 +331,7 @@
         <div class="col-sm-9">
 
           <select class="custom-select my-1 mr-sm-2" (change)="checkFormat($event)">
-            <option *ngFor="let format of this.getStyles(this.dashChart.metric)" [value]="format">{{ format }}</option>
+            <option *ngFor="let format of formatID" [value]="format">{{ format }}</option>
           </select>
 
         </div>
