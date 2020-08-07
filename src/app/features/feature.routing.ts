@@ -74,6 +74,13 @@ import {AdminMessagesComponent} from './messages/admin-messages/admin-messages.c
               IsAuthenticatedGuard
             ],
             loadChildren: './tutorial/tutorial.module#FeatureTutorialModule'
+          },
+          {
+            path: 'tutorialDashboard',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './tutorialDashboard/tutorialDashboard.module#FeatureTutorialDashboardModule'
           }
         ],
       },

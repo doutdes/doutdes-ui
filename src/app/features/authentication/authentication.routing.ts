@@ -5,6 +5,7 @@ import {FeatureAuthenticationRegisterComponent} from './register/register.compon
 import {IsAdminGuard} from '../../shared/_guards/is-admin.guard';
 import {FeatureAuthenticationAccountVerificationComponent} from './account-verification/account-verification.component';
 import {IsNotAuthenticatedGuard} from '../../shared/_guards/is-not-authenticated.guard';
+import {LoggerComponent} from './logger/logger.component';
 
 
 @NgModule({
@@ -21,6 +22,11 @@ import {IsNotAuthenticatedGuard} from '../../shared/_guards/is-not-authenticated
       {
         path: 'register',
         component: FeatureAuthenticationRegisterComponent,
+        canActivate: [IsAdminGuard]
+      },
+      {
+        path: 'logger',
+        component: LoggerComponent,
         canActivate: [IsAdminGuard]
       },
       {

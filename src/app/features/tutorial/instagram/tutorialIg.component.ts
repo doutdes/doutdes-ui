@@ -70,6 +70,9 @@ export class FeatureTutorialIgComponent implements OnInit, OnDestroy {
       case 3:
         this.imgSrc = 'ig_dash.PNG';
         break;
+      case 4:
+        this.imgSrc = 'menuIG.png';
+        break;
     }
   }
 

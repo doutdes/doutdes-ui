@@ -95,6 +95,9 @@
       <a [routerLink]="[drag ? '#' : '/authentication/register']" class="list-group-item list-group-item-action">
         <span class="menu-collapsed ml-4">{{'SIDEBAR.CREA_ACCOUNT' | translate }}</span>
       </a>
+      <a [routerLink]="[drag ? '#' : '/authentication/logger']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed ml-4">Logger</span>
+      </a>
     </div>
 
     <!--<a class="list-group-item list-group-item-action"> &lt;!&ndash; [routerLink]="['/report']" &ndash;&gt;-->
@@ -134,16 +137,24 @@
       </ng-container>
     </div>
 
-    <a href="#submenu7" data-toggle="collapse" aria-expanded="false"
+    <a [routerLink]="[drag ? '#' : '/tutorialDashboard']" data-toggle="collapse" aria-expanded="false"
        class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-start align-items-center" aria-expanded="false">
         <span class="fa fa-question fa-fw mr-3"></span>
         <span class="menu-collapsed">{{'SIDEBAR.GUIDE' | translate }}</span>
-        <span class="fas fa-plus ml-auto"></span>
       </div>
     </a>
 
-    <div id="submenu7" class="collapse sidebar-submenu">
+
+      <div id="submenu7" class="collapse sidebar-submenu">
+
+      <a [routerLink]="[drag ? '#' : '/guideIntro']" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-lg-start align-items-center">
+          <!--- <span class="fas fa-chart-line fa-fw ml-4 mb-4"></span> -->
+          <span class="menu-collapsed ml-4">{{'SIDEBAR.GUIDE_INTRO' | translate }}</span>
+        </div>
+      </a>
+
 
       <a href="#submenu3" data-toggle="collapse" aria-expanded="false"
          class="list-group-item list-group-item-action flex-column align-items-lg-start">
@@ -184,7 +195,22 @@
         </a>
       </div>
 
+
     </div>
+
+
+    <!---
+
+    <a href="#submenu9" data-toggle="collapse" aria-expanded="false"
+       class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="far fa-lightbulb mr-3"></span>
+        <span class="menu-collapsed">{{'SIDEBAR.GUIDE_INTRO' | translate }}</span>
+        <span class="fas fa-plus ml-auto"></span>
+      </div>
+    </a>
+
+    -->
 
   </ul>
   <!-- List Group END-->

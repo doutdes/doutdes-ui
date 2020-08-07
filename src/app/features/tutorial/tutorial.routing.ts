@@ -26,7 +26,7 @@ import {FeatureTutorialYTComponent} from './youtube/tutorialYT.component';
         component: FeatureTutorialIgComponent
       },
       {
-        path: "youtube",
+        path: 'youtube',
         component: FeatureTutorialYTComponent
       }
     ])

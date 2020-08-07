@@ -24,6 +24,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   tmp: string;
   user: User;
   id: string;
+  cookieName: string;
+  version = 'v_1.9.1';
+
 
   @ViewChild('newVersion') newVersionTemplate: ElementRef;
 
@@ -44,7 +47,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.addBreadcrumb();
     this.id = this.localStore.getId();
-    const cookieExists: boolean = this.cookieService.check(this.id);
+    this.cookieName = this.id + this.version;
+    const cookieExists: boolean = this.cookieService.check(this.cookieName);
     if (!cookieExists) {
       this.openModal(this.newVersionTemplate);
     }
@@ -77,7 +81,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   closeModal() {
-    this.cookieService.set(this.id, 'new_version');
+    this.cookieService.set(this.cookieName, this.version);
     this.modalRef.hide();
   }
 }
