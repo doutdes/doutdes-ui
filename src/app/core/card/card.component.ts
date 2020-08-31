@@ -54,6 +54,7 @@ export class CardComponent implements OnInit {
 
   styles: any;
   formatID = [];
+  tmpFormat;
 
   aggregated: boolean;
   type: string;
@@ -170,6 +171,7 @@ export class CardComponent implements OnInit {
     this.dashboardService.getChartsNotAddedByDashboardType(this.dashChart.dashboard_id, this.dashChart.type).subscribe(value => {
       //console.log(value);
       this.styles = value;
+      //console.log(this.styles);
     });
 
     //this.getStyles();
@@ -420,6 +422,7 @@ export class CardComponent implements OnInit {
   }
 
   updateChart(title, toUpdate): void {
+    //console.log(toUpdate);
     this.dashboardService.updateChart(toUpdate)
       .subscribe(() => {
         // this.GEService.updateChartInDashboard.next(toUpdate);
@@ -437,6 +440,49 @@ export class CardComponent implements OnInit {
         console.log('Error updating the Chart');
         console.log(error);
       });
+  }
+
+  updateStyles(card) {
+    //Ci sarà l'aggiornamento
+
+    let tmpNewIDCard = this.checkIDCardByFormat(card.originalTitle, card.format);
+    let tmpNewFormat = this.checkFormatNew;
+
+    const chart: DashboardCharts = {
+      dashboard_id: card.dashboard_id,
+      chart_id: tmpNewIDCard,
+      title: card.title,
+      format: tmpNewFormat,
+      description: card.description,
+      //period: card.period
+      //position: this.dashChart.position
+    };
+
+    if (card.format != tmpNewFormat) {
+      this.dashboardService.updateStyleChart(chart)
+        .subscribe(() => {
+          this.filterActions.updateStylesChart(chart);
+          this.closeModal();
+          this.toastr.success(
+            'Successo!',
+            'Grafico aggiornato correttamente!'
+          );
+          location.reload();
+        }, error => {
+          this.toastr.error(
+            'Errore',
+            'Errore durante l\'aggiornamento del grafico.'
+          );
+          console.log('Error updating the Chart');
+          console.log(error);
+        });
+    } else {
+      this.toastr.error(
+        'Errore!',
+        'Errore durante l\'aggiornamento del grafico poichè il grafico per quel format è già presente!'
+      );
+    }
+
   }
 
   addMetricToChart() {
@@ -637,30 +683,55 @@ export class CardComponent implements OnInit {
 
   }
 
-  getStyles(metric) {
+  getStyles(metric, format) {
+      let count = 1;
+
       this.formatID = [];
+
       //this.openModal(template);
       if (this.styles) {
         //Ciclo per salvarmi tutti i "format" per quella metrica
         for (let i = 0; i < this.styles.length; i++) {
           if (this.styles[i]['title'] === metric) {
-            this.formatID.push([this.styles[i]['format']]);
+            //this.formatID.push([this.styles[i]['format']]);
+            if (this.styles[i]['format']) {
+              this.formatID[count] = this.styles[i]['format'];
+              count++;
+            }
           }
         }
-        //console.log(this.formatID)
+        //this.formatID.unshift([format]);
+        this.formatID[0] = format;
+        //console.log(this.formatID);
         return this.formatID;
       }
+
   }
 
   checkFormat(value) {
+      //console.log(this.formatID);
+      //console.log(value.target.value);
+
       this.checkFormatNew = value.target.value;
+      //console.log(this.checkFormatNew);
+
   }
 
-  updateStyles(dashboard_id, chart_id) {
-     //Ci sarà l'aggiornamento
+  checkIDCardByFormat(titleCard, format){
+    //console.log(this.styles);
 
-    console.log(this.checkFormatNew);
-    this.closeModal();
+    if (this.checkFormatNew){
+      for(let i = 0; i < this.styles.length; i++){
+        if((this.styles[i]['format'] === this.checkFormatNew) && (this.styles[i]['title'] === titleCard)){
+          return this.styles[i]['ID'];
+        }
+      }
+    } else {
+      //console.log(format);
+      this.checkFormatNew = format;
+      //console.log(this.checkFormatNew);
+    }
+
   }
 
 }

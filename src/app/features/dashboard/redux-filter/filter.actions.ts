@@ -110,7 +110,32 @@ export class FilterActions {
       filteredDashboard: this.filteredDashboard,
       storedDashboards: this.storedDashboards
     });
+
   }
+
+  updateStylesChart(chart: DashboardCharts) {
+    const index = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.originalTitle === chart.title);
+    const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
+
+    this.currentDashboard.data[index].chart_id = chart.chart_id;
+    this.currentDashboard.data[index].format = chart.format;
+
+    this.filteredDashboard.data[index].chart_id = chart.chart_id;
+    this.filteredDashboard.data[index].format = chart.format;
+
+    this.storedDashboards[storedIndex].data[index].chart_id = chart.chart_id;
+    this.storedDashboards[storedIndex].data[index].format = chart.format;
+
+
+    this.Redux.dispatch({
+      type: FILTER_UPDATE,
+      currentDashboard: this.currentDashboard,
+      filteredDashboard: this.filteredDashboard,
+      storedDashboards: this.storedDashboards
+    });
+
+  }
+
 /*
   updateIntervalChart(chart: DashboardCharts) {
     const index = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
