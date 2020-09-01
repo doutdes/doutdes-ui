@@ -23,6 +23,7 @@ import {select} from '@angular-redux/store';
 import {ChartsCallsService} from '../../shared/_services/charts_calls.service';
 import {InstagramService} from '../../shared/_services/instagram.service';
 import {ChartParams} from '../../shared/_models/Chart';
+//import {EmptycardComponent} from './emptycard.component';
 
 @Component({
   selector: 'app-card',
@@ -48,6 +49,11 @@ export class CardComponent implements OnInit {
     thirty: 29,
     ninety: 89,
   };
+
+  tmpProva: ['ciao', 'wee'];
+
+  styles: any;
+  formatID = [];
 
   aggregated: boolean;
   type: string;
@@ -90,6 +96,7 @@ export class CardComponent implements OnInit {
 
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
 
+  updateGraph: any;
 
   bsRangeValue: Date[];
   bsRangeValue2: Date[];
@@ -103,12 +110,16 @@ export class CardComponent implements OnInit {
   metrics: Array<Chart>;
   addMetricForm: FormGroup;
 
+
   lang: string;
   value: string;
   tmp: string;
   user: User;
 
+  chartRemaining;
+
   checkComp: boolean;
+  checkFormatNew;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -122,7 +133,8 @@ export class CardComponent implements OnInit {
     private filterActions: FilterActions,
     public translate: TranslateService,
     private userService: UserService,
-    private http: HttpClient
+    private http: HttpClient,
+   // private addChart: EmptycardComponent,
   ) {
     this.GEService.draggable.subscribe(value => this.drag = value);
 
@@ -136,6 +148,7 @@ export class CardComponent implements OnInit {
           console.error(error);
         });
     });
+
   }
 
   ngOnInit() {
@@ -153,6 +166,14 @@ export class CardComponent implements OnInit {
     });
 
     if (this.dashChart.chart_id == 108) return this.checkMinMaxDate(this.dashChart.chart_id);
+
+    this.dashboardService.getChartsNotAddedByDashboardType(this.dashChart.dashboard_id, this.dashChart.type).subscribe(value => {
+      //console.log(value);
+      this.styles = value;
+
+    });
+
+    //this.getStyles();
 
   }
 
@@ -196,6 +217,7 @@ export class CardComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
+
 
     if (this.updateChartForm.invalid) {
       this.loading = false;
@@ -423,6 +445,7 @@ export class CardComponent implements OnInit {
   }
 
   getMetricsAvailable() {
+
     this.dashboardService.getChartsByFormat('linea')
       .subscribe(charts => {
         this.metrics = charts
@@ -613,6 +636,30 @@ export class CardComponent implements OnInit {
     }
     return true;
 
+  }
+
+  getStyles(metric) {
+
+    if (this.styles) {
+      //Ciclo per salvarmi tutti i "format" per quella metrica
+      for (let i = 0; i < this.styles.length; i++) {
+        if (this.styles[i]['metric'] == metric) {
+          this.formatID.push([this.styles[i]['format']]);
+        }
+      }
+      return this.formatID;
+    }
+  }
+
+  checkFormat(value) {
+    console.log(value, 'we')
+      this.checkFormatNew = value.target.value;
+  }
+
+  updateStyles(dashboard_id, chart_id) {
+     //Ci sarà l'aggiornamento
+
+    this.closeModal();
   }
 
 }
