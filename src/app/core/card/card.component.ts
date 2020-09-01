@@ -447,7 +447,7 @@ export class CardComponent implements OnInit {
 
     let tmpNewIDCard = this.checkIDCardByFormat(card.originalTitle, card.format);
     let tmpNewFormat = this.checkFormatNew;
-
+    console.log(tmpNewIDCard);
     const chart: DashboardCharts = {
       dashboard_id: card.dashboard_id,
       chart_id: tmpNewIDCard,
@@ -461,7 +461,7 @@ export class CardComponent implements OnInit {
     if (card.format != tmpNewFormat) {
       this.dashboardService.updateStyleChart(chart)
         .subscribe(() => {
-          this.filterActions.updateStylesChart(chart);
+          //this.filterActions.updateStylesChart(chart);
           this.closeModal();
           this.toastr.success(
             'Successo!',
@@ -683,16 +683,15 @@ export class CardComponent implements OnInit {
 
   }
 
-  getStyles(metric, format) {
+  getStyles(originalTitle, format) {
       let count = 1;
 
       this.formatID = [];
-
       //this.openModal(template);
       if (this.styles) {
         //Ciclo per salvarmi tutti i "format" per quella metrica
         for (let i = 0; i < this.styles.length; i++) {
-          if (this.styles[i]['title'] === metric) {
+          if (this.styles[i]['title'] === originalTitle) {
             //this.formatID.push([this.styles[i]['format']]);
             if (this.styles[i]['format']) {
               this.formatID[count] = this.styles[i]['format'];
@@ -719,10 +718,15 @@ export class CardComponent implements OnInit {
 
   checkIDCardByFormat(titleCard, format){
     //console.log(this.styles);
+    console.log("TitleOriginal", titleCard);
+    console.log("Format", format);
 
+    console.log(this.checkFormatNew);
     if (this.checkFormatNew){
+      console.log(this.styles);
       for(let i = 0; i < this.styles.length; i++){
         if((this.styles[i]['format'] === this.checkFormatNew) && (this.styles[i]['title'] === titleCard)){
+          console.log(this.styles[i]['ID']);
           return this.styles[i]['ID'];
         }
       }
