@@ -169,9 +169,7 @@ export class CardComponent implements OnInit {
     if (this.dashChart.chart_id == 108) return this.checkMinMaxDate(this.dashChart.chart_id);
 
     this.dashboardService.getChartsNotAddedByDashboardType(this.dashChart.dashboard_id, this.dashChart.type).subscribe(value => {
-      //console.log(value);
       this.styles = value;
-      //console.log(this.styles);
     });
 
     //this.getStyles();
@@ -422,7 +420,6 @@ export class CardComponent implements OnInit {
   }
 
   updateChart(title, toUpdate): void {
-    //console.log(toUpdate);
     this.dashboardService.updateChart(toUpdate)
       .subscribe(() => {
         // this.GEService.updateChartInDashboard.next(toUpdate);
@@ -443,11 +440,10 @@ export class CardComponent implements OnInit {
   }
 
   updateStyles(card) {
-    //Ci sarà l'aggiornamento
 
     let tmpNewIDCard = this.checkIDCardByFormat(card.originalTitle, card.format);
     let tmpNewFormat = this.checkFormatNew;
-    console.log(tmpNewIDCard);
+
     const chart: DashboardCharts = {
       dashboard_id: card.dashboard_id,
       chart_id: tmpNewIDCard,
@@ -463,24 +459,24 @@ export class CardComponent implements OnInit {
         .subscribe(() => {
           //this.filterActions.updateStylesChart(chart);
           this.closeModal();
-          this.toastr.success(
-            'Successo!',
-            'Grafico aggiornato correttamente!'
-          );
+
+          this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_FORMAT'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_FORMAT'));
+
           location.reload();
         }, error => {
-          this.toastr.error(
-            'Errore',
-            'Errore durante l\'aggiornamento del grafico.'
-          );
+
+          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_FORMAT'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_FORMAT'));
+
           console.log('Error updating the Chart');
           console.log(error);
         });
     } else {
-      this.toastr.error(
-        'Errore!',
-        'Errore durante l\'aggiornamento del grafico poichè il grafico per quel format è già presente!'
-      );
+
+      this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_FORMAT_1'),
+        this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_FORMAT_1'));
+
     }
 
   }
@@ -701,39 +697,25 @@ export class CardComponent implements OnInit {
         }
         //this.formatID.unshift([format]);
         this.formatID[0] = format;
-        //console.log(this.formatID);
         return this.formatID;
       }
 
   }
 
   checkFormat(value) {
-      //console.log(this.formatID);
-      //console.log(value.target.value);
-
       this.checkFormatNew = value.target.value;
-      //console.log(this.checkFormatNew);
-
   }
 
   checkIDCardByFormat(titleCard, format){
-    //console.log(this.styles);
-    console.log("TitleOriginal", titleCard);
-    console.log("Format", format);
 
-    console.log(this.checkFormatNew);
     if (this.checkFormatNew){
-      console.log(this.styles);
       for(let i = 0; i < this.styles.length; i++){
         if((this.styles[i]['format'] === this.checkFormatNew) && (this.styles[i]['title'] === titleCard)){
-          console.log(this.styles[i]['ID']);
           return this.styles[i]['ID'];
         }
       }
     } else {
-      //console.log(format);
       this.checkFormatNew = format;
-      //console.log(this.checkFormatNew);
     }
 
   }

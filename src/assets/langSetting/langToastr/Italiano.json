@@ -119,6 +119,18 @@
     "NO_INFO": {
       "TITLE": "Errore Info grafico!",
       "MESSAGE": "La guida del grafico non è disponibile."
+    },
+    "SI_UPDATE_FORMAT": {
+       "TITLE": "Aggiornamento completato!",
+       "MESSAGE": "Il Format del grafico è stato aggiornato con successo!"
+    },
+    "NO_UPDATE_FORMAT": {
+      "TITLE": "Errore format!",
+      "MESSAGE": "Non è stato possibile aggiornare il format. Riprova oppure contatta il supporto."
+    },
+    "NO_UPDATE_FORMAT_1": {
+      "TITLE": "Errore format!",
+      "MESSAGE": "Non è stato possibile aggiornare il format perchè è già presnte."
     }
   }
 }

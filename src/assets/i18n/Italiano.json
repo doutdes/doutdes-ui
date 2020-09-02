@@ -298,7 +298,8 @@
     "SCELTA_TITOLO": "Scelta guidata della comparazione ",
     "SCELTA_TITOLO_1": "Clicca sul menù della card",
     "SCELTA_TITOLO_2": "Clicca su 'Modifica intervallo'",
-    "SCELTA_TITOLO_3": "Seleziona gli intervalli che vuoi comparare e clicca 'Modifica' "
+    "SCELTA_TITOLO_3": "Seleziona gli intervalli che vuoi comparare e clicca 'Modifica' ",
+    "NEW_FORMAT": "Nuovo stile:"
   },
   "EMPTYCARD": {
     "NEW_GRA": "Aggiungi grafico",

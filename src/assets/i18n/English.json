@@ -297,7 +297,8 @@
     "SCELTA_TITOLO": "Comparison Guided Choice",
     "SCELTA_TITOLO_1": "Click on the card menu",
     "SCELTA_TITOLO_2": "Click on 'Edit Interval'",
-    "SCELTA_TITOLO_3": "Select the intervals you want to compare and click 'Edit'"
+    "SCELTA_TITOLO_3": "Select the intervals you want to compare and click 'Edit'",
+    "NEW_FORMAT": "New style:"
   },
   "EMPTYCARD": {
     "NEW_GRA": "Add chart",
