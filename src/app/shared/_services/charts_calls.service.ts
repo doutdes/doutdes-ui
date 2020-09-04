@@ -517,40 +517,48 @@ export class ChartsCallsService {
 
         chartData = this.addPaddingRows(chartData);
         break; // Facebook fan per città(elenco)
-      case FB_CHART.PAGE_FANS_AGE_ELENCO:
-        header = [['Età', 'Maschio', 'Femmina']];
+      case FB_CHART.ONLINE_FANS_FOR_DAY:
+        header = [['Orario', 'Fans online']];
 
-        const gender_data_fb = data[0] ? Object.keys(data[0]['value']) : null;
+        const time = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 
-        if (gender_data_fb && gender_data_fb.length > 0) {
-          keys = Object.keys(data[0]['value']); // getting all the gender/age data
+        myMap = new Map();
+        for (const el of data) {
+          if (el['value']) {
+            const times = el['value'];
+            // tslint:disable-next-line:forin
 
-          const subIndex = (keys[0].indexOf('.') !== -1) ? 2 : 1;
-
-          // putting a unique entry in chartArray for every existent age range
-          for (let i = 0; i < keys.length; i++) {
-            index = 0;
-            if (!(chartData.find(e => e[0] === (keys[i].substr(subIndex, keys[i].length))))) {
-              chartData.push([keys[i].substr(subIndex, keys[i].length), 0, 0]);
-              index = (chartData.length - 1);
-            } else {
-              index = chartData.findIndex(e => e[0] === (keys[i].substr(subIndex, keys[i].length)));
-            }
-            // and collecting data
-
-            if (keys[i].substr(0, 1) === 'M') {
-              chartData[index][1] = parseInt(data[0]['value'][keys[i]], 10);
-            } else {
-              if (keys[i].substr(0, 1) === 'F') {
-                chartData[index][2] = parseInt(data[0]['value'][keys[i]], 10);
+            for (let i in times) {
+              const value = parseInt(times[i], 10);
+              if (myMap.has(i)) {
+                myMap.set(i, myMap.get(i) + value);
+              } else {
+                myMap.set(i, value);
               }
             }
-
           }
-          chartData = chartData.sort();
         }
-        break; // Facebook fan per Age (elenco)
 
+        for (const i of time) {
+          if (myMap.has(i)) {
+            myMap.set(i, myMap.get(i));
+          } else {
+            myMap.set(i, 0);
+          }
+        }
+
+        const keyTime = myMap.keys();
+        const valuesTime = myMap.values();
+
+        for (let i = 0; i < time.length; i++) {
+          chartData.push([keyTime.next().value, valuesTime.next().value]);
+        }
+
+        for (let i = 0; i < chartData.length; i++) {
+          chartData[i][1] = chartData[i][1] / data.length;
+        }
+
+        break;
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -2196,6 +2204,11 @@ export class ChartsCallsService {
             options: { vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
               colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
         break; // Facebook Fan Age per elenco
+      case FB_CHART.ONLINE_FANS_FOR_DAY:
+        formattedData = this.columnChart(data,
+          {options: { colors: [FB_PALETTE.TURQUOISE.C6, FB_PALETTE.TURQUOISE.C8, FB_PALETTE.TURQUOISE.C10],
+            }});
+        break;
 
       case GA_CHART.IMPRESSIONS_DAY:
 
