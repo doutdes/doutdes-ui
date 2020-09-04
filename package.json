@@ -63,7 +63,7 @@
     "ngx-perfect-scrollbar": "6.1.0",
     "ngx-select-dropdown": "^1.0.1",
     "ngx-toastr": "10.1.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^4.13.1",
     "package.json": "^2.0.1",
     "popper.js": "^1.14.4",
     "redux": "4.0.0",
