@@ -622,7 +622,7 @@ export class ChartsCallsService {
          **/
 
         header = [['Tipo', 'Numero']];
-        console.log(data);
+
         for (let i = 0; i < data.length; i++) {
           indexFound = keys.findIndex(el => el === data[i][1]);
 
@@ -2228,7 +2228,7 @@ export class ChartsCallsService {
               vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'},
                 textPosition: 'in', textStyle: {color: '#999'}}, colors: [GA_PALETTE.ORANGE.C9],
               bar: {groupWidth: '70%'},  areaOpacity: 0.3 } } );
-        console.log(formattedData);
+
         break;  // Google Sources Column Chart
       case GA_CHART.BOUNCE_RATE:
         type = 'ga_bounce';
@@ -2270,7 +2270,7 @@ export class ChartsCallsService {
           {options: {colors: [GA_PALETTE.ORANGE.C7, GA_PALETTE.LIME.C7]}});
         break;  // Google New Users vs Returning
       case GA_CHART.PAGE_LOAD_TIME:
-        console.log(data);
+
         formattedData = {
           chartType: 'BarChart',
           dataTable: data,
