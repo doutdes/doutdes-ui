@@ -611,6 +611,24 @@ export class CardComponent implements OnInit {
   checkInfo (chart) {
 
       switch (chart) {
+        case 1:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerGiorno.pdf', '_blank');
+          break;
+        case 2:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerPaese.pdf', '_blank');
+          break;
+        case 3:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniPost.pdf', '_blank');
+          break;
+        case 8:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerPaese.pdf', '_blank');
+          break;
+        case 13:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniPagina.pdf', '_blank');
+          break;
+        case 14:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerPaese.pdf', '_blank');
+          break;
         case 15:
           window.open('./././assets/InfoGrafici/GuideSingole/Instagram/Visualizzazioni.pdf', '_blank');
           break;
@@ -635,8 +653,64 @@ export class CardComponent implements OnInit {
         case 28:
           window.open('./././assets/InfoGrafici/GuideSingole/Instagram/NuoviFollower.pdf', '_blank');
           break;
+        case 29:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/InterazioniTotali.pdf', '_blank');
+          break;
+        case 30:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/ClickSuiContenuti.pdf', '_blank');
+          break;
+        case 31:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/CondivisioneDelLuogo.pdf', '_blank');
+          break;
+        case 32:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FeedbackNegativi.pdf', '_blank');
+          break;
+        case 33:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanOnlineGiornalieri.pdf', '_blank');
+          break;
+        case 34:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/Reazioni.pdf', '_blank');
+          break;
+        case 35:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/NuoviFan.pdf', '_blank');
+          break;
+        case 36:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanCancellati.pdf', '_blank');
+          break;
+        case 37:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniInserzioni.pdf', '_blank');
+          break;
+        case 38:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/RiproduzioniVideo.pdf', '_blank');
+          break;
+        case 48:
+        case 49:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/Reazioni.pdf', '_blank');
+          break;
+        case 50:
+        case 51:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/AcquisizioneDegliUtenti.pdf', '_blank');
+          break;
+        case 52:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniContenutiPerCitta.pdf', '_blank');
+          break;
+        case 53:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniContenutiPerCitta.pdf', '_blank');
+          break;
+        case 54:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniContenutiPerPaese.pdf', '_blank');
+          break;
         case 102:
           window.open('./././assets/InfoGrafici/GuideSingole/Instagram/ClickInfo.pdf', '_blank');
+          break;
+        case 110:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerCitta.pdf', '_blank');
+          break;
+        case 111:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerGenereEta.pdf', '_blank');
+          break;
+        case 121:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanOnlinePerOra.pdf', '_blank');
           break;
         default:
           this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_INFO'),
@@ -649,6 +723,12 @@ export class CardComponent implements OnInit {
   checkCardInfo (chart) {
 
     switch (chart) {
+      case 1:
+      case 2:
+      case 3:
+      case 8:
+      case 13:
+      case 14:
       case 15:
       case 16:
       case 17:
@@ -657,7 +737,27 @@ export class CardComponent implements OnInit {
       case 20:
       case 22:
       case 28:
+      case 29:
+      case 30:
+      case 31:
+      case 32:
+      case 33:
+      case 34:
+      case 35:
+      case 36:
+      case 37:
+      case 38:
+      case 48:
+      case 49:
+      case 50:
+      case 51:
+      case 52:
+      case 53:
+      case 54:
       case 102:
+      case 110:
+      case 111:
+      case 121:
         return true;
 
       default:

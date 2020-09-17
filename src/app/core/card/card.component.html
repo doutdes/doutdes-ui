@@ -7,7 +7,7 @@
     <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
         role="menu" aria-labelledby="button-basic">
       <!--<li class="dropdown-item" (click)="getMetricsAvailable()"><i class="fas fa-plus-circle"></i>Aggiungi metrica</li>-->
-      <li *ngIf="dashChart.type == 3 && checkCardInfo(dashChart.chart_id)" class="dropdown-item" (click)="checkInfo(dashChart.chart_id)"><i class="fas fa-info-circle"></i> Interpretazione del grafico</li>
+      <li *ngIf="checkCardInfo(dashChart.chart_id)" class="dropdown-item" (click)="checkInfo(dashChart.chart_id)"><i class="fas fa-info-circle"></i> Interpretazione del grafico</li>
       <li class="dropdown-item" (click)="openModal(updateChart)"><i class="fas fa-edit"></i> Modifica titolo</li>
       <li class="dropdown-item" (click)="openModal(deleteChart)"><i class="fas fa-trash"></i> Elimina</li>
       <li *ngIf="checkCard(dashChart.chart_id)" class="dropdown-item" (click)="openModal(editInterval)"><i class="fas fa-calendar-alt"></i> Modifica intervallo</li>

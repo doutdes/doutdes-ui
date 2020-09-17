@@ -194,6 +194,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break;  // FB Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
         header = [['Paese', 'Numero fan']];
@@ -205,6 +206,7 @@ export class ChartsCallsService {
         }
 
         chartData = this.addPaddingRows(chartData);
+
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
@@ -212,6 +214,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
 
         break;  // Page Impressions
       case FB_CHART.FANS_COUNTRY_PIE:
@@ -313,9 +316,9 @@ export class ChartsCallsService {
         }
         break; // Facebook Fans cancellati
       case FB_CHART.IMPRESSIONS_PAID:
-        header = [['Data', 'Visualizzazioni di inserzioni']];
+        header = [['Data', 'Visualizzazioni inserzioni']];
 
-        for (let i = 0; i < data.length; i++) {
+       for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
 
@@ -368,9 +371,11 @@ export class ChartsCallsService {
           chartData.push([keyReactions.next().value, valuesReactions.next().value]);
         }
 
+
         break; // Facebook Reazioni torta
       case FB_CHART.REACTIONS_LINEA:
         header = [['Data', 'Reazioni']];
+
 
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
@@ -426,9 +431,11 @@ export class ChartsCallsService {
 
         const key = myMap.keys();
         const values = myMap.values();
+
         for (let i = 0; i < myMap.size; i++) {
           chartData.push([key.next().value, values.next().value]);
         }
+
         break; // Facebook Reazioni colonna
       case FB_CHART.PAGE_VIEW_EXTERNALS:
         header = [['Sito Web', 'Numero']];
@@ -558,7 +565,7 @@ export class ChartsCallsService {
           chartData[i][1] = chartData[i][1] / data.length;
         }
 
-        break;
+        break; //Facebook Fan Online per ora (colonne)
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -2041,7 +2048,9 @@ export class ChartsCallsService {
       case FB_CHART.FANS_COUNTRY_PIE:
         formattedData = this.pieChart(data,
           {options: {sliceVisibilityThreshold: 0.05,
-              colors: [FB_PALETTE.BLUE.C2, FB_PALETTE.BLUE.C3, FB_PALETTE.TURQUOISE.C1, FB_PALETTE.STIFFKEY.C2]}});
+              colors: [FB_PALETTE.BLUE.C3, FB_PALETTE.BLUE.C8, FB_PALETTE.BLUE.C6,
+                FB_PALETTE.TURQUOISE.C12, '#1671ff', FB_PALETTE.TURQUOISE.C9,
+                FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9, '#364600']}});
         break;  // Fan Country Pie
       case FB_CHART.ENGAGED_USERS:
         formattedData = this.areaChart( data,
@@ -2082,7 +2091,7 @@ export class ChartsCallsService {
         formattedData = this.areaChart( data,
           {
             options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.TURQUOISE.C7]}
+              colors: [FB_PALETTE.TURQUOISE.C6]}
           }
         );
         break; // Fb Fan online giornalieri
@@ -2208,7 +2217,7 @@ export class ChartsCallsService {
         formattedData = this.columnChart(data,
           {options: { colors: [FB_PALETTE.TURQUOISE.C6, FB_PALETTE.TURQUOISE.C8, FB_PALETTE.TURQUOISE.C10],
             }});
-        break;
+        break; //Facebook Fan Online per ora (colonne)
 
       case GA_CHART.IMPRESSIONS_DAY:
 

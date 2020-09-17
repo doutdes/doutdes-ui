@@ -56,7 +56,6 @@ export class AggregatedDataService {
       ((chart.chart_id === FB_CHART.REACTIONS_LINEA) ||
         (chart.chart_id === FB_CHART.PAGE_VIEW_EXTERNALS_LINEA))) {
 
-
       myMap = new Map();
 
       for (let el of chart.chartData) {
@@ -101,6 +100,8 @@ export class AggregatedDataService {
       prevFilteredData = chart.chartData.filter(el => (new Date(el.end_time)) >= prevDate.first && (new Date(el.end_time)) <= prevDate.last);
 
     } else {
+
+
       switch (chart.type) {
         case D_TYPE.GA :
           filteredData = chart.chartData.filter(el => parseDate(el[0]) >= dateInterval.first && parseDate(el[0]) <= dateInterval.last);
@@ -259,6 +260,7 @@ export class AggregatedDataService {
       interval: dateInterval,
       prevInterval: this.getPrevious(dateInterval),
     };
+
     /* console.log('----------');
      console.log('CURRENT : ');
      console.log('FROM: '+result.interval.first);
