@@ -66,21 +66,31 @@
   <app-minicard *ngFor="let mini of miniCards" [minicard]="mini" [dtype]="D_TYPE.GA"></app-minicard>
 </div> <!-- Mini cards -->
 
-<!--<div class="panel-group" id="accordion" style="margin-top: 10pt;">
-  <div class="card">
-    <div class="panel panel-default">
-      <div class="panel-heading card-header">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-            Info sugli ad</a>
-        </h4>
+<div class="container-fluid" style="margin-top: 10pt; margin-left: 10pt;">
+  <div class="row">
+    <div class="card-header example" (click)="show()"
+         style="width: 70pt; height: 60pt; margin-right: 10pt; border-radius: 30%; border-style: solid; border-width: 5pt; border-color: #4285F4 #DB4437 #F4B400 #0F9D58; cursor: pointer;">
+      <div style="display: flex; justify-content: center; padding-top: 8pt">
+        <i class="fab fa-google" style="font-size: 15pt;"></i>
+        <h5>ADS</h5>
       </div>
-    <div id="collapse1" class="panel-collapse collapse in card-body">
-      weeeeeeeeeeeeee
+      </div>
+      <div id="thisone" *ngIf="flag" class="row" style="margin-left: 40pt;" [ngClass]="{'myelement': !flag2, 'slide': flag2}">
+        <div *ngFor="let mini of AdsCard" class="card" style="box-sizing: border-box; margin-left: -5pt; border-radius: 40%; border-style: solid;
+      border-width: 3pt; height: 60pt; width: 70pt; display: flex; justify-content: center; padding-left: 3%; background-color: #E8E8E8"
+             [ngStyle]="{'border-color': mini.color}" #pop="bs-popover" [popover]="popTemplate" (mouseenter)="pop.show()" (mouseleave)="pop.hide()">
+          <div class="text-value" style="font-size: 10pt; position: absolute; left: 40%;top: 60%;">{{mini.value}}</div>
+          <small  class="text-muted text-uppercase font-weight-bold" style="position: absolute; left: 10%;top: 20%;">{{mini.measure}}</small>
+          <i [class]="mini.icon + ' d-sm-block d-none'" style="position: absolute; left: 10%;top: 60%;"></i>
+        </div>
+      </div>
     </div>
-    </div>
-  </div>
-</div>-->
+</div>
+
+<ng-template #popTemplate>
+  <p style="font-size: 14px; margin: 0;">{{'DASHBOARD.ADS' | translate }}</p>
+</ng-template>
+
 
 <div *ngIf="this.drag" class="alert alert-primary mt-3 mb-0 py-sm-4" role="alert">
   <i class="fas fa-2x fa-people-carry mr-3" style=""></i>

@@ -54,7 +54,19 @@
            bsDaterangepicker>
   </div>
 
-  <ngx-loading [show]="loading" [config]="config"></ngx-loading>
+  <div class="my-container">
+    <ngx-loading [show]="loading" [config]= config>
+    </ngx-loading>
+
+    <span *ngIf="loading" class="text" style="z-index: 2000;
+  position: absolute;
+  font-size: 20px;
+  color: white;
+  left: 0;
+  right: 0;
+  text-align: center;
+  top: calc(50% + 40px);">Caricamento in corso</span>
+  </div>
 </div>
 
 <div *ngIf="dashErrors.emptyMiniCards" class="alert alert-warning px-3 pt-3 mt-3 mb-0" role="alert">

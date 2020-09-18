@@ -231,7 +231,7 @@ export class FilterActions {
           if (!chart.error) {
             switch (chart.type) {
               case D_TYPE.GA:
-                if (chart.chart_id !== 121 && chart.chart_id !== 119) {
+                if (chart.chart_id !== 121) {
                   chart.chartData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime());
                 }
                 break;
@@ -242,13 +242,17 @@ export class FilterActions {
                 chart.chartData = chart.chartData.filter(el => parseDate(el.date_stop).getTime() >= filterInterval.first.getTime() && parseDate(el.date_stop).getTime() <= filterInterval.last.getTime());
                 break;
               case D_TYPE.IG:
-                chart.chartData = chart.metric ===
-                'online_followers' ? chart.chartData.filter(
-                  el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last) :
-                  chart.period !== 'lifetime' && chart.metric !== 'lost_followers' ? (
-                    (chart.metric === 'follower_count' && chart.chart_id === 108) ? chart.chartData :
-                      chart.chartData.filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last))
-                      : chart.chartData;
+                if (chart.metric === 'lost_followers') {
+                  chart.chartData[0]['business'] = chart.chartData[0]['business'].filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
+                  chart.chartData[1]['follower_count'] = chart.chartData[1]['follower_count'].filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
+                }
+                chart.chartData = chart.metric === 'online_followers'
+                  ? chart.chartData.filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last)
+                  : ((chart.metric === 'follower_count' && chart.chart_id === 108) || chart.period === 'lifetime')
+                    ? chart.chartData
+                    : chart.metric === 'lost_followers'
+                      ? chart.chartData
+                      : chart.chartData.filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
 
                 /***
                 chart.chartData = chart.metric ===
