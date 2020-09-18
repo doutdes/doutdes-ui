@@ -34,9 +34,9 @@ import {HttpClient} from '@angular/common/http';
 @Component({
   selector: 'app-feature-dashboard-google',
   templateUrl: './googleAnalytics.component.html',
-  styleUrls: ['./googleAnalytics.component.css'],
+  //styleUrls: ['./googleAnalytics.component.css'],
 
- //styleUrls: ['../../../../assets/css/dragula.css']
+  styleUrls: ['../../../../assets/css/dragula.css']
 })
 
 export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestroy {
