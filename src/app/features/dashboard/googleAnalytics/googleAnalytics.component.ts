@@ -34,9 +34,9 @@ import {HttpClient} from '@angular/common/http';
 @Component({
   selector: 'app-feature-dashboard-google',
   templateUrl: './googleAnalytics.component.html',
-  styleUrls: ['./googleAnalytics.component.css'],
+  //styleUrls: ['./googleAnalytics.component.css'],
 
-  //styleUrls: ['../../../../assets/css/dragula.css']
+  styleUrls: ['../../../../assets/css/dragula.css']
   })
 
 export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestroy {
@@ -58,8 +58,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     thirty: 29,
     ninety: 89
   };
-  color = {'Utenti tot.': '#4285F4', 'Visite tot.': '#DB4437', 'Freq. rimb.': '#F4B400', 'Durata sess.': '#0F9D58'}
-
   color = {'Utenti tot.': '#4285F4', 'Visite tot.': '#DB4437', 'Freq. rimb.': '#F4B400', 'Durata sess.': '#0F9D58'}
 
   public chartArray$: Array<DashboardCharts> = [];
