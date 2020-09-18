@@ -268,6 +268,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
             this.alertTime(chartParams)
 
+
           forkJoin(observables)
             .subscribe(dataArray => {
               for (let i = 0; i < dataArray.length; i++) {

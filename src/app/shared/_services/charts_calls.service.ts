@@ -194,6 +194,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break;  // FB Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
         header = [['Paese', 'Numero fan']];
@@ -205,6 +206,7 @@ export class ChartsCallsService {
         }
 
         chartData = this.addPaddingRows(chartData);
+
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
@@ -212,6 +214,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
 
         break;  // Page Impressions
       case FB_CHART.FANS_COUNTRY_PIE:
@@ -368,9 +371,11 @@ export class ChartsCallsService {
           chartData.push([keyReactions.next().value, valuesReactions.next().value]);
         }
 
+
         break; // Facebook Reazioni torta
       case FB_CHART.REACTIONS_LINEA:
         header = [['Data', 'Reazioni']];
+
 
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
@@ -426,9 +431,11 @@ export class ChartsCallsService {
 
         const key = myMap.keys();
         const values = myMap.values();
+
         for (let i = 0; i < myMap.size; i++) {
           chartData.push([key.next().value, values.next().value]);
         }
+
         break; // Facebook Reazioni colonna
       case FB_CHART.PAGE_VIEW_EXTERNALS:
         header = [['Sito Web', 'Numero']];
@@ -594,7 +601,6 @@ export class ChartsCallsService {
         }
 
         break; //Facebook Fan Online per ora (colonne)
-
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -882,6 +888,7 @@ export class ChartsCallsService {
         break; // Google Session elenco
 
       case GA_CHART.GENDER_AGE :
+
         header = [['Età', 'Donne', {role: 'style'}, {role: 'annotation'}, 'Uomini', {role: 'style'}, {role: 'annotation'}]];
 
         let tmpAcc = 0;
@@ -1199,8 +1206,11 @@ export class ChartsCallsService {
         break;
       case IG_CHART.MEDIA_ENGAGEMENT_DATA:
         header = [['Data', 'Interazioni', {role: 'tooltip'}]];
+
         now = new Date(data[data.length - 1].end_time.slice(0, 10));
+
         for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
+          // @ts-ignore
           tmpData = data.filter(el => Date.parse(new Date(el.end_time).toString().slice(3, 15)) === Date.parse(d.toString().slice(3, 15)));
           tmpData.forEach(el => acc += el.engagement + el.saved);
           n = tmpData.length > 0 ? tmpData.length : 1;
@@ -1273,7 +1283,9 @@ export class ChartsCallsService {
         header = [['Data', ' Visualizzazioni utenti unici', { role: 'style' }, 'Visualizzazioni utenti totali', { role: 'style' }]];
         let supArr = [];
         now = new Date(data[data.length - 1].end_time.slice(0, 10))
+
         for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
+          // @ts-ignore
           supArr = data.filter(el => Date.parse(new Date(el.end_time).toString().slice(3, 15)) === Date.parse(d.toString().slice(3, 15)));
           supArr.forEach(el => {
             reach += el.reach;
@@ -2352,7 +2364,7 @@ export class ChartsCallsService {
 
       case GA_CHART.GENDER_AGE:
         data.forEach(d => d[4] > val ? val = d[4] : val);
-        //data.forEach(d => d[1] < val2 ? val2 = d[1] : val2);
+       // data.forEach(d => d[1] < val2 ? val2 = d[1] : val2);
         //val2 = val2 * -1;
 
         formattedData = {
@@ -4268,6 +4280,7 @@ export class ChartsCallsService {
       chartType: 'AreaChart',
       dataTable: data,
       formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+
       options: {
         chartArea: {left: 0, right: 0, height: 192, top: 0},
         legend: {position: 'none'},
