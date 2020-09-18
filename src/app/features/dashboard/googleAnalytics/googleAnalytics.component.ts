@@ -20,7 +20,7 @@ import html2canvas from 'html2canvas';
 import {UserService} from '../../../shared/_services/user.service';
 import {User} from '../../../shared/_models/User';
 import {D_TYPE} from '../../../shared/_models/Dashboard';
-import {GaMiniCards, MiniCard} from '../../../shared/_models/MiniCard';
+import {GaMiniCards, GaAds, MiniCard} from '../../../shared/_models/MiniCard';
 import {BsLocaleService, BsModalRef, BsModalService, parseDate, PopoverModule} from 'ngx-bootstrap';
 import {ApiKeysService} from '../../../shared/_services/apikeys.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -34,7 +34,9 @@ import {HttpClient} from '@angular/common/http';
 @Component({
   selector: 'app-feature-dashboard-google',
   templateUrl: './googleAnalytics.component.html',
-  styleUrls: ['../../../../assets/css/dragula.css']
+  styleUrls: ['./googleAnalytics.component.css'],
+
+ //styleUrls: ['../../../../assets/css/dragula.css']
 })
 
 export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestroy {
@@ -56,6 +58,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     thirty: 29,
     ninety: 89
   };
+
+  color = {'Utenti tot.': '#4285F4', 'Visite tot.': '#DB4437', 'Freq. rimb.': '#F4B400', 'Durata sess.': '#0F9D58'}
 
   public chartArray$: Array<DashboardCharts> = [];
   public miniCards: MiniCard[] = GaMiniCards;
@@ -96,6 +100,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   tmp: string;
   user: User;
 
+  flag = false;
+  flag2 = true;
+  public AdsCard: MiniCard[] = GaAds;
 
   constructor(
     private GAService: GoogleAnalyticsService,
@@ -271,6 +278,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
 
       this.dashErrors.emptyMiniCards = await this.loadMiniCards();
 
+      await this.loadAds();
+
       if (this.dashStored) {
         // Ci sono già dati salvati
         this.filterActions.loadStoredDashboard(D_TYPE.GA);
@@ -296,7 +305,7 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
               filter: chartEl.filter,
               sort: chartEl.sort
             };
-            observables.push(this.CCService.retrieveChartData(chartEl.type, chartParams));
+            observables.push(this.CCService. retrieveChartData(chartEl.type, chartParams));
           }); // Retrieves data for each chart
 
           dataArray = await forkJoin(observables).toPromise();
@@ -858,6 +867,52 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       view_id: ['', Validators.compose([Validators.maxLength(20), Validators.required])],
     });
     this.selectViewForm.controls['view_id'].setValue(this.viewList[0].id);
+  }
+
+  show() {
+    const obj = document.getElementById('thisone');
+    if (this.flag) {
+      this.flag2 = false;
+      setTimeout(() => {
+        this.flag = false;
+      }, 2000);
+    } else {
+      this.flag = true;
+      this.flag2 = true;
+      obj.style.opacity = '1';
+      obj.style.display = 'block';
+    }
+  }
+
+  async loadAds() {
+    let dataArray;
+    const observables: Observable<any>[] = [];
+    let val = 0;
+    let tmp;
+    const chartParams = {
+      metric: 'ga:impressions,ga:adClicks,ga:adCost,ga:CPM,ga:CPC,ga:CTR',
+      dimensions: 'ga:date',
+      filter: null,
+      sort: null
+    };
+    observables.push(this.CCService.retrieveChartData(2, chartParams));
+    dataArray = await forkJoin(observables).toPromise();
+
+    dataArray = dataArray[0].slice(dataArray[0].length - 31, dataArray[0].length - 1);
+    console.log(dataArray)
+
+
+    for (let i = 0; i < this.AdsCard.length; i++) {
+      if (dataArray[dataArray.length - 1][i + 1].includes('.')) {
+        dataArray.forEach(el => val += parseFloat(el[i + 1]));
+        tmp = (val / 30).toFixed(2);
+      } else {
+        dataArray.forEach(el => val += parseInt(el[i + 1], 10));
+        tmp = (val / 30).toFixed(0);
+      }
+      this.AdsCard[i].value = tmp;
+      val = 0;
+    }
   }
 
 }

@@ -53,7 +53,8 @@
     "GUIDE_INTRO": "Guide Introduttive"
   },
   "DASHBOARD": {
-  	"CUSTOM": "La mia dashboard",
+    "ADS": "Valore medio su 30 giorni per le metriche di Google ads",
+    "CUSTOM": "La mia dashboard",
   	"CLEAR": "Pulisci la dashboard",
   	"ESPORT": "Esporta in PDF",
   	"ORDER": "Ordina la dashboard",

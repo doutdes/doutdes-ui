@@ -1,5 +1,9 @@
 {
   "DASHBOARD": {
+    "MEDIA": {
+      "TITLE": ":Loading posts",
+      "MESSAGE": "Loading the data of your post, please wait"
+    },
     "ERR_GETDATA": {
       "TITLE": "Data recovery failed",
       "MESSAGE": "Instagram permissions have not been set"
