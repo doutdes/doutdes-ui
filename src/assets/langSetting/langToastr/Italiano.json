@@ -1,7 +1,7 @@
 {
   "DASHBOARD": {
     "MEDIA": {
-      "TITLE": "Caricamenteo post",
+      "TITLE": "Caricamento post",
       "MESSAGE": "Caricamento dati dei post, per favore attendere"
     },
     "ERR_GETDATA": {

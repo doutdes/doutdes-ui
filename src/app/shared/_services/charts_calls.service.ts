@@ -562,7 +562,7 @@ export class ChartsCallsService {
       case FB_CHART.ONLINE_FANS_FOR_DAY:
         header = [['Orario', 'Fans online']];
 
-        const time = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+        const time1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 
         myMap = new Map();
         for (const el of data) {
@@ -581,7 +581,7 @@ export class ChartsCallsService {
           }
         }
 
-        for (const i of time) {
+        for (const i of time1) {
           if (myMap.has(i)) {
             myMap.set(i, myMap.get(i));
           } else {
@@ -592,7 +592,7 @@ export class ChartsCallsService {
         const keyTime = myMap.keys();
         const valuesTime = myMap.values();
 
-        for (let i = 0; i < time.length; i++) {
+        for (let i = 0; i < time1.length; i++) {
           chartData.push([keyTime.next().value, valuesTime.next().value]);
         }
 
@@ -1984,6 +1984,8 @@ export class ChartsCallsService {
       case FBM_CHART.HOURLYAUDIENCE_CPC:
         data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
+        //let time = ['0-3', '3-6', '6-9', '9-12', '12-15', '15-18', '18-21', '21-24'];
+
         header = [['Orario', 'CPC']];
         for (let i = 0; i < time.length; i++) {
           supportArray.push(parseFloat(data[i].cpc) + parseFloat(data[i + 1].cpc) + parseFloat(data[i + 2].cpc));
@@ -1992,6 +1994,9 @@ export class ChartsCallsService {
             time[i],
             parseFloat(supportArray[i])]);
         }
+
+        console.log(chartData);
+
         break;
       case FBM_CHART.HOURLYAUDIENCE_CTR:
         data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
