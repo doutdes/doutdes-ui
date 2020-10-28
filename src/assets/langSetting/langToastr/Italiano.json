@@ -16,6 +16,10 @@
       "TITLE": "Grafico aggiunto!",
       "MESSAGE": " è stato correttamente aggiunto alla dashboard."
     },
+    "ADD_ALL": {
+      "TITLE": "Aggiunti tutti i grafici!",
+      "MESSAGE": "Tutti i grafici sono stati correttamente aggiunti alla dashboard."
+    },
     "NO_PERMESSI": {
       "TITLE": "Permessi non validi!",
       "MESSAGE": "I permessi di accesso ai tuoi dati Facebook sono non validi o scaduti. Riaggiungi la sorgente dati per aggiornarli."

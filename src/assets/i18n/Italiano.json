@@ -16,7 +16,8 @@
     "NO": "No, annulla",
     "SI": "Si, salva",
     "ANNULLA": "Annulla",
-    "CONFERMA": "Conferma"
+    "CONFERMA": "Conferma",
+    "ADD_ALL": "Aggiungi tutti"
   },
   "FOOTER": {
   	"START": "A cura del",
@@ -53,6 +54,7 @@
     "GUIDE_INTRO": "Guide Introduttive"
   },
   "DASHBOARD": {
+    "ADD_ALL": "Seleziona i grafici da aggiungere",
     "ADS": "Valore medio su 30 giorni per le metriche di Google ads",
     "CUSTOM": "La mia dashboard",
   	"CLEAR": "Pulisci la dashboard",
@@ -102,7 +104,9 @@
     "NO_ELEM": "Nessun elemento trovato",
     "DETTAGLI": "Dettagli ",
     "STATO": "Dati dello stato delle campagne",
-    "MARKETING": "Dati marketing delle campagne"
+    "MARKETING": "Dati marketing delle campagne",
+    "SELECT_CHART": "Scegli grafici da aggiungere",
+    "SELECT_CHART_TO_ADD": "Scegli i grafici che vuoi aggiungere alla dashboard:"
   },
   "CALENDARIO": {
     "TITLE": "Calendario",

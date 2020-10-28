@@ -230,7 +230,6 @@ export class EmptycardComponent implements OnInit {
           .toPromise()
         : await this.dashboardService.getChartsNotAdded(this.dashboard_data.dashboard_id).toPromise();
 
-
       if (this.chartRemaining && this.chartRemaining.length > 0) {
         this.chartRemaining = this.chartRemaining.filter(e => (e.countFan === 0) || (e.countFan === 1 && this.followers > 100));
         this.chartRemaining.sort((a, b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0));
@@ -302,10 +301,9 @@ export class EmptycardComponent implements OnInit {
 
   filterDropdown = (updateChannel = false) => {
     if (updateChannel) {
-      // this.breakdowns = this.breakdowns.filter(b => this.chartRemaining.filter(chart => chart.title.includes(b)).length > 0);
+      this.breakdowns = this.breakdowns.filter(b => this.chartRemaining.filter(chart => chart.title.includes(b)).length > 0);
       this.chartRemaining.forEach(chart => !this.breakdowns.includes(chart.metric) ? this.breakdowns.push(chart.metric) : null);
       //console.log(this.chartRemaining);
-      this.insertChartForm.value.break === undefined ? this.insertChartForm.controls['break'].setValue('reach') : null;
       //console.log(this.insertChartForm);
 
       this.metrics = this.getUnique(this.chartRemaining
@@ -313,13 +311,17 @@ export class EmptycardComponent implements OnInit {
         .sort((a: Chart, b: Chart) => a.title.localeCompare(b.title)), 'title'
       );
 
+      this.insertChartForm.value.break === undefined || this.metrics === [] ? this.insertChartForm.controls['break'].setValue('reach') : null;
+
+
       if (this.insertChartForm.value.channel === 5) {
         this.metrics = this.metrics.filter(chart => chart.metric === this.insertChartForm.controls['break'].value);
       }
-     if(this.metrics[0])
+     if (this.metrics[0])
       this.insertChartForm.controls['metric'].setValue(this.metrics[0].title);
+
     }
-    if(this.metrics[0]) {
+    if (this.metrics[0]) {
       // Set the description of the metric
       this.description = (this.chartRemaining.find(chart =>
         chart.title === this.insertChartForm.value.metric && chart.type === parseInt(this.insertChartForm.value.channel, 10)

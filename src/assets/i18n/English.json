@@ -16,7 +16,8 @@
     "NO": "No, cancel",
     "SI": "Yes, save",
     "ANNULLA": "Cancel",
-    "CONFERMA": "Confirm"
+    "CONFERMA": "Confirm",
+    "ADD_ALL": "Add all"
   },
   "FOOTER": {
     "START": "By the",
@@ -53,6 +54,7 @@
     "GUIDE_INTRO": "Introductory guides"
   },
   "DASHBOARD": {
+    "ADD_ALL": "Select charts to add",
     "ADS": "Average value for 30 days of the metrics of Google ads",
     "CUSTOM": "My dashboard",
     "CLEAR": "Clean the dashboard",
@@ -102,7 +104,9 @@
     "NO_ELEM": "No data found",
     "DETTAGLI": "Details ",
     "STATO": "Campaign status data",
-    "MARKETING": "Campaign marketing data"
+    "MARKETING": "Campaign marketing data",
+    "SELECT_CHART": "Select the charts to add",
+    "SELECT_CHART_TO_ADD": "Select the chart that you want to add to the dashboard:"
   },
   "CALENDARIO": {
     "TITLE": "Calendar",

@@ -16,6 +16,10 @@
       "TITLE": "Graphic added!",
       "MESSAGE": " has been successfully added to the dashboard."
     },
+    "ADD_ALL": {
+      "TITLE": "All charts added!",
+      "MESSAGE": "All the charts have  been successfully added to the dashboard."
+    },
     "NO_PERMESSI": {
       "TITLE": "Invalid permissions!",
       "MESSAGE": "The access permissions to your Facebook data are invalid or expired. Add the data source to update them."

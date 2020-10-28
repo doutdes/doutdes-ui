@@ -1223,10 +1223,10 @@ export class ChartsCallsService {
           ]);
           acc = 0;
         }
-
         break;
       case IG_CHART.MEDIA_LIKE_DATA:
         header = [['Data', 'Like', {role: 'tooltip'}]];
+        console.log(data)
         let arr = [], len;
         now = new Date(data[data.length - 1].end_time.slice(0, 10))
         for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
@@ -1242,7 +1242,6 @@ export class ChartsCallsService {
           ]);
           acc = 0;
         }
-
         break;
       case IG_CHART.MEDIA_ENGAGEMENT_TYPE:
         header = [['Tipo', 'Interazioni', {role: 'tooltip'}, { role: 'style' }]];
@@ -1301,6 +1300,7 @@ export class ChartsCallsService {
           reach = 0;
           impression = 0;
         }
+
         break;
       case IG_CHART.REACH_IMPRESSION_TYPE:
         header = [['Tipo post', 'Visualizzazioni utenti unici', { role: 'style' }, 'Visualizzazioni utenti totali', { role: 'style' }]];
@@ -1995,7 +1995,6 @@ export class ChartsCallsService {
             parseFloat(supportArray[i])]);
         }
 
-        console.log(chartData);
 
         break;
       case FBM_CHART.HOURLYAUDIENCE_CTR:
