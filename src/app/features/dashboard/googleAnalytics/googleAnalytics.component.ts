@@ -102,6 +102,9 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
   flag = false;
   flag2 = true;
   public AdsCard: MiniCard[] = GaAds;
+  private chartRemaining;
+  private disable = true;
+  private list = [];
 
   constructor(
     private GAService: GoogleAnalyticsService,
@@ -236,6 +239,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       }
 
       await this.loadDashboard();
+
+      this.loadRemainingChart();
 
       this.userService.logger(2, this.user).subscribe();
 
@@ -681,6 +686,8 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
       ignoreBackdropClick: ignoreBackdrop,
       keyboard: !ignoreBackdrop
     });
+
+    this.loadRemainingChart();
   }
 
   closeModal(): void {
@@ -898,7 +905,6 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     dataArray = await forkJoin(observables).toPromise();
 
     dataArray = dataArray[0].slice(dataArray[0].length - 31, dataArray[0].length - 1);
-    console.log(dataArray)
 
 
     for (let i = 0; i < this.AdsCard.length; i++) {
@@ -914,5 +920,55 @@ export class FeatureDashboardGoogleAnalyticsComponent implements OnInit, OnDestr
     }
   }
 
+  onChange(pageName: string, isChecked: boolean) {
+    if (isChecked) {
+      this.list.push(pageName);
+    } else {
+      const index = this.list.indexOf(pageName);
+      this.list.splice(index, 1);
+    }
+  }
 
+  async addAllChartToDashboard(all = '') {
+    // console.log(this.list, all)
+    if (all === 'all') { this.list = this.chartRemaining; }
+    let par, chartSelected: DashboardCharts;
+    /*this.DService.getChartsNotAddedByDashboardType(this.HARD_DASH_DATA.dashboard_id, this.HARD_DASH_DATA.dashboard_type)
+      .subscribe(charts => {*/
+
+    if (this.list && this.list.length > 0) {
+      this.list.forEach(async chart => {
+        par = chart;
+        chartSelected = {
+          ...par,
+          chart_id: chart.ID,
+          dashboard_id: this.HARD_DASH_DATA.dashboard_id
+        };
+
+        await this.DService.addChartToDashboard(chartSelected).toPromise();
+        //this.GEService.showChartInDashboard.next(chartSelected);
+
+      });
+
+      this.toastr.success(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD_ALL'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD_ALL'));
+
+      window.location.reload();
+    }
+    /*}, err => {
+      console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
+      console.warn(err);
+    });*/
+  }
+
+
+  async loadRemainingChart () {
+    this.chartRemaining = await this.DService.getChartsNotAddedByDashboardType(this.HARD_DASH_DATA.dashboard_id,
+      this.HARD_DASH_DATA.dashboard_type).toPromise();
+    if (this.chartRemaining == null || this.chartRemaining.length === 0) {
+      this.disable = false;
+    } else {
+      this.disable = true;
+    }
+  }
 }

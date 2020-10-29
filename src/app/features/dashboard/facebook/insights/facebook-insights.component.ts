@@ -330,7 +330,7 @@ export class FeatureDashboardFacebookInsightComponent implements OnInit, OnDestr
       }
   }
 
-async addAllChartToDashboard(all = '') {
+  async addAllChartToDashboard(all = '') {
      // console.log(this.list, all)
     if (all === 'all') { this.list = this.chartRemaining; }
     let par, chartSelected: DashboardCharts;
@@ -361,7 +361,6 @@ async addAllChartToDashboard(all = '') {
         console.warn(err);
       });*/
   }
-
 
   async addChartToDashboard(dashChart: DashboardCharts) {
     const chartToPush: DashboardCharts = dashChart;

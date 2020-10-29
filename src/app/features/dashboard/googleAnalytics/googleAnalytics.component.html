@@ -29,6 +29,13 @@
         <li class="dropdown-item cursor-pointer" (click)="dragAndDrop()">
           <i class="fas fa-arrows-alt mr-2"></i>{{ 'DASHBOARD.ORDER' | translate }}
         </li>
+        <li *ngIf="disable" class="dropdown-item cursor-pointer" (click)="openModal(chooseCharts)">
+          <i class="fas fa-plus mr-2"></i>{{ 'DASHBOARD.ADD_ALL' | translate }}
+        </li>
+
+        <li *ngIf="!disable" class="dropdown-item cursor-pointer disabled" (click)="openModal(chooseCharts)">
+          <i class="fas fa-plus mr-2"></i>{{ 'DASHBOARD.ADD_ALL' | translate }}
+        </li>
       </ul>
     </div> <!-- PDF export -->
     <div class="btn-group float-right d-md-block d-none" dropdown>
@@ -261,3 +268,29 @@
 
 </ng-template> <!-- gapreferences -->
 
+
+<ng-template #chooseCharts>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><i class="fab fa-facebook mr-3"></i>{{ 'DASHBOARD.SELECT_CHART' | translate }}</h4>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-group row">
+      <p class="col-sm-12 text-justify">{{ 'DASHBOARD.SELECT_CHART_TO_ADD' | translate }}</p>
+      <div class="col-sm-12">
+        <div class="form-check" *ngFor="let chart of chartRemaining">
+          <input class="form-check-input" (change)="onChange(chart, $event.target.checked)" name="{{ chart.title }}" type="checkbox" id="{{chart.title}}">
+          <label class="form-check-label" for="{{chart.title}}">
+            {{chart.title}}
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer pr-0 pb-0">
+      <button type="button" class="btn btn-danger" (click)="closeModal()">{{ 'LANGUAGE.ANNULLA' | translate }}</button>
+      <button type="submit" class="btn btn-success" (click)="addAllChartToDashboard()">{{ 'LANGUAGE.CONFERMA' | translate }}</button>
+      <button type="submit" class="btn btn-success" (click)="addAllChartToDashboard('all')">{{ 'LANGUAGE.ADD_ALL' | translate }}</button>
+    </div>
+  </div>
+
+</ng-template>

@@ -1226,7 +1226,6 @@ export class ChartsCallsService {
         break;
       case IG_CHART.MEDIA_LIKE_DATA:
         header = [['Data', 'Like', {role: 'tooltip'}]];
-        console.log(data)
         let arr = [], len;
         now = new Date(data[data.length - 1].end_time.slice(0, 10))
         for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
@@ -1264,9 +1263,9 @@ export class ChartsCallsService {
       case IG_CHART.MEDIA_LIKE_TYPE:
         header = [['Tipo', 'Like', {role: 'tooltip'}, { role: 'style' }]];
 
-        images = data.filter(el => el.media_type === 'image');
-        video = data.filter(el => el.media_type === 'video');
-        album = data.filter(el => el.media_type === 'carousel_album');
+        images = data.filter(el => el.media_type === 'IMAGE');
+        video = data.filter(el => el.media_type === 'VIDEO');
+        album = data.filter(el => el.media_type === 'CAROUSEL_ALBUM');
 
         tmpData.push(images, video, album);
 
@@ -3767,10 +3766,9 @@ export class ChartsCallsService {
     // console.log(intervalDate)
     switch (measure) {
       case 'post-sum':
-        // console.log('FB', data);
         data['data'] = data['data'].filter(el => (moment(el['created_time'])) >= intervalDate.first && (moment(el['created_time'])) <= intervalDate.last);
 
-        data.length > 0 ? value = data['data'].length : value = 0 ;
+        data['data'].length > 0 ? value = data['data'].length : value = 0 ;
 
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':

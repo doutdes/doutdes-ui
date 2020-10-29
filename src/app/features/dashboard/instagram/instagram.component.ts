@@ -112,6 +112,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   tmp: string;
   user: User;
 
+  private chartRemaining;
+  private disable = true;
+  private list = [];
+
   constructor(
     private appComponent: AppComponent,
     private formBuilder: FormBuilder,
@@ -581,6 +585,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       await this.loadDashboard();
       await this.userService.logger(3, this.user).subscribe();
 
+      this.loadRemainingChart();
 
     } catch (e) {
       console.error('Error on ngOnInit of Instagram', e);
@@ -694,6 +699,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       ignoreBackdropClick: ignoreBackdrop,
       keyboard: !ignoreBackdrop
     });
+
+    this.loadRemainingChart();
   }
 
   closeModal() {
@@ -904,6 +911,58 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       }
     }catch (e) {
       console.log(e)
+    }
+  }
+
+  onChange(pageName: string, isChecked: boolean) {
+    if (isChecked) {
+      this.list.push(pageName);
+    } else {
+      const index = this.list.indexOf(pageName);
+      this.list.splice(index, 1);
+    }
+  }
+
+  async addAllChartToDashboard(all = '') {
+    // console.log(this.list, all)
+    if (all === 'all') { this.list = this.chartRemaining; }
+    let par, chartSelected: DashboardCharts;
+    /*this.DService.getChartsNotAddedByDashboardType(this.HARD_DASH_DATA.dashboard_id, this.HARD_DASH_DATA.dashboard_type)
+      .subscribe(charts => {*/
+
+    if (this.list && this.list.length > 0) {
+      this.list.forEach(async chart => {
+        par = chart;
+        chartSelected = {
+          ...par,
+          chart_id: chart.ID,
+          dashboard_id: this.HARD_DASH_DATA.dashboard_id
+        };
+
+        await this.DService.addChartToDashboard(chartSelected).toPromise();
+        //this.GEService.showChartInDashboard.next(chartSelected);
+
+      });
+
+      this.toastr.success(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD_ALL'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD_ALL'));
+
+      window.location.reload();
+    }
+    /*}, err => {
+      console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
+      console.warn(err);
+    });*/
+  }
+
+
+  async loadRemainingChart () {
+    this.chartRemaining = await this.DService.getChartsNotAddedByDashboardType(this.HARD_DASH_DATA.dashboard_id,
+      this.HARD_DASH_DATA.dashboard_type).toPromise();
+    if (this.chartRemaining == null || this.chartRemaining.length === 0) {
+      this.disable = false;
+    } else {
+      this.disable = true;
     }
   }
 }
