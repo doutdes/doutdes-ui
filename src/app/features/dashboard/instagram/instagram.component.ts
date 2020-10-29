@@ -539,7 +539,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
       this.currentNamePage = await this.getPageName(this.pageID);
       this.oldCurrentNamePage = this.currentNamePage;
-      if(this.currentNamePage.length > 15) {
+      if (this.currentNamePage.length > 15) {
         this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
       }
       this.firstDateRange = this.minDate;

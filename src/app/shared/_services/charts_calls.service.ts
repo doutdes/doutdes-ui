@@ -1245,9 +1245,9 @@ export class ChartsCallsService {
       case IG_CHART.MEDIA_ENGAGEMENT_TYPE:
         header = [['Tipo', 'Interazioni', {role: 'tooltip'}, { role: 'style' }]];
 
-        images = data.filter(el => el.media_type === 'image');
-        video = data.filter(el => el.media_type === 'video');
-        album = data.filter(el => el.media_type === 'carousel_album');
+        images = data.filter(el => el.media_type === 'IMAGE');
+        video = data.filter(el => el.media_type === 'VIDEO');
+        album = data.filter(el => el.media_type === 'CAROUSEL_ALBUM');
         let like = 0, commenti = 0, saved = 0;
         tmpData.push(images, video, album);
 
@@ -1304,9 +1304,9 @@ export class ChartsCallsService {
       case IG_CHART.REACH_IMPRESSION_TYPE:
         header = [['Tipo post', 'Visualizzazioni utenti unici', { role: 'style' }, 'Visualizzazioni utenti totali', { role: 'style' }]];
 
-        images = data.filter( el => el.media_type === 'image');
-        video = data.filter( el => el.media_type === 'video');
-        album = data.filter( el => el.media_type === 'album');
+        images = data.filter(el => el.media_type === 'IMAGE');
+        video = data.filter(el => el.media_type === 'VIDEO');
+        album = data.filter(el => el.media_type === 'CAROUSEL_ALBUM');
 
         images.forEach(el => {
           reach += el.reach;
