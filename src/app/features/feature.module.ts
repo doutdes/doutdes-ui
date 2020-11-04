@@ -13,7 +13,7 @@ import {NgxLoadingModule} from 'ngx-loading';
   declarations: [
     FeatureComponent,
     P404Component,
-    P500Component
+    P500Component,
   ],
   imports: [
     FeatureRoutingModule,

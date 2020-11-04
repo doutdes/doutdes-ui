@@ -43,7 +43,7 @@ export class MessageService {
     return this.http.delete(this.formatURL('deleteMessageForUser/' + message_id ),{headers});
   }
 
-  setMessageAsRead(message_id){
+  setMessageAsRead(message_id) {
     const headers = this.getAuthorization();
     return this.http.put(this.formatURL('setMessageRead'), {message_id: message_id},{headers});
   }

@@ -112,10 +112,16 @@
       <small class="font-weight-bold text-uppercase">{{'SIDEBAR.STRUMENTI' | translate }}</small>
     </li>
     <!-- /END Separator -->
+
     <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/calendar']">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-calendar-alt fa-fw mr-3"></span>
         <span class="menu-collapsed">{{'MENU.CALENDARIO' | translate }}</span>
+      </div>
+    </a>
+    <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/instagram-prediction']">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="menu-collapsed">Previsione</span>
       </div>
     </a>
     <a href="#submenu10" data-toggle="collapse" aria-expanded="false"

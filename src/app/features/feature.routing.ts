@@ -6,7 +6,6 @@ import {FeatureComponent} from './feature.component';
 import {IsAuthenticatedGuard} from '../shared/_guards/is-authenticated.guard';
 import {AuthenticationService} from './authentication/authentication.service';
 import {P404Component} from '../errors/404.component';
-import {AdminMessagesComponent} from './messages/admin-messages/admin-messages.component';
 
 @NgModule({
   imports: [
@@ -55,19 +54,26 @@ import {AdminMessagesComponent} from './messages/admin-messages/admin-messages.c
             loadChildren: './calendar/calendar.module#FeatureCalendarModule'
           },
           {
+            path: 'instagram-prediction',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './instagram-prediction/instagram-prediction.module#InstagramPredictionModule'
+          },
+          {
             path: 'messages',
             canActivate: [
               IsAuthenticatedGuard
             ],
             loadChildren: './messages/message.module#FeatureMessageModule'
           },
-          {
+          /*{
             path: 'messages/admin-messages',
             canActivate: [
               IsAuthenticatedGuard
             ],
             loadChildren: './messages/message.module#FeatureMessageModule'
-          },
+          },*/
           {
             path: 'tutorial',
             canActivate: [
