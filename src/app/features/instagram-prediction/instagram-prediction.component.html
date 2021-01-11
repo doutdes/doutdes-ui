@@ -1,0 +1,68 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 pl-0 pr-0 mt-1">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="text-center mb-3">Predizione Popolarità su Instagram</h1>
+          <div class="text-center mb-3">
+            <img src="/assets/img/instagram-logo.jpg" width="300" height="180" class="rounded"/>
+          </div>
+          <div *ngIf="isShow">
+            <form [formGroup]="fieldsPrediction" (ngSubmit)="onSubmit()">
+              <div class="form-row">
+                <div class="input-group mb-4 col-md-6">
+                  <input type="text" class="form-control" placeholder="Username" formControlName="username">
+                </div>
+                <div class="input-group mb-4 col-md-6">
+                  <input type="date" class="form-control" placeholder="Data pubblicazione" formControlName="date">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="input-group mb-4 col-md-6">
+                  <input type="number" class="form-control" placeholder = "Ora pubblicazione" min="0" max="23" formControlName="time">
+                </div>
+                <div class="input-group mb-4 col-md-6">
+                  <div class="form-check">
+                    <label class="form-check-label">
+                      <input type="checkbox" class="form-check-input" formControlName ="isVideo">
+                      Spuntare se il contenuto è un video
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="input-group mb-4 col-md-6">
+                  <textarea class="form-control" formControlName="description" placeholder = "Descrizione Post"></textarea>
+                </div>
+              </div>
+              <div class="text-center mt-3">
+                <button (click)="onSubmit()" type="button" class="btn btn-primary">Invia</button>
+              </div>
+            </form>
+          </div>
+          <div *ngIf="!isShow && controlOutput"  >
+            <div class="text-center mb-3">
+              <img src="/assets/img/success-duck.webp" width="200" height="200"/>
+            </div>
+            <div class="alert alert-success" role="alert">
+              <h4 class="alert-heading">Complimenti!</h4>
+              <p>Il post sarà più popolare della tua media recente degli ultimi 50 post (probabilità: {{output}}%)</p>
+            </div>
+          </div>
+          <div *ngIf="!isShow && !controlOutput"  >
+            <div class="text-center mb-3">
+              <img src="/assets/img/rabbit.webp" width="200" height="200"/>
+            </div>
+            <div class="alert alert-danger" role="alert">
+              <h4 class="alert-heading">Peccato!</h4>
+              <p>Il post sarà meno popolare della tua media recente degli ultimi 50 post (probabilità: {{output}}%)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

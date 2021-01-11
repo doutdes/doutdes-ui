@@ -112,18 +112,36 @@
       <small class="font-weight-bold text-uppercase">{{'SIDEBAR.STRUMENTI' | translate }}</small>
     </li>
     <!-- /END Separator -->
+
     <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/calendar']">
       <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fas fa-calendar-alt fa-fw mr-3"></span>
         <span class="menu-collapsed">{{'MENU.CALENDARIO' | translate }}</span>
       </div>
     </a>
-    <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/messages']">
+    <a class="list-group-item list-group-item-action" [routerLink]="[drag ? '#' : '/instagram-prediction']">
       <div class="d-flex w-100 justify-content-start align-items-center">
-        <span class="fas fa-envelope fa-fw mr-3"></span>
-        <span class="menu-collapsed">{{'MENU.MESSAGGI' | translate }}</span>
+        <span class="menu-collapsed">Previsione</span>
       </div>
     </a>
+    <a href="#submenu10" data-toggle="collapse" aria-expanded="false"
+       class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-start align-items-center">
+        <span class="fas fa-envelope fa-fw mr-3"></span>
+        <span class="menu-collapsed">{{'Messaggi' | translate }}</span>
+        <span class="fas fa-plus ml-auto"></span>
+      </div>
+    </a>
+    <div id="submenu10" class="collapse sidebar-submenu">
+      <a [routerLink]="[drag ? '#' : '/messages']" class="list-group-item list-group-item-action">
+        <span class="menu-collapsed ml-4">Messaggi Ricevuti</span>
+      </a>
+      <ng-container *ngIf="userType === 0">
+        <a [routerLink]="[drag ? '#' : '/messages/admin-messages']" class="list-group-item list-group-item-action">
+          <span class="menu-collapsed ml-4">Scrivi Messaggio</span>
+        </a>
+      </ng-container>
+    </div>
 
     <a [routerLink]="[drag ? '#' : '/tutorialDashboard']" data-toggle="collapse" aria-expanded="false"
        class="list-group-item list-group-item-action flex-column align-items-start">

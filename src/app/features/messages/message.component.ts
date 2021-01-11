@@ -119,7 +119,7 @@ export class FeatureMessageComponent implements OnInit, OnDestroy {
     const bread = [] as Breadcrumb[];
 
     bread.push(new Breadcrumb('Home', '/'));
-    bread.push(new Breadcrumb('Messaggi', '/messages/'));
+    bread.push(new Breadcrumb('Messaggi Ricevuti', '/messages/'));
 
     this.breadcrumbActions.updateBreadcrumb(bread);
   }

@@ -1,8 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule, HashLocationStrategy, LocationStrategy} from '@angular/common';
-
 import {DragulaModule} from 'ng2-dragula';
-
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 
 import {AppComponent} from './app.component';

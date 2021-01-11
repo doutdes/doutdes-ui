@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {FeatureMessageComponent} from './message.component';
+import {AdminMessagesComponent} from './admin-messages/admin-messages.component';
 
 @NgModule({
   imports: [
@@ -8,6 +9,10 @@ import {FeatureMessageComponent} from './message.component';
       {
         path: '',
         component: FeatureMessageComponent
+      },
+      {
+        path: 'admin-messages',
+        component: AdminMessagesComponent
       }
     ])
   ],

@@ -54,12 +54,26 @@ import {P404Component} from '../errors/404.component';
             loadChildren: './calendar/calendar.module#FeatureCalendarModule'
           },
           {
+            path: 'instagram-prediction',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './instagram-prediction/instagram-prediction.module#InstagramPredictionModule'
+          },
+          {
             path: 'messages',
             canActivate: [
               IsAuthenticatedGuard
             ],
             loadChildren: './messages/message.module#FeatureMessageModule'
           },
+          /*{
+            path: 'messages/admin-messages',
+            canActivate: [
+              IsAuthenticatedGuard
+            ],
+            loadChildren: './messages/message.module#FeatureMessageModule'
+          },*/
           {
             path: 'tutorial',
             canActivate: [
