@@ -1,5 +1,9 @@
 {
   "DASHBOARD": {
+    "MEDIA": {
+      "TITLE": ":Loading posts",
+      "MESSAGE": "Loading the data of your post, please wait"
+    },
     "ERR_GETDATA": {
       "TITLE": "Data recovery failed",
       "MESSAGE": "Instagram permissions have not been set"
@@ -11,6 +15,10 @@
     "ADD": {
       "TITLE": "Graphic added!",
       "MESSAGE": " has been successfully added to the dashboard."
+    },
+    "ADD_ALL": {
+      "TITLE": "All charts added!",
+      "MESSAGE": "All the charts have  been successfully added to the dashboard."
     },
     "NO_PERMESSI": {
       "TITLE": "Invalid permissions!",
@@ -119,6 +127,18 @@
     "NO_INFO": {
       "TITLE": "Error Graphic Info",
       "MESSAGE": "The chart guide is not available."
+    },
+    "SI_UPDATE_FORMAT": {
+      "TITLE": "Update completed!",
+      "MESSAGE": "The Chart Format has been successfully updated!"
+    },
+    "NO_UPDATE_FORMAT": {
+      "TITLE": "Error format!",
+      "MESSAGE": "It was not possible to update the format. Please try again or contact support."
+    },
+    "NO_UPDATE_FORMAT_1": {
+      "TITLE": "Error format!",
+      "MESSAGE": "It was not possible to update the format because it is already present."
     }
   }
 }

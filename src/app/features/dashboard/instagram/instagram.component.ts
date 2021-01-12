@@ -77,6 +77,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     animationType: ngxLoadingAnimationTypes.threeBounce,
     backdropBackgroundColour: 'rgba(0,0,0,0.1)',
     backdropBorderRadius: '4px',
+    fullScreenBackdrop: 'true',
     primaryColour: PrimaryWhite,
     secondaryColour: PrimaryWhite
   };
@@ -110,6 +111,10 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
   value: string;
   tmp: string;
   user: User;
+
+  private chartRemaining;
+  private disable = true;
+  private list = [];
 
   constructor(
     private appComponent: AppComponent,
@@ -189,7 +194,12 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     });
     return empty;
   }
-
+  async alertTime(chart) {
+    if (this.loading && chart.metric.includes('media')) {
+      this.toastr.info(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'MEDIA'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'MEDIA'));
+    }
+  }
   async loadDashboard() {
 
     let dash, chartParams: ChartParams = {};
@@ -210,7 +220,6 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
     this.GEService.loadingScreen.next(true);
     this.dragulaService.find('REVERT');
     try {
-
 
       // Retrieving dashboard ID
       dash = await this.DService.getDashboardByType(D_TYPE.IG).toPromise(); // Instagram type
@@ -260,6 +269,9 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
                 observables.push(this.CCService.retrieveChartData(chart.type, chartParams, this.pageID));
 
             });
+
+            this.alertTime(chartParams)
+
 
           forkJoin(observables)
             .subscribe(dataArray => {
@@ -345,6 +357,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         if (!data['status']) { // Se la chiamata non rende errori
           chartToPush.chartData = data;
           chartToPush.error = false;
+          this.alertTime(chartToPush)
 
           this.toastr.success( dashChart.title + this.GEService.getStringToastr(false, true, "DASHBOARD", 'ADD'),
             this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD'));
@@ -526,7 +539,7 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
 
       this.currentNamePage = await this.getPageName(this.pageID);
       this.oldCurrentNamePage = this.currentNamePage;
-      if(this.currentNamePage.length > 15) {
+      if (this.currentNamePage.length > 15) {
         this.currentNamePage = this.currentNamePage.slice(0, 13) + '...';
       }
       this.firstDateRange = this.minDate;
@@ -568,11 +581,11 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
         this.GEService.addSubscriber(dash_type);
       }
 
-
       this.addBreadcrumb();
       await this.loadDashboard();
       await this.userService.logger(3, this.user).subscribe();
 
+      this.loadRemainingChart();
 
     } catch (e) {
       console.error('Error on ngOnInit of Instagram', e);
@@ -686,6 +699,8 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       ignoreBackdropClick: ignoreBackdrop,
       keyboard: !ignoreBackdrop
     });
+
+    this.loadRemainingChart();
   }
 
   closeModal() {
@@ -896,6 +911,58 @@ export class FeatureDashboardInstagramComponent implements OnInit, OnDestroy {
       }
     }catch (e) {
       console.log(e)
+    }
+  }
+
+  onChange(pageName: string, isChecked: boolean) {
+    if (isChecked) {
+      this.list.push(pageName);
+    } else {
+      const index = this.list.indexOf(pageName);
+      this.list.splice(index, 1);
+    }
+  }
+
+  async addAllChartToDashboard(all = '') {
+    // console.log(this.list, all)
+    if (all === 'all') { this.list = this.chartRemaining; }
+    let par, chartSelected: DashboardCharts;
+    /*this.DService.getChartsNotAddedByDashboardType(this.HARD_DASH_DATA.dashboard_id, this.HARD_DASH_DATA.dashboard_type)
+      .subscribe(charts => {*/
+
+    if (this.list && this.list.length > 0) {
+      this.list.forEach(async chart => {
+        par = chart;
+        chartSelected = {
+          ...par,
+          chart_id: chart.ID,
+          dashboard_id: this.HARD_DASH_DATA.dashboard_id
+        };
+
+        await this.DService.addChartToDashboard(chartSelected).toPromise();
+        //this.GEService.showChartInDashboard.next(chartSelected);
+
+      });
+
+      this.toastr.success(this.GEService.getStringToastr(false, true, 'DASHBOARD', 'ADD_ALL'),
+        this.GEService.getStringToastr(true, false, 'DASHBOARD', 'ADD_ALL'));
+
+      window.location.reload();
+    }
+    /*}, err => {
+      console.error('ERROR in FACEBOOK COMPONENT, when fetching charts.');
+      console.warn(err);
+    });*/
+  }
+
+
+  async loadRemainingChart () {
+    this.chartRemaining = await this.DService.getChartsNotAddedByDashboardType(this.HARD_DASH_DATA.dashboard_id,
+      this.HARD_DASH_DATA.dashboard_type).toPromise();
+    if (this.chartRemaining == null || this.chartRemaining.length === 0) {
+      this.disable = false;
+    } else {
+      this.disable = true;
     }
   }
 }
