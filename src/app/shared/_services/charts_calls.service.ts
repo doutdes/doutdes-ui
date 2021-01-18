@@ -137,7 +137,7 @@ export class ChartsCallsService {
   public initFormatting(ID, data) {
     let header;
     let chartData = [];
-    const tmpData = [];
+    let tmpData = [];
     let keys = [];
     let indexFound;
     let other;
@@ -172,7 +172,7 @@ export class ChartsCallsService {
     const tmpU = [];
     const tmpU_age = ['U13-17', 'U18-24', 'U25-34', 'U35-44', 'U45-54', 'U55-64', 'U65+'];
 
-    const now = new Date();
+    let now = new Date();
     let reach = 0, impression = 0;
 
     let j = 0;
@@ -194,6 +194,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
         break;  // FB Fan Count
       case FB_CHART.FANS_COUNTRY_GEOMAP:
         header = [['Paese', 'Numero fan']];
@@ -205,6 +206,7 @@ export class ChartsCallsService {
         }
 
         chartData = this.addPaddingRows(chartData);
+
         break;  // Geo Map
       case FB_CHART.IMPRESSIONS:
         header = [['Data', 'Visualizzazioni']];
@@ -212,6 +214,7 @@ export class ChartsCallsService {
         for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
+
 
         break;  // Page Impressions
       case FB_CHART.FANS_COUNTRY_PIE:
@@ -313,9 +316,9 @@ export class ChartsCallsService {
         }
         break; // Facebook Fans cancellati
       case FB_CHART.IMPRESSIONS_PAID:
-        header = [['Data', 'Visualizzazioni di inserzioni']];
+        header = [['Data', 'Visualizzazioni inserzioni']];
 
-        for (let i = 0; i < data.length; i++) {
+       for (let i = 0; i < data.length; i++) {
           chartData.push([moment(data[i].end_time).toDate(), data[i].value]);
         }
 
@@ -368,9 +371,11 @@ export class ChartsCallsService {
           chartData.push([keyReactions.next().value, valuesReactions.next().value]);
         }
 
+
         break; // Facebook Reazioni torta
       case FB_CHART.REACTIONS_LINEA:
         header = [['Data', 'Reazioni']];
+
 
         if (this.lengthKeys(data) != 0) {
           let sum = 0;
@@ -426,9 +431,11 @@ export class ChartsCallsService {
 
         const key = myMap.keys();
         const values = myMap.values();
+
         for (let i = 0; i < myMap.size; i++) {
           chartData.push([key.next().value, values.next().value]);
         }
+
         break; // Facebook Reazioni colonna
       case FB_CHART.PAGE_VIEW_EXTERNALS:
         header = [['Sito Web', 'Numero']];
@@ -551,6 +558,49 @@ export class ChartsCallsService {
         }
         break; // Facebook fan per Age (elenco)
 
+
+      case FB_CHART.ONLINE_FANS_FOR_DAY:
+        header = [['Orario', 'Fans online']];
+
+        const time1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+
+        myMap = new Map();
+        for (const el of data) {
+          if (el['value']) {
+            const times = el['value'];
+            // tslint:disable-next-line:forin
+
+            for (let i in times) {
+              const value = parseInt(times[i], 10);
+              if (myMap.has(i)) {
+                myMap.set(i, myMap.get(i) + value);
+              } else {
+                myMap.set(i, value);
+              }
+            }
+          }
+        }
+
+        for (const i of time1) {
+          if (myMap.has(i)) {
+            myMap.set(i, myMap.get(i));
+          } else {
+            myMap.set(i, 0);
+          }
+        }
+
+        const keyTime = myMap.keys();
+        const valuesTime = myMap.values();
+
+        for (let i = 0; i < time1.length; i++) {
+          chartData.push([keyTime.next().value, valuesTime.next().value]);
+        }
+
+        for (let i = 0; i < chartData.length; i++) {
+          chartData[i][1] = chartData[i][1] / data.length;
+        }
+
+        break; //Facebook Fan Online per ora (colonne)
 
       case GA_CHART.IMPRESSIONS_DAY:
         header = [['Data', 'Visualizzazioni']];
@@ -840,16 +890,23 @@ export class ChartsCallsService {
       case GA_CHART.GENDER_AGE :
 
         header = [['Età', 'Donne', {role: 'style'}, {role: 'annotation'}, 'Uomini', {role: 'style'}, {role: 'annotation'}]];
+
+        let tmpAcc = 0;
+
         age.forEach(a =>
-          data.filter(d => d[0] === 'female' && d[1] === a).length !== 0
-            ? (v = data.filter(d => d[0] === 'female' && d[1] === a),
-              female.push(parseInt(v[0][2], 10) * -1))
+          data.filter(d => d[1] === 'female' && d[2] === a).length !== 0
+            ? (v = data.filter(d => d[1] === 'female' && d[2] === a),
+              v.forEach(el => tmpAcc += parseInt(el[3], 10)),
+              female.push(tmpAcc * -1),
+              tmpAcc = 0)
             : female.push(0));
 
         age.forEach(a =>
-          data.filter(d => d[0] === 'male' && d[1] === a).length !== 0
-            ? (v = data.filter(d => d[0] === 'male' && d[1] === a),
-              male.push(parseInt(v[0][2], 10)))
+          data.filter(d => d[1] === 'male' && d[2] === a).length !== 0
+            ? (v = data.filter(d => d[1] === 'male' && d[2] === a),
+              v.forEach(el => tmpAcc += parseInt(el[3], 10)),
+              male.push(tmpAcc),
+              tmpAcc = 0)
             : male.push(0));
 
         for (let i = 0; i < 6; i++) {
@@ -1150,9 +1207,11 @@ export class ChartsCallsService {
       case IG_CHART.MEDIA_ENGAGEMENT_DATA:
         header = [['Data', 'Interazioni', {role: 'tooltip'}]];
 
+        now = new Date(data[data.length - 1].end_time.slice(0, 10));
+
         for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
           // @ts-ignore
-          tmpData = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(d));
+          tmpData = data.filter(el => Date.parse(new Date(el.end_time).toString().slice(3, 15)) === Date.parse(d.toString().slice(3, 15)));
           tmpData.forEach(el => acc += el.engagement + el.saved);
           n = tmpData.length > 0 ? tmpData.length : 1;
           const avgValue = tmpData.length > 1 ? ', in media ' + (acc / n).toFixed(2) + ' ' + elem : '';
@@ -1164,14 +1223,13 @@ export class ChartsCallsService {
           ]);
           acc = 0;
         }
-
         break;
       case IG_CHART.MEDIA_LIKE_DATA:
         header = [['Data', 'Like', {role: 'tooltip'}]];
         let arr = [], len;
+        now = new Date(data[data.length - 1].end_time.slice(0, 10))
         for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
-          // @ts-ignore
-          arr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(d));
+          arr = data.filter(el => Date.parse(new Date(el.end_time).toString().slice(3, 15)) === Date.parse(d.toString().slice(3, 15)));
           arr.forEach(el => acc += el.like);
           len = arr.length > 0 ? arr.length : 1;
           const avgValue = arr.length > 1 ? ', in media ' + (acc / len).toFixed(2) + ' ' + elem : '';
@@ -1183,14 +1241,13 @@ export class ChartsCallsService {
           ]);
           acc = 0;
         }
-
         break;
       case IG_CHART.MEDIA_ENGAGEMENT_TYPE:
         header = [['Tipo', 'Interazioni', {role: 'tooltip'}, { role: 'style' }]];
 
-        images = data.filter(el => el.media_type === 'image');
-        video = data.filter(el => el.media_type === 'video');
-        album = data.filter(el => el.media_type === 'carousel_album');
+        images = data.filter(el => el.media_type === 'IMAGE');
+        video = data.filter(el => el.media_type === 'VIDEO');
+        album = data.filter(el => el.media_type === 'CAROUSEL_ALBUM');
         let like = 0, commenti = 0, saved = 0;
         tmpData.push(images, video, album);
 
@@ -1206,9 +1263,9 @@ export class ChartsCallsService {
       case IG_CHART.MEDIA_LIKE_TYPE:
         header = [['Tipo', 'Like', {role: 'tooltip'}, { role: 'style' }]];
 
-        images = data.filter(el => el.media_type === 'image');
-        video = data.filter(el => el.media_type === 'video');
-        album = data.filter(el => el.media_type === 'carousel_album');
+        images = data.filter(el => el.media_type === 'IMAGE');
+        video = data.filter(el => el.media_type === 'VIDEO');
+        album = data.filter(el => el.media_type === 'CAROUSEL_ALBUM');
 
         tmpData.push(images, video, album);
 
@@ -1223,9 +1280,11 @@ export class ChartsCallsService {
       case IG_CHART.REACH_IMPRESSION_DATA:
         header = [['Data', ' Visualizzazioni utenti unici', { role: 'style' }, 'Visualizzazioni utenti totali', { role: 'style' }]];
         let supArr = [];
+        now = new Date(data[data.length - 1].end_time.slice(0, 10))
+
         for (const d = new Date(data[0].end_time.slice(0, 10)); d <= now; d.setDate(d.getDate() + 1)) {
           // @ts-ignore
-          supArr = data.filter(el => Date.parse(el.end_time.slice(0, 10)) === Date.parse(d));
+          supArr = data.filter(el => Date.parse(new Date(el.end_time).toString().slice(3, 15)) === Date.parse(d.toString().slice(3, 15)));
           supArr.forEach(el => {
             reach += el.reach;
             impression += el.impressions;
@@ -1240,13 +1299,14 @@ export class ChartsCallsService {
           reach = 0;
           impression = 0;
         }
+
         break;
       case IG_CHART.REACH_IMPRESSION_TYPE:
         header = [['Tipo post', 'Visualizzazioni utenti unici', { role: 'style' }, 'Visualizzazioni utenti totali', { role: 'style' }]];
 
-        images = data.filter( el => el.media_type === 'image');
-        video = data.filter( el => el.media_type === 'video');
-        album = data.filter( el => el.media_type === 'album');
+        images = data.filter(el => el.media_type === 'IMAGE');
+        video = data.filter(el => el.media_type === 'VIDEO');
+        album = data.filter(el => el.media_type === 'CAROUSEL_ALBUM');
 
         images.forEach(el => {
           reach += el.reach;
@@ -1923,6 +1983,8 @@ export class ChartsCallsService {
       case FBM_CHART.HOURLYAUDIENCE_CPC:
         data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
 
+        //let time = ['0-3', '3-6', '6-9', '9-12', '12-15', '15-18', '18-21', '21-24'];
+
         header = [['Orario', 'CPC']];
         for (let i = 0; i < time.length; i++) {
           supportArray.push(parseFloat(data[i].cpc) + parseFloat(data[i + 1].cpc) + parseFloat(data[i + 2].cpc));
@@ -1931,6 +1993,8 @@ export class ChartsCallsService {
             time[i],
             parseFloat(supportArray[i])]);
         }
+
+
         break;
       case FBM_CHART.HOURLYAUDIENCE_CTR:
         data = this.formatDataFbm(data, 'hourly_stats_aggregated_by_audience_time_zone');
@@ -2033,7 +2097,9 @@ export class ChartsCallsService {
       case FB_CHART.FANS_COUNTRY_PIE:
         formattedData = this.pieChart(data,
           {options: {sliceVisibilityThreshold: 0.05,
-              colors: [FB_PALETTE.BLUE.C2, FB_PALETTE.BLUE.C3, FB_PALETTE.TURQUOISE.C1, FB_PALETTE.STIFFKEY.C2]}});
+              colors: [FB_PALETTE.BLUE.C3, FB_PALETTE.BLUE.C8, FB_PALETTE.BLUE.C6,
+                FB_PALETTE.TURQUOISE.C12, '#1671ff', FB_PALETTE.TURQUOISE.C9,
+                FB_PALETTE.STIFFKEY.C11, FB_PALETTE.STIFFKEY.C2, FB_PALETTE.STIFFKEY.C9, '#364600']}});
         break;  // Fan Country Pie
       case FB_CHART.ENGAGED_USERS:
         formattedData = this.areaChart( data,
@@ -2074,7 +2140,7 @@ export class ChartsCallsService {
         formattedData = this.areaChart( data,
           {
             options : {vAxis : {minValue: this.getMinChartStep(D_TYPE.FB, data, 0.8)},
-              colors: [FB_PALETTE.TURQUOISE.C7]}
+              colors: [FB_PALETTE.TURQUOISE.C6]}
           }
         );
         break; // Fb Fan online giornalieri
@@ -2196,6 +2262,11 @@ export class ChartsCallsService {
             options: { vAxis: {gridlines: {color: '#eaeaea', count: 5}, textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
               colors: [FB_PALETTE.BLUE.C8, IG_PALETTE.AMARANTH.C10]}});
         break; // Facebook Fan Age per elenco
+      case FB_CHART.ONLINE_FANS_FOR_DAY:
+        formattedData = this.columnChart(data,
+          {options: { colors: [FB_PALETTE.TURQUOISE.C6, FB_PALETTE.TURQUOISE.C8, FB_PALETTE.TURQUOISE.C10],
+            }});
+        break; //Facebook Fan Online per ora (colonne)
 
       case GA_CHART.IMPRESSIONS_DAY:
 
@@ -2216,17 +2287,19 @@ export class ChartsCallsService {
         break;  // Google Sessions
       case GA_CHART.SOURCES_PIE:
         formattedData = this.pieChart(data,
-          {options: {colors: [GA_PALETTE.ORANGE.C12, GA_PALETTE.LIME.C7, GA_PALETTE.OCHER.C9, GA_PALETTE.ORANGE.C11]}});
+          { formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+            options: {colors: [GA_PALETTE.ORANGE.C12, GA_PALETTE.LIME.C7, GA_PALETTE.OCHER.C9, GA_PALETTE.ORANGE.C11]}});
         break;  // Google Sources Pie
       case GA_CHART.MOST_VISITED_PAGES:
         formattedData = this.tableChart(data);
         break;  // Google List Referral
       case GA_CHART.SOURCES_COLUMNS:
         formattedData = this.columnChart(data,
-          {options: {chartArea: {left: 0, right: 0, height: 310, top: 0},
+          { formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+            options: {chartArea: {left: 0, right: 0, height: 310, top: 0},
               height: 330,
               vAxis: {gridlines: {color: '#eaeaea', count: 5}, minorGridlines: {color: 'transparent'},
-                textPosition: 'in', textStyle: {color: '#999'}}, colors: [GA_PALETTE.ORANGE.C9],
+                textPosition: 'in', textStyle: {color: '#999'}, format: '#'}, colors: [GA_PALETTE.ORANGE.C9],
               bar: {groupWidth: '70%'},  areaOpacity: 0.3 } } );
 
         break;  // Google Sources Column Chart
@@ -2294,8 +2367,8 @@ export class ChartsCallsService {
 
       case GA_CHART.GENDER_AGE:
         data.forEach(d => d[4] > val ? val = d[4] : val);
-        data.forEach(d => d[1] < val2 ? val2 = d[1] : val2);
-        val2 = val2 * -1;
+       // data.forEach(d => d[1] < val2 ? val2 = d[1] : val2);
+        //val2 = val2 * -1;
 
         formattedData = {
           chartType: 'BarChart',
@@ -2330,8 +2403,8 @@ export class ChartsCallsService {
                 {v: this.searchStep(val) , f: this.searchStep(val).toString()},
                 {v: this.searchStep(val / 2), f: this.searchStep(val / 2).toString()},
                 {v: 0, f: '0'},
-                {v: this.searchStep(val2 / 2) * -1, f: this.searchStep(val2 / 2).toString()},
-                {v: this.searchStep(val2) * -1, f: this.searchStep(val2).toString()}
+                {v: this.searchStep(val / 2) * -1, f: this.searchStep(val / 2).toString()},
+                {v: this.searchStep(val) * -1, f: this.searchStep(val).toString()}
               ],
               format: ';',
             }, // horizontal label
@@ -2365,6 +2438,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'LineChart',
           dataTable: data,
+          formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
           options: {
             chartArea: {left: 0, right: 0, height: 192, top: 0},
             legend: {position: 'top'},
@@ -2389,7 +2463,7 @@ export class ChartsCallsService {
         formattedData = this.geoChart(data, { options : {
             region: 'IT',
             displayMode: 'markers',
-            colors: [FB_PALETTE.BLUE.C1]}} );
+            colors: [GA_PALETTE.LIME.C1]}} );
         break;  // Geo Map
       case GA_CHART.SESSION_ELENCO_GO:
         formattedData = this.tableChart(data);
@@ -2480,7 +2554,7 @@ export class ChartsCallsService {
         formattedData = this.areaChart( data,
           {
             formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
-            options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.FUCSIA.C3]}});
+            options : {vAxis : {minValue: 0}, colors: [IG_PALETTE.IG_COLORS.C6]}});
         break; // IG Reach
       case IG_CHART.ACTION_PERFORMED:
         formattedData = this.pieChart(data,
@@ -2574,6 +2648,8 @@ export class ChartsCallsService {
               minorGridlines: {color: 'transparent'},
               textPosition: 'in',
               textStyle: {color: '#999', fontSize: 13},
+            },
+            hAxis: {
               format: '#'
             },
             areaOpacity: 0.4,
@@ -2602,6 +2678,8 @@ export class ChartsCallsService {
               minorGridlines: {color: '#ffffff', count: 0},
               textPosition: 'in',
               textStyle: {color: '#999', fontSize: 13},
+            },
+            hAxis: {
               format: '#'
             },
             areaOpacity: 0.4,
@@ -2614,6 +2692,7 @@ export class ChartsCallsService {
         formattedData = {
           chartType: 'LineChart',
           dataTable: data,
+          formatters: [{columns: [1, 3], type: 'NumberFormat', options: {pattern: '#.##'}}],
           options: {
             chartArea: {left: 0, right: 0, height: 270, top: 20},
             legend: {position: 'top'},
@@ -2628,6 +2707,7 @@ export class ChartsCallsService {
               minValue: 0,
               textPosition: 'in',
               textStyle: {color: '#999'},
+              format: '##'
             },
             colors: [IG_PALETTE.IG_COLORS.C6, IG_PALETTE.IG_COLORS.C1],
             areaOpacity: 0.1
@@ -2637,10 +2717,10 @@ export class ChartsCallsService {
 
       case IG_CHART.REACH_IMPRESSION_TYPE:
         formattedData = this.columnChart(data,
-          {formatters: [{columns: [1], type: 'NumberFormat', options: {pattern: '#.##'}}],
+          {formatters: [{columns: [1, 3], type: 'NumberFormat', options: {pattern: '#.##'}}],
             options: { chartArea: {left: 0, right: 0, height: 270, top: 20},
               vAxis: { minValue: 0, viewWindowMode: 'explicit', viewWindow: {min: 0}, gridlines: {color: '#eaeaea', count: 5},
-                textPosition: 'in', textStyle: {color: '#999'}, format: '#'},
+                textPosition: 'in', textStyle: {color: '#999'}, format: '##'},
               hAxis: {
                 gridlines: {color: '#eaeaea', count: 5},
                 minorGridlines: {color: 'trasparent'}
@@ -3686,10 +3766,9 @@ export class ChartsCallsService {
     // console.log(intervalDate)
     switch (measure) {
       case 'post-sum':
-        // console.log('FB', data);
         data['data'] = data['data'].filter(el => (moment(el['created_time'])) >= intervalDate.first && (moment(el['created_time'])) <= intervalDate.last);
 
-        data.length > 0 ? value = data['data'].length : value = 0 ;
+        data['data'].length > 0 ? value = data['data'].length : value = 0 ;
 
         break; // The value is the number of post of the previous month, the perc is calculated considering the last 100 posts
       case 'count':
@@ -4202,6 +4281,8 @@ export class ChartsCallsService {
     formattedData = {
       chartType: 'AreaChart',
       dataTable: data,
+      formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
+
       options: {
         chartArea: {left: 0, right: 0, height: 192, top: 0},
         legend: {position: 'none'},
@@ -4216,6 +4297,7 @@ export class ChartsCallsService {
           minValue: 0,
           textPosition: 'in',
           textStyle: {color: '#999'},
+          format: '##.##'
         },
         areaOpacity: 0.1
       }
@@ -4247,6 +4329,7 @@ export class ChartsCallsService {
     formattedData = {
       chartType: 'Table',
       dataTable: data,
+      formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
       options: {
         cssClassNames: {
           'headerRow': 'border m-3 headercellbg',
@@ -4294,11 +4377,12 @@ export class ChartsCallsService {
     formattedData = {
       chartType: 'ColumnChart',
       dataTable: data,
+      formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
       options: {
         chartArea: {left: 0, right: 0, height: 290, top: 0},
         legend: {position: 'none'},
         height: 330,
-        vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}},
+        vAxis: {gridlines: {color: '#eaeaea', count: 6}, textPosition: 'in', textStyle: {color: '#999'}, format: '##.##'},
         areaOpacity: 0.4,
       }
     };
@@ -4331,6 +4415,7 @@ export class ChartsCallsService {
       chartType: 'PieChart',
       dataTable: data,
       chartClass: 8,
+      formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
       options: {
         chartArea: {left: 100, right: 0, height: 290, top: 20},
         legend: {position: 'right'},
@@ -4371,7 +4456,9 @@ export class ChartsCallsService {
       chartType: 'GeoChart',
       dataTable: data,
       chartClass: 2,
+      formatters: [{ columns: [1],  type: 'NumberFormat', options: { pattern: '#.##' } }],
       options: {
+        legend: {numberFormat: '##.##'},
         colorAxis: {colors: ['#9EDEEF', '#63c2de']},
         backgroundColor: '#fff',
         datalessRegionColor: '#eee',

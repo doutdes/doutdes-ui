@@ -110,7 +110,32 @@ export class FilterActions {
       filteredDashboard: this.filteredDashboard,
       storedDashboards: this.storedDashboards
     });
+
   }
+
+  updateStylesChart(chart: DashboardCharts) {
+    const index = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.originalTitle === chart.title);
+    const storedIndex = this.storedDashboards.findIndex((el: DashboardData) => el.type === this.currentDashboard.type);
+
+    this.currentDashboard.data[index].chart_id = chart.chart_id;
+    this.currentDashboard.data[index].format = chart.format;
+
+    this.filteredDashboard.data[index].chart_id = chart.chart_id;
+    this.filteredDashboard.data[index].format = chart.format;
+
+    this.storedDashboards[storedIndex].data[index].chart_id = chart.chart_id;
+    this.storedDashboards[storedIndex].data[index].format = chart.format;
+
+
+    this.Redux.dispatch({
+      type: FILTER_UPDATE,
+      currentDashboard: this.currentDashboard,
+      filteredDashboard: this.filteredDashboard,
+      storedDashboards: this.storedDashboards
+    });
+
+  }
+
 /*
   updateIntervalChart(chart: DashboardCharts) {
     const index = this.currentDashboard.data.findIndex((chartToUpdate) => chartToUpdate.chart_id === chart.chart_id);
@@ -206,7 +231,7 @@ export class FilterActions {
           if (!chart.error) {
             switch (chart.type) {
               case D_TYPE.GA:
-                if (chart.chart_id !== 121 && chart.chart_id !== 119) {
+                if (chart.chart_id !== 121) {
                   chart.chartData = chart.chartData.filter(el => parseDate(el[0]).getTime() >= filterInterval.first.getTime() && parseDate(el[0]).getTime() <= filterInterval.last.getTime());
                 }
                 break;
@@ -217,13 +242,18 @@ export class FilterActions {
                 chart.chartData = chart.chartData.filter(el => parseDate(el.date_stop).getTime() >= filterInterval.first.getTime() && parseDate(el.date_stop).getTime() <= filterInterval.last.getTime());
                 break;
               case D_TYPE.IG:
-                chart.chartData = chart.metric ===
-                'online_followers' ? chart.chartData.filter(
-                  el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last) :
-                  chart.period !== 'lifetime' && chart.metric !== 'lost_followers' ? (
-                    (chart.metric === 'follower_count' && chart.chart_id === 108) ? chart.chartData :
-                      chart.chartData.filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last))
-                      : chart.chartData;
+                if (chart.metric === 'lost_followers') {
+                  chart.chartData[0]['business'] = chart.chartData[0]['business'].filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
+                  chart.chartData[1]['follower_count'] = chart.chartData[1]['follower_count'].filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
+                }
+                chart.chartData = chart.metric === 'online_followers'
+                  ? chart.chartData.filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last)
+                  : ((chart.metric === 'follower_count' && chart.chart_id === 108) || chart.period === 'lifetime')
+                    ? chart.chartData
+                    : chart.metric === 'lost_followers'
+                      ? chart.chartData
+                      : chart.chartData.filter( el => (moment(el.end_time).toDate()) >= filterInterval.first && (moment(el.end_time).toDate()) <= filterInterval.last);
+
 
                 /***
                 chart.chartData = chart.metric ===

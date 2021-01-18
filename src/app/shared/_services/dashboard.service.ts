@@ -51,6 +51,8 @@ export class DashboardService {
   updateChart = (chart) =>
     this.http.put(`${this.baseUrl}/updateChartInDashboard/`, {chart}, {headers: this.headers});
 
+  updateStyleChart = (chart) =>
+    this.http.put(`${this.baseUrl}/updateStyleChartInDashboard/`, {chart}, {headers: this.headers});
 
   updateChartPosition = (chartArray) =>
     this.http.put(`${this.baseUrl}/updateChartsInDashboard/`, {chartArray}, {headers: this.headers});

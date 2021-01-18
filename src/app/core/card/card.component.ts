@@ -23,6 +23,7 @@ import {select} from '@angular-redux/store';
 import {ChartsCallsService} from '../../shared/_services/charts_calls.service';
 import {InstagramService} from '../../shared/_services/instagram.service';
 import {ChartParams} from '../../shared/_models/Chart';
+//import {EmptycardComponent} from './emptycard.component';
 
 @Component({
   selector: 'app-card',
@@ -48,6 +49,12 @@ export class CardComponent implements OnInit {
     thirty: 29,
     ninety: 89,
   };
+
+  tmpProva: ['ciao', 'wee'];
+
+  styles: any;
+  formatID = [];
+  tmpFormat;
 
   aggregated: boolean;
   type: string;
@@ -90,6 +97,7 @@ export class CardComponent implements OnInit {
 
   maxDate: Date = subDays(new Date(), this.FILTER_DAYS.yesterday);
 
+  updateGraph: any;
 
   bsRangeValue: Date[];
   bsRangeValue2: Date[];
@@ -103,12 +111,16 @@ export class CardComponent implements OnInit {
   metrics: Array<Chart>;
   addMetricForm: FormGroup;
 
+
   lang: string;
   value: string;
   tmp: string;
   user: User;
 
+  chartRemaining;
+
   checkComp: boolean;
+  checkFormatNew;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -122,7 +134,8 @@ export class CardComponent implements OnInit {
     private filterActions: FilterActions,
     public translate: TranslateService,
     private userService: UserService,
-    private http: HttpClient
+    private http: HttpClient,
+   // private addChart: EmptycardComponent,
   ) {
     this.GEService.draggable.subscribe(value => this.drag = value);
 
@@ -136,6 +149,7 @@ export class CardComponent implements OnInit {
           console.error(error);
         });
     });
+
   }
 
   ngOnInit() {
@@ -153,6 +167,12 @@ export class CardComponent implements OnInit {
     });
 
     if (this.dashChart.chart_id == 108) return this.checkMinMaxDate(this.dashChart.chart_id);
+
+    this.dashboardService.getChartsNotAddedByDashboardType(this.dashChart.dashboard_id, this.dashChart.type).subscribe(value => {
+      this.styles = value;
+    });
+
+    //this.getStyles();
 
   }
 
@@ -419,11 +439,54 @@ export class CardComponent implements OnInit {
       });
   }
 
+  updateStyles(card) {
+
+    let tmpNewIDCard = this.checkIDCardByFormat(card.originalTitle, card.format);
+    let tmpNewFormat = this.checkFormatNew;
+
+    const chart: DashboardCharts = {
+      dashboard_id: card.dashboard_id,
+      chart_id: tmpNewIDCard,
+      title: card.title,
+      format: tmpNewFormat,
+      description: card.description,
+      //period: card.period
+      //position: this.dashChart.position
+    };
+
+    if (card.format != tmpNewFormat) {
+      this.dashboardService.updateStyleChart(chart)
+        .subscribe(() => {
+          //this.filterActions.updateStylesChart(chart);
+          this.closeModal();
+
+          this.toastr.success(this.GEService.getStringToastr(false, true, 'CARD', 'SI_UPDATE_FORMAT'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'SI_UPDATE_FORMAT'));
+
+          location.reload();
+        }, error => {
+
+          this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_FORMAT'),
+            this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_FORMAT'));
+
+          console.log('Error updating the Chart');
+          console.log(error);
+        });
+    } else {
+
+      this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_UPDATE_FORMAT_1'),
+        this.GEService.getStringToastr(true, false, 'CARD', 'NO_UPDATE_FORMAT_1'));
+
+    }
+
+  }
+
   addMetricToChart() {
     this.filterActions.addMetric(this.dashChart, this.addMetricForm.controls.metricControl.value);
   }
 
   getMetricsAvailable() {
+
     this.dashboardService.getChartsByFormat('linea')
       .subscribe(charts => {
         this.metrics = charts
@@ -548,6 +611,24 @@ export class CardComponent implements OnInit {
   checkInfo (chart) {
 
       switch (chart) {
+        case 1:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerGiorno.pdf', '_blank');
+          break;
+        case 2:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerPaese.pdf', '_blank');
+          break;
+        case 3:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniPost.pdf', '_blank');
+          break;
+        case 8:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerPaese.pdf', '_blank');
+          break;
+        case 13:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniPagina.pdf', '_blank');
+          break;
+        case 14:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerPaese.pdf', '_blank');
+          break;
         case 15:
           window.open('./././assets/InfoGrafici/GuideSingole/Instagram/Visualizzazioni.pdf', '_blank');
           break;
@@ -572,8 +653,64 @@ export class CardComponent implements OnInit {
         case 28:
           window.open('./././assets/InfoGrafici/GuideSingole/Instagram/NuoviFollower.pdf', '_blank');
           break;
+        case 29:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/InterazioniTotali.pdf', '_blank');
+          break;
+        case 30:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/ClickSuiContenuti.pdf', '_blank');
+          break;
+        case 31:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/CondivisioneDelLuogo.pdf', '_blank');
+          break;
+        case 32:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FeedbackNegativi.pdf', '_blank');
+          break;
+        case 33:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanOnlineGiornalieri.pdf', '_blank');
+          break;
+        case 34:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/Reazioni.pdf', '_blank');
+          break;
+        case 35:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/NuoviFan.pdf', '_blank');
+          break;
+        case 36:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanCancellati.pdf', '_blank');
+          break;
+        case 37:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniInserzioni.pdf', '_blank');
+          break;
+        case 38:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/RiproduzioniVideo.pdf', '_blank');
+          break;
+        case 48:
+        case 49:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/Reazioni.pdf', '_blank');
+          break;
+        case 50:
+        case 51:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/AcquisizioneDegliUtenti.pdf', '_blank');
+          break;
+        case 52:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniContenutiPerCitta.pdf', '_blank');
+          break;
+        case 53:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniContenutiPerCitta.pdf', '_blank');
+          break;
+        case 54:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/VisualizzazioniContenutiPerPaese.pdf', '_blank');
+          break;
         case 102:
           window.open('./././assets/InfoGrafici/GuideSingole/Instagram/ClickInfo.pdf', '_blank');
+          break;
+        case 110:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerCitta.pdf', '_blank');
+          break;
+        case 111:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanPerGenereEta.pdf', '_blank');
+          break;
+        case 121:
+          window.open('./././assets/InfoGrafici/GuideSingole/Facebook/FanOnlinePerOra.pdf', '_blank');
           break;
         default:
           this.toastr.error(this.GEService.getStringToastr(false, true, 'CARD', 'NO_INFO'),
@@ -586,6 +723,12 @@ export class CardComponent implements OnInit {
   checkCardInfo (chart) {
 
     switch (chart) {
+      case 1:
+      case 2:
+      case 3:
+      case 8:
+      case 13:
+      case 14:
       case 15:
       case 16:
       case 17:
@@ -594,7 +737,27 @@ export class CardComponent implements OnInit {
       case 20:
       case 22:
       case 28:
+      case 29:
+      case 30:
+      case 31:
+      case 32:
+      case 33:
+      case 34:
+      case 35:
+      case 36:
+      case 37:
+      case 38:
+      case 48:
+      case 49:
+      case 50:
+      case 51:
+      case 52:
+      case 53:
+      case 54:
       case 102:
+      case 110:
+      case 111:
+      case 121:
         return true;
 
       default:
@@ -613,6 +776,47 @@ export class CardComponent implements OnInit {
       }
     }
     return true;
+
+  }
+
+  getStyles(originalTitle, format) {
+      let count = 1;
+
+      this.formatID = [];
+      //this.openModal(template);
+      if (this.styles) {
+        //Ciclo per salvarmi tutti i "format" per quella metrica
+        for (let i = 0; i < this.styles.length; i++) {
+          if (this.styles[i]['title'] === originalTitle) {
+            //this.formatID.push([this.styles[i]['format']]);
+            if (this.styles[i]['format']) {
+              this.formatID[count] = this.styles[i]['format'];
+              count++;
+            }
+          }
+        }
+        //this.formatID.unshift([format]);
+        this.formatID[0] = format;
+        return this.formatID;
+      }
+
+  }
+
+  checkFormat(value) {
+      this.checkFormatNew = value.target.value;
+  }
+
+  checkIDCardByFormat(titleCard, format){
+
+    if (this.checkFormatNew){
+      for(let i = 0; i < this.styles.length; i++){
+        if((this.styles[i]['format'] === this.checkFormatNew) && (this.styles[i]['title'] === titleCard)){
+          return this.styles[i]['ID'];
+        }
+      }
+    } else {
+      this.checkFormatNew = format;
+    }
 
   }
 

@@ -1,20 +1,11 @@
 {
   "HOME": {
-    "TITLE": "Welcome to Doutdes!",
-    "DESCRIPTION": "Doutdes is a data analysis platform for companies. Through Doutdes, it is possible to integrate",
-    "DESCRIPTION_2": "like Google Analytics, Facebook and Instagram Insights, Youtube Studio and more.",
-    "DESCRIPTION2": "Thanks to Doutdes, therefore, you will be able to simplify and centralize your performance management on the web and social channels, finally from a single interface. The intuitiveness and ease of use will also allow you to quickly learn to" ,
-    "DESCRIPTION2_1": "customize the tools",
-    "DESCRIPTION2_2": "by Doutdes for your needs.",
-    "DESCRIPTION3": "Doutdes is financed by Sardegna Ricerche and developed by the Department of Mathematics and Computer Science of the University of Cagliari, and is constantly evolving. New functionalities are periodically integrated, thanks to the suggestions and feedback of the companies that collaborate on development.",
-    "DASHBOARD_REPORT": "Dashboard and report",
-    "DASHBOARD_REPORT_1": "Doutdes offers the possibility of configuring predefined and customized dashboards, with all the graphics needed to analyze the performance of its channels, generating the associated reports.",
-    "GO_TO": "Go now",
-    "IMPO_EASY": "Simple import",
-    "IMPO_EASY_1": "Importing data from external sources such as Google Analytics or Facebook Insights onto the Doutdes platform is extremely simple. Authorize the operation in total security from your accounts.",
-    "USO": "User guides",
-    "USO_1": "If you have problems configuring your dashboards, no problem! A special section is dedicated to step-by-step tutorials to help you become familiar with the tools.",
-    "DESCRIPTION_1": "external service data"
+    "DESCRIPTION": "The cluster project «",
+    "DESCRIPTION_1": "- transfer of Business Intelligence technologies and skills to companies in innovative and traditional sectors», aims to provide cluster companies with the tools and skills to adequately exploit the data of their current and prospective clients from their communication channels, both social and web or from the use of their digital services, in order to create new marketing and affiliation opportunities.",
+    "DESCRIPTION_2": "provides cluster companies with an integrated platform through a web interface, to effectively analyze the data of use of its communication channels, without the need for specific skills, nd this means less time consuming. The platform allows companies to save and maintain their data within their personal account, and this allows them to analyze information for longer periods of time, with no limits on the historical period to be considered.",
+    "CONTATTI": "Contacts",
+    "INDIRIZZO": "Address",
+    "INDIRIZZO_1": "Department of Mathematics and Computer Science, Via Ospedale, 72, 09124 Cagliari CA"
   },
   "LANGUAGE": {
     "TITLE": "Language setting",
@@ -25,7 +16,8 @@
     "NO": "No, cancel",
     "SI": "Yes, save",
     "ANNULLA": "Cancel",
-    "CONFERMA": "Confirm"
+    "CONFERMA": "Confirm",
+    "ADD_ALL": "Add all"
   },
   "FOOTER": {
     "START": "By the",
@@ -62,6 +54,8 @@
     "GUIDE_INTRO": "Introductory guides"
   },
   "DASHBOARD": {
+    "ADD_ALL": "Select charts to add",
+    "ADS": "Average value for 30 days of the metrics of Google ads",
     "CUSTOM": "My dashboard",
     "CLEAR": "Clean the dashboard",
     "ESPORT": "Export to PDF",
@@ -110,7 +104,9 @@
     "NO_ELEM": "No data found",
     "DETTAGLI": "Details ",
     "STATO": "Campaign status data",
-    "MARKETING": "Campaign marketing data"
+    "MARKETING": "Campaign marketing data",
+    "SELECT_CHART": "Select the charts to add",
+    "SELECT_CHART_TO_ADD": "Select the chart that you want to add to the dashboard:"
   },
   "CALENDARIO": {
     "TITLE": "Calendar",
@@ -306,7 +302,8 @@
     "SCELTA_TITOLO": "Comparison Guided Choice",
     "SCELTA_TITOLO_1": "Click on the card menu",
     "SCELTA_TITOLO_2": "Click on 'Edit Interval'",
-    "SCELTA_TITOLO_3": "Select the intervals you want to compare and click 'Edit'"
+    "SCELTA_TITOLO_3": "Select the intervals you want to compare and click 'Edit'",
+    "NEW_FORMAT": "New style:"
   },
   "EMPTYCARD": {
     "NEW_GRA": "Add chart",

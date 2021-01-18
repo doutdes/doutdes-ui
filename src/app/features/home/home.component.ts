@@ -10,6 +10,7 @@ import {UserService} from '../../shared/_services/user.service';
 import {ToastrService} from 'ngx-toastr';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
 import {CookieService} from 'ngx-cookie-service';
+import {version} from 'moment';
 
 @Component({
   selector: 'app-home',
@@ -26,7 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   id: string;
   cookieName: string;
   version = 'v_1.9.1';
-
+  versionDate = new Date('10-09-2020')
 
   @ViewChild('newVersion') newVersionTemplate: ElementRef;
 
@@ -45,11 +46,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const today = new Date();
     this.addBreadcrumb();
     this.id = this.localStore.getId();
     this.cookieName = this.id + this.version;
     const cookieExists: boolean = this.cookieService.check(this.cookieName);
-    if (!cookieExists) {
+    const diff = new Date(today.getTime() - this.versionDate.getTime());
+
+    if (!cookieExists && diff.getDate() < 15) {
       this.openModal(this.newVersionTemplate);
     }
 
