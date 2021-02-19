@@ -1331,7 +1331,7 @@ export class ChartsCallsService {
         break;
       case IG_CHART.COMPARISON_COLONNA:
         header = [['Colonna', 'Intervallo 1', 'Intervallo 2']];
-
+        console.log(data)
         this.GEservice.ComparisonIntervals.subscribe(intervalDateComparison => {
           // Sezione nel caso di modifica intervalli
           if (intervalDateComparison != null) {

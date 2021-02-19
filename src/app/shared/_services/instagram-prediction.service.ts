@@ -12,11 +12,11 @@ export class InstagramPredictionService {
   }
 
   concatenationStrings(username: String, day_publication: number, month_publication: number, time_publication: number,
-  isVideo: boolean, description: String) {
+  isVideo: boolean, description: String, page_id: String) {
     const headers = this.getAuthorization();
     return this.http.post(this.formatURL('concatenationStrings'), {username: username,
     day_publication: day_publication, month_publication: month_publication, time_publication: time_publication,
-    isVideo: isVideo, description: description}, {headers});
+    isVideo: isVideo, description: description, page_id: page_id}, {headers});
   }
 
   private formatURL(call): string {

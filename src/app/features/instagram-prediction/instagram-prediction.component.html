@@ -19,7 +19,7 @@
               </div>
               <div class="form-row">
                 <div class="input-group mb-4 col-md-6">
-                  <input type="number" class="form-control" placeholder = "Ora pubblicazione" min="0" max="23" formControlName="time">
+                  <input type="time" class="form-control" placeholder = "Ora pubblicazione" min="0" max="23" formControlName="time">
                 </div>
                 <div class="input-group mb-4 col-md-6">
                   <div class="form-check">
@@ -46,7 +46,7 @@
             </div>
             <div class="alert alert-success" role="alert">
               <h4 class="alert-heading">Complimenti!</h4>
-              <p>Il post sarà più popolare della tua media recente degli ultimi 50 post (probabilità: {{output}}%)</p>
+              <p>Il post sarà più popolare della tua media recente degli ultimi 50 post (affidabilità che sarà popolare: {{output}}%)</p>
             </div>
           </div>
           <div *ngIf="!isShow && !controlOutput"  >
@@ -55,7 +55,7 @@
             </div>
             <div class="alert alert-danger" role="alert">
               <h4 class="alert-heading">Peccato!</h4>
-              <p>Il post sarà meno popolare della tua media recente degli ultimi 50 post (probabilità: {{output}}%)</p>
+              <p>Il post sarà meno popolare della tua media recente degli ultimi 50 post (affidabilità che sarà popolare: {{output}}%)</p>
             </div>
           </div>
         </div>
