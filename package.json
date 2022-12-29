@@ -70,13 +70,13 @@
     "redux": "4.0.0",
     "redux-observable": "0.14.1",
     "rxjs": "6.1.0",
-    "sass-loader": "^7.0.3",
+    "sass-loader": "^13.2.0",
     "simple-line-icons": "^2.4.1",
     "ts-helpers": "1.1.2",
     "zone.js": "0.8.26"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "0.12.4",
+    "@angular-devkit/build-angular": "15.0.4",
     "@angular/cli": "6.0.3",
     "@angular/compiler-cli": "6.0.2",
     "@angular/language-service": "6.0.2",
